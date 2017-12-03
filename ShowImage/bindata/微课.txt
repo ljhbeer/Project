@@ -1,0 +1,59 @@
+人教版 73
+苏教版 75
+浙教版 77
+北师大版 79
+中图版  81
+
+高中 3 初中 5
+语文 9 数学 11 英语 13 物理 15 化学 17 生物 19 政治 21 历史 23 地理 25 通用技术 231 信息技术 235
+
+必修一    http://91taoke.com/Lesson/index/id/3,19,73,1045567/d/2
+必修二    http://91taoke.com/Lesson/index/id/3,19,73,1045575/d/2             //javascript:aclick(4,1045575)
+必修三    javascript:aclick(4,1045579)
+选修三    javascript:aclick(4,1045589)   
+一轮复习  javascript:aclick(4,1045605)
+二轮复习  javascript:aclick(4,1084757)
+
+
+
+/Lesson/xiangqing/
+xueduan_id/3   学段
+/xueke_id/19   学科
+/banben_id/73/  版本
+
+/mokuai_id/1045579  模块
+/zhangjie_id/1062737 章节
+
+
+~=http://91taoke.com/index.php?s=/Lesson/xiangqing/xueduan_id/3/xueke_id/19/banben_id/73/mokuai_id/1045579/zhangjie_id/1062737/keshi_id
+
+3.1.1
+~/1062807/zhuanban_id/
+3.1.2
+~/1062815/zhuanban_id/
+3.2.1
+~/1062851/zhuanban_id/
+
+
+~=http://91taoke.com/index.php?s=/Lesson/xiangqing/xueduan_id/3/xueke_id/19/banben_id/73/mokuai_id/1045579/zhangjie_id/1062737/keshi_id/1062807/type_id
+
+碎片资源
+~/183/type_name/%E7%A2%8E%E7%89%87%E8%B5%84%E6%BA%90/beike_id/2582607/type2_name/false/zhuanban_id/
+対点题组
+~/186/type_name/%E5%AF%B9%E7%82%B9%E9%A2%98%E7%BB%84/_URL_/
+
+
+
+
+~=http://91taoke.com/Lesson/xiangqing/xueduan_id/3/xueke_id/19/banben_id/73/mokuai_id/1045579/zhangjie_id/1062737/keshi_id/1062807/type_id
+
+课件
+~/180/type_name/%E8%AF%BE%E4%BB%B6/beike_id/2582629/zhuanban_id/
+学案
+~/181/type_name/%E5%AD%A6%E6%A1%88/zhuanban_id/
+好题精析
+~/182/type_name/%E5%A5%BD%E9%A2%98%E7%B2%BE%E6%9E%90/zhuanban_id/
+教学设计
+~/187/type_name/%E6%95%99%E5%AD%A6%E8%AE%BE%E8%AE%A1/zhuanban_id/
+教学视频
+~/185/type_name/%E5%BE%AE%E8%AF%BE%E8%A7%86%E9%A2%91/zhuanban_id/

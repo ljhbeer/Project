@@ -89,6 +89,7 @@ namespace yj
         }
         public void SaveBitmapDataToData()
         {
+            string path = workpath + "floor[fid]bitmapdata\\".Replace("[fid]", activefloor.sID);
             List<formimg.Room> rooms = activefloor.Rooms;
 
             List<FileStream> fs = new List<FileStream>();
@@ -97,9 +98,10 @@ namespace yj
             List<long> startpos = new List<long>();
             for (int i = 0; i < rooms.Count; i++)
             {
-                if (File.Exists("roomdata_" + rooms[i].id + ".data"))
-                    File.Delete("roomdata_" + rooms[i].id + ".data");
-                fs.Add(new FileStream("roomdata_" + rooms[i].id + ".data", FileMode.Append, FileAccess.Write));
+                if (File.Exists(path+"roomdata_" + rooms[i].id + ".data"))
+                    File.Delete(path+"roomdata_" + rooms[i].id + ".data");
+
+                fs.Add(new FileStream(path+"roomdata_" + rooms[i].id + ".data", FileMode.Append, FileAccess.Write));
                 startpos.Add(0);
                 di.Add(new List<datainfo>());
                 bsf.Add(new BufferedStream(fs[i], 102400));
@@ -147,7 +149,7 @@ namespace yj
                 //fs[index].Flush();
                 fs[index].Close();
             }
-            SaveDatainfo(di, "datainfo" + activefloor.sID + ".json");
+            SaveDatainfo(di, path + "datainfo" + activefloor.sID + ".json");
 
         }
         public void TestReadBitmapData(int roomcnt=-1,int savecnt=5)
@@ -242,7 +244,7 @@ namespace yj
         }
         private string ImageFileName(string kh)
         {
-            return workpath+ kh+"_00_1_p1.TIF";
+            return workpath + "C_IMAGES\\" + kh + "_00_1_p1.TIF";
         }
         private Bitmap GetBitmap(string kh)
         {

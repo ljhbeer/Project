@@ -276,8 +276,9 @@ namespace yj.formimg
                     return;
                 }
                 MultiBitmapToData mbt = new MultiBitmapToData(db, activefloor, workpath);
-                mbt.SaveBitmapToData();
-                mbt.TestReadBitmap();
+                //mbt.SaveBitmapToData();
+                //mbt.TestReadBitmap();
+                mbt.SaveBitmapDataToData();
             }
             else if (e.KeyCode == Keys.O)
             {

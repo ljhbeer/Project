@@ -28,7 +28,6 @@ namespace yj
 			_colstatetemplate = new List<int>();
 			_itemsize = new Size(1,1);            
 		}
-
         private void InitColState(int MaxScore)
         {
             _colstatetemplate.Clear();
@@ -38,30 +37,8 @@ namespace yj
             _ColState.Clear();
             for (int i = 0; i < 10; i++)
                 _ColState.AddRange(_colstatetemplate);
-        }
-		
-		
-		private Db.ConnDb _db;
-		private List<subject> _sublist;
-		private int _activefloorid;
-		private string _workpath;
-		//
-		private subject _activesubject;
-		
-		// for multiyj
-		private Size _dgvsize;
-		private Size _itemsize;
-		private Size _imgsize;
-		private DataTable _dtshow;
-		private DataTable _activedt;
-		
-		private int _cntx;
-		private int _cnty;
-		private List<int> _ColState;
-		private List<int> _colstatetemplate;		
-        private List<DataRow> _drlist;
-		public  LoadBitmapData _loadbmpdata;
-		
+        }				
+		///
 		private void ComboBox1SelectedIndexChanged(object sender, EventArgs e)
 		{
 			if (comboBox1.SelectedIndex == -1) return;
@@ -86,6 +63,43 @@ namespace yj
 			InitDgvUI();
 			InitLoadBmpData();	
 			YueJuan();
+		}
+		private void ButtonSubmitMultiClick(object sender, EventArgs e)
+		{
+			if (checkallsetscore())
+            {
+                string sql1 = "update subjectscore_[floorid]  set  tk[subid] = [score] where kh=[kh]"
+                    .Replace("[floorid]", _activefloorid.ToString())
+                    .Replace("[subid]", _activesubject.Subid.ToString());
+
+                int sum = 0;
+                List<int> scoreindex = new List<int>();
+				for (int i = 0; i < dgvs.Columns.Count; i++){
+					if(_ColState[i]==0)
+						scoreindex.Add(i);
+				}
+
+                bool bbreak = false;
+                foreach(int index in scoreindex){
+                    for (int i = 0; i < dgvs.Rows.Count; i++)
+                    {
+                        if (dgvs.Rows[i].Cells[index - 2].Value is DBNull)
+                        {
+                            bbreak = true;
+                            break;
+                        }
+	                    string s = sql1.Replace("[score]", dgvs.Rows[i].Cells[index].Value.ToString())
+	                        .Replace("[kh]", dgvs.Rows[i].Cells[index-2].Value.ToString());
+	                    sum += _db.update(s);
+                	}
+                    if (bbreak) break;
+                } //MessageBox.Show("已更新" + sum + "条数据");
+                LoadNext();
+            }
+            else
+            {
+                MessageBox.Show("还有试题没有给分");
+            }
 		}
 		private void YueJuan()
         {
@@ -125,14 +139,12 @@ namespace yj
         			e.CellStyle.BackColor =  Color.Red;
                 }
 			}
-		}
-		
+		}		
 		///////////////////////////
 		private void InitLoadBmpData()
 		{
 			if (_loadbmpdata == null) {
-				string bmpdatapath = "floor[fid]bitmapdata".Replace("[fid]", _activefloorid.ToString());
-				bmpdatapath = _workpath.Replace("C_IMAGES", bmpdatapath);
+				string bmpdatapath = _workpath + "floor[fid]bitmapdata\\".Replace("[fid]", _activefloorid.ToString());
 				_loadbmpdata = new LoadBitmapData(bmpdatapath, _activefloorid, _sublist);
 			}
 			_loadbmpdata.SetActiveSubject(_activesubject);
@@ -191,8 +203,22 @@ namespace yj
 				}				
 				if(kh=="") break;
 			}			
-		}
-		
+		}		
+		private void LoadNext()
+        {
+            try
+            {
+//                foreach (DataRow dr in _drlist)
+//                    _activedt.Rows.Remove(dr);
+                _drlist.Clear(); //done.Add(activekh);
+                textBoxShow.Text = "本题未完成阅卷份数" + _activedt.Rows.Count + " 满分为" + _activesubject.MaxResult + "分";
+                YueJuan();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
 		private string GetNextKh(){
 			if(_activedt.Rows.Count>0){
 				string kh = _activedt.Rows[0]["kh"].ToString();
@@ -201,45 +227,7 @@ namespace yj
 				return kh;
 			}
 			return "";
-		}
-		
-		private void ButtonSubmitMultiClick(object sender, EventArgs e)
-		{
-			if (checkallsetscore())
-            {
-                string sql1 = "update subjectscore_[floorid]  set  tk[subid] = [score] where kh=[kh]"
-                    .Replace("[floorid]", _activefloorid.ToString())
-                    .Replace("[subid]", _activesubject.Subid.ToString());
-
-                int sum = 0;
-                List<int> scoreindex = new List<int>();
-				for (int i = 0; i < dgvs.Columns.Count; i++){
-					if(_ColState[i]==0)
-						scoreindex.Add(i);
-				}
-
-                bool bbreak = false;
-                foreach(int index in scoreindex){
-                    for (int i = 0; i < dgvs.Rows.Count; i++)
-                    {
-                        if (dgvs.Rows[i].Cells[index - 2].Value is DBNull)
-                        {
-                            bbreak = true;
-                            break;
-                        }
-	                    string s = sql1.Replace("[score]", dgvs.Rows[i].Cells[index].Value.ToString())
-	                        .Replace("[kh]", dgvs.Rows[i].Cells[index-2].Value.ToString());
-	                    sum += _db.update(s);
-                	}
-                    if (bbreak) break;
-                } //MessageBox.Show("已更新" + sum + "条数据");
-                LoadNext();
-            }
-            else
-            {
-                MessageBox.Show("还有试题没有给分");
-            }
-		}
+		}		
 		private bool checkallsetscore() // 还有 其他行
         {
 			List<int> scoreindex = new List<int>();
@@ -260,20 +248,23 @@ namespace yj
             }
             return true;
         }
-		private void LoadNext()
-        {
-            try
-            {
-//                foreach (DataRow dr in _drlist)
-//                    _activedt.Rows.Remove(dr);
-                _drlist.Clear(); //done.Add(activekh);
-                textBoxShow.Text = "本题未完成阅卷份数" + _activedt.Rows.Count + " 满分为" + _activesubject.MaxResult + "分";
-                YueJuan();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-        }
+
+        private Db.ConnDb _db;
+        private List<subject> _sublist;
+        private int _activefloorid;
+        private string _workpath;
+        //        // for multiyj
+        private subject _activesubject;
+        private Size _dgvsize;
+        private Size _itemsize;
+        private Size _imgsize;
+        private DataTable _dtshow;
+        private DataTable _activedt;
+        private int _cntx;
+        private int _cnty;
+        private List<int> _ColState;
+        private List<int> _colstatetemplate;
+        private List<DataRow> _drlist;
+        public LoadBitmapData _loadbmpdata;
 	}
 }

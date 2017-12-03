@@ -20,13 +20,13 @@ namespace yj
             InitializeComponent();
             InitDatabase();
             ShowFloor();
-            activefloorid = -1;
-            workpath = "E:\\Project\\SWAR\\back\\C_IMAGES\\";
-            imgpathtemplate = workpath + "[id]_00_1_p1.TIF";
-            textBoxWorkPath.Text = workpath;  
+            _activefloorid = -1;
+            _workpath = "E:\\Project\\SWAR\\back\\C_IMAGES\\";
+            _imgpathtemplate = _workpath + "[id]_00_1_p1.TIF";
+            textBoxWorkPath.Text = _workpath;  
 	        splitContainer2.Panel1Collapsed = true;
-            dtshow = null;
-            drlist = new List<DataRow>();
+            _dtshow = null;
+            _drlist = new List<DataRow>();
             loadbmpdata = null;
         }
         private void Form1Load(object sender, EventArgs e)
@@ -48,11 +48,17 @@ namespace yj
                 if (str.Trim().StartsWith("workpath="))
                 {
                     path = str.Substring("workpath=".Length) ;
-                    
                     break;
                 }
             if (path != "" && Directory.Exists(path))
-                imgpathtemplate = path + "[id]_00_1_p1.TIF";
+            {
+                if (!path.EndsWith("\\")) 
+                    path+="\\";
+                _imgpathtemplate = path + "[id]_00_1_p1.TIF";
+                _workpath = path;
+
+                textBoxWorkPath.Text = _workpath;
+            }
         	if(s.StartsWith("selectindex=")){
         		try{
         			int index = Convert.ToInt32( s.Substring( "selectindex=".Length));
@@ -69,36 +75,36 @@ namespace yj
         {
             while (true)
             {
-                dbfilename = "data\\yj.mdb";
-                if (!File.Exists(dbfilename))
+                _dbfilename = "data\\yj.mdb";
+                if (!File.Exists(_dbfilename))
                 {
-                    MessageBox.Show("数据库" + dbfilename + "不存在");
+                    MessageBox.Show("数据库" + _dbfilename + "不存在");
                     if (MessageBox.Show("重新选择数据库", "重新选择数据库", MessageBoxButtons.OKCancel) == System.Windows.Forms.DialogResult.Cancel)
                         return false;
                     OpenFileDialog fd = new OpenFileDialog();
                     if (fd.ShowDialog() == DialogResult.OK)
                     {
-                        this.dbfilename = fd.FileName;
+                        this._dbfilename = fd.FileName;
                     }
                 }
                 try
                 {
-                    if (db != null)
+                    if (_db != null)
                     {
-                        db.connClose();
-                        db = null;
+                        _db.connClose();
+                        _db = null;
                     }
-                    FileInfo fi = new FileInfo(dbfilename);
-                    db = new Db.ConnDb(fi.FullName);
+                    FileInfo fi = new FileInfo(_dbfilename);
+                    _db = new Db.ConnDb(fi.FullName);
 //                    RefreshDatabasedata();
-                    db.connClose();
-                    this.textBoxShow.Text = "当前数据数据库：" + dbfilename;
+                    _db.connClose();
+                    this.textBoxShow.Text = "当前数据数据库：" + _dbfilename;
                     break;
                 }
                 catch
                 {
-                    MessageBox.Show("数据库：" +  dbfilename +" 格式不正确");
-                    dbfilename = "";
+                    MessageBox.Show("数据库：" +  _dbfilename +" 格式不正确");
+                    _dbfilename = "";
                 }
             }
             return true;
@@ -106,7 +112,7 @@ namespace yj
         private void ShowFloor()
         {
             string sql = "select * from floor";
-            DataTable dt = db.query(sql).Tables[0];
+            DataTable dt = _db.query(sql).Tables[0];
             dgv.DataSource = dt;
         }
         private void buttonInitData_Click(object sender, EventArgs e)
@@ -117,7 +123,7 @@ namespace yj
                 int FloorID = (int)(dgv.CurrentRow.Cells["ID"].Value);
                 string Name = (string)(dgv.CurrentRow.Cells["floorname"].Value);
                 string ImgPath = (string)(dgv.CurrentRow.Cells["path"].Value);
-                TableTools tt = new TableTools(db,FloorID.ToString(),Name);
+                TableTools tt = new TableTools(_db,FloorID.ToString(),Name);
                 MessageBox.Show("请导入 扫描的文本数据 ");
                 if(! tt.ImportScanData() ) return;
             }
@@ -127,9 +133,9 @@ namespace yj
         {
             this.Hide();
             //TODO: 做一些收尾工作
-            if (db == null)
+            if (_db == null)
                 return;
-            FormCreateTemplate f = new FormCreateTemplate(db,workpath);
+            FormCreateTemplate f = new FormCreateTemplate(_db,_workpath);
             f.ShowDialog();
             ShowFloor();
             this.Show();
@@ -153,7 +159,7 @@ namespace yj
                 tableLayoutPanel2.Visible = true;
 	        	splitContainer2.Panel1Collapsed = true;
 	        	dgvs.Visible = false;
-	        	this.activefloorid = FloorID;
+	        	this._activefloorid = FloorID;
 	        	Init(FloorID);
             }
         }       
@@ -164,19 +170,19 @@ namespace yj
             {
                
                 int result = Convert.ToInt32(fs);
-                if (result >= 0 && result <= activesj.MaxResult)
+                if (result >= 0 && result <= _activesj.MaxResult)
                 {
                     string sql = "update subjectscore_[floorid] set tk[subid] = [score] where kh = [kh]"
-                    	.Replace("[floorid]",activefloorid.ToString());
+                    	.Replace("[floorid]",_activefloorid.ToString());
                     sql = sql.Replace("[score]", result.ToString())
-                    	.Replace("[kh]", activekh)
-                    	.Replace("[subid]",activesj.Subid.ToString());
+                    	.Replace("[kh]", _activekh)
+                    	.Replace("[subid]",_activesj.Subid.ToString());
                     
-                    if (db.update(sql) == 1)
+                    if (_db.update(sql) == 1)
                     {
-                        activedt.Rows.RemoveAt(0);
-                        done.Add(activekh);
-                        textBoxShow.Text = "本题未完成阅卷份数" + activedt.Rows.Count + " 满分为" + activesj.MaxResult + "分";
+                        _activedt.Rows.RemoveAt(0);
+                        _done.Add(_activekh);
+                        textBoxShow.Text = "本题未完成阅卷份数" + _activedt.Rows.Count + " 满分为" + _activesj.MaxResult + "分";
                         pictureBox1.Image = null;
                         pictureBox1.Invalidate();
                         if (checkBoxautoLoadNext.Checked)
@@ -187,7 +193,7 @@ namespace yj
                 }
                 else
                 {
-                    boutarea = true;
+                    _boutarea = true;
                     MessageBox.Show("已超过最大分值,请按 ‘Esc’键取消");
                     //textBoxFenshu.Focus();
                     textBoxFenshu.SelectAll();
@@ -201,14 +207,14 @@ namespace yj
         }
         private void buttonback_Click(object sender, EventArgs e)
         {
-            if (done.Count == 0)
+            if (_done.Count == 0)
             {
                 MessageBox.Show("没有可以回评的试卷");
                 return;
             }
 
             this.Hide();
-            Formhp fhp = new Formhp(db,imgpathtemplate,activesj,done);
+            Formhp fhp = new Formhp(_db,_imgpathtemplate,_activesj,_done);
             fhp.ShowDialog();
             this.Show();
         }  
@@ -217,19 +223,19 @@ namespace yj
             if (Directory.Exists(textBoxWorkPath.Text))
             {
                 DirectoryInfo di = new DirectoryInfo(textBoxWorkPath.Text);
-                workpath = di.FullName;
-                this.imgpathtemplate = workpath + "[id]_00_1_p1.TIF";
+                _workpath = di.FullName;
+                this._imgpathtemplate = _workpath + "[id]_00_1_p1.TIF";
             }
         }
         private void ButtonExportScoreClick(object sender, EventArgs e)
         {
-        	if(activefloorid != -1 && activesj!=null){
+        	if(_activefloorid != -1 && _activesj!=null){
         		// 检测 是否改完
         		bool hasover = false;
         		foreach( subject s      in comboBox1.Items ){
         			string sql = "select count(*) as cnt from subjectscore_[floorid] where tk[tkid] = -1 "
-        				.Replace("[tkid]",s.Subid.ToString()).Replace("[floorid]",activefloorid.ToString());
-        			DataTable dt = db.query(sql).Tables[0];
+        				.Replace("[tkid]",s.Subid.ToString()).Replace("[floorid]",_activefloorid.ToString());
+        			DataTable dt = _db.query(sql).Tables[0];
         			int sum = (int)dt.Rows[0][0];
         			if(sum>0) {
         				MessageBox.Show("你还有试题未改完");
@@ -241,8 +247,8 @@ namespace yj
         		///
         		hasover = false;
         		if(!hasover){
-        			string sql = "select * from subjectscore_[floorid]".Replace("[floorid]",activefloorid.ToString());
-        			DataTable dt = db.query(sql).Tables[0];
+        			string sql = "select * from subjectscore_[floorid]".Replace("[floorid]",_activefloorid.ToString());
+        			DataTable dt = _db.query(sql).Tables[0];
         			StringBuilder sb = new StringBuilder();
         			foreach(DataColumn dc in dt.Columns)
         				sb.Append( dc.ColumnName+",");
@@ -262,8 +268,8 @@ namespace yj
         }
         private void buttonSetXztAnswer_Click(object sender, EventArgs e)
         {           
-            string sql = "select * from subjectscore_[floorid] where 1=2 ".Replace("[floorid]", activefloorid.ToString());
-            DataTable dt = db.query(sql).Tables[0];
+            string sql = "select * from subjectscore_[floorid] where 1=2 ".Replace("[floorid]", _activefloorid.ToString());
+            DataTable dt = _db.query(sql).Tables[0];
             List<string> xztids = new List<string>();
             foreach (DataColumn dc in dt.Columns)
                 if (dc.ColumnName.StartsWith("xz"))
@@ -279,16 +285,16 @@ namespace yj
                 return;
             }
             string sqlt1 = "update subjectscore_[floorid] as A, subjectbase_[floorid]  as B set A.[xztid]=[score] where trim(A.kh) = B.kh and B.[xztid] = '[answer]'"
-                .Replace("[floorid]", activefloorid.ToString());
+                .Replace("[floorid]", _activefloorid.ToString());
             string sqlt2 = "update subjectscore_[floorid] as A, subjectbase_[floorid]  as B set A.[xztid]=0 where trim(A.kh) = B.kh and B.[xztid] <> '[answer]'"
-                 .Replace("[floorid]", activefloorid.ToString());
+                 .Replace("[floorid]", _activefloorid.ToString());
            
             foreach (XztQuestion q in f.Xzt())
             {
                 sql = sqlt1.Replace("[xztid]", "xz" + q.ID).Replace("[answer]", q.OptionAnswer).Replace("[score]",q.Score.ToString());
-                db.update(sql);
+                _db.update(sql);
                 sql = sqlt2.Replace("[xztid]", "xz" + q.ID).Replace("[answer]", q.OptionAnswer);
-                db.update(sql);
+                _db.update(sql);
             }
 
         }
@@ -297,15 +303,15 @@ namespace yj
             if (checkallsetscore())
             {
                 string sql1 = "update subjectscore_[floorid]  set  tk[subid] = [score] where kh=[kh]"
-                    .Replace("[floorid]", activefloorid.ToString())
-                    .Replace("[subid]", activesj.Subid.ToString());
+                    .Replace("[floorid]", _activefloorid.ToString())
+                    .Replace("[subid]", _activesj.Subid.ToString());
 
                 int sum = 0;
                 for (int i = 0; i < dgvs.Rows.Count; i++)
                 {
                     string s = sql1.Replace("[score]", dgvs.Rows[i].Cells["得分"].Value.ToString())
                         .Replace("[kh]", dgvs.Rows[i].Cells["kh"].Value.ToString());
-                    sum += db.update(s);
+                    sum += _db.update(s);
                 } //MessageBox.Show("已更新" + sum + "条数据");
                 LoadNext();
             }
@@ -317,10 +323,10 @@ namespace yj
         private void ButtonFullScreenYJClick(object sender, EventArgs e)
         {
         	//
-        	if(dtshow!=null)
-        	dtshow.Rows.Clear();
+        	if(_dtshow!=null)
+        	_dtshow.Rows.Clear();
         	dgvs.Rows.Clear();
-        	FormFullScreenYJ f = new FormFullScreenYJ( db,GetSubjects(),activefloorid,workpath);
+        	FormFullScreenYJ f = new FormFullScreenYJ( _db,GetSubjects(),_activefloorid,_workpath);
         	
         	this.Hide();
         	f.ShowDialog();
@@ -330,11 +336,11 @@ namespace yj
         {
             try
             {
-                foreach (DataRow dr in drlist)
-                    activedt.Rows.Remove(dr);
-                drlist.Clear();
+                foreach (DataRow dr in _drlist)
+                    _activedt.Rows.Remove(dr);
+                _drlist.Clear();
                 //done.Add(activekh);
-                textBoxShow.Text = "本题未完成阅卷份数" + activedt.Rows.Count + " 满分为" + activesj.MaxResult + "分";
+                textBoxShow.Text = "本题未完成阅卷份数" + _activedt.Rows.Count + " 满分为" + _activesj.MaxResult + "分";
                 
                 if (checkBoxautoLoadNext.Checked)
                     YueJuan();
@@ -402,14 +408,14 @@ namespace yj
             if (comboBox1.SelectedIndex == -1) return;
 
             subject sj = (subject)comboBox1.SelectedItem;
-            activesj = sj;
+            _activesj = sj;
             string sql = "select kh,tk[subid] from subjectscore_[floorid] where tk[subid]=-1 order by id"
-                        .Replace("[floorid]", activefloorid.ToString())
+                        .Replace("[floorid]", _activefloorid.ToString())
                         .Replace("[subid]", sj.Subid.ToString());
-            activedt = db.query(sql).Tables[0];
+            _activedt = _db.query(sql).Tables[0];
 
-            textBoxShow.Text = "本题未完成阅卷份数" + activedt.Rows.Count + " 满分为" + sj.MaxResult + "分";
-            done.Clear();
+            textBoxShow.Text = "本题未完成阅卷份数" + _activedt.Rows.Count + " 满分为" + sj.MaxResult + "分";
+            _done.Clear();
             if (checkBoxdgvpic.Checked)
             {
             	dgvs.Visible = true;
@@ -422,14 +428,14 @@ namespace yj
                 checkBoxautoLoadNext.Visible = false;
                 buttonback.Visible = false;
 
-                int maxscore = (int)activesj.MaxResult;
+                int maxscore = (int)_activesj.MaxResult;
                 List<string> titles = new List<string>(new string[] { "kh", "图片", "得分" });
                 for (int i = 0; i <= maxscore; i++)
                 {
                     titles.Add(i + "分");
                 }
-                dtshow = Tools.DataTableTools.ConstructDataTable(titles.ToArray());
-                dgvs.DataSource = dtshow;
+                _dtshow = Tools.DataTableTools.ConstructDataTable(titles.ToArray());
+                dgvs.DataSource = _dtshow;
 
                 int index = 0;
                 foreach (DataGridViewColumn dc in dgvs.Columns)
@@ -445,11 +451,11 @@ namespace yj
                     else if (dc.Name == "图片")
                     {
                         ((DataGridViewImageColumn)(dgvs.Columns[index])).ImageLayout = DataGridViewImageCellLayout.Zoom;
-                        dc.Width = activesj.Rect.Width / 3;
+                        dc.Width = _activesj.Rect.Width / 3;
                     }
                     index++;
                 }
-                dgvs.RowTemplate.Height = activesj.Rect.Height / 3;
+                dgvs.RowTemplate.Height = _activesj.Rect.Height / 3;
 
             }
             else
@@ -467,12 +473,12 @@ namespace yj
             
             if(checkBoxLoadFromBitmapdata.Checked){
 	            if(  loadbmpdata==null){            	           
-	            	string bmpdatapath = "floor[fid]bitmapdata".Replace("[fid]",activefloorid.ToString());
-	            	bmpdatapath = workpath.Replace("C_IMAGES",bmpdatapath);
+	            	string bmpdatapath = "floor[fid]bitmapdata".Replace("[fid]",_activefloorid.ToString());
+	            	bmpdatapath = _workpath.Replace("C_IMAGES",bmpdatapath);
 	            	List<subject> sublist = GetSubjects();
-	            	loadbmpdata = new LoadBitmapData(bmpdatapath,activefloorid,sublist);
+	            	loadbmpdata = new LoadBitmapData(bmpdatapath,_activefloorid,sublist);
 	            }
-            	loadbmpdata.SetActiveSubject(activesj);
+            	loadbmpdata.SetActiveSubject(_activesj);
             }
             YueJuan();
 
@@ -482,9 +488,9 @@ namespace yj
         {             
             if (e.KeyData == Keys.Return)
             {
-                if(!boutarea)
+                if(!_boutarea)
                 buttonok.PerformClick();
-                boutarea = false;
+                _boutarea = false;
             }
         }  
 		private void ComboBox1KeyUp(object sender, KeyEventArgs e)
@@ -499,8 +505,8 @@ namespace yj
         }
         private void Init(int floorid)
         {            
-            boutarea = false;
-            done = new List<string>();            
+            _boutarea = false;
+            _done = new List<string>();            
             InitSubjectData(floorid.ToString());  
         	if(loadbmpdata!=null){
         		loadbmpdata.Clear();
@@ -511,7 +517,7 @@ namespace yj
         {
         	comboBox1.Items.Clear();
         	string sql = "select * from room where floorid=[floorid] order by id ".Replace("[floorid]",floorid);
-            DataTable dtsubject = db.query(sql).Tables[0];
+            DataTable dtsubject = _db.query(sql).Tables[0];
             foreach (DataRow dr in dtsubject.Rows)
             {
             	int x = Convert.ToInt32( dr["rx"].ToString());
@@ -527,45 +533,44 @@ namespace yj
         	foreach(object o in comboBox1.Items)
         		sublist.Add( (subject)o);
         	return sublist;
-        }
-        
+        }        
         private void YueJuan()
         {
 
-            if (activedt.Rows.Count > 0)
+            if (_activedt.Rows.Count > 0)
             {
                 if (checkBoxdgvpic.Checked)
                 {
                     int cnt = 0;
-                    dtshow.Rows.Clear();
-                    drlist.Clear();
-                    foreach (DataRow dr in activedt.Rows)
+                    _dtshow.Rows.Clear();
+                    _drlist.Clear();
+                    foreach (DataRow dr in _activedt.Rows)
                     {
-                        DataRow drt = dtshow.NewRow();
+                        DataRow drt = _dtshow.NewRow();
                         drt["kh"] = dr["kh"];
                         //drt[""] = dr[""];
                         if(checkBoxLoadFromBitmapdata.Checked){
                         	drt["图片"] = loadbmpdata.GetBitmap( dr["kh"].ToString());
                         }else{
-	                        string imgname = imgpathtemplate.Replace("[id]", dr["kh"].ToString());
+	                        string imgname = _imgpathtemplate.Replace("[id]", dr["kh"].ToString());
 	                        Bitmap img = (Bitmap)Bitmap.FromFile(imgname);
-	                        Bitmap imgc = img.Clone(activesj.Rect, img.PixelFormat);
+	                        Bitmap imgc = img.Clone(_activesj.Rect, img.PixelFormat);
 	                        drt["图片"] = imgc;
                         }
 
-                        dtshow.Rows.Add(drt);
-                        drlist.Add(dr);
+                        _dtshow.Rows.Add(drt);
+                        _drlist.Add(dr);
                         if (++cnt == 10) break;
                     }
                 }
                 else
                 {
-                    DataRow dr = activedt.Rows[0];
-                    string imgname = imgpathtemplate.Replace("[id]", dr["kh"].ToString());
+                    DataRow dr = _activedt.Rows[0];
+                    string imgname = _imgpathtemplate.Replace("[id]", dr["kh"].ToString());
                     Bitmap img = (Bitmap)Bitmap.FromFile(imgname);
-                    Bitmap imgc = img.Clone(activesj.Rect, img.PixelFormat);
+                    Bitmap imgc = img.Clone(_activesj.Rect, img.PixelFormat);
                     pictureBox1.Image = imgc;
-                    activekh = dr["kh"].ToString();
+                    _activekh = dr["kh"].ToString();
                     textBoxFenshu.Focus();
                     textBoxFenshu.SelectAll();
                 }
@@ -573,23 +578,23 @@ namespace yj
             else
             {
                 if (checkBoxdgvpic.Checked)
-                    dtshow.Rows.Clear();
+                    _dtshow.Rows.Clear();
             }
         }      
-        private string dbfilename;
-        private string activekh;
-        private bool boutarea;
-        private Db.ConnDb db;
-        private List<string> done;
-        private DataTable activedt;
-        private DataTable dtshow;
-        private List<DataRow> drlist;
-        private subject activesj;
-        private int activefloorid;
+
+        private string _dbfilename;
+        private string _activekh;
+        private bool _boutarea;
+        private Db.ConnDb _db;
+        private List<string> _done;
+        private DataTable _activedt;
+        private DataTable _dtshow;
+        private List<DataRow> _drlist;
+        private subject _activesj;
+        private int _activefloorid;
         private string _ImgPath;
-        private string imgpathtemplate;
-        private string workpath;
-        
+        private string _imgpathtemplate;
+        private string _workpath;        
         public  LoadBitmapData loadbmpdata;        
         
         

@@ -1,0 +1,3 @@
+2014-5-12 1、更新了dbsqlfullname 和 dbdatafullname 的 config.ini 的设置方式
+          2、更新了dbsqlfullname 和 dbdatafullname 的 config.ini 的设置方式
+6.29.  xp win7合并

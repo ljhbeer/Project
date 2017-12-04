@@ -49,6 +49,7 @@
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.buttonLeftHide = new System.Windows.Forms.Button();
             this.buttonRightHide = new System.Windows.Forms.Button();
+            this.buttonCreateYJData = new System.Windows.Forms.Button();
             this.buttonVerify = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -79,7 +80,7 @@
             // 
             this.splitContainer1.Panel2.Controls.Add(this.tableLayoutPanel1);
             this.splitContainer1.Size = new System.Drawing.Size(1264, 682);
-            this.splitContainer1.SplitterDistance = 53;
+            this.splitContainer1.SplitterDistance = 25;
             this.splitContainer1.TabIndex = 0;
             // 
             // panel2
@@ -88,7 +89,7 @@
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel2.Location = new System.Drawing.Point(0, 0);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(1264, 53);
+            this.panel2.Size = new System.Drawing.Size(1264, 25);
             this.panel2.TabIndex = 3;
             // 
             // tableLayoutPanel1
@@ -103,7 +104,7 @@
             this.tableLayoutPanel1.RowCount = 2;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 34F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(1264, 625);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(1264, 653);
             this.tableLayoutPanel1.TabIndex = 0;
             // 
             // TLP
@@ -120,7 +121,7 @@
             this.TLP.Name = "TLP";
             this.TLP.RowCount = 1;
             this.TLP.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.TLP.Size = new System.Drawing.Size(1258, 585);
+            this.TLP.Size = new System.Drawing.Size(1258, 613);
             this.TLP.TabIndex = 0;
             // 
             // dgv
@@ -130,7 +131,7 @@
             this.dgv.Location = new System.Drawing.Point(254, 3);
             this.dgv.Name = "dgv";
             this.dgv.RowTemplate.Height = 23;
-            this.dgv.Size = new System.Drawing.Size(748, 579);
+            this.dgv.Size = new System.Drawing.Size(748, 607);
             this.dgv.TabIndex = 1;
             this.dgv.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgv_CellContentClick);
             // 
@@ -151,7 +152,7 @@
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(3, 3);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(245, 579);
+            this.panel1.Size = new System.Drawing.Size(245, 607);
             this.panel1.TabIndex = 2;
             // 
             // textBox1
@@ -256,7 +257,7 @@
             this.panel3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel3.Location = new System.Drawing.Point(1008, 3);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(247, 579);
+            this.panel3.Size = new System.Drawing.Size(247, 607);
             this.panel3.TabIndex = 3;
             // 
             // pictureBox1
@@ -283,9 +284,10 @@
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 50F));
             this.tableLayoutPanel2.Controls.Add(this.buttonLeftHide, 0, 0);
             this.tableLayoutPanel2.Controls.Add(this.buttonRightHide, 5, 0);
+            this.tableLayoutPanel2.Controls.Add(this.buttonCreateYJData, 2, 0);
             this.tableLayoutPanel2.Controls.Add(this.buttonVerify, 1, 0);
             this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 594);
+            this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 622);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.RowCount = 1;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
@@ -313,6 +315,16 @@
             this.buttonRightHide.Text = ">>";
             this.buttonRightHide.UseVisualStyleBackColor = true;
             this.buttonRightHide.Click += new System.EventHandler(this.buttonRightHide_Click);
+            // 
+            // buttonCreateYJData
+            // 
+            this.buttonCreateYJData.Location = new System.Drawing.Point(103, 3);
+            this.buttonCreateYJData.Name = "buttonCreateYJData";
+            this.buttonCreateYJData.Size = new System.Drawing.Size(135, 22);
+            this.buttonCreateYJData.TabIndex = 9;
+            this.buttonCreateYJData.Text = "生成阅卷数据";
+            this.buttonCreateYJData.UseVisualStyleBackColor = true;
+            this.buttonCreateYJData.Click += new System.EventHandler(this.buttonCreateYJData_Click);
             // 
             // buttonVerify
             // 
@@ -372,6 +384,7 @@
         private System.Windows.Forms.Panel panel3;
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.ListBox listBoxData;
-        private System.Windows.Forms.Button buttonVerify;        
+        private System.Windows.Forms.Button buttonVerify;
+        private System.Windows.Forms.Button buttonCreateYJData;        
     }
 }

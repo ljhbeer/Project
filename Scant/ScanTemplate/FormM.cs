@@ -139,6 +139,15 @@ namespace ScanTemplate
 			VerifyXzt();
 			this.Show();
 		}
+        private void buttonCreateYJData_Click(object sender, EventArgs e)
+        {
+            if (_artemplate == null || _rundt == null || _rundt.Rows.Count == 0)
+                return;
+            this.Hide();
+            FormYJ.FormYJInit f = new FormYJ.FormYJInit(_artemplate,_rundt,_angle);
+            f.ShowDialog();
+            this.Show();
+        }
 		//暂时不起作用
 		private void VerifyKaoHao()
 		{
@@ -331,8 +340,9 @@ namespace ScanTemplate
 			{
 				double angle = (double)(_rundt.Rows[e.RowIndex]["校验角度"]);
 				Bitmap bmp =(Bitmap) Bitmap.FromFile(fn);
-				DrawInfoBmp(bmp,angle);
-				//pictureBox1.Image = bmp;
+                if (_angle != null)
+                    _angle.SetPaper(angle);
+                pictureBox1.Image = ARTemplate.TemplateTools.DrawInfoBmp(bmp, _artemplate, _angle);
 			}
 		}
 		//dr["选择题"] = ss[3];
@@ -349,49 +359,7 @@ namespace ScanTemplate
 			S.Offset((int)(e.X * (1 - rat)), (int)(e.Y * (1 - rat)));
 			panel1.Invalidate();
 			panel1.AutoScrollPosition = new Point(-S.X, -S.Y);
-		}
-		private void  DrawInfoBmp(Bitmap bmp, double angle)
-		{
-			if(_angle!=null)
-				_angle.SetPaper(angle);
-			bmp = bmp.Clone(new Rectangle(0, 0, bmp.Width, bmp.Height), System.Drawing.Imaging.PixelFormat.Format24bppRgb);
-			using (Graphics g = Graphics.FromImage(bmp))
-			{
-				Pen pen = Pens.Red;
-				Brush dark = Brushes.Black;
-				Brush white = Brushes.White;
-				Brush Red = Brushes.Red;
-				Font font = DefaultFont;
-				
-				foreach (string s in new string[] { "特征点", "考号","姓名", "选择题", "非选择题"})
-					if (_artemplate.Dic.ContainsKey(s))
-				{
-					int cnt = 0;
-					foreach (Area I in _artemplate.Dic[s])
-					{
-						g.DrawRectangle(pen, I.ImgArea );
-						if (I.HasSubArea())
-						{
-							foreach (Rectangle r in I.ImgSubArea())
-							{
-								r.Offset(I.ImgArea.Location);
-								g.DrawRectangle(pen,  r );
-								r.Offset(-1, -1);
-								g.DrawRectangle(pen,  r );
-								r.Offset(2, 2);
-								g.DrawRectangle(pen,  r );
-							}
-						}
-						if (I.NeedFill())
-						{
-							g.FillRectangle(I.FillPen(), I.ImgArea );
-							g.DrawString(cnt.ToString(), font, Red,  I.ImgArea .Location);
-						}
-					}
-				}
-			}
-			pictureBox1.Image = bmp;
-		}
+		}		
 		private void CreateTemplate(string filename, string templatefilename = ""){
 			Bitmap bmp = (Bitmap)Bitmap.FromFile(filename);
 			MyDetectFeatureRectAngle dr = new MyDetectFeatureRectAngle(bmp);
@@ -679,6 +647,8 @@ namespace ScanTemplate
 			};
 			return new List<string>();
 		}
+
+        
 
 	}
 	public class ValueTag

@@ -35,6 +35,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>Lib\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -65,6 +68,12 @@
     <Compile Include="FormVerify.Designer.cs">
       <DependentUpon>FormVerify.cs</DependentUpon>
     </Compile>
+    <Compile Include="FormYJ\FormFullScreenYJ.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormYJ\FormFullScreenYJ.Designer.cs">
+      <DependentUpon>FormFullScreenYJ.cs</DependentUpon>
+    </Compile>
     <Compile Include="FormYJ\FormSetscore.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -77,6 +86,9 @@
     <Compile Include="FormYJ\FormYJInit.Designer.cs">
       <DependentUpon>FormYJInit.cs</DependentUpon>
     </Compile>
+    <Compile Include="FormYJ\JsonFormatTool.cs" />
+    <Compile Include="FormYJ\LoadBitmapData.cs" />
+    <Compile Include="FormYJ\MultiBitmapToData.cs" />
     <Compile Include="Form\Components.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -100,6 +112,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FormVerify.resx">
       <DependentUpon>FormVerify.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormYJ\FormFullScreenYJ.resx">
+      <DependentUpon>FormFullScreenYJ.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FormYJ\FormSetscore.resx">
       <DependentUpon>FormSetscore.cs</DependentUpon>

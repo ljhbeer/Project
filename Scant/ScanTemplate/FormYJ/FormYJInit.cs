@@ -143,10 +143,10 @@ namespace ScanTemplate.FormYJ
         {            
             //FormFullScreenYJ f = new FormFullScreenYJ(_artemplate, _rundt);
             ImgbinManagesubjects ims = new ImgbinManagesubjects(_Students, _Imgsubjects);
-            string path = _workpath.Replace("\\LJH","\\LJH\\bindata") ;
+            string path = _workpath.Replace("\\LJH","\\LJH\\bindata")  + "\\";
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
-            ims.SaveBitmapToData(path);
+            ims.SaveBitmapFixedDataToData(path);
         }
         private void buttonImportOptionAnswerScore_Click(object sender, EventArgs e)
         {
@@ -405,8 +405,9 @@ namespace ScanTemplate.FormYJ
         }
 
         //for SaveBinData 
-        public void SaveBitmapToData(string bindatapath)
-        {           
+        private void SaveBitmapToData(string bindatapath) //bitmap.Length 不定长 ， 低效
+        {
+            List<List<long>> LL = new List<List<long>>();
             List<FileStream> fs = new List<FileStream>();
             List<BufferedStream> bsf = new List<BufferedStream>();
             List<long> startpos = new List<long>();
@@ -422,6 +423,8 @@ namespace ScanTemplate.FormYJ
             int index = 0;
             foreach (Student S in _Students.students)
             {
+                List<long> L = new List<long>();
+                LL.Add(L);
                 IDIndex[S.ID] = index;
                 index++;
                 using (MemoryStream ms = new MemoryStream())
@@ -437,6 +440,7 @@ namespace ScanTemplate.FormYJ
                             byte[] buff = ms.ToArray();
                             bsf[i].Write(buff, 0, buff.Length);
                             //di[i].Add(new datainfo(kh, startpos[i], bs.Length));
+                            L.Add(bs.Length);
                             startpos[i] += bs.Length;
                             i++;
                         }
@@ -452,6 +456,10 @@ namespace ScanTemplate.FormYJ
                 fs[i].Close();
             }
             SaveIDIndex(IDIndex, bindatapath + "idindex.json");
+            StringBuilder sb = new StringBuilder();
+            foreach(List<long> L in LL)
+                sb.AppendLine( string.Join(",",L));
+            File.WriteAllText(bindatapath + "length.txt", sb.ToString());
             MessageBox.Show("以保存好BitmapBindata");
         }
         private void SaveIDIndex(Dictionary<int, int> IDIndex, string filename)
@@ -459,16 +467,17 @@ namespace ScanTemplate.FormYJ
             string str = Tools.JsonFormatTool.ConvertJsonString(Newtonsoft.Json.JsonConvert.SerializeObject(IDIndex));
             File.WriteAllText(filename, str);
         }       
-        public void SaveBitmapDataToData(string bindatapath)
+        public void SaveBitmapFixedDataToData(string bindatapath)
         {
+            List<List<long>> LL = new List<List<long>>();
             List<FileStream> fs = new List<FileStream>();
             List<BufferedStream> bsf = new List<BufferedStream>();
             List<long> startpos = new List<long>();
             for (int i = 0; i < _Imgsubjects.Subjects.Count; i++)
             {
-                if (File.Exists(bindatapath + "subject_" + i + ".data"))
-                    File.Delete(bindatapath + "subject_" + i + ".data");
-                fs.Add(new FileStream(bindatapath + "subject_" + i + ".data", FileMode.Append, FileAccess.Write));
+                if (File.Exists(bindatapath + "subjectfixed_" + i + ".data"))
+                    File.Delete(bindatapath + "subjectfixed_" + i + ".data");
+                fs.Add(new FileStream(bindatapath + "subjectfixed_" + i + ".data", FileMode.Append, FileAccess.Write));
                 startpos.Add(0);
                 bsf.Add(new BufferedStream(fs[i], 102400));
             }
@@ -476,6 +485,8 @@ namespace ScanTemplate.FormYJ
             int index = 0;
             foreach (Student S in _Students.students)
             {
+                List<long> L = new List<long>();
+                LL.Add(L);
                 IDIndex[S.ID] = index;
                 index++;
                 BitmapData bmpdata = S.Src.LockBits(new Rectangle(0, 0, S.Src.Width, S.Src.Height), ImageLockMode.ReadOnly, S.Src.PixelFormat);
@@ -505,7 +516,9 @@ namespace ScanTemplate.FormYJ
                     }
 
                     bsf[i].Write(buff, 0, buff.Length);
-                    //di[index].Add(new datainfo(kh, startpos[index], buff.Length));
+                    L.Add(buff.Length);
+                    //L.Add(bsf[i].Length);
+                
                     startpos[i] += buff.Length;
                     i++;
                 }
@@ -517,7 +530,13 @@ namespace ScanTemplate.FormYJ
                 bsf[i].Close();
                 fs[i].Close();
             }
-            //SaveDatainfo(di, _bitmapdatapath + "datainfo" + activefloor.sID + ".json");
+
+            SaveIDIndex(IDIndex, bindatapath + "idindex.json");
+            StringBuilder sb = new StringBuilder();
+            foreach (List<long> L in LL)
+                sb.AppendLine(string.Join(",", L));
+            File.WriteAllText(bindatapath + "length.txt", sb.ToString());
+            MessageBox.Show("已保存好BitmapBinfixeddata");
         }
         public void TestReadBitmapData(int roomcnt=-1,int savecnt=5)
         {

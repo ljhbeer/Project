@@ -364,7 +364,6 @@ namespace ARTemplate
         {
             this.Rect = rect;
         }
-
     }
     public class TempArea : Area
     {

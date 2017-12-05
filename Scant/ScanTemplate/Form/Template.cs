@@ -242,7 +242,7 @@ namespace ARTemplate
                     }
                 }
             }
-            catch(Exception ex)
+            catch //(Exception ex)
             {
                 ResetData();
                 return false;

@@ -87,8 +87,6 @@
       <DependentUpon>FormYJInit.cs</DependentUpon>
     </Compile>
     <Compile Include="FormYJ\JsonFormatTool.cs" />
-    <Compile Include="FormYJ\LoadBitmapData.cs" />
-    <Compile Include="FormYJ\MultiBitmapToData.cs" />
     <Compile Include="Form\Components.cs">
       <SubType>Form</SubType>
     </Compile>

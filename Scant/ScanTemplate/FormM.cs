@@ -144,7 +144,7 @@ namespace ScanTemplate
             if (_artemplate == null || _rundt == null || _rundt.Rows.Count == 0)
                 return;
             this.Hide();
-            FormYJ.FormYJInit f = new FormYJ.FormYJInit(_artemplate,_rundt,_angle);
+            FormYJ.FormYJInit f = new FormYJ.FormYJInit(_artemplate,_rundt,_angle,_workpath);
             f.ShowDialog();
             this.Show();
         }

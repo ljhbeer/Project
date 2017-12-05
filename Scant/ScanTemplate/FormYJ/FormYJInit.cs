@@ -7,29 +7,21 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using ARTemplate;
+using System.IO;
+using System.Drawing.Imaging;
 
 namespace ScanTemplate.FormYJ
 {
     public partial class FormYJInit : Form
     {
-        private Template _artemplate;
-        private DataTable _rundt;
-        private AutoAngle _angle;
-        private DataTable _dtsetxzt;
-        private DataTable _dtsetfxzt;
-        private Bitmap _src;
-        private int _AvgUnImgWith;
-        private int _AvgUnImgHeight;
-
-        private Students _Students;
-        private Imgsubjects _Imgsubjects;
-        public FormYJInit(Template _artemplate, DataTable _rundt, AutoAngle _angle)
+        public FormYJInit(Template _artemplate, DataTable _rundt, AutoAngle _angle, string _workpath)
         {
             // TODO: Complete member initialization
             this._artemplate = _artemplate;
             this._rundt = _rundt;
             this._angle = _angle;
             this._src = _artemplate.Image;
+            this._workpath = _workpath;
             InitializeComponent();
             InitStudents();
             InitImgSubjects();
@@ -130,7 +122,7 @@ namespace ScanTemplate.FormYJ
                 DataRow dr = dtset.NewRow();
                 dr["OID"] = new ValueTag(S.ID.ToString(), S);
                 dr["题组名称"] = S.Name;
-                dr["最大分值"] = S.Scores;
+                dr["最大分值"] = S.Score;
                 _AvgUnImgHeight += S.Height;
                 _AvgUnImgWith += S.Width;
                 dr["图片"] = _src.Clone(S.Rect, _src.PixelFormat);
@@ -148,10 +140,13 @@ namespace ScanTemplate.FormYJ
             InitDgvSetUI(false);
         }
         private void buttonCreateYJData_Click(object sender, EventArgs e)
-        {
-            MultiBitmapToData mbt = new MultiBitmapToData(_artemplate, _rundt, _dtsetfxzt);
-
+        {            
             //FormFullScreenYJ f = new FormFullScreenYJ(_artemplate, _rundt);
+            ImgbinManagesubjects ims = new ImgbinManagesubjects(_Students, _Imgsubjects);
+            string path = _workpath.Replace("\\LJH","\\LJH\\bindata") ;
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
+            ims.SaveBitmapToData(path);
         }
         private void buttonImportOptionAnswerScore_Click(object sender, EventArgs e)
         {
@@ -173,15 +168,30 @@ namespace ScanTemplate.FormYJ
                 }
             }
         }
+
+        private Template _artemplate;
+        private DataTable _rundt;
+        private AutoAngle _angle;
+        private DataTable _dtsetxzt;
+        private DataTable _dtsetfxzt;
+        private Bitmap _src;
+        private int _AvgUnImgWith;
+        private int _AvgUnImgHeight;
+
+        private Students _Students;
+        private Imgsubjects _Imgsubjects;
+        private string _workpath;
     }
     public class Imgsubjects
     {
         List<Imgsubject> _subjects;
         Dictionary<int, Imgsubject> _dic;
+        private int _activeid;
         public Imgsubjects()
         {
             _subjects = new List<Imgsubject>();
             _dic = new Dictionary<int, Imgsubject>();
+            _activeid = -1;
         }
         public bool Add(Imgsubject S)
         {
@@ -207,35 +217,45 @@ namespace ScanTemplate.FormYJ
                 return _dic[ID];
             return null;
         }
+        public Imgsubject ActiveSubject
+        {
+            get
+            {
+                return ImgSubjectByID(_activeid);
+            }
+        }
+        public void SetActiveSubject(Imgsubject S)
+        {
+            if (S != null)
+                _activeid = S.ID;
+            else
+                _activeid = -1;
+        }
     }
     public class Imgsubject
     {      
         public Imgsubject(UnChoose U, int ID)
         {
-            // TODO: Complete member initialization
-            this.U = U;
+            this._U = U;
             this.ID = ID;
+            this.Score = U.Scores;
             this.Name = U.Name;
-            this.Subid = ID;
-            this.MaxResult = U.Scores;
-            this.Rect = U.Rect;
-            this.BitmapdataLength = -1;
         }
-        public int Subid;
-        public Double MaxResult;
-        public string Name;
-        public Rectangle Rect;
-        public int BitmapdataLength;
-        private UnChoose U;
-        public int ID;
         public override string ToString()
         {
             return Name;
         }
 
-        public int Scores { get; set; }
-        public int Height { get; set; }
-        public int Width { get; set; }
+        public string Name { get; set; } 
+        public int ID { get; set; }
+        public int Score { get; set; }
+        public Rectangle Rect { get { return _U.ImgArea; } }
+        public int Height { get { return Rect.Height; } }
+        public int Width { get { return Rect.Width; } }
+        private UnChoose _U;
+        //public int ID;
+        //public Double Score;
+        public int BitmapdataLength{ get; set; }
     }
     public class Students
     {
@@ -270,7 +290,13 @@ namespace ScanTemplate.FormYJ
         {
             return _khdic[KH];
         }
-
+        public List<Student> students
+        {
+            get
+            {
+                return _students;
+            }
+        }
     }
     public class Student
     {
@@ -309,5 +335,241 @@ namespace ScanTemplate.FormYJ
         private string _imgfilename;
         private Bitmap _src;
         private List<string> _XZT;
+    }
+    public class ImgbinManagesubjects
+    {
+        public ImgbinManagesubjects(Students _Students, Imgsubjects _Imgsubjects)
+        {
+            // TODO: Complete member initialization
+            this._Students = _Students;
+            this._Imgsubjects = _Imgsubjects;
+            _fs = null;
+            _bs = null;
+            _buffer = new byte[102400];
+        }
+        ~ImgbinManagesubjects()
+        {
+            Clear();
+        }
+        public void Clear()
+        {
+            if (_bs != null || _fs != null)
+            {
+                _bs.Flush();
+                _bs.Close();
+                _fs.Close();
+                _bs = null;
+                _fs = null;
+            }
+        }
+        public void InitLoadBindata(string workpath)
+        {
+            this._bindatapath = workpath;
+             //for (int i = 0; i <_Imgsubjects.Subjects.Count; i++)
+             //    _Imgsubjects.Subjects[i].BitmapdataLength = (int)(di[i][0].count);
+        }
+        public bool SetActiveSubject(Imgsubject S)
+        {
+            _Imgsubjects.SetActiveSubject(S);
+            if(_Imgsubjects.ActiveSubject==null)
+                return false;          
+            if (_bs != null || _fs != null)
+            {
+                _bs.Flush();
+                _bs.Close();
+                _fs.Close();
+            }
+            string imgdatafilename = _bindatapath .Replace("[roomid]", S.ID.ToString());
+            _fs = new FileStream(imgdatafilename, FileMode.Open, FileAccess.Read);
+            _bs = new BufferedStream(_fs, 512000);
+            return true;
+        }
+        public Bitmap ActiveSubjectBitmap(Student S) //indexdic
+        {
+            int length = _Imgsubjects.ActiveSubject.BitmapdataLength;
+            Rectangle r = _Imgsubjects.ActiveSubject.Rect;
+
+            int index =  0; //_Students.
+            if (length > _buffer.Length)
+                _buffer = new byte[length];
+            _bs.Position = index * length;
+            _bs.Read(_buffer, 0, _buffer.Length);
+            Bitmap bmp = new Bitmap(r.Width, r.Height);
+            BitmapData bmpData = bmp.LockBits(new Rectangle(0, 0, r.Width, r.Height), ImageLockMode.WriteOnly, PixelFormat.Format1bppIndexed);
+
+            IntPtr ptr = bmpData.Scan0;
+            int bytes = bmpData.Stride * bmp.Height;
+            System.Runtime.InteropServices.Marshal.Copy(_buffer, 0, ptr, bytes);
+            bmp.UnlockBits(bmpData);
+            return bmp;
+        }
+
+        //for SaveBinData 
+        public void SaveBitmapToData(string bindatapath)
+        {           
+            List<FileStream> fs = new List<FileStream>();
+            List<BufferedStream> bsf = new List<BufferedStream>();
+            List<long> startpos = new List<long>();
+            for (int i = 0; i < _Imgsubjects.Subjects.Count; i++)
+            {
+                if (File.Exists(bindatapath + "subject_" + i + ".data"))
+                    File.Delete(bindatapath+"subject_" + i + ".data");
+                fs.Add(new FileStream(bindatapath+"subject_" + i + ".data", FileMode.Append, FileAccess.Write));
+                startpos.Add(0);
+                bsf.Add(new BufferedStream(fs[i], 102400));
+            }
+            Dictionary<int, int> IDIndex = new Dictionary<int, int>();
+            int index = 0;
+            foreach (Student S in _Students.students)
+            {
+                IDIndex[S.ID] = index;
+                index++;
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    using (BufferedStream bs = new BufferedStream(ms))
+                    {
+                        int i = 0;
+                        foreach (Imgsubject I in _Imgsubjects.Subjects)
+                        {
+                            Bitmap img = S.Src.Clone(I.Rect, S.Src.PixelFormat);
+                            img.Save(bs, System.Drawing.Imaging.ImageFormat.Tiff);
+                            bs.Flush();
+                            byte[] buff = ms.ToArray();
+                            bsf[i].Write(buff, 0, buff.Length);
+                            //di[i].Add(new datainfo(kh, startpos[i], bs.Length));
+                            startpos[i] += bs.Length;
+                            i++;
+                        }
+                    }
+                }
+            }
+
+            for (int i = 0; i < _Imgsubjects.Subjects.Count; i++)
+            {
+                bsf[i].Flush();
+                bsf[i].Close();
+                //fs[i].Flush();
+                fs[i].Close();
+            }
+            SaveIDIndex(IDIndex, bindatapath + "idindex.json");
+            MessageBox.Show("以保存好BitmapBindata");
+        }
+        private void SaveIDIndex(Dictionary<int, int> IDIndex, string filename)
+        {
+            string str = Tools.JsonFormatTool.ConvertJsonString(Newtonsoft.Json.JsonConvert.SerializeObject(IDIndex));
+            File.WriteAllText(filename, str);
+        }       
+        public void SaveBitmapDataToData(string bindatapath)
+        {
+            List<FileStream> fs = new List<FileStream>();
+            List<BufferedStream> bsf = new List<BufferedStream>();
+            List<long> startpos = new List<long>();
+            for (int i = 0; i < _Imgsubjects.Subjects.Count; i++)
+            {
+                if (File.Exists(bindatapath + "subject_" + i + ".data"))
+                    File.Delete(bindatapath + "subject_" + i + ".data");
+                fs.Add(new FileStream(bindatapath + "subject_" + i + ".data", FileMode.Append, FileAccess.Write));
+                startpos.Add(0);
+                bsf.Add(new BufferedStream(fs[i], 102400));
+            }
+            Dictionary<int, int> IDIndex = new Dictionary<int, int>();
+            int index = 0;
+            foreach (Student S in _Students.students)
+            {
+                IDIndex[S.ID] = index;
+                index++;
+                BitmapData bmpdata = S.Src.LockBits(new Rectangle(0, 0, S.Src.Width, S.Src.Height), ImageLockMode.ReadOnly, S.Src.PixelFormat);
+                int i = 0;
+                foreach (Imgsubject I in _Imgsubjects.Subjects)
+                {
+                    Rectangle r = I.Rect;
+                    r.X = (r.X / 8) * 8 + (r.X % 8 > 2 ? 8 : 0);
+                    r.Width = (r.Width / 8) * 8 + (r.Width % 8 > 2 ? 8 : 0);
+                    int stride = r.Width / 8;
+                    stride = (stride / 4 * 4) + (stride % 4 > 0 ? 4 : 0);
+                    byte[] buff = new byte[stride * r.Height];
+
+                    unsafe
+                    {
+                        byte* bmpPtr = (byte*)bmpdata.Scan0.ToPointer();
+                        bmpPtr += r.Y * bmpdata.Stride + r.X / 8;
+
+                        for (int y = 0; y < r.Height; y++)
+                        {
+                            for (int k = 0; k < r.Width / 8; k++)
+                            {
+                                buff[y * (stride) + k] = bmpPtr[k];
+                            }
+                            bmpPtr += bmpdata.Stride;
+                        }
+                    }
+
+                    bsf[i].Write(buff, 0, buff.Length);
+                    //di[index].Add(new datainfo(kh, startpos[index], buff.Length));
+                    startpos[i] += buff.Length;
+                    i++;
+                }
+            }
+
+            for (int i = 0; i < _Imgsubjects.Subjects.Count; i++)
+            {
+                bsf[i].Flush();
+                bsf[i].Close();
+                fs[i].Close();
+            }
+            //SaveDatainfo(di, _bitmapdatapath + "datainfo" + activefloor.sID + ".json");
+        }
+        public void TestReadBitmapData(int roomcnt=-1,int savecnt=5)
+        {
+            //List<List<datainfo>> di = LoadDatainfo("datainfo" + activefloor.sID + ".json");
+            int index = 0;
+            foreach (Imgsubject I in _Imgsubjects.Subjects)
+            //foreach (ScanTemplate.formimg.Room room in activefloor.Rooms)
+            {
+                Rectangle r = I.Rect;
+                r.X = (r.X / 8) * 8 + (r.X % 8 > 2 ? 8 : 0);
+                r.Width = (r.Width / 8) * 8 + (r.Width % 8 > 2 ? 8 : 0);
+
+                //ReadBitmapdata(di[index],_bitmapdatapath, index, r, savecnt);
+                index++;
+                if (roomcnt == index) break;
+            }
+        }
+        private static void ConstructImgData(Students students, ref Rectangle imgrect)
+        {
+            FileStream fs = new FileStream("img.data", FileMode.Append, FileAccess.Write);
+            MemoryStream ms = new MemoryStream();
+            BufferedStream bs = new BufferedStream(ms, 40960);
+
+            int startpos = 0;
+            for (int cnt = 0; cnt <students.students.Count; cnt++)
+            {               
+                Bitmap imgc = students.students[cnt].Src.Clone(imgrect, students.students[cnt].Src.PixelFormat);
+                imgc.Save(bs, System.Drawing.Imaging.ImageFormat.Tiff);
+                bs.Flush();
+                byte[] buff = ms.ToArray();
+                fs.Write(buff, 0, buff.Length);
+
+                startpos += (int)bs.Length;
+                if (buff.Length != bs.Length)
+                {
+                    System.Windows.Forms.MessageBox.Show("Error: buff.length=" + buff.Length + ",bs.length=" + bs.Length);
+                }
+            }
+            ms.Flush();
+            bs.Flush();
+            fs.Flush();
+            ms.Close();
+            bs.Close();
+            fs.Close();
+        }
+
+        private Students _Students;
+        private Imgsubjects _Imgsubjects;
+        //for LoadBinData
+		private FileStream _fs;
+        private BufferedStream _bs;
+		private byte[] _buffer;
+        private string _bindatapath;
     }
 }

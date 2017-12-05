@@ -39,14 +39,14 @@
             this.TLP = new System.Windows.Forms.TableLayoutPanel();
             this.dgv = new System.Windows.Forms.DataGridView();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
-            this.dgvSet = new System.Windows.Forms.DataGridView();
-            this.panel1 = new System.Windows.Forms.Panel();
-            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
+            this.dgvSet = new System.Windows.Forms.DataGridView();
             this.buttonShowXztSet = new System.Windows.Forms.Button();
             this.buttonShowFXztSet = new System.Windows.Forms.Button();
             this.buttonImportOptionAnswerScore = new System.Windows.Forms.Button();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.tableLayoutPanel2.SuspendLayout();
             this.panel3.SuspendLayout();
@@ -56,13 +56,13 @@
             this.splitContainer2.Panel1.SuspendLayout();
             this.splitContainer2.Panel2.SuspendLayout();
             this.splitContainer2.SuspendLayout();
+            this.tableLayoutPanel3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvSet)).BeginInit();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
-            this.tableLayoutPanel3.SuspendLayout();
             this.SuspendLayout();
             // 
             // panel2
@@ -134,6 +134,7 @@
             this.buttonVerify.TabIndex = 4;
             this.buttonVerify.Text = "校验";
             this.buttonVerify.UseVisualStyleBackColor = true;
+            this.buttonVerify.Click += new System.EventHandler(this.buttonVerify_Click);
             // 
             // buttonCreateYJData
             // 
@@ -200,6 +201,27 @@
             this.splitContainer2.SplitterDistance = 289;
             this.splitContainer2.TabIndex = 4;
             // 
+            // tableLayoutPanel3
+            // 
+            this.tableLayoutPanel3.ColumnCount = 4;
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableLayoutPanel3.Controls.Add(this.buttonCreateYJData, 3, 0);
+            this.tableLayoutPanel3.Controls.Add(this.dgvSet, 0, 1);
+            this.tableLayoutPanel3.Controls.Add(this.buttonShowXztSet, 0, 0);
+            this.tableLayoutPanel3.Controls.Add(this.buttonShowFXztSet, 1, 0);
+            this.tableLayoutPanel3.Controls.Add(this.buttonImportOptionAnswerScore, 2, 0);
+            this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel3.Location = new System.Drawing.Point(0, 0);
+            this.tableLayoutPanel3.Name = "tableLayoutPanel3";
+            this.tableLayoutPanel3.RowCount = 2;
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 24F));
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel3.Size = new System.Drawing.Size(234, 289);
+            this.tableLayoutPanel3.TabIndex = 0;
+            // 
             // dgvSet
             // 
             this.dgvSet.AllowUserToAddRows = false;
@@ -213,6 +235,37 @@
             this.dgvSet.RowTemplate.Resizable = System.Windows.Forms.DataGridViewTriState.True;
             this.dgvSet.Size = new System.Drawing.Size(228, 259);
             this.dgvSet.TabIndex = 2;
+            // 
+            // buttonShowXztSet
+            // 
+            this.buttonShowXztSet.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.buttonShowXztSet.Location = new System.Drawing.Point(3, 3);
+            this.buttonShowXztSet.Name = "buttonShowXztSet";
+            this.buttonShowXztSet.Size = new System.Drawing.Size(52, 18);
+            this.buttonShowXztSet.TabIndex = 3;
+            this.buttonShowXztSet.Text = "选择题";
+            this.buttonShowXztSet.UseVisualStyleBackColor = true;
+            this.buttonShowXztSet.Click += new System.EventHandler(this.buttonShowXztSet_Click);
+            // 
+            // buttonShowFXztSet
+            // 
+            this.buttonShowFXztSet.Location = new System.Drawing.Point(61, 3);
+            this.buttonShowFXztSet.Name = "buttonShowFXztSet";
+            this.buttonShowFXztSet.Size = new System.Drawing.Size(52, 18);
+            this.buttonShowFXztSet.TabIndex = 4;
+            this.buttonShowFXztSet.Text = "非选择题";
+            this.buttonShowFXztSet.UseVisualStyleBackColor = true;
+            this.buttonShowFXztSet.Click += new System.EventHandler(this.buttonShowFXztSet_Click);
+            // 
+            // buttonImportOptionAnswerScore
+            // 
+            this.buttonImportOptionAnswerScore.Location = new System.Drawing.Point(119, 3);
+            this.buttonImportOptionAnswerScore.Name = "buttonImportOptionAnswerScore";
+            this.buttonImportOptionAnswerScore.Size = new System.Drawing.Size(52, 18);
+            this.buttonImportOptionAnswerScore.TabIndex = 4;
+            this.buttonImportOptionAnswerScore.Text = "导入选择题答案";
+            this.buttonImportOptionAnswerScore.UseVisualStyleBackColor = true;
+            this.buttonImportOptionAnswerScore.Click += new System.EventHandler(this.buttonImportOptionAnswerScore_Click);
             // 
             // panel1
             // 
@@ -258,58 +311,6 @@
             this.splitContainer1.SplitterDistance = 37;
             this.splitContainer1.TabIndex = 1;
             // 
-            // tableLayoutPanel3
-            // 
-            this.tableLayoutPanel3.ColumnCount = 4;
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.tableLayoutPanel3.Controls.Add(this.buttonCreateYJData, 3, 0);
-            this.tableLayoutPanel3.Controls.Add(this.dgvSet, 0, 1);
-            this.tableLayoutPanel3.Controls.Add(this.buttonShowXztSet, 0, 0);
-            this.tableLayoutPanel3.Controls.Add(this.buttonShowFXztSet, 1, 0);
-            this.tableLayoutPanel3.Controls.Add(this.buttonImportOptionAnswerScore, 2, 0);
-            this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel3.Location = new System.Drawing.Point(0, 0);
-            this.tableLayoutPanel3.Name = "tableLayoutPanel3";
-            this.tableLayoutPanel3.RowCount = 2;
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 24F));
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel3.Size = new System.Drawing.Size(234, 289);
-            this.tableLayoutPanel3.TabIndex = 0;
-            // 
-            // buttonShowXztSet
-            // 
-            this.buttonShowXztSet.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.buttonShowXztSet.Location = new System.Drawing.Point(3, 3);
-            this.buttonShowXztSet.Name = "buttonShowXztSet";
-            this.buttonShowXztSet.Size = new System.Drawing.Size(52, 18);
-            this.buttonShowXztSet.TabIndex = 3;
-            this.buttonShowXztSet.Text = "选择题";
-            this.buttonShowXztSet.UseVisualStyleBackColor = true;
-            this.buttonShowXztSet.Click += new System.EventHandler(this.buttonShowXztSet_Click);
-            // 
-            // buttonShowFXztSet
-            // 
-            this.buttonShowFXztSet.Location = new System.Drawing.Point(61, 3);
-            this.buttonShowFXztSet.Name = "buttonShowFXztSet";
-            this.buttonShowFXztSet.Size = new System.Drawing.Size(52, 18);
-            this.buttonShowFXztSet.TabIndex = 4;
-            this.buttonShowFXztSet.Text = "非选择题";
-            this.buttonShowFXztSet.UseVisualStyleBackColor = true;
-            this.buttonShowFXztSet.Click += new System.EventHandler(this.buttonShowFXztSet_Click);
-            // 
-            // buttonImportOptionAnswerScore
-            // 
-            this.buttonImportOptionAnswerScore.Location = new System.Drawing.Point(119, 3);
-            this.buttonImportOptionAnswerScore.Name = "buttonImportOptionAnswerScore";
-            this.buttonImportOptionAnswerScore.Size = new System.Drawing.Size(52, 18);
-            this.buttonImportOptionAnswerScore.TabIndex = 4;
-            this.buttonImportOptionAnswerScore.Text = "导入选择题答案";
-            this.buttonImportOptionAnswerScore.UseVisualStyleBackColor = true;
-            this.buttonImportOptionAnswerScore.Click += new System.EventHandler(this.buttonImportOptionAnswerScore_Click);
-            // 
             // FormYJInit
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -328,13 +329,13 @@
             this.splitContainer2.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
             this.splitContainer2.ResumeLayout(false);
+            this.tableLayoutPanel3.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgvSet)).EndInit();
             this.tableLayoutPanel1.ResumeLayout(false);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
-            this.tableLayoutPanel3.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }

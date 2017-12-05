@@ -5,27 +5,22 @@ using System.Collections.Generic;
 using System.Data;
 using ARTemplate;
 
-namespace ScanTemplate
+namespace ScanTemplate.FormYJ
 {
 	public partial class FormFullScreenYJ : Form
 	{
-        public FormFullScreenYJ(Template _artemplate, DataTable _rundt, List<subject> sublist,int activefloorid,string workpath)
+        public FormFullScreenYJ(FormYJ.Students _Students, FormYJ.Imgsubjects _Imgsubjects, string path)
         {
 			InitializeComponent();
-            this._artemplate = _artemplate;
-            this._rundt = _rundt;
-			_sublist = sublist;
-			_activefloorid = activefloorid;
-			_workpath = workpath;
-			comboBox1.Items.AddRange(sublist.ToArray());
+			this._workpath = path;
+            _SR = new StudentsResult(_Students, _Imgsubjects, _workpath);
+			comboBox1.Items.AddRange(_Imgsubjects.Subjects.ToArray());
 			Init();
-            // TODO: Complete member initialization
         }
 		private void Init(){
 			_dgvsize = dgvs.ClientSize;
 			_cntx = 1;
 			_cnty = 1;
-			_activesubject = null;
 			_drlist = new List<DataRow>();
 			_ColState = new List<int>();
 			_colstatetemplate = new List<int>();
@@ -41,40 +36,30 @@ namespace ScanTemplate
             for (int i = 0; i < 10; i++)
                 _ColState.AddRange(_colstatetemplate);
         }				
-		///
 		private void ComboBox1SelectedIndexChanged(object sender, EventArgs e)
 		{
-//            if (comboBox1.SelectedIndex == -1) return;
-//            _activesubject =(subject)comboBox1.SelectedItem;
-//            InitColState( (int)_activesubject.MaxResult );
-//            string sql = "select kh,tk[subid] from subjectscore_[floorid] where tk[subid]=-1 order by id"
-//                .Replace("[floorid]", _activefloorid.ToString())
-//                .Replace("[subid]", _activesubject.Subid.ToString());
-//            _activedt = _db.query(sql).Tables[0];
-//            textBoxShow.Text = "本题未完成阅卷份数" + _activedt.Rows.Count + " 满分为" + _activesubject.MaxResult + "分";
-//            //            done.Clear();	
-//            //int _imgsize _itemsize	 _cntx _cnty		
-//            _imgsize = _activesubject.Rect.Size;
-////			_imgsize.Height = _imgsize.Height/3;
-////			_imgsize.Width = _imgsize.Width/3;	
-			
-//            _itemsize.Width = _imgsize.Width/3 + ((int)_activesubject.MaxResult+2)*27;
-//            _itemsize.Height = _imgsize.Height/3;
-//            _cntx = (dgvs.Size.Width-15) / _itemsize.Width;
-//            _cnty = (dgvs.Size.Height-30)/_itemsize.Height;
-//            InitDtshow(_cntx);
-//            InitDgvUI();
-//            InitLoadBmpData();	
-//            YueJuan();
+            if (comboBox1.SelectedIndex == -1) return;
+            Imgsubject S = (Imgsubject)comboBox1.SelectedItem;
+            InitColState( S.Score);
+            _SR.SetActiveSubject(S);
+            textBoxShow.Text = "本题未完成阅卷份数" +_SR.Students.Count + " 满分为" + S.Score + "分";
+         
+            _imgsize = S.Rect.Size;
+            _itemsize.Width = _imgsize.Width / 3 + (S.Score + 2) * 27;
+            _itemsize.Height = _imgsize.Height / 3;
+            _cntx = (dgvs.Size.Width - 15) / _itemsize.Width;
+            _cnty = (dgvs.Size.Height - 30) / _itemsize.Height;
+            _SR.InitLoadBinData();
+            InitDtshow(_cntx);
+            InitDgvUI();
+            YueJuan();
 		}
+        //TODO: fullscreen.Debug
 		private void ButtonSubmitMultiClick(object sender, EventArgs e)
 		{
 			if (checkallsetscore())
             {
-                string sql1 = "update subjectscore_[floorid]  set  tk[subid] = [score] where kh=[kh]"
-                    .Replace("[floorid]", _activefloorid.ToString())
-                    ;//.Replace("[subid]", _activesubject.Subid.ToString());
-
+                
                 int sum = 0;
                 List<int> scoreindex = new List<int>();
 				for (int i = 0; i < dgvs.Columns.Count; i++){
@@ -97,7 +82,7 @@ namespace ScanTemplate
                 //    }
                 //    if (bbreak) break;
                 //} //MessageBox.Show("已更新" + sum + "条数据");
-                LoadNext();
+                //LoadNext();
             }
             else
             {
@@ -143,29 +128,21 @@ namespace ScanTemplate
                 }
 			}
 		}		
-		///////////////////////////
-		private void InitLoadBmpData()
-		{
-            //if (_loadbmpdata == null) {
-            //    string bmpdatapath = _workpath + "floor[fid]bitmapdata\\".Replace("[fid]", _activefloorid.ToString());
-            //    _loadbmpdata = new LoadBitmapData(bmpdatapath, _activefloorid, _sublist);
-            //}
-            //_loadbmpdata.SetActiveSubject(_activesubject);
-		}
+		///////////////////////////		
 		private void InitDtshow(int cntx){
 			List<string> titles = new List<string>();		
 			for(int x=0; x<cntx; x++){
 				string xx = x.ToString();
 				titles.Add("kh"+xx);
 				titles.Add("图片"+xx);
-				titles.Add(	"得分"+xx);				
-                //for (int i = 0; i <= (int)_activesubject.MaxResult; i++)
-                //    titles.Add(i + "分"+xx);
+				titles.Add(	"得分"+xx);
+                for (int i = 0; i <= _SR.ActiveSubject.Score ; i++)
+                    titles.Add(i + "分" + xx);
 			}
 			_dtshow = Tools.DataTableTools.ConstructDataTable(titles.ToArray());
 			dgvs.DataSource = null;
-			dgvs.DataSource = _dtshow;		
-//			dgvs.SortedColumn.SortMode = DataGridViewColumnSortMode.NotSortable;			
+			dgvs.DataSource = _dtshow;
+            //dgvs.SortedColumn.SortMode = DataGridViewColumnSortMode.NotSortable;			
 		}
 		private void InitDgvUI()
 		{
@@ -190,46 +167,27 @@ namespace ScanTemplate
 			int cntx = _cntx;
 			int cnty = _cnty;
 			_dtshow.Rows.Clear();
-			string kh="";
-			for(int x=0; x<cntx; x++){
-				string xx = x.ToString();
-				for(int y=0; y<cnty; y++){
-					kh = GetNextKh();
-					if(kh=="") break;
-					if(x==0){
-						DataRow drt = _dtshow.NewRow();
-						_dtshow.Rows.Add(drt);
-					}
-					DataRow dr = _dtshow.Rows[y];
-					dr["kh"+xx] = kh;
-					dr["图片"+xx] = _loadbmpdata.GetBitmap(kh);
-				}				
-				if(kh=="") break;
-			}			
-		}		
-		private void LoadNext()
-        {
-            try
+            Stack<Student> stack = new Stack<Student>(_SR.Students);
+            Student S = null;
+            for (int x = 0; x < cntx; x++)
             {
-//                foreach (DataRow dr in _drlist)
-//                    _activedt.Rows.Remove(dr);
-                _drlist.Clear(); //done.Add(activekh);
-                textBoxShow.Text = "本题未完成阅卷份数" + _activedt.Rows.Count;// +" 满分为" + _activesubject.MaxResult + "分";
-                YueJuan();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-        }
-		private string GetNextKh(){
-			if(_activedt.Rows.Count>0){
-				string kh = _activedt.Rows[0]["kh"].ToString();
-				_drlist.Add(_activedt.Rows[0]);
-				_activedt.Rows.Remove(_activedt.Rows[0]);
-				return kh;
-			}
-			return "";
+                string xx = x.ToString();
+                for (int y = 0; y < cnty; y++)
+                {
+                    if (stack.Count == 0)
+                        break;
+                    S = stack.Pop();
+                    if (x == 0)
+                    {
+                        DataRow drt = _dtshow.NewRow();
+                        _dtshow.Rows.Add(drt);
+                    }
+                    DataRow dr = _dtshow.Rows[y];
+                    dr["kh" + xx] = S.KH;
+                    dr["图片" + xx] = _SR.GetBitMap(S);
+                }
+                if (S==null) break;
+            }			
 		}		
 		private bool checkallsetscore() // 还有 其他行
         {
@@ -252,23 +210,65 @@ namespace ScanTemplate
             return true;
         }
 
-        private List<subject> _sublist;
-        private int _activefloorid;
-        private string _workpath;
-        //        // for multiyj
-        private subject _activesubject;
         private Size _dgvsize;
         private Size _itemsize;
         private Size _imgsize;
-        private DataTable _dtshow;
-        private DataTable _activedt;
         private int _cntx;
         private int _cnty;
         private List<int> _ColState;
         private List<int> _colstatetemplate;
         private List<DataRow> _drlist;
-        public LoadBitmapData _loadbmpdata;
-        private ARTemplate.Template _artemplate;
-        private DataTable _rundt;
+        private DataTable _dtshow;
+
+        private string _workpath;
+        private StudentsResult _SR;
 	}
+    public class StudentsResult
+    {
+        public Imgsubject ActiveSubject { get { return _activesubject; } }
+        public List<Student> Students { get; set; }
+        public StudentsResult(FormYJ.Students _Students, FormYJ.Imgsubjects _Imgsubjects, string _workpath)
+        {
+            this._Students = _Students;
+            this._Imgsubjects = _Imgsubjects;
+            this._workpath = _workpath;
+
+            _Result = new List<List<IntValueTag>>();
+            for (int i = 0; i < _Imgsubjects.Subjects.Count; i++)
+            {
+                List<IntValueTag> L = new List<IntValueTag>();
+                for (int index = 0; index < _Students.students.Count; index++)
+                {
+                    //TODO: SR. student.index对不上
+                    L.Add(new IntValueTag(index, _Students.students[i]));
+                }
+
+                _Result.Add(L);
+            }
+            _Ims = new ImgbinManagesubjects(_Students, _Imgsubjects);
+        }
+        public void SetActiveSubject(Imgsubject S)
+        {
+            this._activesubject = S;
+            _Ims.SetActiveSubject(S);
+
+
+        }
+        public void InitLoadBinData()
+        {
+            string path = _workpath.Replace("\\LJH", "\\LJH\\bindata") + "\\";
+            _Ims.InitLoadBindata(path);
+        }
+        public Bitmap  GetBitMap(Student S)
+        {
+           return  _Ims.ActiveSubjectBitmap(S);
+        }
+
+        private FormYJ.Students _Students;
+        private FormYJ.Imgsubjects _Imgsubjects;
+        private string _workpath;
+        private ImgbinManagesubjects _Ims;
+        private Imgsubject _activesubject;
+        private List<List<IntValueTag>> _Result;
+    }
 }

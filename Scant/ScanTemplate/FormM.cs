@@ -146,6 +146,7 @@ namespace ScanTemplate
             this.Hide();
             FormYJ.FormYJInit f = new FormYJ.FormYJInit(_artemplate,_rundt,_angle,_workpath);
             f.ShowDialog();
+
             this.Show();
         }
 		//暂时不起作用
@@ -663,6 +664,20 @@ namespace ScanTemplate
 		public override string ToString()
 		{
 			return Value;
+		}
+	}
+	public class IntValueTag
+	{
+		public IntValueTag(int value, Object tag)
+		{
+			this.Value = value;
+			this.Tag = tag;
+		}
+		public Object Tag;
+		public int Value;
+		public override string ToString()
+		{
+			return Value.ToString();
 		}
 	}
 }

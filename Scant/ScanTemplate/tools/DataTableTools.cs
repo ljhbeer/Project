@@ -139,9 +139,9 @@ namespace Tools
             int.TryParse(vstr[1], out y);
             return new Size(x, y);
         }
-        public static Rectangle StringToRectangle(string str)
+        public static Rectangle StringToRectangle(string str,char splitchar = ',')
         {
-            String[] vstr = str.Split(',');
+            String[] vstr = str.Split(splitchar);
             if (vstr.Count() != 4)
                 throw new NotImplementedException();
             int x, y, w, h;

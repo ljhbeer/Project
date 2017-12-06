@@ -4,6 +4,7 @@ using System.Windows.Forms;
 using System.Collections.Generic;
 using System.Data;
 using ARTemplate;
+using System.Linq;
 
 namespace ScanTemplate.FormYJ
 {
@@ -12,8 +13,9 @@ namespace ScanTemplate.FormYJ
         public FormFullScreenYJ(FormYJ.Students _Students, FormYJ.Imgsubjects _Imgsubjects, string path)
         {
 			InitializeComponent();
-			this._workpath = path;
+			this._workpath = path;            
             _SR = new StudentsResult(_Students, _Imgsubjects, _workpath);
+         
 			comboBox1.Items.AddRange(_Imgsubjects.Subjects.ToArray());
 			Init();
         }
@@ -41,15 +43,13 @@ namespace ScanTemplate.FormYJ
             if (comboBox1.SelectedIndex == -1) return;
             Imgsubject S = (Imgsubject)comboBox1.SelectedItem;
             InitColState( S.Score);
-            _SR.SetActiveSubject(S);
-            textBoxShow.Text = "本题未完成阅卷份数" +_SR.Students.Count + " 满分为" + S.Score + "分";
-         
+            _SR.SetActiveSubject(S);            
+            textBoxShow.Text = "本题未完成阅卷份数" + _SR.Students.Count + " 满分为" + S.Score + "分";         
             _imgsize = S.Rect.Size;
-            _itemsize.Width = _imgsize.Width / 3 + (S.Score + 2) * 27;
-            _itemsize.Height = _imgsize.Height / 3;
+            _itemsize.Width = _imgsize.Width /2 + (S.Score + 2) * 27;
+            _itemsize.Height = _imgsize.Height / 2;
             _cntx = (dgvs.Size.Width - 15) / _itemsize.Width;
             _cnty = (dgvs.Size.Height - 30) / _itemsize.Height;
-            _SR.InitLoadBinData();
             InitDtshow(_cntx);
             InitDgvUI();
             YueJuan();
@@ -157,11 +157,11 @@ namespace ScanTemplate.FormYJ
 					dgvs.Columns[index].Visible = false;
 				} else if (dc.Name.Contains("图片")) {
 					((DataGridViewImageColumn)(dgvs.Columns[index])).ImageLayout = DataGridViewImageCellLayout.Zoom;
-					dc.Width = _imgsize.Width / 3;
+                    dc.Width = _imgsize.Width / 2;
 				}
 				index++;
 			}
-			dgvs.RowTemplate.Height = _imgsize.Height / 3;
+            dgvs.RowTemplate.Height = _itemsize.Height;
 		}
 		private void ShowItemsInDgv(){
 			int cntx = _cntx;
@@ -233,35 +233,35 @@ namespace ScanTemplate.FormYJ
             this._Imgsubjects = _Imgsubjects;
             this._workpath = _workpath;
 
-            _Result = new List<List<IntValueTag>>();
+            _Result = new List<List<int>>();
             for (int i = 0; i < _Imgsubjects.Subjects.Count; i++)
             {
-                List<IntValueTag> L = new List<IntValueTag>();
+                List<int> L = new List<int>();
                 for (int index = 0; index < _Students.students.Count; index++)
                 {
-                    //TODO: SR. student.index对不上
-                    L.Add(new IntValueTag(index, _Students.students[i]));
+                    L.Add(-index-1);
                 }
-
                 _Result.Add(L);
             }
             _Ims = new ImgbinManagesubjects(_Students, _Imgsubjects);
+            _Ims.InitLoadBindata(_workpath);
+         
+            if (!_Students.CheckIndex())
+                MessageBox.Show("index Error");
         }
         public void SetActiveSubject(Imgsubject S)
         {
             this._activesubject = S;
             _Ims.SetActiveSubject(S);
-
-
-        }
-        public void InitLoadBinData()
-        {
-            string path = _workpath.Replace("\\LJH", "\\LJH\\bindata") + "\\";
-            _Ims.InitLoadBindata(path);
+            Students = NextStudents();
         }
         public Bitmap  GetBitMap(Student S)
         {
            return  _Ims.ActiveSubjectBitmap(S);
+        }
+        public List<Student> NextStudents()
+        {
+            return _Result[_activesubject.Index].Select(r => _Students.students[-r - 1]).ToList();
         }
 
         private FormYJ.Students _Students;
@@ -269,6 +269,6 @@ namespace ScanTemplate.FormYJ
         private string _workpath;
         private ImgbinManagesubjects _Ims;
         private Imgsubject _activesubject;
-        private List<List<IntValueTag>> _Result;
+        private List<List<int>> _Result;
     }
 }

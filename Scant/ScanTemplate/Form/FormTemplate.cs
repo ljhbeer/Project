@@ -475,7 +475,7 @@ namespace ARTemplate
         {
             Rectangle m_Imgselection = zoombox.BoxToImgSelection(MT.Selection);
             String keyname = "非选择题";
-            if (!ExistDeFineSelection(keyname))
+            //if (!ExistDeFineSelection(keyname))
             {
                 TreeNode t = new TreeNode();
                 int cnt = m_tn.Nodes[keyname].GetNodeCount(false) + 1;

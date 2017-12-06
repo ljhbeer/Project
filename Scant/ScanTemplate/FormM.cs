@@ -63,9 +63,12 @@ namespace ScanTemplate
 				//TODO: 使用类，显示相关信息
 				string value = s.Substring(s.LastIndexOf("\\")+1);
 				listBoxTemplate.Items.Add( new ValueTag(value,s));
-			}
-			panel3.AutoScroll = true;
+			}			
 		}
+        private void buttonRefresh_Click(object sender, EventArgs e)
+        {
+            FormM_Load(null, e);
+        }
 		private void buttonLeftHide_Click(object sender, EventArgs e)
 		{
 			if (TLP.ColumnStyles[0].Width > 10)
@@ -648,9 +651,6 @@ namespace ScanTemplate
 			};
 			return new List<string>();
 		}
-
-        
-
 	}
 	public class ValueTag
 	{

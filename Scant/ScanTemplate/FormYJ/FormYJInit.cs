@@ -150,23 +150,30 @@ namespace ScanTemplate.FormYJ
         }
         private void buttonVerify_Click(object sender, EventArgs e)
         {
-            ImgbinManagesubjects ims = new ImgbinManagesubjects(_Students, _Imgsubjects);
+            for (int index = 0; index < _Imgsubjects.Subjects.Count; index++)
+            {
+                _Imgsubjects.Subjects[index].Index = index;
+            }
             string path = _workpath.Replace("\\LJH", "\\LJH\\bindata") + "\\";
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
-            ims.InitLoadBindata( path);
-
-            //if (ims.SetActiveSubject(_Imgsubjects.Subjects[2]))
+            //ImgbinManagesubjects ims = new ImgbinManagesubjects(_Students, _Imgsubjects);
+            //ims.InitLoadBindata( path);
+            //if (ims.SetActiveSubject(_Imgsubjects.Subjects[0]))
             //{
             //    int cnt = 0;
             //    foreach (Student S in _Students.students)
             //    {
-            //        if (cnt++ == 10) break;
-            //        ims.ActiveSubjectBitmap(S).Save(S.ID + "_1_" + S.KH + ".tif");
+            //        if (cnt++ == 5) break;
+            //        //ims.ActiveSubjectBitmap(S).Save(S.ID + "_1_" + S.KH + ".tif");
             //    }
             //}
-
+            //ims.SetActiveSubject(null);
+            //return;
             FormFullScreenYJ fs = new FormFullScreenYJ(_Students, _Imgsubjects, path);
+            this.Hide();
+            fs.ShowDialog();
+            this.Show();
         }
         private void buttonImportOptionAnswerScore_Click(object sender, EventArgs e)
         {
@@ -276,6 +283,8 @@ namespace ScanTemplate.FormYJ
         //public int ID;
         //public Double Score;
         public int BitmapdataLength{ get; set; }
+
+        public int Index { get; set; }
     }
     public class Students
     {
@@ -287,19 +296,22 @@ namespace ScanTemplate.FormYJ
                 if (dc.ColumnName.StartsWith("x"))
                     cnt++;
             _students = new List<Student>();
-            _xhdic = new Dictionary<int, Student>();
+            _iddic = new Dictionary<int, Student>();
             _khdic = new Dictionary<int, Student>();
+            //int index = 0;
             foreach (DataRow dr in _rundt.Rows)
             {
                 Student s = new Student(dr,cnt);
                 _students.Add(s);
-                _xhdic[s.ID] = s;
+                _iddic[s.ID] = s;
                 _khdic[s.KH] = s;
+                //s.Index = index;
+                //index++;
             }
         }
-        public Student StudentFromXh(int ID)
+        public Student StudentFromID(int ID)
         {
-            return _xhdic[ID];
+            return _iddic[ID];
         }
         public Student StudentFromKh(int KH)
         {
@@ -312,10 +324,18 @@ namespace ScanTemplate.FormYJ
                 return _students;
             }
         }
-
+        public bool CheckIndex()
+        {
+            for (int i = 0; i < _students.Count; i++)
+            {
+                if (i != _students[i].Index)
+                    return false;
+            }
+            return true;
+        }
         private List<Student> _students;
         private DataTable _studt;
-        private Dictionary<int, Student> _xhdic;
+        private Dictionary<int, Student> _iddic;
         private Dictionary<int, Student> _khdic;
     }
     public class Student
@@ -369,6 +389,8 @@ namespace ScanTemplate.FormYJ
         private List<string> _XZT;
         private int _id;
         private Rectangle _SrcCorrectRect;
+
+        public int Index { get; set; }
     }
     public class ImgbinManagesubjects
     {
@@ -379,7 +401,7 @@ namespace ScanTemplate.FormYJ
             this._Imgsubjects = _Imgsubjects;
             _fs = null;
             _bs = null;
-            _IDIndex = null;
+            _IDInfo = null;
             _buffer = new byte[102400];
         }
         ~ImgbinManagesubjects()
@@ -401,24 +423,29 @@ namespace ScanTemplate.FormYJ
         {
             this._bindatapath = bindatapath;
             string lengthpath = bindatapath + "length.txt";
-            string idindexpath = bindatapath  +"idindex.json";
-            List<int> L = new List<int>() { 1484, 1908, 2052 };
-            _IDIndex = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<int, int>>(File.ReadAllText(idindexpath));
-
+            string idindexpath = bindatapath + "idinfo.json";
+          
+            _IDInfo = Newtonsoft.Json.JsonConvert.DeserializeObject<ImgbinDataInfo>(File.ReadAllText(idindexpath));
+            foreach (KeyValuePair<int, int> kv in _IDInfo.IDIndex)
+            {
+                _Students.StudentFromID(kv.Key).Index = kv.Value;
+            }
             for (int i = 0; i < _Imgsubjects.Subjects.Count; i++)
-                _Imgsubjects.Subjects[i].BitmapdataLength = L[i];
+                _Imgsubjects.Subjects[i].BitmapdataLength = _IDInfo.SubjectLengthInfo[i];
         }
         public bool SetActiveSubject(Imgsubject S)
         {
-            _Imgsubjects.SetActiveSubject(S);
-            if(_Imgsubjects.ActiveSubject==null)
-                return false;          
             if (_bs != null || _fs != null)
             {
                 _bs.Flush();
                 _bs.Close();
                 _fs.Close();
+                _bs = null;
+                _fs = null;
             }
+            _Imgsubjects.SetActiveSubject(S);
+            if(_Imgsubjects.ActiveSubject==null)
+                return false;
             string imgdatafilename = _bindatapath + "subjectfixed_" + S.ID + ".data";
             _fs = new FileStream(imgdatafilename, FileMode.Open, FileAccess.Read);
             _bs = new BufferedStream(_fs, 512000);
@@ -428,10 +455,10 @@ namespace ScanTemplate.FormYJ
         {
             int length = _Imgsubjects.ActiveSubject.BitmapdataLength;
             Rectangle r = _Imgsubjects.ActiveSubject.Rect;
-            if (_IDIndex == null || !_IDIndex.ContainsKey(S.ID))
+            if (_IDInfo == null || !_IDInfo.IDIndex.ContainsKey(S.ID))
                 return null;
 
-            int index = _IDIndex[S.ID];
+            int index = _IDInfo.IDIndex[S.ID];
             if (length > _buffer.Length)
                 _buffer = new byte[length];
             _bs.Position = index * length;
@@ -499,21 +526,20 @@ namespace ScanTemplate.FormYJ
                 //fs[i].Flush();
                 fs[i].Close();
             }
-            SaveIDIndex(IDIndex, bindatapath + "idindex.json");
-            StringBuilder sb = new StringBuilder();
-            foreach(List<long> L in LL)
-                sb.AppendLine( string.Join(",",L));
-            File.WriteAllText(bindatapath + "length.txt", sb.ToString());
+            SaveIDIndex(_IDInfo, bindatapath + "idindex.json");
+            //StringBuilder sb = new StringBuilder();
+            //foreach(List<long> L in LL)
+            //    sb.AppendLine( string.Join(",",L));
+            //File.WriteAllText(bindatapath + "length.txt", sb.ToString());
             MessageBox.Show("以保存好BitmapBindata");
         }
-        private void SaveIDIndex(Dictionary<int, int> IDIndex, string filename)
+        private void SaveIDIndex(ImgbinDataInfo IDIndex, string filename)
         {
             string str = Tools.JsonFormatTool.ConvertJsonString(Newtonsoft.Json.JsonConvert.SerializeObject(IDIndex));
             File.WriteAllText(filename, str);
         }       
         public void SaveBitmapFixedDataToData(string bindatapath)
         {
-            List<List<long>> LL = new List<List<long>>();
             List<FileStream> fs = new List<FileStream>();
             List<BufferedStream> bsf = new List<BufferedStream>();
             List<long> startpos = new List<long>();
@@ -527,12 +553,14 @@ namespace ScanTemplate.FormYJ
                 bsf.Add(new BufferedStream(fs[i], 102400));
             }
             Dictionary<int, int> IDIndex = new Dictionary<int, int>();
+            List<List<long>> LL = new List<List<long>>();
             int index = 0;
             foreach (Student S in _Students.students)
             {
                 List<long> L = new List<long>();
                 LL.Add(L);
                 IDIndex[S.ID] = index;
+                S.Index = index;
                 index++;
                 BitmapData bmpdata = S.Src.LockBits(new Rectangle(0, 0, S.Src.Width, S.Src.Height), ImageLockMode.ReadOnly, S.Src.PixelFormat);
                 int i = 0;
@@ -577,12 +605,20 @@ namespace ScanTemplate.FormYJ
                 bsf[i].Close();
                 fs[i].Close();
             }
-
-            SaveIDIndex(IDIndex, bindatapath + "idindex.json");
-            StringBuilder sb = new StringBuilder();
-            foreach (List<long> L in LL)
-                sb.AppendLine(string.Join(",", L));
-            File.WriteAllText(bindatapath + "length.txt", sb.ToString());
+            _IDInfo = new ImgbinDataInfo();
+            _IDInfo.IDIndex = IDIndex;
+            _IDInfo.SubjectLengthInfo = new Dictionary<int, int>();
+            if (LL.Count > 0)
+            {
+                for (int i = 0; i < LL[0].Count; i++)
+                {
+                    _IDInfo.SubjectLengthInfo[i] =(int) LL[0][i];
+                }
+            }
+            SaveIDIndex(_IDInfo, bindatapath + "idinfo.json");
+            //StringBuilder sb = new StringBuilder();
+            //foreach (List<long> L in LL)
+            //    sb.AppendLine(string.Join(",", L));
             MessageBox.Show("已保存好BitmapBinfixeddata");
         }
         public void TestReadBitmapData(string bindatapath, int roomcnt = -1, int savecnt = 5)
@@ -639,6 +675,11 @@ namespace ScanTemplate.FormYJ
         private BufferedStream _bs;
 		private byte[] _buffer;
         private string _bindatapath;
-        private Dictionary<int, int> _IDIndex;
+        private ImgbinDataInfo _IDInfo;
+    }
+    public class ImgbinDataInfo
+    {
+        public Dictionary<int, int> IDIndex;
+        public Dictionary<int, int> SubjectLengthInfo;
     }
 }

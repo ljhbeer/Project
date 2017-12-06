@@ -51,6 +51,7 @@
             this.buttonRightHide = new System.Windows.Forms.Button();
             this.buttonCreateYJData = new System.Windows.Forms.Button();
             this.buttonVerify = new System.Windows.Forms.Button();
+            this.buttonRefresh = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -139,6 +140,7 @@
             // 
             this.panel1.AutoScroll = true;
             this.panel1.BackColor = System.Drawing.SystemColors.Control;
+            this.panel1.Controls.Add(this.buttonRefresh);
             this.panel1.Controls.Add(this.textBox1);
             this.panel1.Controls.Add(this.listBoxData);
             this.panel1.Controls.Add(this.buttonScan);
@@ -336,6 +338,16 @@
             this.buttonVerify.UseVisualStyleBackColor = true;
             this.buttonVerify.Click += new System.EventHandler(this.buttonVerify_Click);
             // 
+            // buttonRefresh
+            // 
+            this.buttonRefresh.Location = new System.Drawing.Point(65, 6);
+            this.buttonRefresh.Name = "buttonRefresh";
+            this.buttonRefresh.Size = new System.Drawing.Size(42, 22);
+            this.buttonRefresh.TabIndex = 12;
+            this.buttonRefresh.Text = "刷新";
+            this.buttonRefresh.UseVisualStyleBackColor = true;
+            this.buttonRefresh.Click += new System.EventHandler(this.buttonRefresh_Click);
+            // 
             // FormM
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -385,6 +397,7 @@
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.ListBox listBoxData;
         private System.Windows.Forms.Button buttonVerify;
-        private System.Windows.Forms.Button buttonCreateYJData;        
+        private System.Windows.Forms.Button buttonCreateYJData;
+        private System.Windows.Forms.Button buttonRefresh;        
     }
 }

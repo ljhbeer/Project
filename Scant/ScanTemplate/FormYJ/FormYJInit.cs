@@ -455,6 +455,7 @@ namespace ScanTemplate.FormYJ
         {
             int length = _Imgsubjects.ActiveSubject.BitmapdataLength;
             Rectangle r = _Imgsubjects.ActiveSubject.Rect;
+            r.Width = (r.Width / 8) * 8 + (r.Width % 8 > 2 ? 8 : 0);
             if (_IDInfo == null || !_IDInfo.IDIndex.ContainsKey(S.ID))
                 return null;
 
@@ -562,6 +563,14 @@ namespace ScanTemplate.FormYJ
                 IDIndex[S.ID] = index;
                 S.Index = index;
                 index++;
+                //debug
+                foreach (Imgsubject I in _Imgsubjects.Subjects)
+                {
+                    Rectangle r = I.Rect;
+                    r.Offset(S.SrcCorrectRect.Location);
+                    Bitmap debugimg = S.Src.Clone(r, S.Src.PixelFormat);
+                    debugimg.Save(S.ID + "_" + S.KH + ".tif");
+                }
                 BitmapData bmpdata = S.Src.LockBits(new Rectangle(0, 0, S.Src.Width, S.Src.Height), ImageLockMode.ReadOnly, S.Src.PixelFormat);
                 int i = 0;
                 foreach (Imgsubject I in _Imgsubjects.Subjects)
@@ -592,7 +601,9 @@ namespace ScanTemplate.FormYJ
                     bsf[i].Write(buff, 0, buff.Length);
                     L.Add(buff.Length);
                     //L.Add(bsf[i].Length);
-                
+                    //fordebug
+                    File.WriteAllBytes(S.ID+".data", buff);
+                    bsf[i].Flush();
                     startpos[i] += buff.Length;
                     i++;
                 }

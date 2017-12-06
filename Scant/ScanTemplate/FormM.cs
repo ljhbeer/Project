@@ -17,6 +17,7 @@ namespace ScanTemplate
 	public delegate void MyInvoke( );
 	public partial class FormM : Form
 	{
+        public static Config g_cfg = new Config();
 		private string _workpath;
 		private AutoAngle _angle;
 		private Template _artemplate;
@@ -63,7 +64,9 @@ namespace ScanTemplate
 				//TODO: 使用类，显示相关信息
 				string value = s.Substring(s.LastIndexOf("\\")+1);
 				listBoxTemplate.Items.Add( new ValueTag(value,s));
-			}			
+			}
+            string exampath = _workpath.Substring(0, _workpath.LastIndexOf("\\")) + "\\Exam";
+            g_cfg.SetWorkPath(exampath);
 		}
         private void buttonRefresh_Click(object sender, EventArgs e)
         {
@@ -684,4 +687,71 @@ namespace ScanTemplate
 			return Value.ToString();
 		}
 	}
+    public class Config
+    {
+        public Config()
+        {
+            _examinfo = new List<ExamInfo>();
+        }
+        public  void SetWorkPath(string exampath)
+        {
+            this._workpath = exampath;
+            LoadConfig();
+        }
+        private void LoadConfig( )
+        {
+            string filename = _workpath + "\\config.js";
+            if (File.Exists( filename))
+            {
+                this._filename = filename;
+                Config f = Newtonsoft.Json.JsonConvert.DeserializeObject<Config>(File.ReadAllText(_filename));
+                _examinfo = f._examinfo;
+                //_workpath = f._workpath;
+            }
+        }
+        public void SaveConfig(string filename = "")
+        {
+            string fn = _filename;
+            if (filename != "")
+                fn = filename;
+            if (fn != "")
+            {
+                if (!fn.Contains(":"))
+                    fn = _workpath+"\\" + fn;
+                _filename = fn;
+                string str = Tools.JsonFormatTool.ConvertJsonString(Newtonsoft.Json.JsonConvert.SerializeObject(this));
+                File.WriteAllText(_filename, str);
+            }
+        }
+        public bool CheckExamInfoName(ExamInfo ei)
+        {
+            if( !_examinfo.Exists( r => r.Name == ei.Name))
+               //|| !_examinfo.Exists( r=> r.Path == ei.Path) )
+            {
+                ei.Number = 1001;
+                if(_examinfo.Count>0) 
+                    ei.Number = _examinfo.Max(r => r.Number) + 1;
+                ei.Path = _workpath + "\\" + ei.Number+"\\";
+                return true;
+            }
+            return false;
+        }
+        public void AddExamInfo(ExamInfo ei)
+        {
+            _examinfo.Add(ei);
+        }
+        public string ExamPath
+        {
+            get { return _workpath; }
+        }
+        public List<ExamInfo> _examinfo;
+        private string _filename;
+        private string _workpath;
+    }
+    public class ExamInfo
+    {
+        public string Name;
+        public string Path;
+        public int Number;
+    }
 }

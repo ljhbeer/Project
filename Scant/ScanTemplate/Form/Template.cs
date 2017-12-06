@@ -344,8 +344,9 @@ namespace ARTemplate
     {
         public static Bitmap DrawInfoBmp(Bitmap src, Template _artemplate, ScanTemplate.AutoAngle _angle)
         {
-            Bitmap bmp = src.Clone(new Rectangle(0, 0, src.Width, src.Height), System.Drawing.Imaging.PixelFormat.Format24bppRgb);
-            using (Graphics g = Graphics.FromImage(bmp))
+            Bitmap //bmp = src.Clone(new Rectangle(0, 0, src.Width, src.Height), System.Drawing.Imaging.PixelFormat.Format24bppRgb);
+             bmp = ConvertFormat.ConvertToRGB(src);
+             using (Graphics g = Graphics.FromImage(bmp))
             {
                 Pen pen = Pens.Red;
                 Brush dark = Brushes.Black;

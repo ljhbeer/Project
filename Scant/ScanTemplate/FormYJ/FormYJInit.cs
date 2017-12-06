@@ -140,12 +140,34 @@ namespace ScanTemplate.FormYJ
             InitDgvSetUI(false);
         }
         private void buttonCreateYJData_Click(object sender, EventArgs e)
-        {  
-            string path = _workpath.Replace("\\LJH","\\LJH\\bindata")  + "\\";
-            if (!Directory.Exists(path))
-                Directory.CreateDirectory(path);
-            ImgbinManagesubjects ims = new ImgbinManagesubjects(_Students, _Imgsubjects);
-            ims.SaveBitmapFixedDataToData(path);
+        {
+            string examname = "";
+            float score = 0;
+            if (InputBox.Input("设置考试名称", "考试名称", ref examname, "分值", ref score))
+            {
+                ExamInfo ei = new ExamInfo();
+                ei.Name = examname;
+                Config g = FormM.g_cfg;
+                if (g.CheckExamInfoName(ei))
+                {
+                    Exam exam = new Exam(_Students, _Imgsubjects, ei.Path);
+                    if (!Directory.Exists(ei.Path))
+                        Directory.CreateDirectory(ei.Path);
+                    ImgbinManagesubjects ims = new ImgbinManagesubjects(_Students, _Imgsubjects);
+                    ims.SaveBitmapFixedDataToData(ei.Path);
+
+                    g.AddExamInfo(ei);
+                    g.SaveConfig("config.js");
+                    string str = Tools.JsonFormatTool.ConvertJsonString(Newtonsoft.Json.JsonConvert.SerializeObject(exam));
+                    File.WriteAllText(g.ExamPath + "\\"+ei.Name+".js", str);
+                }
+                else
+                {
+                    MessageBox.Show("考试名称存在重复，请重新设置");
+                }
+
+            }
+
         }
         private void buttonVerify_Click(object sender, EventArgs e)
         {
@@ -423,8 +445,9 @@ namespace ScanTemplate.FormYJ
         {
             this._bindatapath = bindatapath;
             string lengthpath = bindatapath + "length.txt";
-            string idindexpath = bindatapath + "idinfo.json";
-          
+            string idindexpath = bindatapath + "idinfo.json";          
+            if (!File.Exists(idindexpath))
+                return;
             _IDInfo = Newtonsoft.Json.JsonConvert.DeserializeObject<ImgbinDataInfo>(File.ReadAllText(idindexpath));
             foreach (KeyValuePair<int, int> kv in _IDInfo.IDIndex)
             {
@@ -563,14 +586,6 @@ namespace ScanTemplate.FormYJ
                 IDIndex[S.ID] = index;
                 S.Index = index;
                 index++;
-                //debug
-                foreach (Imgsubject I in _Imgsubjects.Subjects)
-                {
-                    Rectangle r = I.Rect;
-                    r.Offset(S.SrcCorrectRect.Location);
-                    Bitmap debugimg = S.Src.Clone(r, S.Src.PixelFormat);
-                    debugimg.Save(S.ID + "_" + S.KH + ".tif");
-                }
                 BitmapData bmpdata = S.Src.LockBits(new Rectangle(0, 0, S.Src.Width, S.Src.Height), ImageLockMode.ReadOnly, S.Src.PixelFormat);
                 int i = 0;
                 foreach (Imgsubject I in _Imgsubjects.Subjects)
@@ -601,9 +616,7 @@ namespace ScanTemplate.FormYJ
                     bsf[i].Write(buff, 0, buff.Length);
                     L.Add(buff.Length);
                     //L.Add(bsf[i].Length);
-                    //fordebug
-                    File.WriteAllBytes(S.ID+".data", buff);
-                    bsf[i].Flush();
+                    //bsf[i].Flush();
                     startpos[i] += buff.Length;
                     i++;
                 }

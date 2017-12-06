@@ -33,7 +33,9 @@ namespace Tools
                 {
                     dc.DataType = typeof(bool);
                 }
-                else if (columntitles[count].Contains("学号") || columntitles[count].Contains("OID"))
+                else if (columntitles[count].Contains("学号")
+                    || columntitles[count].Contains("OID")
+                    || columntitles[count].Contains("object"))
                 {
                     dc.DataType = typeof(Object);
                 }

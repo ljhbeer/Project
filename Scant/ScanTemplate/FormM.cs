@@ -500,9 +500,13 @@ namespace ScanTemplate
 		}
 		private void InitDgvUI()
 		{
-			foreach (DataGridViewColumn dc in dgv.Columns)
-				if (dc.Name.StartsWith("x"))
-					dc.Width = 20;
+            foreach (DataGridViewColumn dc in dgv.Columns)
+                if (dc.Name.StartsWith("x"))
+                    dc.Width = 20;
+                else if(dc.Name == "序号")
+                    dc.Width = 30;
+                else
+                    dc.Width = 60;
 		}
 		private void InitRundt(Template _artemplate)
 		{

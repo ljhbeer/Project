@@ -57,6 +57,8 @@ namespace ScanTemplate.FormYJ
         //TODO: fullscreen.Debug
 		private void ButtonSubmitMultiClick(object sender, EventArgs e)
 		{
+            if (_SR.ActiveSubject == null)
+                return;
 			if (checkallsetscore())
             {
                 
@@ -68,21 +70,24 @@ namespace ScanTemplate.FormYJ
 				}
 
                 bool bbreak = false;
-                //foreach(int index in scoreindex){
-                //    for (int i = 0; i < dgvs.Rows.Count; i++)
-                //    {
-                //        if (dgvs.Rows[i].Cells[index - 2].Value is DBNull)
-                //        {
-                //            bbreak = true;
-                //            break;
-                //        }
-                //        string s = sql1.Replace("[score]", dgvs.Rows[i].Cells[index].Value.ToString())
-                //            .Replace("[kh]", dgvs.Rows[i].Cells[index-2].Value.ToString());
-                //        sum += _db.update(s);
-                //    }
-                //    if (bbreak) break;
-                //} //MessageBox.Show("已更新" + sum + "条数据");
-                //LoadNext();
+                foreach (int index in scoreindex)
+                {
+                    for (int i = 0; i < dgvs.Rows.Count; i++)
+                    {
+                        if (dgvs.Rows[i].Cells[index - 2].Value is DBNull)
+                        {
+                            bbreak = true;
+                            break;
+                        }
+                        int Score = Convert.ToInt32(dgvs.Rows[i].Cells[index].Value.ToString());
+                        Student S = (Student)dgvs.Rows[i].Cells[index - 2].Value;
+                        _SR.SetScoreByKh(S, Score);
+                    }
+                    if (bbreak) break;
+                } //MessageBox.Show("已更新" + sum + "条数据");
+                _SR.LoadNextStudents();
+                ShowItemsInDgv();
+                textBoxShow.Text = "本题未完成阅卷份数" + _SR.Students.Count + " 满分为" +_SR.ActiveSubject.Score + "分";        
             }
             else
             {
@@ -133,7 +138,7 @@ namespace ScanTemplate.FormYJ
 			List<string> titles = new List<string>();		
 			for(int x=0; x<cntx; x++){
 				string xx = x.ToString();
-				titles.Add("kh"+xx);
+				titles.Add("object"+xx);
 				titles.Add("图片"+xx);
 				titles.Add(	"得分"+xx);
                 for (int i = 0; i <= _SR.ActiveSubject.Score ; i++)
@@ -152,8 +157,7 @@ namespace ScanTemplate.FormYJ
 					dgvs.Columns[index].Width = 27;
 					if(!dc.Name.EndsWith("分"))
 						dgvs.Columns[index].HeaderText = dc.Name.Substring(0,dc.Name.Length-1);
-				} else if (dc.Name.ToUpper().Contains( "KH")) {
-					;
+				} else if (dc.Name.ToUpper().Contains( "OBJECT")) {
 					dgvs.Columns[index].Visible = false;
 				} else if (dc.Name.Contains("图片")) {
 					((DataGridViewImageColumn)(dgvs.Columns[index])).ImageLayout = DataGridViewImageCellLayout.Zoom;
@@ -183,7 +187,7 @@ namespace ScanTemplate.FormYJ
                         _dtshow.Rows.Add(drt);
                     }
                     DataRow dr = _dtshow.Rows[y];
-                    dr["kh" + xx] = S.KH;
+                    dr["object" + xx] = S;
                     dr["图片" + xx] = _SR.GetBitMap(S);
                 }
                 if (S==null) break;
@@ -253,15 +257,19 @@ namespace ScanTemplate.FormYJ
         {
             this._activesubject = S;
             _Ims.SetActiveSubject(S);
-            Students = NextStudents();
+            LoadNextStudents();
+        }
+        public void SetScoreByKh(Student S, int Score)
+        {
+            _Result[_activesubject.Index][S.Index] = Score;
         }
         public Bitmap  GetBitMap(Student S)
         {
            return  _Ims.ActiveSubjectBitmap(S);
         }
-        public List<Student> NextStudents()
+        public void LoadNextStudents()
         {
-            return _Result[_activesubject.Index].Select(r => _Students.students[-r - 1]).ToList();
+            Students = _Result[_activesubject.Index].Where( r=> r<0).Select(r =>_Students.students[-r - 1] ).ToList();
         }
 
         private FormYJ.Students _Students;
@@ -270,5 +278,6 @@ namespace ScanTemplate.FormYJ
         private ImgbinManagesubjects _Ims;
         private Imgsubject _activesubject;
         private List<List<int>> _Result;
+
     }
 }

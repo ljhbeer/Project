@@ -10,13 +10,11 @@ namespace ScanTemplate.FormYJ
 {
 	public partial class FormFullScreenYJ : Form
 	{
-        public FormFullScreenYJ(FormYJ.Students _Students, FormYJ.Imgsubjects _Imgsubjects, string path)
+        public FormFullScreenYJ(Exam exam)
         {
 			InitializeComponent();
-			this._workpath = path;            
-            _SR = new StudentsResult(_Students, _Imgsubjects, _workpath);
-         
-			comboBox1.Items.AddRange(_Imgsubjects.Subjects.ToArray());
+            _SR = exam.SR;
+            comboBox1.Items.AddRange(exam.Subjects.ToArray());
 			Init();
         }
 		private void Init(){
@@ -223,61 +221,6 @@ namespace ScanTemplate.FormYJ
         private List<int> _colstatetemplate;
         private List<DataRow> _drlist;
         private DataTable _dtshow;
-
-        private string _workpath;
         private StudentsResult _SR;
-	}
-    public class StudentsResult
-    {
-        public Imgsubject ActiveSubject { get { return _activesubject; } }
-        public List<Student> Students { get; set; }
-        public StudentsResult(FormYJ.Students _Students, FormYJ.Imgsubjects _Imgsubjects, string _workpath)
-        {
-            this._Students = _Students;
-            this._Imgsubjects = _Imgsubjects;
-            this._workpath = _workpath;
-
-            _Result = new List<List<int>>();
-            for (int i = 0; i < _Imgsubjects.Subjects.Count; i++)
-            {
-                List<int> L = new List<int>();
-                for (int index = 0; index < _Students.students.Count; index++)
-                {
-                    L.Add(-index-1);
-                }
-                _Result.Add(L);
-            }
-            _Ims = new ImgbinManagesubjects(_Students, _Imgsubjects);
-            _Ims.InitLoadBindata(_workpath);
-         
-            if (!_Students.CheckIndex())
-                MessageBox.Show("index Error");
-        }
-        public void SetActiveSubject(Imgsubject S)
-        {
-            this._activesubject = S;
-            _Ims.SetActiveSubject(S);
-            LoadNextStudents();
-        }
-        public void SetScoreByKh(Student S, int Score)
-        {
-            _Result[_activesubject.Index][S.Index] = Score;
-        }
-        public Bitmap  GetBitMap(Student S)
-        {
-           return  _Ims.ActiveSubjectBitmap(S);
-        }
-        public void LoadNextStudents()
-        {
-            Students = _Result[_activesubject.Index].Where( r=> r<0).Select(r =>_Students.students[-r - 1] ).ToList();
-        }
-
-        private FormYJ.Students _Students;
-        private FormYJ.Imgsubjects _Imgsubjects;
-        private string _workpath;
-        private ImgbinManagesubjects _Ims;
-        private Imgsubject _activesubject;
-        private List<List<int>> _Result;
-
-    }
+	}   
 }

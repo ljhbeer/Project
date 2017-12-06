@@ -140,12 +140,11 @@ namespace ScanTemplate.FormYJ
             InitDgvSetUI(false);
         }
         private void buttonCreateYJData_Click(object sender, EventArgs e)
-        {            
-            //FormFullScreenYJ f = new FormFullScreenYJ(_artemplate, _rundt);
-            ImgbinManagesubjects ims = new ImgbinManagesubjects(_Students, _Imgsubjects);
+        {  
             string path = _workpath.Replace("\\LJH","\\LJH\\bindata")  + "\\";
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
+            ImgbinManagesubjects ims = new ImgbinManagesubjects(_Students, _Imgsubjects);
             ims.SaveBitmapFixedDataToData(path);
         }
         private void buttonVerify_Click(object sender, EventArgs e)
@@ -157,6 +156,11 @@ namespace ScanTemplate.FormYJ
             string path = _workpath.Replace("\\LJH", "\\LJH\\bindata") + "\\";
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
+            Exam exam = new Exam(_Students, _Imgsubjects,path);
+            FormFullScreenYJ fs = new FormFullScreenYJ(exam);
+            this.Hide();
+            fs.ShowDialog();
+            this.Show();
             //ImgbinManagesubjects ims = new ImgbinManagesubjects(_Students, _Imgsubjects);
             //ims.InitLoadBindata( path);
             //if (ims.SetActiveSubject(_Imgsubjects.Subjects[0]))
@@ -170,10 +174,6 @@ namespace ScanTemplate.FormYJ
             //}
             //ims.SetActiveSubject(null);
             //return;
-            FormFullScreenYJ fs = new FormFullScreenYJ(_Students, _Imgsubjects, path);
-            this.Hide();
-            fs.ShowDialog();
-            this.Show();
         }
         private void buttonImportOptionAnswerScore_Click(object sender, EventArgs e)
         {
@@ -692,5 +692,75 @@ namespace ScanTemplate.FormYJ
     {
         public Dictionary<int, int> IDIndex;
         public Dictionary<int, int> SubjectLengthInfo;
+    }
+    public class StudentsResult
+    {
+        public Imgsubject ActiveSubject { get { return _activesubject; } }
+        public List<Student> Students { get; set; }
+        public StudentsResult(FormYJ.Students _Students, FormYJ.Imgsubjects _Imgsubjects, string _workpath)
+        {
+            this._Students = _Students;
+            this._Imgsubjects = _Imgsubjects;
+            this._workpath = _workpath;
+
+            _Result = new List<List<int>>();
+            for (int i = 0; i < _Imgsubjects.Subjects.Count; i++)
+            {
+                List<int> L = new List<int>();
+                for (int index = 0; index < _Students.students.Count; index++)
+                {
+                    L.Add(-index - 1);
+                }
+                _Result.Add(L);
+            }
+            _Ims = new ImgbinManagesubjects(_Students, _Imgsubjects);
+            _Ims.InitLoadBindata(_workpath);
+
+            if (!_Students.CheckIndex())
+                MessageBox.Show("index Error");
+        }
+        public void SetActiveSubject(Imgsubject S)
+        {
+            this._activesubject = S;
+            _Ims.SetActiveSubject(S);
+            LoadNextStudents();
+        }
+        public void SetScoreByKh(Student S, int Score)
+        {
+            _Result[_activesubject.Index][S.Index] = Score;
+        }
+        public Bitmap GetBitMap(Student S)
+        {
+            return _Ims.ActiveSubjectBitmap(S);
+        }
+        public void LoadNextStudents()
+        {
+            Students = _Result[_activesubject.Index].Where(r => r < 0).Select(r => _Students.students[-r - 1]).ToList();
+        }
+
+        private FormYJ.Students _Students;
+        private FormYJ.Imgsubjects _Imgsubjects;
+        private string _workpath;
+        private ImgbinManagesubjects _Ims;
+        private Imgsubject _activesubject;
+        private List<List<int>> _Result;
+
+    }
+    public class Exam
+    {
+        private Students _Students;
+        private Imgsubjects _Imgsubjects;
+        private StudentsResult _SR;
+        public Exam(Students _Students, Imgsubjects _Imgsubjects, string path )
+        {
+            this._Students = _Students;
+            this._Imgsubjects = _Imgsubjects;
+            this.Path = path;
+            _SR = new StudentsResult(_Students, _Imgsubjects, path);
+        }
+        public string Name { get; set; }
+        public string Path { get; set; }
+        public StudentsResult SR { get { return _SR; } }
+        public List<Imgsubject> Subjects { get { return _Imgsubjects.Subjects; } }
     }
 }

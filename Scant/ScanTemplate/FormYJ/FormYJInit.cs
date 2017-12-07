@@ -9,14 +9,18 @@ using System.Windows.Forms;
 using ARTemplate;
 using System.IO;
 using System.Drawing.Imaging;
+using Newtonsoft.Json;
 
 namespace ScanTemplate.FormYJ
 {
     public partial class FormYJInit : Form
     {
+        public FormYJInit()
+        {
+            InitializeComponent();
+        }
         public FormYJInit(Template _artemplate, DataTable _rundt, AutoAngle _angle, string _workpath)
         {
-            // TODO: Complete member initialization
             this._artemplate = _artemplate;
             this._rundt = _rundt;
             this._angle = _angle;
@@ -151,15 +155,16 @@ namespace ScanTemplate.FormYJ
                 if (g.CheckExamInfoName(ei))
                 {
                     Exam exam = new Exam(_Students, _Imgsubjects, ei.Path);
+                    exam.Name = examname;
                     if (!Directory.Exists(ei.Path))
                         Directory.CreateDirectory(ei.Path);
                     ImgbinManagesubjects ims = new ImgbinManagesubjects(_Students, _Imgsubjects);
                     ims.SaveBitmapFixedDataToData(ei.Path);
-
+                    //TODO: 实现 exam.checkindex
                     g.AddExamInfo(ei);
-                    g.SaveConfig("config.js");
+                    g.SaveConfig("config.json");
                     string str = Tools.JsonFormatTool.ConvertJsonString(Newtonsoft.Json.JsonConvert.SerializeObject(exam));
-                    File.WriteAllText(g.ExamPath + "\\"+ei.Name+".js", str);
+                    File.WriteAllText(g.ExamPath + "\\"+ei.Name+".json", str);
                 }
                 else
                 {
@@ -229,7 +234,7 @@ namespace ScanTemplate.FormYJ
 
         private Students _Students;
         private Imgsubjects _Imgsubjects;
-        private string _workpath;
+        private string _workpath;        
     }
     public class Imgsubjects
     {
@@ -304,6 +309,7 @@ namespace ScanTemplate.FormYJ
         private UnChoose _U;
         //public int ID;
         //public Double Score;
+        [JsonIgnore]
         public int BitmapdataLength{ get; set; }
 
         public int Index { get; set; }
@@ -360,6 +366,7 @@ namespace ScanTemplate.FormYJ
         private Dictionary<int, Student> _iddic;
         private Dictionary<int, Student> _khdic;
     }
+    [JsonObject(MemberSerialization.OptOut)]
     public class Student
     {
         public Student(DataRow dr,int XZTcount)
@@ -387,6 +394,7 @@ namespace ScanTemplate.FormYJ
         public double Angle { get; set; }
         public int KH { get; set; }
         public string Name { get; set; }
+        [JsonIgnore]
         public Bitmap Src
         {
             get
@@ -406,11 +414,13 @@ namespace ScanTemplate.FormYJ
                 return _SrcCorrectRect;
             }
         }
+        [JsonProperty]
         private string _imgfilename;
-        private Bitmap _src;
+        [JsonProperty]
         private List<string> _XZT;
         private int _id;
         private Rectangle _SrcCorrectRect;
+        private Bitmap _src;
 
         public int Index { get; set; }
     }
@@ -418,7 +428,6 @@ namespace ScanTemplate.FormYJ
     {
         public ImgbinManagesubjects(Students _Students, Imgsubjects _Imgsubjects)
         {
-            // TODO: Complete member initialization
             this._Students = _Students;
             this._Imgsubjects = _Imgsubjects;
             _fs = null;
@@ -706,6 +715,7 @@ namespace ScanTemplate.FormYJ
         public Dictionary<int, int> IDIndex;
         public Dictionary<int, int> SubjectLengthInfo;
     }
+   [JsonObject(MemberSerialization.OptIn)]
     public class StudentsResult
     {
         public Imgsubject ActiveSubject { get { return _activesubject; } }
@@ -728,9 +738,9 @@ namespace ScanTemplate.FormYJ
             }
             _Ims = new ImgbinManagesubjects(_Students, _Imgsubjects);
             _Ims.InitLoadBindata(_workpath);
-
-            if (!_Students.CheckIndex())
-                MessageBox.Show("index Error");
+            //TODO : _Students.CheckIndex Error  . 在 Savebitmapdata之后 Check
+            //if (!_Students.CheckIndex())
+            //    MessageBox.Show("index Error");
         }
         public void SetActiveSubject(Imgsubject S)
         {
@@ -751,11 +761,15 @@ namespace ScanTemplate.FormYJ
             Students = _Result[_activesubject.Index].Where(r => r < 0).Select(r => _Students.students[-r - 1]).ToList();
         }
 
-        private FormYJ.Students _Students;
-        private FormYJ.Imgsubjects _Imgsubjects;
-        private string _workpath;
         private ImgbinManagesubjects _Ims;
         private Imgsubject _activesubject;
+        [JsonProperty]
+        private string _workpath;
+        [JsonProperty]
+        private FormYJ.Students _Students;
+        [JsonProperty]
+        private FormYJ.Imgsubjects _Imgsubjects;
+        [JsonProperty]
         private List<List<int>> _Result;
 
     }
@@ -774,6 +788,7 @@ namespace ScanTemplate.FormYJ
         public string Name { get; set; }
         public string Path { get; set; }
         public StudentsResult SR { get { return _SR; } }
+        [JsonIgnore]
         public List<Imgsubject> Subjects { get { return _Imgsubjects.Subjects; } }
     }
 }

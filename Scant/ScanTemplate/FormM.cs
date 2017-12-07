@@ -12,6 +12,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using ZXing.Common;
 using ZXing;
+using Tools;
 namespace ScanTemplate
 {
 	public delegate void MyInvoke( );
@@ -52,16 +53,15 @@ namespace ScanTemplate
 		}
 		private void FormM_Load(object sender, EventArgs e)
 		{
+            //TODO: FormM_Load 使用类，显示相关信息
 			//AutoLoadLatestImg(_workpath);
-			foreach (string s in GetLastestSubDirectorys(_workpath))
+			foreach (string s in Tools.FileTools. GetLastestSubDirectorys(_workpath))
 			{
-				//TODO: 使用类，显示相关信息
 				listBox1.Items.Add(s);
 			}
 			string templatepath = _workpath.Substring( 0,_workpath.LastIndexOf("\\"))+"\\Template";
-			foreach (string s in NameListFromDir(templatepath,".xml"))
+            foreach (string s in FileTools.NameListFromDir(templatepath, ".xml"))
 			{
-				//TODO: 使用类，显示相关信息
 				string value = s.Substring(s.LastIndexOf("\\")+1);
 				listBoxTemplate.Items.Add( new ValueTag(value,s));
 			}
@@ -98,7 +98,7 @@ namespace ScanTemplate
 		{
 			if (listBox1.SelectedIndex == -1) return;
 			string path = listBox1.SelectedItem.ToString();
-			List<string> nameList = NameListFromDir(path);
+            List<string> nameList = FileTools.NameListFromDir(path);
 			if (nameList.Count == 0) return;
 			string filename = nameList[0];
 			CreateTemplate(filename);
@@ -112,7 +112,7 @@ namespace ScanTemplate
 			}
 			
 			string path = listBox1.SelectedItem.ToString();
-			List<string> nameList = NameListFromDir(path);
+            List<string> nameList = FileTools.NameListFromDir(path);
 			if (nameList.Count == 0) return;
 			string filename = nameList[0];
 			
@@ -127,7 +127,7 @@ namespace ScanTemplate
 				return ;
 			}
 			string path = listBox1.SelectedItem.ToString();
-			List<string> nameList = NameListFromDir(path);
+            List<string> nameList = FileTools.NameListFromDir(path);
 			if (nameList.Count == 0) return;
 			Bitmap bmp = (Bitmap)Bitmap.FromFile(_artemplate.Filename);
 			MyDetectFeatureRectAngle dr = new MyDetectFeatureRectAngle(bmp);
@@ -283,7 +283,7 @@ namespace ScanTemplate
 		{
 			string dataname = templatefilename.Replace(".xml", ".txt");
 			string dir = templatefilename.Substring(0, templatefilename.LastIndexOf("\\"));
-			List<string> data = NameListFromDir(dir, ".txt");
+            List<string> data = FileTools.NameListFromDir(dir, ".txt");
 			data = data.Where(r => r.Contains(templatefilename.Replace(".xml", ""))).ToList();
 			listBoxData.Items.Clear();
 			foreach (string s in data)
@@ -424,12 +424,10 @@ namespace ScanTemplate
 			sb.Append(s + "," +  CorrectRect.ToString("-") + ",");// 文件名 CorrectRect
 			if (CorrectRect.Width > 0)
 			{
-				//TODO: debug r1 in 001
 				Rectangle cr1 = new Rectangle(CorrectRect.Right - 60, CorrectRect.Top - 20, 80, 80);
 				Rectangle r1 = dr.Detected(cr1, bmp);
 				Rectangle cr2 = new Rectangle(CorrectRect.Left - 20, CorrectRect.Bottom - 60, 80, 80);
 				Rectangle r2 = dr.Detected(cr2, bmp);
-
 				
 				sb.Append( _angle.SetPaper(CorrectRect.Location, r1.Location, r2.Location)+"," ); //校验角度
 				Bitmap nbmp = (Bitmap)bmp.Clone(CorrectRect, bmp.PixelFormat);
@@ -444,7 +442,7 @@ namespace ScanTemplate
 					KaoHaoChoiceArea kha = (KaoHaoChoiceArea)(_artemplate.Dic["考号"][0]);
 					if(kha.Type=="条形码"){
 						Rectangle Ir = kha.ImgArea;
-//						Ir.Offset(CorrectRect.Location);
+                        //Ir.Offset(CorrectRect.Location);
 						Bitmap barmap = (Bitmap)nbmp.Clone( kha.ImgArea,nbmp.PixelFormat);
 						barmap.Save("f:\\aa.tif");
 						ZXing.Result rs = _br.Decode(barmap);
@@ -453,8 +451,6 @@ namespace ScanTemplate
 						}
 					}
 				}
-
-
 			}
 			else
 			{
@@ -612,50 +608,15 @@ namespace ScanTemplate
 //			for(int i=0; i<xx.Length; i++)
 //				dr[ "x"+(i+1)] = xx[i];
 			_rundt.Rows.Add(dr);
-		}
-		public static List<string> NameListFromDir(string fidir,string ext =".tif" )
-		{
-			List<string> namelist = new List<string>();
-			DirectoryInfo dirinfo = new DirectoryInfo(fidir);
-			//string ext = fi.Extension;
-			foreach (FileInfo f in dirinfo.GetFiles())
-				if (f.Extension.ToLower() == ext)
-					namelist.Add(f.FullName);
-			return namelist;
-		}
+		}		
 		private List<string> NameListFromFile(string filename)
 		{
 			if (File.Exists(filename))
 			{
 				FileInfo fi = new FileInfo(filename);
 				string fidir = fi.Directory.FullName;
-				return NameListFromDir(fidir);
+                return FileTools.NameListFromDir(fidir);
 			}
-			return new List<string>();
-		}
-		private static string GetLastestSubDirectory(string path)
-		{
-			List<string> sudirects = GetLastestSubDirectorys(path);
-			if (sudirects.Count > 0)
-				return sudirects.Max();
-			return "";
-		}
-		private static List<string> GetLastestSubDirectorys(string path)
-		{
-			Regex r = new Regex("[0-9]{8}-[0-9]+");
-			if (Directory.Exists(path))
-			{
-				DirectoryInfo dir = new DirectoryInfo(path);
-				List<string> sudirects = new List<string>();
-				foreach (DirectoryInfo d in dir.GetDirectories())
-				{
-					if (r.IsMatch(d.Name))
-					{
-						sudirects.Add(d.FullName);
-					}
-				}
-				return sudirects;
-			};
 			return new List<string>();
 		}
 	}
@@ -700,7 +661,7 @@ namespace ScanTemplate
         }
         private void LoadConfig( )
         {
-            string filename = _workpath + "\\config.js";
+            string filename = _workpath + "\\config.json";
             if (File.Exists( filename))
             {
                 this._filename = filename;
@@ -753,5 +714,9 @@ namespace ScanTemplate
         public string Name;
         public string Path;
         public int Number;
+        public override string ToString()
+        {
+            return Name + "_" + Number + "_" + Path; ;
+        }
     }
 }

@@ -56,6 +56,12 @@
     <Compile Include="AutoAngle.cs" />
     <Compile Include="AutoComputeXZT.cs" />
     <Compile Include="DetectFeature\subject.cs" />
+    <Compile Include="FormChoose.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormChoose.Designer.cs">
+      <DependentUpon>FormChoose.cs</DependentUpon>
+    </Compile>
     <Compile Include="FormM.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -86,6 +92,12 @@
     <Compile Include="FormYJ\FormYJInit.Designer.cs">
       <DependentUpon>FormYJInit.cs</DependentUpon>
     </Compile>
+    <Compile Include="FormYJ\FormYJTools.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormYJ\FormYJTools.Designer.cs">
+      <DependentUpon>FormYJTools.cs</DependentUpon>
+    </Compile>
     <Compile Include="FormYJ\JsonFormatTool.cs" />
     <Compile Include="Form\Components.cs">
       <SubType>Form</SubType>
@@ -105,6 +117,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="tools\BitmapTools.cs" />
     <Compile Include="tools\DataTableTools.cs" />
+    <EmbeddedResource Include="FormChoose.resx">
+      <DependentUpon>FormChoose.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FormM.resx">
       <DependentUpon>FormM.cs</DependentUpon>
     </EmbeddedResource>
@@ -119,6 +134,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FormYJ\FormYJInit.resx">
       <DependentUpon>FormYJInit.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormYJ\FormYJTools.resx">
+      <DependentUpon>FormYJTools.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Form\FormTemplate.resx">
       <DependentUpon>FormTemplate.cs</DependentUpon>

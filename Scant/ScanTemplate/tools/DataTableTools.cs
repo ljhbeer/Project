@@ -154,4 +154,42 @@ namespace Tools
             return new Rectangle(x, y, w, h);
         }
     }
+    public class FileTools
+    {
+        public static string GetLastestSubDirectory(string path)
+        {
+            List<string> sudirects = GetLastestSubDirectorys(path);
+            if (sudirects.Count > 0)
+                return sudirects.Max();
+            return "";
+        }
+        public static List<string> GetLastestSubDirectorys(string path)
+        {
+            System.Text.RegularExpressions.Regex r = new System.Text.RegularExpressions.Regex("[0-9]{8}-[0-9]+");
+            if (System.IO.Directory.Exists(path))
+            {
+                System.IO.DirectoryInfo dir = new System.IO.DirectoryInfo(path);
+                List<string> sudirects = new List<string>();
+                foreach (System.IO.DirectoryInfo d in dir.GetDirectories())
+                {
+                    if (r.IsMatch(d.Name))
+                    {
+                        sudirects.Add(d.FullName);
+                    }
+                }
+                return sudirects;
+            };
+            return new List<string>();
+        }
+        public static List<string> NameListFromDir(string fidir, string ext = ".tif")
+        {
+            List<string> namelist = new List<string>();
+            System.IO.DirectoryInfo dirinfo = new System.IO.DirectoryInfo(fidir);
+            //string ext = fi.Extension;
+            foreach (System.IO.FileInfo f in dirinfo.GetFiles())
+                if (f.Extension.ToLower() == ext)
+                    namelist.Add(f.FullName);
+            return namelist;
+        }
+    }
 }

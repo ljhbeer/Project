@@ -58,6 +58,7 @@
             this.splitContainer2.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvSet)).BeginInit();
+            this.panel1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -134,13 +135,15 @@
             this.buttonVerify.TabIndex = 4;
             this.buttonVerify.Text = "校验";
             this.buttonVerify.UseVisualStyleBackColor = true;
+            this.buttonVerify.Visible = false;
             this.buttonVerify.Click += new System.EventHandler(this.buttonVerify_Click);
             // 
             // buttonCreateYJData
             // 
-            this.buttonCreateYJData.Location = new System.Drawing.Point(177, 3);
+            this.buttonCreateYJData.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.buttonCreateYJData.Location = new System.Drawing.Point(0, 0);
             this.buttonCreateYJData.Name = "buttonCreateYJData";
-            this.buttonCreateYJData.Size = new System.Drawing.Size(54, 18);
+            this.buttonCreateYJData.Size = new System.Drawing.Size(234, 38);
             this.buttonCreateYJData.TabIndex = 9;
             this.buttonCreateYJData.Text = "生成阅卷数据";
             this.buttonCreateYJData.UseVisualStyleBackColor = true;
@@ -198,7 +201,7 @@
             // 
             this.splitContainer2.Panel2.Controls.Add(this.panel1);
             this.splitContainer2.Size = new System.Drawing.Size(234, 396);
-            this.splitContainer2.SplitterDistance = 289;
+            this.splitContainer2.SplitterDistance = 354;
             this.splitContainer2.TabIndex = 4;
             // 
             // tableLayoutPanel3
@@ -208,7 +211,6 @@
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.tableLayoutPanel3.Controls.Add(this.buttonCreateYJData, 3, 0);
             this.tableLayoutPanel3.Controls.Add(this.dgvSet, 0, 1);
             this.tableLayoutPanel3.Controls.Add(this.buttonShowXztSet, 0, 0);
             this.tableLayoutPanel3.Controls.Add(this.buttonShowFXztSet, 1, 0);
@@ -219,7 +221,7 @@
             this.tableLayoutPanel3.RowCount = 2;
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 24F));
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel3.Size = new System.Drawing.Size(234, 289);
+            this.tableLayoutPanel3.Size = new System.Drawing.Size(234, 354);
             this.tableLayoutPanel3.TabIndex = 0;
             // 
             // dgvSet
@@ -233,7 +235,7 @@
             this.dgvSet.Name = "dgvSet";
             this.dgvSet.RowTemplate.Height = 50;
             this.dgvSet.RowTemplate.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.dgvSet.Size = new System.Drawing.Size(228, 259);
+            this.dgvSet.Size = new System.Drawing.Size(228, 324);
             this.dgvSet.TabIndex = 2;
             // 
             // buttonShowXztSet
@@ -271,10 +273,11 @@
             // 
             this.panel1.AutoScroll = true;
             this.panel1.BackColor = System.Drawing.SystemColors.Control;
+            this.panel1.Controls.Add(this.buttonCreateYJData);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(234, 103);
+            this.panel1.Size = new System.Drawing.Size(234, 38);
             this.panel1.TabIndex = 2;
             // 
             // tableLayoutPanel1
@@ -331,6 +334,7 @@
             this.splitContainer2.ResumeLayout(false);
             this.tableLayoutPanel3.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgvSet)).EndInit();
+            this.panel1.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);

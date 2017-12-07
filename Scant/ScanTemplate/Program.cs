@@ -15,7 +15,7 @@ namespace ScanTemplate
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new FormM());
+            Application.Run(new FormChoose());
         }
     }
 }

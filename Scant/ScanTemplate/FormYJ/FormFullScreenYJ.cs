@@ -51,16 +51,13 @@ namespace ScanTemplate.FormYJ
             InitDtshow(_cntx);
             InitDgvUI();
             YueJuan();
-		}
-        //TODO: fullscreen.Debug
+		}      
 		private void ButtonSubmitMultiClick(object sender, EventArgs e)
 		{
             if (_SR.ActiveSubject == null)
                 return;
 			if (checkallsetscore())
             {
-                
-                int sum = 0;
                 List<int> scoreindex = new List<int>();
 				for (int i = 0; i < dgvs.Columns.Count; i++){
 					if(_ColState[i]==0)
@@ -131,7 +128,6 @@ namespace ScanTemplate.FormYJ
                 }
 			}
 		}		
-		///////////////////////////		
 		private void InitDtshow(int cntx){
 			List<string> titles = new List<string>();		
 			for(int x=0; x<cntx; x++){

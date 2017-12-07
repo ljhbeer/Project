@@ -147,10 +147,16 @@ namespace ScanTemplate.FormYJ
         {
             string examname = "";
             float score = 0;
+            if (!File.Exists(_artemplate.XmlFileName))
+            {
+                MessageBox.Show("模板文件名不在无法导出数据，请先保存模板再创建阅卷数据");
+                return;
+            }
             if (InputBox.Input("设置考试名称", "考试名称", ref examname, "分值", ref score))
             {
                 ExamInfo ei = new ExamInfo();
                 ei.Name = examname;
+                ei.TemplateFileName = _artemplate.XmlFileName;
                 Config g = FormM.g_cfg;
                 if (g.CheckExamInfoName(ei))
                 {
@@ -203,17 +209,22 @@ namespace ScanTemplate.FormYJ
             //return;
         }
         private void buttonImportOptionAnswerScore_Click(object sender, EventArgs e)
+        {           
+            ImportOptionAnswerScore(_dtsetxzt);
+        }
+
+        public static void ImportOptionAnswerScore(DataTable _dtsetxzt)
         {
             List<string> ids = new List<string>();
-            foreach(DataRow dr in _dtsetxzt.Rows)
-                ids.Add("xz"+ dr["ID"].ToString());
+            foreach (DataRow dr in _dtsetxzt.Rows)
+                ids.Add("xz" + dr["ID"].ToString());
             FormSetscore f = new FormSetscore(ids);
             if (f.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 for (int i = 0; i < f.Xzt().Count; i++)
                 {
-                    if(f.Xzt()[i].ID.ToString().EndsWith( 
-                    _dtsetxzt.Rows[i]["ID"].ToString() ))
+                    if (f.Xzt()[i].ID.ToString().EndsWith(
+                    _dtsetxzt.Rows[i]["ID"].ToString()))
                     {
                         _dtsetxzt.Rows[i]["正确答案"] = f.Xzt()[i].OptionAnswer;
                         _dtsetxzt.Rows[i]["最大分值"] = f.Xzt()[i].Score;
@@ -234,7 +245,48 @@ namespace ScanTemplate.FormYJ
 
         private Students _Students;
         private Imgsubjects _Imgsubjects;
-        private string _workpath;        
+        private string _workpath;
+
+        private void pictureBox1_MouseEnter(object sender, EventArgs e)
+        {
+            pictureBox1.Focus();
+        }
+        private void pictureBox1_MouseWheel(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            if (pictureBox1.Image == null) return;
+            int numberOfTextLinesToMove = e.Delta * SystemInformation.MouseWheelScrollLines / 120;
+            double f = 0.0;
+            if (numberOfTextLinesToMove > 0)
+            {
+                for (int i = 0; i < numberOfTextLinesToMove; i++)
+                {
+                    f += 0.05;
+                }
+                Zoomrat(f + 1, e.Location);
+            }
+            else if (numberOfTextLinesToMove < 0)
+            {
+                for (int i = 0; i > numberOfTextLinesToMove; i--)
+                {
+                    f -= 0.05;
+                }
+                Zoomrat(f + 1, e.Location);
+            }
+        }
+        private void Zoomrat(double rat, Point e)
+        {
+            Bitmap bitmap_show = (Bitmap)pictureBox1.Image;
+            Point L = pictureBox1.Location;
+            Point S = panel3.AutoScrollPosition;
+            int w = (int)(pictureBox1.Width * rat);
+            int h = w * bitmap_show.Height / bitmap_show.Width;
+            L.Offset((int)(e.X * (rat - 1)), (int)(e.Y * (rat - 1)));
+            pictureBox1.SetBounds(S.X, S.Y, w, h);
+            //zoombox.UpdateBoxScale(pictureBox1);
+            S.Offset((int)(e.X * (1 - rat)), (int)(e.Y * (1 - rat)));
+            panel3.Invalidate();
+            panel3.AutoScrollPosition = new Point(-S.X, -S.Y);
+        }
     }
     [JsonObject(MemberSerialization.OptIn)]
     public class Imgsubjects

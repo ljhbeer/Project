@@ -357,15 +357,15 @@ namespace ScanTemplate
 		{
 			Bitmap bitmap_show = (Bitmap)pictureBox1.Image;
 			Point L = pictureBox1.Location;
-			Point S = panel1.AutoScrollPosition;
+			Point S = panel3.AutoScrollPosition;
 			int w = (int)(pictureBox1.Width * rat);
 			int h = w * bitmap_show.Height / bitmap_show.Width;
 			L.Offset((int)(e.X * (rat - 1)), (int)(e.Y * (rat - 1)));
 			pictureBox1.SetBounds(S.X, S.Y, w, h);
 			//zoombox.UpdateBoxScale(pictureBox1);
 			S.Offset((int)(e.X * (1 - rat)), (int)(e.Y * (1 - rat)));
-			panel1.Invalidate();
-			panel1.AutoScrollPosition = new Point(-S.X, -S.Y);
+			panel3.Invalidate();
+			panel3.AutoScrollPosition = new Point(-S.X, -S.Y);
 		}		
 		private void CreateTemplate(string filename, string templatefilename = ""){
 			Bitmap bmp = (Bitmap)Bitmap.FromFile(filename);
@@ -714,6 +714,7 @@ namespace ScanTemplate
         public string Name;
         public string Path;
         public int Number;
+        public string TemplateFileName;
         public override string ToString()
         {
             return Name + "_" + Number + "_" + Path; ;

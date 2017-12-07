@@ -75,6 +75,7 @@ namespace ARTemplate
             {
                 XmlDocument xmlDoc = SaveToXmlDoc();
                 xmlDoc.Save(xmlFileName);
+                this._XmlFileName = xmlFileName;
             }
         }
         public XmlDocument SaveToXmlDoc()
@@ -110,6 +111,7 @@ namespace ARTemplate
             ResetData();
             if (!xmlFileName.ToLower().EndsWith(".xml")) return false;
             if (!File.Exists(xmlFileName)) return false;
+            this._XmlFileName = xmlFileName;
             try
             {
                 XmlDocument xmlDoc = new XmlDocument();
@@ -309,12 +311,8 @@ namespace ARTemplate
             get;
             set;
         }
+        public string XmlFileName { get { return _XmlFileName; } }
         public Dictionary<string, List<Area>> Dic { get { return _dic; } }
-        private Bitmap _src;
-        private string _imagefilename;
-        private Dictionary< string, List<Area>> _dic;
-        
-        private Dictionary<int, Rectangle> _xztRect;
         public Dictionary<int,Rectangle> XztRect{
         	get{
         		if(_xztRect==null){
@@ -338,7 +336,12 @@ namespace ARTemplate
         		return _xztRect;
         	}
         }
-    	
+        
+        private Dictionary< string, List<Area>> _dic;        
+        private Dictionary<int, Rectangle> _xztRect;
+        private Bitmap _src;
+        private string _imagefilename;
+        private string _XmlFileName;    	
     }
     public class TemplateTools
     {

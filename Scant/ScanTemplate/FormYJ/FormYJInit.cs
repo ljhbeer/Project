@@ -236,16 +236,24 @@ namespace ScanTemplate.FormYJ
         private Imgsubjects _Imgsubjects;
         private string _workpath;        
     }
+    [JsonObject(MemberSerialization.OptIn)]
     public class Imgsubjects
     {
-        List<Imgsubject> _subjects;
-        Dictionary<int, Imgsubject> _dic;
-        private int _activeid;
         public Imgsubjects()
         {
             _subjects = new List<Imgsubject>();
             _dic = new Dictionary<int, Imgsubject>();
             _activeid = -1;
+        }
+        public void InitDeserialize()
+        {
+            _dic = new Dictionary<int, Imgsubject>();
+            _activeid = -1;
+            foreach (Imgsubject S in _subjects)
+            {
+                _dic[S.ID] = S;
+                S.InitDeserialize();
+            }
         }
         public bool Add(Imgsubject S)
         {
@@ -258,25 +266,11 @@ namespace ScanTemplate.FormYJ
             return false;
 
         }
-        public List<Imgsubject> Subjects
-        {
-            get
-            {
-                return _subjects;
-            }
-        }
         public Imgsubject ImgSubjectByID(int ID)
         {
             if (_dic.ContainsKey(ID))
                 return _dic[ID];
             return null;
-        }
-        public Imgsubject ActiveSubject
-        {
-            get
-            {
-                return ImgSubjectByID(_activeid);
-            }
         }
         public void SetActiveSubject(Imgsubject S)
         {
@@ -285,6 +279,25 @@ namespace ScanTemplate.FormYJ
             else
                 _activeid = -1;
         }
+        public List<Imgsubject> Subjects
+        {
+            get
+            {
+                return _subjects;
+            }
+        }
+        public Imgsubject ActiveSubject
+        {
+            get
+            {
+                return ImgSubjectByID(_activeid);
+            }
+        }
+
+        [JsonProperty]
+        private List<Imgsubject> _subjects;
+        private Dictionary<int, Imgsubject> _dic;
+        private int _activeid;
     }
     public class Imgsubject
     {      
@@ -294,6 +307,19 @@ namespace ScanTemplate.FormYJ
             this.ID = ID;
             this.Score = U.Scores;
             this.Name = U.Name;
+            this._Rect = _U.ImgArea;
+        }
+        public Imgsubject()
+        {
+        }
+        public void InitDeserialize()
+        {
+            //TODO: set bitmapdatalength
+            int w = Width;
+            w = (w / 8) * 8 + (w % 8 > 2 ? 8 : 0);
+            int stride = w / 8;
+            stride = (stride / 4 * 4) + (stride % 4 > 0 ? 4 : 0);
+            BitmapdataLength = w * stride;
         }
         public override string ToString()
         {
@@ -303,16 +329,20 @@ namespace ScanTemplate.FormYJ
         public string Name { get; set; } 
         public int ID { get; set; }
         public int Score { get; set; }
-        public Rectangle Rect { get { return _U.ImgArea; } }
+        public int Index { get; set; }
+        [JsonProperty]
+        private Rectangle _Rect;
+        [JsonIgnore]
+        public Rectangle Rect { get { return _Rect; } }
+        [JsonIgnore]
         public int Height { get { return Rect.Height; } }
+        [JsonIgnore]
         public int Width { get { return Rect.Width; } }
+        [JsonIgnore]
+        public int BitmapdataLength{ get; set; }
         private UnChoose _U;
         //public int ID;
         //public Double Score;
-        [JsonIgnore]
-        public int BitmapdataLength{ get; set; }
-
-        public int Index { get; set; }
     }
     public class Students
     {
@@ -337,6 +367,21 @@ namespace ScanTemplate.FormYJ
                 //index++;
             }
         }
+        public Students()
+        {
+            _studt = null;
+        }
+        public void InitDeserialize()
+        {
+            _iddic = new Dictionary<int, Student>();
+            _khdic = new Dictionary<int, Student>();
+            foreach (Student s  in _students)
+            {
+                s.InitDeserialize();
+                _iddic[s.ID] = s;
+                _khdic[s.KH] = s;
+            }
+        }
         public Student StudentFromID(int ID)
         {
             return _iddic[ID];
@@ -345,6 +390,7 @@ namespace ScanTemplate.FormYJ
         {
             return _khdic[KH];
         }
+        [JsonIgnore]
         public List<Student> students
         {
             get
@@ -361,10 +407,12 @@ namespace ScanTemplate.FormYJ
             }
             return true;
         }
+        [JsonProperty]
         private List<Student> _students;
-        private DataTable _studt;
         private Dictionary<int, Student> _iddic;
         private Dictionary<int, Student> _khdic;
+        // Can be null
+        private DataTable _studt;
     }
     [JsonObject(MemberSerialization.OptOut)]
     public class Student
@@ -389,7 +437,17 @@ namespace ScanTemplate.FormYJ
             }
             _src = null;
         }
-
+        public Student()
+        {
+        }
+        public void InitDeserialize()
+        {
+            string str = _imgfilename.Substring(_imgfilename.LastIndexOf("-") + 1);
+            str = str.Substring(0, str.IndexOf("."));
+            _id = Convert.ToInt32(str);
+            _id %= 10000;
+        }
+        [JsonIgnore]
         public int ID { get { return _id; } }
         public double Angle { get; set; }
         public int KH { get; set; }
@@ -407,6 +465,7 @@ namespace ScanTemplate.FormYJ
                 return _src;
             }
         }
+        [JsonIgnore]
         public Rectangle SrcCorrectRect
         {
             get
@@ -419,10 +478,11 @@ namespace ScanTemplate.FormYJ
         [JsonProperty]
         private List<string> _XZT;
         private int _id;
+        [JsonProperty]
         private Rectangle _SrcCorrectRect;
         private Bitmap _src;
-
         public int Index { get; set; }
+
     }
     public class ImgbinManagesubjects
     {
@@ -719,7 +779,7 @@ namespace ScanTemplate.FormYJ
     public class StudentsResult
     {
         public Imgsubject ActiveSubject { get { return _activesubject; } }
-        public List<Student> Students { get; set; }
+        public List<Student> Students { get; set; }        
         public StudentsResult(FormYJ.Students _Students, FormYJ.Imgsubjects _Imgsubjects, string _workpath)
         {
             this._Students = _Students;
@@ -742,6 +802,17 @@ namespace ScanTemplate.FormYJ
             //if (!_Students.CheckIndex())
             //    MessageBox.Show("index Error");
         }
+        public StudentsResult(FormYJ.Students _Students, Imgsubjects _Imgsubjects, string Path, List<List<int>> result)
+        {
+            this._Students = _Students;
+            this._Imgsubjects = _Imgsubjects;
+            this._workpath = Path;
+            this._Result = result;
+            _Ims = new ImgbinManagesubjects(_Students, _Imgsubjects);
+            _Ims.InitLoadBindata(_workpath);
+            if (!_Students.CheckIndex())
+                MessageBox.Show("index Error");
+        }
         public void SetActiveSubject(Imgsubject S)
         {
             this._activesubject = S;
@@ -760,6 +831,10 @@ namespace ScanTemplate.FormYJ
         {
             Students = _Result[_activesubject.Index].Where(r => r < 0).Select(r => _Students.students[-r - 1]).ToList();
         }
+        public Imgsubjects GetImgsubjects()
+        {
+            return _Imgsubjects;
+        }
 
         private ImgbinManagesubjects _Ims;
         private Imgsubject _activesubject;
@@ -771,7 +846,6 @@ namespace ScanTemplate.FormYJ
         private FormYJ.Imgsubjects _Imgsubjects;
         [JsonProperty]
         private List<List<int>> _Result;
-
     }
     public class Exam
     {
@@ -784,6 +858,14 @@ namespace ScanTemplate.FormYJ
             this._Imgsubjects = _Imgsubjects;
             this.Path = path;
             _SR = new StudentsResult(_Students, _Imgsubjects, path);
+        }
+        public Exam(Examdata ed)
+        {
+            this.Name = ed.Name;
+            this.Path = ed.Path;
+            _Imgsubjects = ed.SR._Imgsubjects;
+            _Students = ed.SR._Students;
+            this._SR = new StudentsResult(_Students, _Imgsubjects, Path,ed.SR._Result);
         }
         public string Name { get; set; }
         public string Path { get; set; }

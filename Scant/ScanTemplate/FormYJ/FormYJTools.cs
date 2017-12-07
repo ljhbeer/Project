@@ -42,10 +42,22 @@ namespace ScanTemplate.FormYJ
             string filename = ei.Path.Substring(0, ei.Path.Length - ei.Number.ToString().Length - 1) + ei.Name + ".json";
             if(!File.Exists(filename))
                 return;
-            Exam exam = Newtonsoft.Json.JsonConvert.DeserializeObject<Exam>(File.ReadAllText(filename));
+            Examdata  examdata = Newtonsoft.Json.JsonConvert.DeserializeObject<Examdata >(File.ReadAllText(filename));
 
-            MessageBox.Show(exam.Name);
+            examdata.SR._Students.InitDeserialize();
+            examdata.SR._Imgsubjects.InitDeserialize();
+            for (int index = 0; index < examdata.SR._Imgsubjects.Subjects.Count; index++)
+            {
+                examdata.SR._Imgsubjects.Subjects[index].Index = index;
+            }
+            Exam exam = new Exam(examdata);
+            //TODO: NextWork
+            FormFullScreenYJ fs = new FormFullScreenYJ(exam);
+            this.Hide();
+            fs.ShowDialog();
+            this.Show();
 
+            MessageBox.Show(examdata.Name + examdata.Path);
         }
         private void buttonModifyData_Click(object sender, EventArgs e)
         {
@@ -67,7 +79,18 @@ namespace ScanTemplate.FormYJ
         {
 
         }
-
-
+    }
+    public class Examdata
+    {
+        public string Name { get; set; }
+        public string Path { get; set; }
+        public StudentsResultData SR { get; set;}       
+    }
+    public class StudentsResultData
+    {
+        public string _workpath;
+        public Students _Students;
+        public Imgsubjects _Imgsubjects;
+        public List<List<int>> _Result;
     }
 }

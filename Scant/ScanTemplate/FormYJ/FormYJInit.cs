@@ -218,13 +218,12 @@ namespace ScanTemplate.FormYJ
             List<string> ids = new List<string>();
             foreach (DataRow dr in _dtsetxzt.Rows)
                 ids.Add("xz" + dr["ID"].ToString());
-            FormSetscore f = new FormSetscore(ids);
+            FormSetscore f = new FormSetscore(_dtsetxzt);
             if (f.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 for (int i = 0; i < f.Xzt().Count; i++)
                 {
-                    if (f.Xzt()[i].ID.ToString().EndsWith(
-                    _dtsetxzt.Rows[i]["ID"].ToString()))
+                    if (_dtsetxzt.Rows[i]["题组名称"].ToString().EndsWith(f.Xzt()[i].ID.ToString()))
                     {
                         _dtsetxzt.Rows[i]["正确答案"] = f.Xzt()[i].OptionAnswer;
                         _dtsetxzt.Rows[i]["最大分值"] = f.Xzt()[i].Score;

@@ -47,6 +47,7 @@ namespace ScanTemplate.FormYJ
                 return;
             _template = null;
             _src = null;
+            _students = null;
             if (File.Exists(ei.TemplateFileName))
             {
                 _template = new  Template(ei.TemplateFileName);
@@ -57,6 +58,7 @@ namespace ScanTemplate.FormYJ
             Examdata  examdata = Newtonsoft.Json.JsonConvert.DeserializeObject<Examdata >(File.ReadAllText(filename));
             examdata.SR._Students.InitDeserialize();
             examdata.SR._Imgsubjects.InitDeserialize();
+            _students = examdata.SR._Students;
             for (int index = 0; index < examdata.SR._Imgsubjects.Subjects.Count; index++)
             {
                 examdata.SR._Imgsubjects.Subjects[index].Index = index;
@@ -66,8 +68,16 @@ namespace ScanTemplate.FormYJ
             InitDgvUI();
             AddChooseTodtset(ref _dtsetxzt);
             AddUnChooseTodtset(ref _dtsetfxzt);
+            AddStudentsdtset(ref _dtsetstudents);
             InitDgvSetUI(true);
 
+        }
+        private void dgv_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (!_bshowstudent) return;
+            if (e.ColumnIndex == -1 || e.RowIndex == -1) return;
+            Student S =(Student) ((ValueTag)dgv[0, e.RowIndex].Value).Tag;
+            pictureBox1.Image = TemplateTools.DrawInfoBmp(S.Src.Clone( S.SrcCorrectRect,S.Src.PixelFormat) , _template, null);
         }
         private void buttonModifyData_Click(object sender, EventArgs e)
         {
@@ -90,12 +100,25 @@ namespace ScanTemplate.FormYJ
         {
             InitDgvSetUI(false);
         }
+        private void buttonShowStudents_Click(object sender, EventArgs e)
+        {
+            dgv.RowTemplate.Height = 24;
+            dgv.DataSource = null;
+            dgv.DataSource = _dtsetstudents;
+            _bshowstudent = true;
+            foreach (DataGridViewColumn dc in dgv.Columns)
+                if (dc.Name.Contains("考号"))
+                    dc.Width = 75;
+                else
+                    dc.Width = 40;
+        }
         private void buttonImportOptionAnswerScore_Click(object sender, EventArgs e)
         {
            FormYJInit.ImportOptionAnswerScore(_dtsetxzt);
         }
         private void InitDgvSetUI(bool xzt)
         {
+            _bshowstudent = false;
             dgv.DataSource = null;
             if (xzt)
             {
@@ -172,15 +195,30 @@ namespace ScanTemplate.FormYJ
             _AvgUnImgHeight /= _exam.Subjects.Count;
             _AvgUnImgWith /= _exam.Subjects.Count;
         }
+        private void AddStudentsdtset(ref DataTable dtset )
+        {
+            dtset = Tools.DataTableTools.ConstructDataTable(new string[] { "OID", "姓名", "考号"});           
+            foreach(Student S in _students.students)
+            {
+                DataRow dr = dtset.NewRow();
+                dr["OID"] = new ValueTag(S.ID.ToString(), S);
+                dr["姓名"] = S.Name;
+                dr["考号"] = S.KH;
+                dtset.Rows.Add(dr);
+            }
+        }
 
         private Exam _exam;
         private string _workpath;
         private Bitmap _src;
         private DataTable _dtsetxzt;
         private DataTable _dtsetfxzt;
+        private DataTable _dtsetstudents;
         private int _AvgUnImgWith;
         private int _AvgUnImgHeight;
         private Template _template;
+        private Students _students;
+        private bool _bshowstudent;
 
         private void pictureBox1_MouseEnter(object sender, EventArgs e)
         {
@@ -222,6 +260,8 @@ namespace ScanTemplate.FormYJ
             panel3.Invalidate();
             panel3.AutoScrollPosition = new Point(-S.X, -S.Y);
         }
+
+
     }
     public class Examdata
     {

@@ -41,6 +41,7 @@
             this.buttonShowXztSet = new System.Windows.Forms.Button();
             this.buttonShowFXztSet = new System.Windows.Forms.Button();
             this.buttonImportOptionAnswerScore = new System.Windows.Forms.Button();
+            this.buttonShowStudents = new System.Windows.Forms.Button();
             this.panel3 = new System.Windows.Forms.Panel();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -163,20 +164,23 @@
             // 
             // tableLayoutPanel3
             // 
-            this.tableLayoutPanel3.ColumnCount = 3;
+            this.tableLayoutPanel3.ColumnCount = 4;
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
             this.tableLayoutPanel3.Controls.Add(this.dgv, 0, 1);
             this.tableLayoutPanel3.Controls.Add(this.buttonShowXztSet, 0, 0);
             this.tableLayoutPanel3.Controls.Add(this.buttonShowFXztSet, 1, 0);
-            this.tableLayoutPanel3.Controls.Add(this.buttonImportOptionAnswerScore, 2, 0);
+            this.tableLayoutPanel3.Controls.Add(this.buttonImportOptionAnswerScore, 3, 0);
+            this.tableLayoutPanel3.Controls.Add(this.buttonShowStudents, 2, 0);
             this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel3.Location = new System.Drawing.Point(3, 3);
             this.tableLayoutPanel3.Name = "tableLayoutPanel3";
             this.tableLayoutPanel3.RowCount = 2;
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 24F));
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 29F));
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel3.Size = new System.Drawing.Size(208, 400);
             this.tableLayoutPanel3.TabIndex = 2;
             // 
@@ -185,21 +189,22 @@
             this.dgv.AllowUserToAddRows = false;
             this.dgv.AllowUserToDeleteRows = false;
             this.dgv.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.tableLayoutPanel3.SetColumnSpan(this.dgv, 3);
+            this.tableLayoutPanel3.SetColumnSpan(this.dgv, 4);
             this.dgv.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dgv.Location = new System.Drawing.Point(3, 27);
+            this.dgv.Location = new System.Drawing.Point(3, 32);
             this.dgv.Name = "dgv";
             this.dgv.RowTemplate.Height = 50;
             this.dgv.RowTemplate.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.dgv.Size = new System.Drawing.Size(202, 370);
+            this.dgv.Size = new System.Drawing.Size(202, 365);
             this.dgv.TabIndex = 2;
+            this.dgv.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgv_CellContentClick);
             // 
             // buttonShowXztSet
             // 
             this.buttonShowXztSet.Dock = System.Windows.Forms.DockStyle.Fill;
             this.buttonShowXztSet.Location = new System.Drawing.Point(3, 3);
             this.buttonShowXztSet.Name = "buttonShowXztSet";
-            this.buttonShowXztSet.Size = new System.Drawing.Size(63, 18);
+            this.buttonShowXztSet.Size = new System.Drawing.Size(46, 23);
             this.buttonShowXztSet.TabIndex = 3;
             this.buttonShowXztSet.Text = "选择题";
             this.buttonShowXztSet.UseVisualStyleBackColor = true;
@@ -207,9 +212,10 @@
             // 
             // buttonShowFXztSet
             // 
-            this.buttonShowFXztSet.Location = new System.Drawing.Point(72, 3);
+            this.buttonShowFXztSet.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.buttonShowFXztSet.Location = new System.Drawing.Point(55, 3);
             this.buttonShowFXztSet.Name = "buttonShowFXztSet";
-            this.buttonShowFXztSet.Size = new System.Drawing.Size(63, 18);
+            this.buttonShowFXztSet.Size = new System.Drawing.Size(46, 23);
             this.buttonShowFXztSet.TabIndex = 4;
             this.buttonShowFXztSet.Text = "非选择题";
             this.buttonShowFXztSet.UseVisualStyleBackColor = true;
@@ -217,13 +223,25 @@
             // 
             // buttonImportOptionAnswerScore
             // 
-            this.buttonImportOptionAnswerScore.Location = new System.Drawing.Point(141, 3);
+            this.buttonImportOptionAnswerScore.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.buttonImportOptionAnswerScore.Location = new System.Drawing.Point(159, 3);
             this.buttonImportOptionAnswerScore.Name = "buttonImportOptionAnswerScore";
-            this.buttonImportOptionAnswerScore.Size = new System.Drawing.Size(64, 18);
+            this.buttonImportOptionAnswerScore.Size = new System.Drawing.Size(46, 23);
             this.buttonImportOptionAnswerScore.TabIndex = 4;
             this.buttonImportOptionAnswerScore.Text = "导入选择题答案";
             this.buttonImportOptionAnswerScore.UseVisualStyleBackColor = true;
             this.buttonImportOptionAnswerScore.Click += new System.EventHandler(this.buttonImportOptionAnswerScore_Click);
+            // 
+            // buttonShowStudents
+            // 
+            this.buttonShowStudents.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.buttonShowStudents.Location = new System.Drawing.Point(107, 3);
+            this.buttonShowStudents.Name = "buttonShowStudents";
+            this.buttonShowStudents.Size = new System.Drawing.Size(46, 23);
+            this.buttonShowStudents.TabIndex = 5;
+            this.buttonShowStudents.Text = "考生";
+            this.buttonShowStudents.UseVisualStyleBackColor = true;
+            this.buttonShowStudents.Click += new System.EventHandler(this.buttonShowStudents_Click);
             // 
             // panel3
             // 
@@ -288,5 +306,6 @@
         private System.Windows.Forms.Button buttonImportOptionAnswerScore;
         private System.Windows.Forms.Panel panel3;
         private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.Button buttonShowStudents;
     }
 }

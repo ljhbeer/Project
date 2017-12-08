@@ -11,14 +11,13 @@ namespace ScanTemplate.FormYJ
 {
     public partial class FormSetscore : Form
     {
-        public FormSetscore( List<string> xztids )
+        private FormSetscore( List<string> xztids )
         {
             InitializeComponent();
             buttonClearanswer.Visible = false;
-
             InitXZTQuestion(xztids);
             InitDgvAndCbx();
-            ReFreshDgv();            
+            ReFreshDgv();           
         }
         private void InitXZTQuestion(List<string> xztids)
         {
@@ -28,11 +27,34 @@ namespace ScanTemplate.FormYJ
                 if (s.StartsWith("xz"))
                 {
                     XztQuestion x = new XztQuestion();
-                    x.ID = Convert.ToInt32(s.Substring(2));                  
+                    x.ID = Convert.ToInt32(s.Substring(2));
                     _xzt.Add(x);
                 }
             }
-        }       
+        }
+        public FormSetscore(DataTable _dtsetxzt)
+        {
+            this._dtsetxzt = _dtsetxzt;
+            InitializeComponent();
+            buttonClearanswer.Visible = false;
+
+            InitXZTQuestion(_dtsetxzt);
+            InitDgvAndCbx();
+            ReFreshDgv();            
+        }
+        private void InitXZTQuestion(DataTable _dtsetxzt) // 题组名称 最大分值 正确答案
+        {
+            _xzt = new List<XztQuestion>();
+            foreach (DataRow dr in _dtsetxzt.Rows)
+            {
+                XztQuestion x = new XztQuestion();
+                string s = dr["题组名称"].ToString();
+                x.ID = Convert.ToInt32(s.Substring(1));
+                x.OptionAnswer = dr["正确答案"].ToString();
+                x.Score =(float) Convert.ToDouble(dr["最大分值"].ToString());
+                _xzt.Add(x);
+            }
+        }
         public void InitDgv(int questioncnt, DataGridView dgv) // used by settypeform
         {
             string[] strxq = new string[] { "题型", "答案", "分值" };
@@ -173,6 +195,7 @@ namespace ScanTemplate.FormYJ
             }
         }
         private List<XztQuestion> _xzt;
+        private DataTable _dtsetxzt;
         public List<XztQuestion> Xzt(){ return _xzt;}
         public bool CheckOK(){
             foreach (XztQuestion q in _xzt)

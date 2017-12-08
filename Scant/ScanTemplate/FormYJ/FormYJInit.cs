@@ -125,6 +125,7 @@ namespace ScanTemplate.FormYJ
                 dr["正确答案"] = "";
                 dtset.Rows.Add(dr);
             }
+            dtset.AcceptChanges();
         }
         private void AddUnChooseTodtset(ref DataTable dtset)
         {
@@ -143,6 +144,7 @@ namespace ScanTemplate.FormYJ
                 dr["图片"] = _src.Clone(S.Rect, _src.PixelFormat);
                 dtset.Rows.Add(dr);
             }
+            dtset.AcceptChanges();
             _AvgUnImgHeight /= _Imgsubjects.Subjects.Count;
             _AvgUnImgWith /= _Imgsubjects.Subjects.Count;
         }
@@ -171,6 +173,7 @@ namespace ScanTemplate.FormYJ
                 Config g = FormM.g_cfg;
                 if (g.CheckExamInfoName(ei))
                 {
+                    AcceptXztDataTableModified();
                     Exam exam = new Exam(_Students, _Imgsubjects,_Optionsubjects, ei.Path);
                     exam.Name = examname;
                     if (!Directory.Exists(ei.Path))
@@ -190,6 +193,20 @@ namespace ScanTemplate.FormYJ
 
             }
 
+        }
+        private void AcceptXztDataTableModified()
+        {
+            if (_dtsetfxzt != null)
+                foreach (DataRow dr in _dtsetfxzt.Rows)
+                {
+                    if (dr.RowState == DataRowState.Modified)
+                    {
+                        Imgsubject I = (Imgsubject)((ValueTag)dr["OID"]).Tag;
+                        I.Score = Convert.ToInt32(dr["最大分值"].ToString());
+                        I.Name = dr["题组名称"].ToString();
+                        dr.AcceptChanges();
+                    }
+                }
         }
         private void buttonVerify_Click(object sender, EventArgs e)
         {
@@ -223,25 +240,22 @@ namespace ScanTemplate.FormYJ
         {           
             ImportOptionAnswerScore(_dtsetxzt);
         }
-
         public static void ImportOptionAnswerScore(DataTable _dtsetxzt)
         {
-            List<string> ids = new List<string>();
-            foreach (DataRow dr in _dtsetxzt.Rows)
-            {
-                ids.Add("xz" + dr["OID"].ToString());
-            }
             FormSetscore f = new FormSetscore(_dtsetxzt);
             if (f.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 for (int i = 0; i < f.Xzt().Count; i++)
                 {
-                    if (_dtsetxzt.Rows[i]["题组名称"].ToString().EndsWith(f.Xzt()[i].ID.ToString()))
+                    Optionsubject O = (Optionsubject)((ValueTag)_dtsetxzt.Rows[i]["OID"]).Tag;
+                    //if (_dtsetxzt.Rows[i]["题组名称"].ToString().EndsWith(f.Xzt()[i].ID.ToString()))
+                    if (O.ID == f.Xzt()[i].ID)
                     {
                         _dtsetxzt.Rows[i]["正确答案"] = f.Xzt()[i].OptionAnswer;
                         _dtsetxzt.Rows[i]["最大分值"] = f.Xzt()[i].Score;
+                        O.Answer = f.Xzt()[i].OptionAnswer;
+                        O.Score = f.Xzt()[i].Score;
                     }
-
                 }
             }
         }
@@ -343,11 +357,12 @@ namespace ScanTemplate.FormYJ
         }
 
         public int ID { get; set; }
-        public int Score { get; set; }
+        public float Score { get; set; }
         public int Index { get; set; }
         public List<Point> List{ get; set; }
         public Size Size { get; set; }
         public string Name() { return "x" + ID; }
+        public string Answer { get; set; }
         [JsonProperty]
         private Rectangle _Rect;
 
@@ -572,11 +587,29 @@ namespace ScanTemplate.FormYJ
             _id = Convert.ToInt32(str);
             _id %= 10000;
         }
+        public string ResultInfo()
+        {
+            return ID + "," + KH + "," + Name + ",";
+        }
         [JsonIgnore]
         public int ID { get { return _id; } }
         public double Angle { get; set; }
         public int KH { get; set; }
         public string Name { get; set; }
+       
+        public string OutXzt(List<string> optionanswer, List<float> maxscore)
+        {
+            int i =0;
+            List<float> result = _XZT.Select(r =>
+            {
+                float  ret = 0;
+                if (r == optionanswer[i])
+                    ret = maxscore[i];
+                i++;
+                return ret;
+            }).ToList();
+            return result.Sum() + "," + string.Join(",", result);
+        }
         [JsonIgnore]
         public Bitmap Src
         {
@@ -607,6 +640,7 @@ namespace ScanTemplate.FormYJ
         private Rectangle _SrcCorrectRect;
         private Bitmap _src;
         public int Index { get; set; }
+
 
     }
     public class ImgbinManagesubjects
@@ -973,9 +1007,9 @@ namespace ScanTemplate.FormYJ
         [JsonProperty]
         private FormYJ.Imgsubjects _Imgsubjects;
         [JsonProperty]
-        private List<List<int>> _Result;
-        [JsonProperty]
         private Optionsubjects _Optionsubjects;
+        [JsonProperty]
+        private List<List<int>> _Result;
     }
     public class Exam
     {

@@ -20,6 +20,8 @@ namespace ScanTemplate.FormYJ
             _exam = null;
             _template = null;
             _src = null;
+            this._activeitem = null;
+            _bexamdatamodified = false;
         }
         private void FormYJTools_Load(object sender, EventArgs e)
         {
@@ -27,6 +29,7 @@ namespace ScanTemplate.FormYJ
         }
         private void buttonRefresh_Click(object sender, EventArgs e)
         {
+            listBox1.Items.Clear();
             InitExamInfos();
         }
         private void InitExamInfos()
@@ -41,7 +44,27 @@ namespace ScanTemplate.FormYJ
         private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (listBox1.SelectedIndex == -1) return;
+            if (_activeitem != null)
+            {
+                CheckDataTable(); // 修改 选择题的答案和分值， 以及非选择题的分值，以及添加考生
+                //保存当前数据
+                if (_bexamdatamodified)
+                {
+                    //MessageBox.Show("是否保存当前数据");
+                    String Name = ((ExamInfo)_activeitem).Path + ((ExamInfo)_activeitem).Name;
+                    Name = Name.Replace(((ExamInfo)_activeitem).Number + "\\", "");
+                    string str = Tools.JsonFormatTool.ConvertJsonString(Newtonsoft.Json.JsonConvert.SerializeObject(_examdata));
+                    File.WriteAllText(Name + ".json", str);
+                    MessageBox.Show("已保存当前数据");
+                    _bexamdatamodified = false;
+                }
+            }
+
             ExamInfo ei = (ExamInfo)listBox1.SelectedItem;
+            if (_activeitem == ei)
+                return;
+            _activeitem = ei;
+            _bexamdatamodified = false;
             string filename = ei.Path.Substring(0, ei.Path.Length - ei.Number.ToString().Length - 1) + ei.Name + ".json";
             if(!File.Exists(filename))
                 return;
@@ -55,15 +78,12 @@ namespace ScanTemplate.FormYJ
                 if(_src!=null)
                     InitImage();
             }
-            Examdata  examdata = Newtonsoft.Json.JsonConvert.DeserializeObject<Examdata >(File.ReadAllText(filename));
-            examdata.SR._Students.InitDeserialize();
-            examdata.SR._Imgsubjects.InitDeserialize();
-            _students = examdata.SR._Students;
-            for (int index = 0; index < examdata.SR._Imgsubjects.Subjects.Count; index++)
-            {
-                examdata.SR._Imgsubjects.Subjects[index].Index = index;
-            }
-            _exam = new Exam(examdata);
+            _examdata = Newtonsoft.Json.JsonConvert.DeserializeObject<Examdata >(File.ReadAllText(filename));
+            _examdata.SR._Students.InitDeserialize(); //init index and dic
+            _examdata.SR._Imgsubjects.InitDeserialize(); // dic and bitmapdatalength
+            _students = _examdata.SR._Students;
+          
+            _exam = new Exam(_examdata);
 
             InitDgvUI();
             AddChooseTodtset(ref _dtsetxzt);
@@ -80,8 +100,73 @@ namespace ScanTemplate.FormYJ
             pictureBox1.Image = TemplateTools.DrawInfoBmp(S.Src.Clone( S.SrcCorrectRect,S.Src.PixelFormat) , _template, null);
         }
         private void buttonModifyData_Click(object sender, EventArgs e)
+        {//导出成绩
+            if(_activeitem == null) return;
+            List<float > maxscore = new List<float>();
+            List<string> optionanswer = new List<string>();
+            if (CheckOptionAnswer(maxscore, optionanswer)
+                && CheckResult())
+            {
+                int Oscore = (int)_exam.OSubjects.Sum(r => r.Score);
+                int Sscore = _exam.Subjects.Sum(r => r.Score);
+                MessageBox.Show("导出成绩 总分 " + (Oscore + Sscore) + " 分， 选择题 " + Oscore + " 分，非选择题 " + Sscore + "分");
+                SaveFileDialog saveFileDialog2 = new SaveFileDialog();
+                saveFileDialog2.FileName = _examdata.Name;
+                saveFileDialog2.Filter = "txt files (*.txt)|*.txt";
+                saveFileDialog2.Title = "导出成绩";
+                if (saveFileDialog2.ShowDialog() == DialogResult.OK)
+                {
+                    try
+                    {
+                        File.WriteAllText(saveFileDialog2.FileName,
+                        string.Join("\r\n",
+                        _students.students.Select(r => r.ResultInfo()  + r.OutXzt(optionanswer,maxscore)+","
+                            + string.Join(",",
+                            _examdata.SR._Result.Select(rr => rr[r.Index].ToString()).ToArray())+","
+                            + _examdata.SR._Result.Sum( rr => rr[r.Index])
+                            ).ToArray()));
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
+            else
+            {
+                MessageBox.Show("还有选择题没有设定答案或者分值  或者 试卷未改完");
+            }
+        }
+        private bool CheckResult()
         {
-
+            foreach (List<int> L in _examdata.SR._Result)
+            {
+                if (L.Any(r => r < 0))
+                    return false;
+            }
+            return true;
+        }
+        private bool CheckOptionAnswer(List<float> maxscore, List<string> optionanswer)
+        {
+            bool allhasanswer = true;
+            foreach (DataRow dr in _dtsetxzt.Rows)
+            {
+                string AN = dr["正确答案"].ToString();
+                string SC = dr["最大分值"].ToString();
+                if (AN.Length == 1 && "ABCD".Contains(AN) && SC != "")
+                {
+                    optionanswer.Add(AN);
+                    try
+                    {
+                        maxscore.Add(Convert.ToSingle(SC));
+                        continue;
+                    }
+                    catch { }
+                }
+                allhasanswer = false;
+                break;
+            }
+            return allhasanswer;
         }
         private void buttonBeginYJ_Click(object sender, EventArgs e)
         {
@@ -90,6 +175,7 @@ namespace ScanTemplate.FormYJ
             FormFullScreenYJ fs = new FormFullScreenYJ(_exam);
             this.Hide();
             fs.ShowDialog();
+            _bexamdatamodified = fs.Modified;
             this.Show();
         }
         private void buttonShowXztSet_Click(object sender, EventArgs e)
@@ -157,15 +243,16 @@ namespace ScanTemplate.FormYJ
         private void AddChooseTodtset(ref DataTable dtset)
         {
             dtset = Tools.DataTableTools.ConstructDataTable(new string[] { "OID", "题组名称", "最大分值", "正确答案" });
-            //foreach (Optionsubject S in _Optionsubjects.OptionSubjects)
-            //{
-            //    DataRow dr = dtset.NewRow();
-            //    dr["OID"] = new ValueTag(S.ID.ToString(), S);
-            //    dr["题组名称"] = S.Name();
-            //    dr["最大分值"] = S.Score;
-            //    dr["正确答案"] = "";
-            //    dtset.Rows.Add(dr);
-            //}
+            foreach (Optionsubject S in  _exam.OSubjects )
+            {
+                DataRow dr = dtset.NewRow();
+                dr["OID"] = new ValueTag(S.ID.ToString(), S);
+                dr["题组名称"] = S.Name();
+                dr["最大分值"] = S.Score;
+                dr["正确答案"] = S.Answer;
+                dtset.Rows.Add(dr);
+            }
+            dtset.AcceptChanges();
         }
         private void AddUnChooseTodtset(ref DataTable dtset)
         {
@@ -183,6 +270,7 @@ namespace ScanTemplate.FormYJ
                 dr["图片"] = _src.Clone(S.Rect, _src.PixelFormat);
                 dtset.Rows.Add(dr);
             }
+            dtset.AcceptChanges();
             _AvgUnImgHeight /= _exam.Subjects.Count;
             _AvgUnImgWith /= _exam.Subjects.Count;
         }
@@ -197,8 +285,57 @@ namespace ScanTemplate.FormYJ
                 dr["考号"] = S.KH;
                 dtset.Rows.Add(dr);
             }
+            dtset.AcceptChanges();
         }
-
+        private void CheckDataTable()
+        {
+            AcceptXztDataTableModified();
+            AcceptFXztDataTableModified();
+            AcceptStudentsDataTableModified();
+        }
+        private void AcceptXztDataTableModified()
+        {
+            if (_dtsetxzt != null)
+                foreach (DataRow dr in _dtsetxzt.Rows)
+                {
+                    if (dr.RowState == DataRowState.Modified)
+                    {
+                        Optionsubject I = (Optionsubject)((ValueTag)dr["OID"]).Tag;
+                        I.Score = Convert.ToInt32(dr["最大分值"].ToString());    
+                        I.Answer = dr["正确答案"].ToString();
+                        dr.AcceptChanges();
+                        _bexamdatamodified = true;
+                    }
+                }
+        }
+        private void AcceptFXztDataTableModified()
+        {
+            if (_dtsetfxzt != null)
+                foreach (DataRow dr in _dtsetfxzt.Rows)
+                {
+                    if (dr.RowState == DataRowState.Modified)
+                    {
+                        Imgsubject I = (Imgsubject)((ValueTag)dr["OID"]).Tag;
+                        I.Score = Convert.ToInt32(dr["最大分值"].ToString());
+                        I.Name = dr["题组名称"].ToString();
+                        dr.AcceptChanges();
+                        _bexamdatamodified = true;
+                    }
+                }
+        }
+        private void AcceptStudentsDataTableModified()
+        {
+            if (_dtsetfxzt != null)
+                foreach (DataRow dr in _dtsetstudents.Rows)
+                {
+                    if (dr.RowState == DataRowState.Added)
+                    {
+                       //
+                        MessageBox.Show("还未实现，待以后添加");
+                        //_bexamdatamodified = true;
+                    }
+                }
+        }
         private Exam _exam;
         private string _workpath;
         private Bitmap _src;
@@ -210,6 +347,9 @@ namespace ScanTemplate.FormYJ
         private Template _template;
         private Students _students;
         private bool _bshowstudent;
+        private object _activeitem;
+        private Examdata _examdata;
+        private bool _bexamdatamodified;
 
         private void pictureBox1_MouseEnter(object sender, EventArgs e)
         {
@@ -251,8 +391,6 @@ namespace ScanTemplate.FormYJ
             panel3.Invalidate();
             panel3.AutoScrollPosition = new Point(-S.X, -S.Y);
         }
-
-
     }
     public class Examdata
     {

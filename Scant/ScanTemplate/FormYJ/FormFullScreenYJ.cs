@@ -15,6 +15,7 @@ namespace ScanTemplate.FormYJ
 			InitializeComponent();
             _SR = exam.SR;
             comboBox1.Items.AddRange(exam.Subjects.ToArray());
+            Modified = false;
 			Init();
         }
 		private void Init(){
@@ -77,6 +78,7 @@ namespace ScanTemplate.FormYJ
                         int Score = Convert.ToInt32(dgvs.Rows[i].Cells[index].Value.ToString());
                         Student S = (Student)dgvs.Rows[i].Cells[index - 2].Value;
                         _SR.SetScoreByKh(S, Score);
+                        Modified = true;
                     }
                     if (bbreak) break;
                 } //MessageBox.Show("已更新" + sum + "条数据");
@@ -218,5 +220,6 @@ namespace ScanTemplate.FormYJ
         private List<DataRow> _drlist;
         private DataTable _dtshow;
         private StudentsResult _SR;
-	}   
+        public bool Modified { get; set; }
+    }   
 }

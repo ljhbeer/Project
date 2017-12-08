@@ -32,7 +32,7 @@
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.buttonRefresh = new System.Windows.Forms.Button();
             this.listBox1 = new System.Windows.Forms.ListBox();
-            this.buttonModifyData = new System.Windows.Forms.Button();
+            this.buttonExportResult = new System.Windows.Forms.Button();
             this.buttonBeginYJ = new System.Windows.Forms.Button();
             this.textBoxWorkPath = new System.Windows.Forms.TextBox();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
@@ -80,7 +80,7 @@
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel1.Controls.Add(this.buttonRefresh, 1, 0);
             this.tableLayoutPanel1.Controls.Add(this.listBox1, 0, 1);
-            this.tableLayoutPanel1.Controls.Add(this.buttonModifyData, 0, 2);
+            this.tableLayoutPanel1.Controls.Add(this.buttonExportResult, 0, 2);
             this.tableLayoutPanel1.Controls.Add(this.buttonBeginYJ, 1, 2);
             this.tableLayoutPanel1.Controls.Add(this.textBoxWorkPath, 0, 0);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -116,16 +116,16 @@
             this.listBox1.TabIndex = 6;
             this.listBox1.SelectedIndexChanged += new System.EventHandler(this.listBox1_SelectedIndexChanged);
             // 
-            // buttonModifyData
+            // buttonExportResult
             // 
-            this.buttonModifyData.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.buttonModifyData.Location = new System.Drawing.Point(3, 379);
-            this.buttonModifyData.Name = "buttonModifyData";
-            this.buttonModifyData.Size = new System.Drawing.Size(92, 24);
-            this.buttonModifyData.TabIndex = 7;
-            this.buttonModifyData.Text = "更改数据";
-            this.buttonModifyData.UseVisualStyleBackColor = true;
-            this.buttonModifyData.Click += new System.EventHandler(this.buttonModifyData_Click);
+            this.buttonExportResult.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.buttonExportResult.Location = new System.Drawing.Point(3, 379);
+            this.buttonExportResult.Name = "buttonExportResult";
+            this.buttonExportResult.Size = new System.Drawing.Size(92, 24);
+            this.buttonExportResult.TabIndex = 7;
+            this.buttonExportResult.Text = "导出成绩";
+            this.buttonExportResult.UseVisualStyleBackColor = true;
+            this.buttonExportResult.Click += new System.EventHandler(this.buttonModifyData_Click);
             // 
             // buttonBeginYJ
             // 
@@ -294,7 +294,7 @@
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.ListBox listBox1;
-        private System.Windows.Forms.Button buttonModifyData;
+        private System.Windows.Forms.Button buttonExportResult;
         private System.Windows.Forms.Button buttonBeginYJ;
         private System.Windows.Forms.TextBox textBoxWorkPath;
         private System.Windows.Forms.Button buttonRefresh;

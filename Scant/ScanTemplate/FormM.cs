@@ -55,11 +55,13 @@ namespace ScanTemplate
 		{
             //TODO: FormM_Load 使用类，显示相关信息
 			//AutoLoadLatestImg(_workpath);
+            listBox1.Items.Clear();
 			foreach (string s in Tools.FileTools. GetLastestSubDirectorys(_workpath))
 			{
 				listBox1.Items.Add(s);
 			}
 			string templatepath = _workpath.Substring( 0,_workpath.LastIndexOf("\\"))+"\\Template";
+            listBoxTemplate.Items.Clear();
             foreach (string s in FileTools.NameListFromDir(templatepath, ".xml"))
 			{
 				string value = s.Substring(s.LastIndexOf("\\")+1);
@@ -152,7 +154,7 @@ namespace ScanTemplate
             this.Hide();
             FormYJ.FormYJInit f = new FormYJ.FormYJInit(_artemplate,_rundt,_angle,_workpath);
             f.ShowDialog();
-
+            
             this.Show();
         }
 		//暂时不起作用

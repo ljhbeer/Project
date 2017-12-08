@@ -156,25 +156,16 @@ namespace ScanTemplate.FormYJ
         }
         private void AddChooseTodtset(ref DataTable dtset)
         {
-            dtset = Tools.DataTableTools.ConstructDataTable(new string[] { "ID", "题组名称", "最大分值", "正确答案" });
-            int cnt = 0;
-
-            foreach (Area I in _template.Dic["选择题"])
-            {
-                SingleChoiceArea U = (SingleChoiceArea)I;
-                if (I.HasSubArea())
-                {
-                    foreach (List<Point> lp in ((SingleChoiceArea)I).list)
-                    {
-                        Rectangle r = I.ImgArea;
-                        DataRow dr = dtset.NewRow();
-                        dr["ID"] = cnt++;
-                        dr["题组名称"] = "x" + cnt;
-                        dr["最大分值"] = 1;
-                        dtset.Rows.Add(dr);
-                    }
-                }
-            }
+            dtset = Tools.DataTableTools.ConstructDataTable(new string[] { "OID", "题组名称", "最大分值", "正确答案" });
+            //foreach (Optionsubject S in _Optionsubjects.OptionSubjects)
+            //{
+            //    DataRow dr = dtset.NewRow();
+            //    dr["OID"] = new ValueTag(S.ID.ToString(), S);
+            //    dr["题组名称"] = S.Name();
+            //    dr["最大分值"] = S.Score;
+            //    dr["正确答案"] = "";
+            //    dtset.Rows.Add(dr);
+            //}
         }
         private void AddUnChooseTodtset(ref DataTable dtset)
         {
@@ -274,6 +265,7 @@ namespace ScanTemplate.FormYJ
         public string _workpath;
         public Students _Students;
         public Imgsubjects _Imgsubjects;
+        public Optionsubjects _Optionsubjects;
         public List<List<int>> _Result;
     }
 }

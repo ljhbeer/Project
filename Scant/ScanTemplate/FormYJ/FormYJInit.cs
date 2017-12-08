@@ -28,21 +28,41 @@ namespace ScanTemplate.FormYJ
             this._workpath = _workpath;
             InitializeComponent();
             InitStudents();
-            InitImgSubjects();
+            InitOptionImgSubjects();
             dgv.DataSource = _rundt;
             InitImage();
         }
-        private void InitImgSubjects()
+        private void InitOptionImgSubjects()
         {
             _Imgsubjects = new Imgsubjects();
-            int ID = 0;
+            int index = 0;
             foreach (Area I in _artemplate.Dic["非选择题"])
             {
                 UnChoose U = (UnChoose)I;
-                Imgsubject S = new Imgsubject(U,ID);
+                Imgsubject S = new Imgsubject(U,index);
                 if( _Imgsubjects.Add(S) )
-                ID++;
+                index++;
             }
+
+            _Optionsubjects = new Optionsubjects();
+            index = 0;
+            foreach (Area I in _artemplate.Dic["选择题"])
+            {
+                SingleChoiceArea U = (SingleChoiceArea)I;
+                if (I.HasSubArea())
+                {
+                    int pos = 0;
+                    foreach (List<Point> lp in ((SingleChoiceArea)I).list)
+                    {
+                        Rectangle r = I.ImgArea;
+                        Optionsubject S = new Optionsubject(U, index, pos);
+                        _Optionsubjects.Add(S);
+                        pos++;
+                        index++;
+                    }
+                }
+            }
+
         }
         private void InitStudents()
         {
@@ -95,24 +115,15 @@ namespace ScanTemplate.FormYJ
         }
         private void AddChooseTodtset(ref DataTable dtset)
         {
-            dtset = Tools.DataTableTools.ConstructDataTable(new string[] { "ID", "题组名称", "最大分值", "正确答案" });
-            int cnt = 0;
-            foreach (Area I in _artemplate.Dic["选择题"])
+            dtset = Tools.DataTableTools.ConstructDataTable(new string[] { "OID", "题组名称", "最大分值", "正确答案" });
+            foreach (Optionsubject S in _Optionsubjects.OptionSubjects)
             {
-                SingleChoiceArea  U = (SingleChoiceArea)I;
-                if (I.HasSubArea())
-                {
-                    foreach (List<Point> lp in ((SingleChoiceArea)I).list)
-                    {
-                        Rectangle r = I.ImgArea;
-                        DataRow dr = dtset.NewRow();
-                        dr["ID"] =cnt++;
-                        dr["题组名称"] ="x"+cnt;
-                        dr["最大分值"] =1;
-                        //dr["图片"] = _src.Clone(U.ImgArea, _src.PixelFormat);
-                        dtset.Rows.Add(dr);
-                    }
-                }
+                DataRow dr = dtset.NewRow();
+                dr["OID"] = new ValueTag(S.ID.ToString(), S);
+                dr["题组名称"] = S.Name();
+                dr["最大分值"] = S.Score;
+                dr["正确答案"] = "";
+                dtset.Rows.Add(dr);
             }
         }
         private void AddUnChooseTodtset(ref DataTable dtset)
@@ -131,7 +142,7 @@ namespace ScanTemplate.FormYJ
                 _AvgUnImgWith += S.Width;
                 dr["图片"] = _src.Clone(S.Rect, _src.PixelFormat);
                 dtset.Rows.Add(dr);
-            }           
+            }
             _AvgUnImgHeight /= _Imgsubjects.Subjects.Count;
             _AvgUnImgWith /= _Imgsubjects.Subjects.Count;
         }
@@ -160,7 +171,7 @@ namespace ScanTemplate.FormYJ
                 Config g = FormM.g_cfg;
                 if (g.CheckExamInfoName(ei))
                 {
-                    Exam exam = new Exam(_Students, _Imgsubjects, ei.Path);
+                    Exam exam = new Exam(_Students, _Imgsubjects,_Optionsubjects, ei.Path);
                     exam.Name = examname;
                     if (!Directory.Exists(ei.Path))
                         Directory.CreateDirectory(ei.Path);
@@ -189,7 +200,7 @@ namespace ScanTemplate.FormYJ
             string path = _workpath.Replace("\\LJH", "\\LJH\\bindata") + "\\";
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
-            Exam exam = new Exam(_Students, _Imgsubjects,path);
+            Exam exam = new Exam(_Students, _Imgsubjects, _Optionsubjects ,path);
             FormFullScreenYJ fs = new FormFullScreenYJ(exam);
             this.Hide();
             fs.ShowDialog();
@@ -217,7 +228,9 @@ namespace ScanTemplate.FormYJ
         {
             List<string> ids = new List<string>();
             foreach (DataRow dr in _dtsetxzt.Rows)
-                ids.Add("xz" + dr["ID"].ToString());
+            {
+                ids.Add("xz" + dr["OID"].ToString());
+            }
             FormSetscore f = new FormSetscore(_dtsetxzt);
             if (f.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
@@ -244,6 +257,7 @@ namespace ScanTemplate.FormYJ
 
         private Students _Students;
         private Imgsubjects _Imgsubjects;
+        private Optionsubjects _Optionsubjects;
         private string _workpath;
 
         private void pictureBox1_MouseEnter(object sender, EventArgs e)
@@ -286,6 +300,65 @@ namespace ScanTemplate.FormYJ
             panel3.Invalidate();
             panel3.AutoScrollPosition = new Point(-S.X, -S.Y);
         }
+    }
+    public class Optionsubjects
+    {
+        public Optionsubjects()
+        {
+            OptionSubjects = new List<Optionsubject>();
+        }
+        public void Clear()
+        {
+        }
+        public void Add(Optionsubject S)
+        {
+            OptionSubjects.Add(S);
+        }
+        public List<Optionsubject> OptionSubjects { get; set; }
+    }
+    public class Optionsubject
+    {
+        public Optionsubject()
+        {
+        }
+        public Optionsubject(SingleChoiceArea U, int index, int pos)
+        {
+            this.U = U;
+            this.ID = index+1;
+            this.Index = index;
+            this.Score = 1;
+            this._Rect = U.ImgArea;
+            this.Size = U.Size;
+            this.List = new List<Point>();
+
+            List = U.list[pos];
+        }
+        public void InitDeserialize()
+        {
+          
+        }
+        public override string ToString()
+        {
+            return Name();
+        }
+
+        public int ID { get; set; }
+        public int Score { get; set; }
+        public int Index { get; set; }
+        public List<Point> List{ get; set; }
+        public Size Size { get; set; }
+        public string Name() { return "x" + ID; }
+        [JsonProperty]
+        private Rectangle _Rect;
+
+        [JsonIgnore]
+        public Rectangle Rect { get { return _Rect; } }
+        [JsonIgnore]
+        public int Height { get { return Rect.Height; } }
+        [JsonIgnore]
+        public int Width { get { return Rect.Width; } }
+        [JsonIgnore]
+        private SingleChoiceArea U;
     }
     [JsonObject(MemberSerialization.OptIn)]
     public class Imgsubjects
@@ -352,10 +425,11 @@ namespace ScanTemplate.FormYJ
     }
     public class Imgsubject
     {      
-        public Imgsubject(UnChoose U, int ID)
+        public Imgsubject(UnChoose U, int index)
         {
             this._U = U;
-            this.ID = ID;
+            this.ID = index+1;
+            this.Index = index;
             this.Score = U.Scores;
             this.Name = U.Name;
             this._Rect = _U.ImgArea;
@@ -831,11 +905,12 @@ namespace ScanTemplate.FormYJ
     {
         public Imgsubject ActiveSubject { get { return _activesubject; } }
         public List<Student> Students { get; set; }        
-        public StudentsResult(FormYJ.Students _Students, FormYJ.Imgsubjects _Imgsubjects, string _workpath)
+        public StudentsResult(FormYJ.Students _Students, FormYJ.Imgsubjects _Imgsubjects, Optionsubjects _Optionsubjects, string _workpath)
         {
             this._Students = _Students;
             this._Imgsubjects = _Imgsubjects;
             this._workpath = _workpath;
+            this._Optionsubjects = _Optionsubjects;
 
             _Result = new List<List<int>>();
             for (int i = 0; i < _Imgsubjects.Subjects.Count; i++)
@@ -853,10 +928,11 @@ namespace ScanTemplate.FormYJ
             //if (!_Students.CheckIndex())
             //    MessageBox.Show("index Error");
         }
-        public StudentsResult(FormYJ.Students _Students, Imgsubjects _Imgsubjects, string Path, List<List<int>> result)
+        public StudentsResult(FormYJ.Students _Students, Imgsubjects _Imgsubjects, Optionsubjects _Optionsubjects, string Path, List<List<int>> result)
         {
             this._Students = _Students;
             this._Imgsubjects = _Imgsubjects;
+            this._Optionsubjects = _Optionsubjects;
             this._workpath = Path;
             this._Result = result;
             _Ims = new ImgbinManagesubjects(_Students, _Imgsubjects);
@@ -864,6 +940,7 @@ namespace ScanTemplate.FormYJ
             if (!_Students.CheckIndex())
                 MessageBox.Show("index Error");
         }
+
         public void SetActiveSubject(Imgsubject S)
         {
             this._activesubject = S;
@@ -897,18 +974,22 @@ namespace ScanTemplate.FormYJ
         private FormYJ.Imgsubjects _Imgsubjects;
         [JsonProperty]
         private List<List<int>> _Result;
+        [JsonProperty]
+        private Optionsubjects _Optionsubjects;
     }
     public class Exam
     {
         private Students _Students;
         private Imgsubjects _Imgsubjects;
         private StudentsResult _SR;
-        public Exam(Students _Students, Imgsubjects _Imgsubjects, string path )
+        private Optionsubjects _Optionsubjects;
+        public Exam(Students _Students, Imgsubjects _Imgsubjects, Optionsubjects _Optionsubjects, string path )
         {
             this._Students = _Students;
             this._Imgsubjects = _Imgsubjects;
+            this._Optionsubjects = _Optionsubjects;
             this.Path = path;
-            _SR = new StudentsResult(_Students, _Imgsubjects, path);
+            _SR = new StudentsResult(_Students, _Imgsubjects,_Optionsubjects, path);
         }
         public Exam(Examdata ed)
         {
@@ -916,12 +997,16 @@ namespace ScanTemplate.FormYJ
             this.Path = ed.Path;
             _Imgsubjects = ed.SR._Imgsubjects;
             _Students = ed.SR._Students;
-            this._SR = new StudentsResult(_Students, _Imgsubjects, Path,ed.SR._Result);
+            _Optionsubjects = ed.SR._Optionsubjects;
+            this._SR = new StudentsResult(_Students, _Imgsubjects, _Optionsubjects, Path,ed.SR._Result);
         }
+
         public string Name { get; set; }
         public string Path { get; set; }
         public StudentsResult SR { get { return _SR; } }
         [JsonIgnore]
-        public List<Imgsubject> Subjects { get { return _Imgsubjects.Subjects; } }
+        public List<Imgsubject> Subjects { get { return _Imgsubjects.Subjects; } }        
+        [JsonIgnore]
+        public List<Optionsubject> OSubjects { get { return _Optionsubjects.OptionSubjects; } }
     }
 }

@@ -263,6 +263,8 @@ namespace ARTemplate
                     int cnt = tc.Count + 1;
                     t.Name = cnt.ToString();
                     t.Text =s + cnt;
+                    if (s == "非选择题")
+                        t.Text = I.ToString();
                     t.Tag =I;
                     tc.Add(t);
                 }

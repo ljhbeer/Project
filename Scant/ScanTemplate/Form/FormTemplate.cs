@@ -15,7 +15,7 @@ using ScanTemplate;
 namespace ARTemplate
 {
     [Flags]
-    enum Act : short { None = 0, DefinePoint = 1, DefineId = 2, DefineChoose = 4, DefineUnChoose = 8,DefineName=16, Zoomin, Zoomout, SeclectionToWhite, SeclectionToDark, ZoomMouse };
+    enum Act : short { None = 0, DefinePoint = 1, DefineId = 2, DefineChoose = 4, DefineUnChoose = 8, DefineName = 16, Zoomin, Zoomout, SeclectionToWhite, SeclectionToDark, ZoomMouse, SelectionToGroup };
     public delegate void CompleteMouseMove(bool bcompleted);
 
     public partial class FormTemplate : Form
@@ -165,7 +165,8 @@ namespace ARTemplate
             //MT.ClearEvent();
             if (m_act == Act.DefinePoint || m_act == Act.DefineId || m_act == Act.DefineName||
                 m_act == Act.DefineChoose || m_act == Act.DefineUnChoose||
-                m_act == Act.SeclectionToDark || m_act == Act.SeclectionToWhite )
+                m_act == Act.SeclectionToDark || m_act == Act.SeclectionToWhite ||
+                m_act == Act.SelectionToGroup )
             {
                 MT.StartDraw(true);
                 //MT.completevent += CompleteSelection;
@@ -215,6 +216,12 @@ namespace ARTemplate
         	UpdateTemplate();
             this.Close();
         }
+        private void toolStripButtonSetGroup_Click(object sender, EventArgs e)
+        {
+            if (!((ToolStripButton)sender).Checked)
+                m_act = Act.SelectionToGroup;
+            toolStripButton_Click(sender, e);
+        }
         private void CompleteSelection(bool bcomplete)
         {
             if (bcomplete)
@@ -230,10 +237,12 @@ namespace ARTemplate
                     case Act.SeclectionToWhite: CompleteSelectionToWhite(); break;
                     case Act.SeclectionToDark: CompleteSelectionToDark(); break;
                     case Act.DefineName: CompleteDeFineName(); break;
+                    case Act.SelectionToGroup: CompleteSelectionGroup(); break;
                 }
             }
             pictureBox1.Invalidate();
         }
+
        
         private void pictureBox1_MouseUp(object sender, MouseEventArgs e)
         {
@@ -429,10 +438,13 @@ namespace ARTemplate
                 int cnt = m_tn.Nodes[keyname].GetNodeCount(false) + 1;
                 t.Name = t.Text = keyname + cnt;
                 string choosename = "";
-                float count = 0;
+                int count = 0;
                 //TODO: inputbox
-                if (InputBox.Input(keyname))
+                if (InputBox.Input("选择题"))
+                    count = InputBox.IntValue;
+                else
                 {
+                    return;
                 }
                 {//仅支持 横向
                     Bitmap bitmap = ((Bitmap)(pictureBox1.Image)).Clone(m_Imgselection, PixelFormat.Format24bppRgb);
@@ -453,7 +465,7 @@ namespace ARTemplate
                                 }
                     }
 
-                    DetectChoiceArea dca = new DetectChoiceArea(bitmap, (int)count);
+                    DetectChoiceArea dca = new DetectChoiceArea(bitmap, count);
                     if (dca.Detect())
                     {
                         t.Name = t.Text = choosename;
@@ -476,11 +488,12 @@ namespace ARTemplate
             {
                 TreeNode t = new TreeNode();
                 int cnt = m_tn.Nodes[keyname].GetNodeCount(false) + 1;
-                string unchoosename = keyname + cnt;
+                string unchoosename = "T-" + cnt;
                 if (cnt == 1)
                 {
                      _defaultunchoosescore = 1;
-                     InputBox.Input("非选择题");
+                     if (InputBox.Input("非选择题"))
+                         _defaultunchoosescore = InputBox.IntValue;
                 }                
                 {
                     String name = unchoosename;
@@ -521,6 +534,29 @@ namespace ARTemplate
                 m_tn.Nodes[keyname].Nodes.Add(t);
             }
         }      
+        private void CompleteSelectionGroup()
+        {
+            Rectangle m_Imgselection = zoombox.BoxToImgSelection(MT.Selection);
+            String keyname = "题组";
+            if (!ExistDeFineSelection("非选择题"))
+            {
+                MessageBox.Show("题组必须包含非选择题");
+            }
+            {
+                //TreeNode t = new TreeNode();
+                //int cnt = m_tn.Nodes[keyname].GetNodeCount(false) + 1;
+                                
+                //string Tzname = "TZ-" + cnt;
+                //{
+                //    String name = Tzname;
+                //    t.Name = Tzname;
+                //    t.Text = Tzname;
+                //    t.Tag = new TzArea( m_Imgselection,name);
+                //    m_tn.Nodes[keyname].Nodes.Add(t);
+                //    //TODO: //重命名非选择题
+                //}
+            }
+        }
         private bool ExistDeFineSelection(String keyname)
         {
             Rectangle rect = m_Imgselection;
@@ -598,6 +634,7 @@ namespace ARTemplate
         private Template template;
         private double _OriginWith;
         private float  _defaultunchoosescore;
+
 
     }
 }

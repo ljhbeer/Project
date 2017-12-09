@@ -14,10 +14,25 @@ namespace ARTemplate
         {
         }
 
-        internal static bool Input(string keyname)
+        public static bool Input(string keyname)
         {
-            throw new NotImplementedException();
+            FormInput f = new FormInput(keyname);
+            if (f.ShowDialog() == DialogResult.OK)
+            {
+                if (keyname == "考试名称")
+                    strValue = f.StrValue;
+                else if (keyname == "选择题" || keyname == "非选择题")
+                    IntValue = f.IntValue;
+
+                if (f.StrValue == "" || f.IntValue < 0)
+                    return false;
+                return true;
+            }
+            return false;
         }
+        public static string strValue;
+        public static int IntValue;
+        public static float FloatValue;
     }
     public class Area
     {
@@ -250,6 +265,15 @@ namespace ARTemplate
         //}
         private string _Name;
         private Brush _P;
+    }
+    public class TzArea : Area
+    {
+        public TzArea(Rectangle rect, string name)
+        {
+            this.Rect = rect;
+            this._Name = name;
+        }
+        private string _Name;
     }
     public class ZoomBox
     {

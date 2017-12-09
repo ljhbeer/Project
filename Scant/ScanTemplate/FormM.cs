@@ -596,7 +596,7 @@ namespace ScanTemplate
 			}
 		}
 		public void ShowMsg(){
-			string[] ss = _runmsg.Split(',');
+			string[] ss = _runmsg.Trim().Split(',');
 
 			DataRow dr = _rundt.NewRow();
 			MsgToDr(_titlepos, _xztpos, ss, ref dr);

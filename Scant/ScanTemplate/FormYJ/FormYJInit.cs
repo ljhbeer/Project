@@ -166,7 +166,11 @@ namespace ScanTemplate.FormYJ
                 return;
             }
             if (InputBox.Input("考试名称"))
+                examname = InputBox.strValue;
+            else
             {
+                MessageBox.Show("未设置名称");
+                return;
             }
             {
                 ExamInfo ei = new ExamInfo();
@@ -571,7 +575,8 @@ namespace ScanTemplate.FormYJ
             _SrcCorrectRect = Tools.StringTools.StringToRectangle(str,'-');
             this.Angle = Convert.ToDouble( dr["校验角度"].ToString());
             this.Name =  dr["姓名"].ToString();
-            this.KH = Convert.ToInt32(dr["考号"].ToString());
+            if (dr.Table.Columns.Contains("考号"))
+                this.KH = Convert.ToInt32(dr["考号"].ToString());
             this._XZT = new List<string>();
             for (int i = 1; i < XZTcount+1; i++)
             {

@@ -430,7 +430,10 @@ namespace ARTemplate
                 t.Name = t.Text = keyname + cnt;
                 string choosename = "";
                 float count = 0;
-                if (InputBox.Input("设置选择题", "标题", ref choosename, "小题数", ref count))
+                //TODO: inputbox
+                if (InputBox.Input(keyname))
+                {
+                }
                 {//仅支持 横向
                     Bitmap bitmap = ((Bitmap)(pictureBox1.Image)).Clone(m_Imgselection, PixelFormat.Format24bppRgb);
                     using (Graphics g = Graphics.FromImage(bitmap))
@@ -474,13 +477,16 @@ namespace ARTemplate
                 TreeNode t = new TreeNode();
                 int cnt = m_tn.Nodes[keyname].GetNodeCount(false) + 1;
                 string unchoosename = keyname + cnt;
-                float score = 1;
-                if (InputBox.Input("设置非选择题", "标题", ref unchoosename, "分值", ref score))
+                if (cnt == 1)
+                {
+                     _defaultunchoosescore = 1;
+                     InputBox.Input("非选择题");
+                }                
                 {
                     String name = unchoosename;
                     t.Name = unchoosename;
-                    t.Text = unchoosename + "(" + score + "分)";
-                    t.Tag = new UnChoose(score, name, m_Imgselection);
+                    t.Text = unchoosename + "(" + _defaultunchoosescore + "分)";
+                    t.Tag = new UnChoose(_defaultunchoosescore, name, m_Imgselection);
                     m_tn.Nodes[keyname].Nodes.Add(t);
                 }
             }
@@ -591,6 +597,7 @@ namespace ARTemplate
         private ZoomBox zoombox;
         private Template template;
         private double _OriginWith;
+        private float  _defaultunchoosescore;
 
     }
 }

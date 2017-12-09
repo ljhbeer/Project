@@ -74,9 +74,7 @@
     <Compile Include="FormVerify.Designer.cs">
       <DependentUpon>FormVerify.cs</DependentUpon>
     </Compile>
-    <Compile Include="FormYJ\FormFullScreenYJ.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="FormYJ\FormFullScreenYJ.cs" />
     <Compile Include="FormYJ\FormFullScreenYJ.Designer.cs">
       <DependentUpon>FormFullScreenYJ.cs</DependentUpon>
     </Compile>
@@ -99,11 +97,13 @@
       <DependentUpon>FormYJTools.cs</DependentUpon>
     </Compile>
     <Compile Include="FormYJ\JsonFormatTool.cs" />
-    <Compile Include="Form\Components.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="Form\Components.cs" />
     <Compile Include="Form\ConvertFormat.cs" />
     <Compile Include="Form\DetectChoiceArea.cs" />
+    <Compile Include="Form\FormInput.cs" />
+    <Compile Include="Form\FormInput.Designer.cs">
+      <DependentUpon>FormInput.cs</DependentUpon>
+    </Compile>
     <Compile Include="Form\FormTemplate.cs">
       <SubType>Form</SubType>
     </Compile>

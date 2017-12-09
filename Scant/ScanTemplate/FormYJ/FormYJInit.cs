@@ -165,7 +165,9 @@ namespace ScanTemplate.FormYJ
                 MessageBox.Show("模板文件名不在无法导出数据，请先保存模板再创建阅卷数据");
                 return;
             }
-            if (InputBox.Input("设置考试名称", "考试名称", ref examname, "分值", ref score))
+            if (InputBox.Input("考试名称"))
+            {
+            }
             {
                 ExamInfo ei = new ExamInfo();
                 ei.Name = examname;

@@ -271,9 +271,17 @@ namespace ARTemplate
         public TzArea(Rectangle rect, string name)
         {
             this.Rect = rect;
-            this._Name = name;
+            this._name = name;
         }
-        private string _Name;
+        private string _name;
+        public override string ToXmlString()
+        {
+            return Rect.ToXmlString() + _name.ToXmlString("NAME") ;
+        }
+        public override String ToString()
+        {
+            return _name;
+        }
     }
     public class ZoomBox
     {

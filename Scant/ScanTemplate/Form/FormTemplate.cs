@@ -59,7 +59,7 @@ namespace ARTemplate
 
 
             m_tn.Text = "网上阅卷";
-            TreeNode[] vt = new TreeNode[7];
+            TreeNode[] vt = new TreeNode[8];
             for (int i = 0; i < vt.Count(); i++)
                 vt[i] = new TreeNode();
             vt[0].Name = vt[0].Text = "特征点";
@@ -69,6 +69,7 @@ namespace ARTemplate
             vt[4].Name = vt[4].Text = "非选择题";
             vt[5].Name = vt[5].Text = "选区变白";
             vt[6].Name = vt[6].Text = "选区变黑";
+            vt[7].Name = vt[7].Text = "题组";
             m_tn.Nodes.AddRange(vt);
             treeView1.Nodes.Add(m_tn);
             treeView1.ExpandAll();
@@ -289,7 +290,7 @@ namespace ARTemplate
                 Brush white = Brushes.White;
                 Brush Red = Brushes.Red;
                 Font font = DefaultFont;
-                foreach (string s in new string[] { "特征点", "考号","姓名", "选择题", "非选择题", "选区变黑", "选区变白" })
+                foreach (string s in new string[] { "特征点", "考号","姓名", "选择题", "非选择题", "选区变黑", "选区变白","题组" })
                 {
                     foreach (TreeNode t in m_tn.Nodes[s].Nodes)
                     {
@@ -543,18 +544,18 @@ namespace ARTemplate
                 MessageBox.Show("题组必须包含非选择题");
             }
             {
-                //TreeNode t = new TreeNode();
-                //int cnt = m_tn.Nodes[keyname].GetNodeCount(false) + 1;
-                                
-                //string Tzname = "TZ-" + cnt;
-                //{
-                //    String name = Tzname;
-                //    t.Name = Tzname;
-                //    t.Text = Tzname;
-                //    t.Tag = new TzArea( m_Imgselection,name);
-                //    m_tn.Nodes[keyname].Nodes.Add(t);
-                //    //TODO: //重命名非选择题
-                //}
+                TreeNode t = new TreeNode();
+                int cnt = m_tn.Nodes[keyname].GetNodeCount(false) + 1;
+
+                string Tzname = "TZ-" + cnt;
+                {
+                    String name = Tzname;
+                    t.Name = Tzname;
+                    t.Text = Tzname;
+                    t.Tag = new TzArea(m_Imgselection, name);
+                    m_tn.Nodes[keyname].Nodes.Add(t);
+                    //TODO: //重命名非选择题
+                }
             }
         }
         private bool ExistDeFineSelection(String keyname)

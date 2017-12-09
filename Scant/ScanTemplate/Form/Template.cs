@@ -87,7 +87,7 @@ namespace ARTemplate
             root.AppendChild(path);
             path.InnerXml = Imgsize.ToXmlString() + _imagefilename.ToXmlString("PATH")+Correctrect.ToXmlString().ToXmlString("CORRECTRECT");
 
-            foreach (string s in new string[] { "特征点-FEATUREPOINTSAREA", "考号-KAOHAOAREA", "姓名-NAMEAREA", "选择题-SINGLECHOICES", "非选择题-UNCHOOSES", "选区变黑-BLACKAREA", "选区变白-WHITEAREA" })
+            foreach (string s in new string[] { "特征点-FEATUREPOINTSAREA", "考号-KAOHAOAREA", "姓名-NAMEAREA", "选择题-SINGLECHOICES", "非选择题-UNCHOOSES", "选区变黑-BLACKAREA", "选区变白-WHITEAREA","题组-UNCHOOSEGROUP" })
             {
                 string name = s.Substring(0, s.IndexOf("-"));
                 string ENname = s.Substring(s.IndexOf("-")+1);
@@ -126,7 +126,7 @@ namespace ARTemplate
                 //////if (bitmap.Size != imgsize)
                 //////    return false;
                 //////_src = bitmap;
-                foreach (string s in new string[] { "特征点-FEATUREPOINTSAREA", "考号-KAOHAOAREA", "姓名-NAMEAREA", "选择题-SINGLECHOICES", "非选择题-UNCHOOSES", "选区变黑-BLACKAREA", "选区变白-WHITEAREA" })
+                foreach (string s in new string[] { "特征点-FEATUREPOINTSAREA", "考号-KAOHAOAREA", "姓名-NAMEAREA", "选择题-SINGLECHOICES", "非选择题-UNCHOOSES", "选区变黑-BLACKAREA", "选区变白-WHITEAREA", "题组-UNCHOOSEGROUP" })
                 {
                     string name = s.Substring(0, s.IndexOf("-"));
                     string ENname = s.Substring(s.IndexOf("-")+1);
@@ -241,6 +241,19 @@ namespace ARTemplate
                                 _dic[name].Add(new TempArea(r, "选区变白"));
                             }
                         }
+                    }else if (ENname == "UNCHOOSEGROUP")
+                    {
+                        foreach (XmlNode node in list)
+                        {
+                            XmlNode rect = node.SelectSingleNode("Rectangle");
+                            XmlNode xname = node.SelectSingleNode("NAME");
+                            if (rect != null && xname!=null )
+                            {
+                                Rectangle r = Tools.StringTools.StringToRectangle(rect.InnerText);
+                                string strname = xname.InnerText;
+                                _dic[name].Add(new TzArea(r,strname));
+                            }
+                        }
                     }
                 }
             }
@@ -253,7 +266,7 @@ namespace ARTemplate
         }       
         public void SetDataToNode(TreeNode m_tn)
         {
-            foreach (string s in new string[] { "特征点", "考号", "姓名", "选择题", "非选择题", "选区变黑", "选区变白" })
+            foreach (string s in new string[] { "特征点", "考号", "姓名", "选择题", "非选择题", "选区变黑", "选区变白","题组" })
             {
                 TreeNodeCollection tc = m_tn.Nodes[s].Nodes;
                 if(_dic.ContainsKey(s))

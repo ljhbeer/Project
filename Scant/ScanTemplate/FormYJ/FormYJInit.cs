@@ -598,13 +598,17 @@ namespace ScanTemplate.FormYJ
         {
             return ID + "," + KH + "," + Name + ",";
         }
+        public static string ResultTitle()
+        {
+            return "ID,考号,姓名,";
+        }
         [JsonIgnore]
         public int ID { get { return _id; } }
         public double Angle { get; set; }
         public int KH { get; set; }
         public string Name { get; set; }
        
-        public string OutXzt(List<string> optionanswer, List<float> maxscore)
+        public string OutXzt(List<string> optionanswer, List<float> maxscore, ref float sum)
         {
             int i =0;
             List<float> result = _XZT.Select(r =>
@@ -615,7 +619,8 @@ namespace ScanTemplate.FormYJ
                 i++;
                 return ret;
             }).ToList();
-            return result.Sum() + "," + string.Join(",", result);
+            sum = result.Sum();
+            return  string.Join(",", result);
         }
         [JsonIgnore]
         public Bitmap Src
@@ -647,8 +652,6 @@ namespace ScanTemplate.FormYJ
         private Rectangle _SrcCorrectRect;
         private Bitmap _src;
         public int Index { get; set; }
-
-
     }
     public class ImgbinManagesubjects
     {

@@ -118,13 +118,43 @@ namespace ScanTemplate.FormYJ
                 {
                     try
                     {
-                        File.WriteAllText(saveFileDialog2.FileName,
-                        string.Join("\r\n",
-                        _students.students.Select(r => r.ResultInfo()  + r.OutXzt(optionanswer,maxscore)+","
-                            + string.Join(",",
-                            _examdata.SR._Result.Select(rr => rr[r.Index].ToString()).ToArray())+","
-                            + _examdata.SR._Result.Sum( rr => rr[r.Index])
-                            ).ToArray()));
+                        List<List<Imgsubject>> Tz = new List<List<Imgsubject>>();
+                        string Tztitle="";
+                        foreach (TzArea t in _template.Dic["题组"])
+                        {
+                            List<Imgsubject> L = new List<Imgsubject>();
+                            foreach (Imgsubject i in _examdata.SR._Imgsubjects.Subjects)
+                            {
+                                if (t.ImgArea.Contains(i.Rect))
+                                    L.Add(i);
+                            }
+                            Tz.Add(L);
+                            Tztitle += t.ToString()+",";
+                        }
+
+
+                        string title = Student.ResultTitle() +"选择题,非选择题,总分,"+ string.Join(",", _exam.OSubjects.Select(r => r.Name()))
+                            + string.Join(",", _examdata.SR._Imgsubjects.Subjects.Select(r => r.Name)) + ","+Tztitle;
+
+                        StringBuilder sb = new StringBuilder();
+                        foreach (Student r in _students.students)
+                        {
+                            sb.Append(r.ResultInfo());
+                            float sum = 0;
+                            string xzt = r.OutXzt(optionanswer, maxscore, ref sum);
+                            float fsum = _examdata.SR._Result.Sum( rr => rr[r.Index]);
+                            sb.Append(sum + "," + fsum + "," + (sum + fsum) + ",");
+                            sb.Append(xzt);
+                            sb.Append(_examdata.SR._Result.Select(rr => rr[r.Index].ToString()).ToArray());
+
+                            foreach (List<Imgsubject> L in Tz)
+                            {
+                                sb.Append(L.Select(I => _examdata.SR._Result[r.Index][I.Index]).Sum() + ",");
+                            }
+
+                            sb.AppendLine();
+                        }
+                        File.WriteAllText(saveFileDialog2.FileName, sb.ToString());
                     }
                     catch (Exception ex)
                     {

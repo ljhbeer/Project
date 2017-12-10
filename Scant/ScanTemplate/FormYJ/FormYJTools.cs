@@ -134,9 +134,9 @@ namespace ScanTemplate.FormYJ
 
 
                         string title = Student.ResultTitle() +"选择题,非选择题,总分,"+ string.Join(",", _exam.OSubjects.Select(r => r.Name()))
-                            + string.Join(",", _examdata.SR._Imgsubjects.Subjects.Select(r => r.Name)) + ","+Tztitle;
+                         +","  + string.Join(",", _examdata.SR._Imgsubjects.Subjects.Select(r => r.Name)) + ","+Tztitle+"\r\n";
 
-                        StringBuilder sb = new StringBuilder();
+                        StringBuilder sb = new StringBuilder(title);
                         foreach (Student r in _students.students)
                         {
                             sb.Append(r.ResultInfo());
@@ -145,11 +145,12 @@ namespace ScanTemplate.FormYJ
                             float fsum = _examdata.SR._Result.Sum( rr => rr[r.Index]);
                             sb.Append(sum + "," + fsum + "," + (sum + fsum) + ",");
                             sb.Append(xzt);
-                            sb.Append(_examdata.SR._Result.Select(rr => rr[r.Index].ToString()).ToArray());
-
+                            sb.Append(",");
+                            sb.Append(string.Join(",",_examdata.SR._Result.Select(rr => rr[r.Index].ToString()).ToArray()));
+                            sb.Append(",");
                             foreach (List<Imgsubject> L in Tz)
                             {
-                                sb.Append(L.Select(I => _examdata.SR._Result[r.Index][I.Index]).Sum() + ",");
+                                sb.Append(L.Select(I => _examdata.SR._Result[I.Index][r.Index]).Sum() + ",");
                             }
 
                             sb.AppendLine();

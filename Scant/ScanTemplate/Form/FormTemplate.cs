@@ -579,6 +579,7 @@ namespace ARTemplate
         }
         private void treeView1_KeyUp(object sender, KeyEventArgs e)
         {
+            if (treeView1.SelectedNode == null) return;
             if (e.KeyCode == Keys.Delete)
             {
                 if (treeView1.SelectedNode.Parent.Text != "网上阅卷")
@@ -588,6 +589,35 @@ namespace ARTemplate
                         t = treeView1.SelectedNode.PrevNode;
                     treeView1.SelectedNode.Remove();
                     treeView1.SelectedNode = t;
+                }
+                pictureBox1.Invalidate();
+            } else if (e.KeyCode == Keys.R)
+            {
+                if (treeView1.SelectedNode.Text == "题组")
+                {
+                    int cnt = template.XztRect.Count+1;
+
+                    for (int i = 0; i < m_tn.Nodes["题组"].Nodes.Count; i++)
+                    {
+                        TreeNode t = m_tn.Nodes["题组"].Nodes[i];
+                        t.Name = "TZ-" + cnt;
+                        t.Text = t.Name;
+                        TzArea tr = (TzArea)t.Tag;
+                     
+                        int subcnt = 1;
+                        foreach (TreeNode tn in m_tn.Nodes["非选择题"].Nodes)
+                        {
+                            UnChoose uc = (UnChoose)tn.Tag;
+                            if (tr.ImgArea.Contains(uc.ImgArea))
+                            {
+                                tn.Name = tn.Text = cnt + "-" + subcnt;
+                                uc.SetName(tn.Name);
+                                subcnt++;
+                            }
+                        }
+                        cnt ++;
+                    }
+                    UpdateTemplate();
                 }
                 pictureBox1.Invalidate();
             }

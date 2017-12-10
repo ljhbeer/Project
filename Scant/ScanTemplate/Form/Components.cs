@@ -236,6 +236,11 @@ namespace ARTemplate
             return _name;
         }
         public string Name { get { return _name; } }
+        public void SetName(string name)
+        {
+            if (name != "")
+                _name = name;
+        }
         private float score;
         private string _name;
     }
@@ -272,6 +277,11 @@ namespace ARTemplate
         {
             this.Rect = rect;
             this._name = name;
+        }
+        public void SetName(string name)
+        {
+            if(name!="")
+            _name = name;
         }
         private string _name;
         public override string ToXmlString()

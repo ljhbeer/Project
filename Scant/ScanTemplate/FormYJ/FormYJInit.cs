@@ -159,7 +159,6 @@ namespace ScanTemplate.FormYJ
         private void buttonCreateYJData_Click(object sender, EventArgs e)
         {
             string examname = "";
-            float score = 0;
             if (!File.Exists(_artemplate.XmlFileName))
             {
                 MessageBox.Show("模板文件名不在无法导出数据，请先保存模板再创建阅卷数据");

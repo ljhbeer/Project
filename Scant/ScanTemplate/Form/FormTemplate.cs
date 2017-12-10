@@ -437,8 +437,8 @@ namespace ARTemplate
             {
                 TreeNode t = new TreeNode();
                 int cnt = m_tn.Nodes[keyname].GetNodeCount(false) + 1;
-                t.Name = t.Text = keyname + cnt;
-                string choosename = "";
+                //t.Name = t.Text = ;
+                string choosename = keyname + cnt;
                 int count = 0;
                 //TODO: inputbox
                 if (InputBox.Input("选择题"))

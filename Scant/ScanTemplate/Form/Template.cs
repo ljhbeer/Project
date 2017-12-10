@@ -50,7 +50,7 @@ namespace ARTemplate
         }
         public void ResetData(bool clearFeaturePoint=true)
         { //"特征点",不能清除
-            foreach (string s in new string[] {"特征点",  "考号", "姓名", "选择题", "非选择题", "选区变黑", "选区变白" })
+            foreach (string s in new string[] {"特征点",  "考号", "姓名", "选择题", "非选择题", "选区变黑", "选区变白" ,"题组"})
                 if (_dic.ContainsKey(s))
                 {
                     if (!clearFeaturePoint && s == "特征点")
@@ -333,20 +333,24 @@ namespace ARTemplate
         		if(_xztRect==null){
         			_xztRect = new Dictionary<int, Rectangle>();
         			int cnt = 0;
-        			foreach(Area I in _dic["选择题"]){
-        				if(I.HasSubArea()){
-        					int subcnt = 0;
-        					foreach(List<Point> lp in ((SingleChoiceArea)I).list){
-	        					Rectangle r =I.ImgArea;
-	        					r.Height/= ((SingleChoiceArea)I).Count;
-        						r.Y += subcnt* r.Height;
-        						subcnt++;
-        						
-        						_xztRect[cnt] = r;
-        						cnt++;
-        					}
-        				}
-        			}
+                    if (_dic.ContainsKey("选择题"))
+                        foreach (Area I in _dic["选择题"])
+                        {
+                            if (I.HasSubArea())
+                            {
+                                int subcnt = 0;
+                                foreach (List<Point> lp in ((SingleChoiceArea)I).list)
+                                {
+                                    Rectangle r = I.ImgArea;
+                                    r.Height /= ((SingleChoiceArea)I).Count;
+                                    r.Y += subcnt * r.Height;
+                                    subcnt++;
+
+                                    _xztRect[cnt] = r;
+                                    cnt++;
+                                }
+                            }
+                        }
         		}
         		return _xztRect;
         	}

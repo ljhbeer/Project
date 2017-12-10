@@ -39,6 +39,16 @@ namespace ScanTemplate
                 new subject("右上",new  Rectangle(bmp.Width-300, 80, 300, 100)),
                 new subject("左下",new  Rectangle(50, bmp.Height-280, 250, 100)) };
                 _listFeatureRectangles = new List<Rectangle>();
+
+                if (File.Exists("detectFeatureSet.json"))
+                {
+                    //string str = Tools.JsonFormatTool.ConvertJsonString(Newtonsoft.Json.JsonConvert.SerializeObject(_listsubjects));
+                    //File.WriteAllText("detectFeatureSet.json", str);
+                    List<subject> ls = Newtonsoft.Json.JsonConvert.DeserializeObject<List<subject>>(File.ReadAllText("detectFeatureSet.json"));
+                    _listsubjects.Clear();
+                    _listsubjects = ls;
+                }
+
                 Detect3Point();
             }
             //Bitmap newbmp = (Bitmap)_src.Clone(CorrectRect, _src.PixelFormat);
@@ -62,14 +72,34 @@ namespace ScanTemplate
             CorrectRect = new Rectangle(_listFeatureRectangles[0].Location,
                 new Size(_listFeatureRectangles[1].Right - _listFeatureRectangles[0].Left,
                     _listFeatureRectangles[2].Bottom - _listFeatureRectangles[0].Top));
+
+            //
+
+            if (File.Exists("detectFeatureSet.json"))
+            {
+                if (CorrectRect.Width < 0 || CorrectRect.X + CorrectRect.Width > 0)
+                {
+                    CorrectRect = new Rectangle(_listFeatureRectangles[1].Location,
+                new Size(_listFeatureRectangles[0].Right - _listFeatureRectangles[1].Left,
+                    _listFeatureRectangles[2].Bottom - _listFeatureRectangles[0].Top));
+                    //CorrectRect = new Rectangle(CorrectRect.X + CorrectRect.Width, CorrectRect.Y, -CorrectRect.Width, CorrectRect.Height);                   
+                }
+            }
         }
         public Rectangle Detected(Bitmap bmp)
         {
             Rectangle r = DetectFeatureRect(_listsubjects[0],bmp);
+            
             if (r.Width == 0)
                 return new Rectangle();
             r.Width = CorrectRect.Width;
             r.Height = CorrectRect.Height;
+            //TODO:
+            if (File.Exists("detectFeatureSet.json"))
+            {
+                if ( r.X >r.Width)
+                    r.X -= r.Width;
+            }
             return r;
         }
         public Rectangle Detected(Rectangle subrect, Bitmap src)

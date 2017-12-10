@@ -1,0 +1,482 @@
+<TEMPLATE>
+  <BASE>
+    <SIZE>4161,2909</SIZE>
+    <PATH>E:\Scan\LJH\s1025\20170000-001\200001_00_1_p1.TIF</PATH>
+    <CORRECTRECT>
+      <Rectangle>400,464,4161,2909</Rectangle>
+    </CORRECTRECT>
+  </BASE>
+  <FEATUREPOINTSAREAS>
+    <FEATUREPOINTSAREA ID="0">
+      <Rectangle>4078,5,83,55</Rectangle>
+    </FEATUREPOINTSAREA>
+    <FEATUREPOINTSAREA ID="1">
+      <Rectangle>0,0,39,52</Rectangle>
+    </FEATUREPOINTSAREA>
+    <FEATUREPOINTSAREA ID="2">
+      <Rectangle>4085,2880,83,34</Rectangle>
+    </FEATUREPOINTSAREA>
+  </FEATUREPOINTSAREAS>
+  <KAOHAOAREAS>
+    <KAOHAOAREA ID="0">
+      <TYPE>条形码</TYPE>
+      <Rectangle>768,450,598,296</Rectangle>
+      <NAME>考号</NAME>
+    </KAOHAOAREA>
+  </KAOHAOAREAS>
+  <NAMEAREAS>
+    <NAMEAREA ID="0">
+      <Rectangle>159,365,535,201</Rectangle>
+    </NAMEAREA>
+  </NAMEAREAS>
+  <SINGLECHOICESS>
+    <SINGLECHOICES ID="0">
+      <Rectangle>87,1196,385,311</Rectangle>
+      <NAME>
+      </NAME>
+      <SIZE>68,35</SIZE>
+      <SINGLE ID="0">
+        <POINT>21,23</POINT>
+        <POINT>116,23</POINT>
+        <POINT>212,23</POINT>
+        <POINT>298,23</POINT>
+      </SINGLE>
+      <SINGLE ID="1">
+        <POINT>21,82</POINT>
+        <POINT>116,82</POINT>
+        <POINT>212,82</POINT>
+        <POINT>298,82</POINT>
+      </SINGLE>
+      <SINGLE ID="2">
+        <POINT>21,139</POINT>
+        <POINT>116,139</POINT>
+        <POINT>212,139</POINT>
+        <POINT>298,139</POINT>
+      </SINGLE>
+      <SINGLE ID="3">
+        <POINT>21,198</POINT>
+        <POINT>116,198</POINT>
+        <POINT>212,198</POINT>
+        <POINT>298,198</POINT>
+      </SINGLE>
+      <SINGLE ID="4">
+        <POINT>21,257</POINT>
+        <POINT>116,257</POINT>
+        <POINT>212,257</POINT>
+        <POINT>298,257</POINT>
+      </SINGLE>
+    </SINGLECHOICES>
+    <SINGLECHOICES ID="1">
+      <Rectangle>518,1204,372,298</Rectangle>
+      <NAME>选择题2</NAME>
+      <SIZE>67,34</SIZE>
+      <SINGLE ID="0">
+        <POINT>10,16</POINT>
+        <POINT>102,16</POINT>
+        <POINT>193,16</POINT>
+        <POINT>284,16</POINT>
+      </SINGLE>
+      <SINGLE ID="1">
+        <POINT>10,73</POINT>
+        <POINT>102,73</POINT>
+        <POINT>193,73</POINT>
+        <POINT>284,73</POINT>
+      </SINGLE>
+      <SINGLE ID="2">
+        <POINT>10,132</POINT>
+        <POINT>102,132</POINT>
+        <POINT>193,132</POINT>
+        <POINT>284,132</POINT>
+      </SINGLE>
+      <SINGLE ID="3">
+        <POINT>10,191</POINT>
+        <POINT>102,191</POINT>
+        <POINT>193,191</POINT>
+        <POINT>284,191</POINT>
+      </SINGLE>
+      <SINGLE ID="4">
+        <POINT>10,249</POINT>
+        <POINT>102,249</POINT>
+        <POINT>193,249</POINT>
+        <POINT>284,249</POINT>
+      </SINGLE>
+    </SINGLECHOICES>
+    <SINGLECHOICES ID="2">
+      <Rectangle>959,1202,378,301</Rectangle>
+      <NAME>选择题3</NAME>
+      <SIZE>67,35</SIZE>
+      <SINGLE ID="0">
+        <POINT>10,18</POINT>
+        <POINT>104,18</POINT>
+        <POINT>198,18</POINT>
+        <POINT>291,18</POINT>
+      </SINGLE>
+      <SINGLE ID="1">
+        <POINT>10,76</POINT>
+        <POINT>104,76</POINT>
+        <POINT>198,76</POINT>
+        <POINT>291,76</POINT>
+      </SINGLE>
+      <SINGLE ID="2">
+        <POINT>10,135</POINT>
+        <POINT>104,135</POINT>
+        <POINT>198,135</POINT>
+        <POINT>291,135</POINT>
+      </SINGLE>
+      <SINGLE ID="3">
+        <POINT>10,193</POINT>
+        <POINT>104,193</POINT>
+        <POINT>198,193</POINT>
+        <POINT>291,193</POINT>
+      </SINGLE>
+      <SINGLE ID="4">
+        <POINT>10,251</POINT>
+        <POINT>104,251</POINT>
+        <POINT>198,251</POINT>
+        <POINT>291,251</POINT>
+      </SINGLE>
+    </SINGLECHOICES>
+    <SINGLECHOICES ID="3">
+      <Rectangle>87,1519,388,303</Rectangle>
+      <NAME>选择题4</NAME>
+      <SIZE>66,35</SIZE>
+      <SINGLE ID="0">
+        <POINT>15,14</POINT>
+        <POINT>111,14</POINT>
+        <POINT>205,14</POINT>
+        <POINT>298,14</POINT>
+      </SINGLE>
+      <SINGLE ID="1">
+        <POINT>15,71</POINT>
+        <POINT>111,71</POINT>
+        <POINT>205,71</POINT>
+        <POINT>298,71</POINT>
+      </SINGLE>
+      <SINGLE ID="2">
+        <POINT>15,130</POINT>
+        <POINT>111,130</POINT>
+        <POINT>205,130</POINT>
+        <POINT>298,130</POINT>
+      </SINGLE>
+      <SINGLE ID="3">
+        <POINT>15,188</POINT>
+        <POINT>111,188</POINT>
+        <POINT>205,188</POINT>
+        <POINT>298,188</POINT>
+      </SINGLE>
+      <SINGLE ID="4">
+        <POINT>15,246</POINT>
+        <POINT>111,246</POINT>
+        <POINT>205,246</POINT>
+        <POINT>298,246</POINT>
+      </SINGLE>
+    </SINGLECHOICES>
+    <SINGLECHOICES ID="4">
+      <Rectangle>520,1516,375,303</Rectangle>
+      <NAME>选择题5</NAME>
+      <SIZE>67,33</SIZE>
+      <SINGLE ID="0">
+        <POINT>8,16</POINT>
+        <POINT>100,16</POINT>
+        <POINT>189,16</POINT>
+        <POINT>282,16</POINT>
+      </SINGLE>
+      <SINGLE ID="1">
+        <POINT>8,75</POINT>
+        <POINT>100,75</POINT>
+        <POINT>189,75</POINT>
+        <POINT>282,75</POINT>
+      </SINGLE>
+      <SINGLE ID="2">
+        <POINT>8,133</POINT>
+        <POINT>100,133</POINT>
+        <POINT>189,133</POINT>
+        <POINT>282,133</POINT>
+      </SINGLE>
+      <SINGLE ID="3">
+        <POINT>8,192</POINT>
+        <POINT>100,192</POINT>
+        <POINT>189,192</POINT>
+        <POINT>282,192</POINT>
+      </SINGLE>
+      <SINGLE ID="4">
+        <POINT>8,249</POINT>
+        <POINT>100,249</POINT>
+        <POINT>189,249</POINT>
+        <POINT>282,249</POINT>
+      </SINGLE>
+    </SINGLECHOICES>
+    <SINGLECHOICES ID="5">
+      <Rectangle>951,1524,367,314</Rectangle>
+      <NAME>选择题6</NAME>
+      <SIZE>68,36</SIZE>
+      <SINGLE ID="0">
+        <POINT>14,18</POINT>
+        <POINT>103,18</POINT>
+        <POINT>191,18</POINT>
+        <POINT>282,18</POINT>
+      </SINGLE>
+      <SINGLE ID="1">
+        <POINT>14,77</POINT>
+        <POINT>103,77</POINT>
+        <POINT>191,77</POINT>
+        <POINT>282,77</POINT>
+      </SINGLE>
+      <SINGLE ID="2">
+        <POINT>14,129</POINT>
+        <POINT>103,129</POINT>
+        <POINT>191,129</POINT>
+        <POINT>282,129</POINT>
+      </SINGLE>
+      <SINGLE ID="3">
+        <POINT>14,192</POINT>
+        <POINT>103,192</POINT>
+        <POINT>191,192</POINT>
+        <POINT>282,192</POINT>
+      </SINGLE>
+      <SINGLE ID="4">
+        <POINT>14,252</POINT>
+        <POINT>103,252</POINT>
+        <POINT>191,252</POINT>
+        <POINT>282,252</POINT>
+      </SINGLE>
+    </SINGLECHOICES>
+    <SINGLECHOICES ID="6">
+      <Rectangle>63,1865,375,295</Rectangle>
+      <NAME>选择题7</NAME>
+      <SIZE>67,34</SIZE>
+      <SINGLE ID="0">
+        <POINT>22,17</POINT>
+        <POINT>114,17</POINT>
+        <POINT>204,17</POINT>
+        <POINT>295,17</POINT>
+      </SINGLE>
+      <SINGLE ID="1">
+        <POINT>22,74</POINT>
+        <POINT>114,74</POINT>
+        <POINT>204,74</POINT>
+        <POINT>295,74</POINT>
+      </SINGLE>
+      <SINGLE ID="2">
+        <POINT>22,133</POINT>
+        <POINT>114,133</POINT>
+        <POINT>204,133</POINT>
+        <POINT>295,133</POINT>
+      </SINGLE>
+      <SINGLE ID="3">
+        <POINT>22,190</POINT>
+        <POINT>114,190</POINT>
+        <POINT>204,190</POINT>
+        <POINT>295,190</POINT>
+      </SINGLE>
+      <SINGLE ID="4">
+        <POINT>22,248</POINT>
+        <POINT>114,248</POINT>
+        <POINT>204,248</POINT>
+        <POINT>295,248</POINT>
+      </SINGLE>
+    </SINGLECHOICES>
+    <SINGLECHOICES ID="7">
+      <Rectangle>499,1862,370,306</Rectangle>
+      <NAME>选择题8</NAME>
+      <SIZE>69,34</SIZE>
+      <SINGLE ID="0">
+        <POINT>0,19</POINT>
+        <POINT>100,19</POINT>
+        <POINT>190,19</POINT>
+        <POINT>282,19</POINT>
+      </SINGLE>
+      <SINGLE ID="1">
+        <POINT>0,78</POINT>
+        <POINT>100,78</POINT>
+        <POINT>190,78</POINT>
+        <POINT>282,78</POINT>
+      </SINGLE>
+      <SINGLE ID="2">
+        <POINT>0,134</POINT>
+        <POINT>100,134</POINT>
+        <POINT>190,134</POINT>
+        <POINT>282,134</POINT>
+      </SINGLE>
+      <SINGLE ID="3">
+        <POINT>0,194</POINT>
+        <POINT>100,194</POINT>
+        <POINT>190,194</POINT>
+        <POINT>282,194</POINT>
+      </SINGLE>
+      <SINGLE ID="4">
+        <POINT>0,251</POINT>
+        <POINT>100,251</POINT>
+        <POINT>190,251</POINT>
+        <POINT>282,251</POINT>
+      </SINGLE>
+    </SINGLECHOICES>
+  </SINGLECHOICESS>
+  <UNCHOOSESS>
+    <UNCHOOSES ID="0">
+      <Rectangle>1485,192,335,103</Rectangle>
+      <NAME>41-1</NAME>
+      <SCORE>2</SCORE>
+    </UNCHOOSES>
+    <UNCHOOSES ID="1">
+      <Rectangle>1921,198,370,100</Rectangle>
+      <NAME>41-2</NAME>
+      <SCORE>2</SCORE>
+    </UNCHOOSES>
+    <UNCHOOSES ID="2">
+      <Rectangle>1493,303,338,110</Rectangle>
+      <NAME>41-3</NAME>
+      <SCORE>2</SCORE>
+    </UNCHOOSES>
+    <UNCHOOSES ID="3">
+      <Rectangle>1903,322,385,84</Rectangle>
+      <NAME>41-4</NAME>
+      <SCORE>2</SCORE>
+    </UNCHOOSES>
+    <UNCHOOSES ID="4">
+      <Rectangle>1501,420,317,105</Rectangle>
+      <NAME>41-5</NAME>
+      <SCORE>2</SCORE>
+    </UNCHOOSES>
+    <UNCHOOSES ID="5">
+      <Rectangle>1488,697,317,110</Rectangle>
+      <NAME>42-1</NAME>
+      <SCORE>2</SCORE>
+    </UNCHOOSES>
+    <UNCHOOSES ID="6">
+      <Rectangle>1839,697,311,108</Rectangle>
+      <NAME>42-2</NAME>
+      <SCORE>2</SCORE>
+    </UNCHOOSES>
+    <UNCHOOSES ID="7">
+      <Rectangle>1488,811,309,108</Rectangle>
+      <NAME>42-3</NAME>
+      <SCORE>2</SCORE>
+    </UNCHOOSES>
+    <UNCHOOSES ID="8">
+      <Rectangle>1887,819,684,129</Rectangle>
+      <NAME>42-4</NAME>
+      <SCORE>2</SCORE>
+    </UNCHOOSES>
+    <UNCHOOSES ID="9">
+      <Rectangle>1488,927,422,116</Rectangle>
+      <NAME>42-5</NAME>
+      <SCORE>2</SCORE>
+    </UNCHOOSES>
+    <UNCHOOSES ID="10">
+      <Rectangle>1496,1101,354,121</Rectangle>
+      <NAME>42-6</NAME>
+      <SCORE>2</SCORE>
+    </UNCHOOSES>
+    <UNCHOOSES ID="11">
+      <Rectangle>1906,1112,412,113</Rectangle>
+      <NAME>42-7</NAME>
+      <SCORE>2</SCORE>
+    </UNCHOOSES>
+    <UNCHOOSES ID="12">
+      <Rectangle>1514,1321,261,95</Rectangle>
+      <NAME>43-1</NAME>
+      <SCORE>2</SCORE>
+    </UNCHOOSES>
+    <UNCHOOSES ID="13">
+      <Rectangle>1802,1305,711,134</Rectangle>
+      <NAME>43-2</NAME>
+      <SCORE>2</SCORE>
+    </UNCHOOSES>
+    <UNCHOOSES ID="14">
+      <Rectangle>1438,1450,1226,224</Rectangle>
+      <NAME>43-3</NAME>
+      <SCORE>2</SCORE>
+    </UNCHOOSES>
+    <UNCHOOSES ID="15">
+      <Rectangle>2870,203,370,105</Rectangle>
+      <NAME>44-1</NAME>
+      <SCORE>2</SCORE>
+    </UNCHOOSES>
+    <UNCHOOSES ID="16">
+      <Rectangle>3254,198,396,108</Rectangle>
+      <NAME>44-2</NAME>
+      <SCORE>2</SCORE>
+    </UNCHOOSES>
+    <UNCHOOSES ID="17">
+      <Rectangle>2894,317,333,103</Rectangle>
+      <NAME>44-3</NAME>
+      <SCORE>2</SCORE>
+    </UNCHOOSES>
+    <UNCHOOSES ID="18">
+      <Rectangle>3336,327,658,208</Rectangle>
+      <NAME>44-4</NAME>
+      <SCORE>2</SCORE>
+    </UNCHOOSES>
+    <UNCHOOSES ID="19">
+      <Rectangle>2876,430,341,92</Rectangle>
+      <NAME>44-5</NAME>
+      <SCORE>2</SCORE>
+    </UNCHOOSES>
+    <UNCHOOSES ID="20">
+      <Rectangle>2860,1257,1073,110</Rectangle>
+      <NAME>45-1</NAME>
+      <SCORE>2</SCORE>
+    </UNCHOOSES>
+    <UNCHOOSES ID="21">
+      <Rectangle>2857,1373,367,100</Rectangle>
+      <NAME>45-2</NAME>
+      <SCORE>2</SCORE>
+    </UNCHOOSES>
+    <UNCHOOSES ID="22">
+      <Rectangle>3299,1373,623,105</Rectangle>
+      <NAME>45-3</NAME>
+      <SCORE>2</SCORE>
+    </UNCHOOSES>
+    <UNCHOOSES ID="23">
+      <Rectangle>2876,1469,634,121</Rectangle>
+      <NAME>45-4</NAME>
+      <SCORE>2</SCORE>
+    </UNCHOOSES>
+    <UNCHOOSES ID="24">
+      <Rectangle>2870,1595,462,110</Rectangle>
+      <NAME>45-5</NAME>
+      <SCORE>2</SCORE>
+    </UNCHOOSES>
+  </UNCHOOSESS>
+  <BLACKAREAS>
+    <BLACKAREA ID="0">
+      <Rectangle>203,1336,66,31</Rectangle>
+    </BLACKAREA>
+    <BLACKAREA ID="1">
+      <Rectangle>528,1336,68,34</Rectangle>
+    </BLACKAREA>
+    <BLACKAREA ID="2">
+      <Rectangle>385,1590,66,36</Rectangle>
+    </BLACKAREA>
+    <BLACKAREA ID="3">
+      <Rectangle>1142,1653,68,42</Rectangle>
+    </BLACKAREA>
+    <BLACKAREA ID="4">
+      <Rectangle>507,1997,68,34</Rectangle>
+    </BLACKAREA>
+  </BLACKAREAS>
+  <WHITEAREAS />
+  <UNCHOOSEGROUPS>
+    <UNCHOOSEGROUP ID="0">
+      <Rectangle>1395,137,1308,502</Rectangle>
+      <NAME>TZ-1</NAME>
+    </UNCHOOSEGROUP>
+    <UNCHOOSEGROUP ID="1">
+      <Rectangle>1390,642,1308,615</Rectangle>
+      <NAME>TZ-2</NAME>
+    </UNCHOOSEGROUP>
+    <UNCHOOSEGROUP ID="2">
+      <Rectangle>1393,1284,1311,459</Rectangle>
+      <NAME>TZ-3</NAME>
+    </UNCHOOSEGROUP>
+    <UNCHOOSEGROUP ID="3">
+      <Rectangle>2773,137,1332,586</Rectangle>
+      <NAME>TZ-4</NAME>
+    </UNCHOOSEGROUP>
+    <UNCHOOSEGROUP ID="4">
+      <Rectangle>2759,1181,1316,570</Rectangle>
+      <NAME>TZ-5</NAME>
+    </UNCHOOSEGROUP>    
+  </UNCHOOSEGROUPS>
+</TEMPLATE>

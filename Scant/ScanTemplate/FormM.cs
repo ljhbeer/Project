@@ -427,11 +427,26 @@ namespace ScanTemplate
 			if (CorrectRect.Width > 0)
 			{
 				Rectangle cr1 = new Rectangle(CorrectRect.Right - 60, CorrectRect.Top - 20, 80, 80);
-				Rectangle r1 = dr.Detected(cr1, bmp);
 				Rectangle cr2 = new Rectangle(CorrectRect.Left - 20, CorrectRect.Bottom - 60, 80, 80);
+                if (File.Exists("detectFeatureSet.json"))
+                {
+                    //string str = Tools.JsonFormatTool.ConvertJsonString(Newtonsoft.Json.JsonConvert.SerializeObject(_listsubjects));
+                    //File.WriteAllText("detectFeatureSet.json", str);
+                    List<subject> ls = Newtonsoft.Json.JsonConvert.DeserializeObject<List<subject>>(File.ReadAllText("detectFeatureSet.json"));
+                    
+
+                }
+
+				Rectangle r1 = dr.Detected(cr1, bmp);
 				Rectangle r2 = dr.Detected(cr2, bmp);
-				
-				sb.Append( _angle.SetPaper(CorrectRect.Location, r1.Location, r2.Location)+"," ); //校验角度
+                if (File.Exists("detectFeatureSet.json"))
+                {
+                    _angle.SetPaper(_angle.Angle1());
+                    sb.Append( _angle.Angle1()  + ",");
+                }
+                else
+                    sb.Append(_angle.SetPaper(CorrectRect.Location, r1.Location, r2.Location) + ","); //校验角度
+
 				Bitmap nbmp = (Bitmap)bmp.Clone(CorrectRect, bmp.PixelFormat);
 				nbmp.Save(s.Replace("LJH\\", "LJH\\Correct\\"));
 				

@@ -43,5 +43,10 @@ namespace ScanTemplate
             angle -= _Angle1-_Angle2;
             return new Point( (int)(r * Math.Sin(angle)),(int)(r*Math.Cos(angle)));
         }
+
+        public  double Angle1()
+        {
+            return _Angle1;
+        }
     }
 }

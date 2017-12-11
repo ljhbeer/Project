@@ -38,10 +38,24 @@ namespace ScanTemplate
         }
         public Point GetCorrectPoint(int x, int y) //相对0，0而言
         {
-            double r = Math.Sqrt(x * x + y * y);
-            double angle = Math.Asin( x/r);
-            angle -= _Angle1-_Angle2;
-            return new Point( (int)(r * Math.Sin(angle)),(int)(r*Math.Cos(angle)));
+            if (_T[0].X == 0)
+            {
+                double r = Math.Sqrt(x * x + y * y);
+                double angle = Math.Asin(x / r);
+                angle -= _Angle1 - _Angle2;
+                return new Point((int)(r * Math.Sin(angle)), (int)(r * Math.Cos(angle)));
+            }
+            else
+            {
+                double r = Math.Sqrt( (x-_T[0].X)* (x-_T[0].X) + (y-_T[0].Y)*(y-_T[0].Y));
+                double angle =  Math.Asin( (x-_T[0].X) / r);
+                angle -= _Angle1 - _Angle2;
+
+                int nx = (int)(r * Math.Sin(angle))+ _P[0].X;
+                int ny = (int)(r * Math.Cos(angle))+ _P[0].Y;
+
+                return new Point(nx,ny);
+            }
         }
 
         public  double Angle1()

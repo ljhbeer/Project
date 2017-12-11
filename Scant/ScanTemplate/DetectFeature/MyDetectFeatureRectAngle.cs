@@ -93,14 +93,13 @@ namespace ScanTemplate
                 TBO.Add(FB);
                 TBO.Add(FO);
             }
-            T.Width = CorrectRect.Width;
-            T.Height = CorrectRect.Height;
-
             string Ostr = _listsubjects[2].ToString();
             if (Ostr.StartsWith("L"))
             {
-                T.X = T.Left - CorrectRect.Width;
+                T.X = T.Right - CorrectRect.Width;
             }
+            T.Width = CorrectRect.Width;
+            T.Height = CorrectRect.Height;
             return T;
         }
         public Rectangle Detected(Rectangle subrect, Bitmap src)
@@ -444,15 +443,18 @@ namespace ScanTemplate
                     new  Rectangle(size.Width-300, 80, 300, 100),
                     new  Rectangle(50, size.Height-280, 250, 100)
                 };
-            if (File.Exists("detectFeatureSet.json"))
+            if (FeatureSetPath != "")
             {
-                //string str = Tools.JsonFormatTool.ConvertJsonString(Newtonsoft.Json.JsonConvert.SerializeObject(Lr));
-                //File.WriteAllText("detectFeatureSet.json", str);
-                listrect = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Rectangle>>(File.ReadAllText("detectFeatureSet.json"));
+                string filename = FeatureSetPath + ".detectFeatureSet.json";
+                if (File.Exists(filename))
+                {
+                    //string str = Tools.JsonFormatTool.ConvertJsonString(Newtonsoft.Json.JsonConvert.SerializeObject(Lr));
+                    //File.WriteAllText("detectFeatureSet.json", str);
+                    listrect = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Rectangle>>(File.ReadAllText(filename));
+                }
             }
             ComputTBO(listrect);
         }
-
         public  void ComputTBO(List<Rectangle> listrect)
         {
             Clear();
@@ -526,5 +528,6 @@ namespace ScanTemplate
                 new subject(othername,Other)
             };
         }
+        public static string FeatureSetPath = "";
     }
 }

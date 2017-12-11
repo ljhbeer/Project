@@ -249,6 +249,7 @@ namespace ScanTemplate
 			if (listBox1.SelectedIndex == -1) return;
 			string templatename = listBox1.SelectedItem.ToString();
 			string txt = templatename.Substring(templatename.LastIndexOf("\\") + 1);
+            AutoDetectRectAnge.FeatureSetPath = templatename;
 			bool unselected = true;
 			for(int i=0; i<listBoxTemplate.Items.Count; i++){
 				if(listBoxTemplate.Items[i].ToString().StartsWith(txt)){
@@ -448,6 +449,11 @@ namespace ScanTemplate
                         return new StringBuilder();
                     }
                 }
+                Point offset = new Point(-CorrectRect.X, -CorrectRect.Y);
+                T.Offset(offset);
+                B.Offset(offset);
+                O.Offset(offset);
+
                 sb.Append(_angle.SetPaper(T.Location, B.Location, O.Location) + ","); //校验角度
 
                 Bitmap nbmp = (Bitmap)bmp.Clone(CorrectRect, bmp.PixelFormat);
@@ -465,7 +471,7 @@ namespace ScanTemplate
                         Rectangle Ir = kha.ImgArea;
                         //Ir.Offset(CorrectRect.Location);
                         Bitmap barmap = (Bitmap)nbmp.Clone(kha.ImgArea, nbmp.PixelFormat);
-                        barmap.Save("f:\\aa.tif");
+                        //barmap.Save("f:\\aa.tif");
                         ZXing.Result rs = _br.Decode(barmap);
                         if (rs != null)
                         {
@@ -490,7 +496,7 @@ namespace ScanTemplate
 				_runmsg = DetectAllImg(_rundr, s).ToString();
 				sb.Append(_runmsg);
 				this.Invoke(new MyInvoke(ShowMsg));
-				Thread.Sleep(100);
+				Thread.Sleep(10);
 			}
 			_exportdata = sb.ToString();
 			this.Invoke(new MyInvoke(ExportData));

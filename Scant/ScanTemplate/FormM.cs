@@ -271,13 +271,17 @@ namespace ScanTemplate
 				if (t.Image != null)
 				{
 					_artemplate = t;
-					List<Point> ListPoint = new List<Point>();
+					List<Rectangle> listrect = new List<Rectangle>();
 					foreach (Area I in t.Dic["特征点"])
 					{
-						ListPoint.Add(I.ImgArea.Location);
+						listrect.Add(I.ImgArea );
 					}
-					if (ListPoint.Count == 3)
-						_angle = new AutoAngle(ListPoint);
+                    if (listrect.Count == 3)
+                    {
+                        AutoDetectRectAnge adr = new AutoDetectRectAnge();
+                        adr.ComputTBO(listrect);
+                        _angle = new AutoAngle(adr.TBO());
+                    }
 				}
 			}
 		}
@@ -418,57 +422,58 @@ namespace ScanTemplate
 					title.Add("考号");
 				return null;
 			}
+
 			Bitmap bmp = (Bitmap)Bitmap.FromFile(s);
-			string str = s.Substring(s.Length - 7, 3);
+            string str = s.Substring(s.Length - 7, 3);
 			//MyDetectFeatureRectAngle dr = new MyDetectFeatureRectAngle(bmp);
-			Rectangle CorrectRect = dr.Detected(bmp);
+            List<Rectangle> TBO = new List<Rectangle>();
+			Rectangle CorrectRect = dr.Detected(bmp,TBO);
 			StringBuilder sb = new StringBuilder();
 			sb.Append(s + "," +  CorrectRect.ToString("-") + ",");// 文件名 CorrectRect
-			if (CorrectRect.Width > 0)
-			{
-				Rectangle cr1 = new Rectangle(CorrectRect.Right - 60, CorrectRect.Top - 20, 80, 80);
-				Rectangle cr2 = new Rectangle(CorrectRect.Left - 20, CorrectRect.Bottom - 60, 80, 80);
-                if (File.Exists("detectFeatureSet.json"))
+			if (CorrectRect.Width > 0 && TBO.Count==3)
+            {
+                Rectangle T = TBO[0];
+                Rectangle B = dr.Detected(TBO[1], bmp);
+                Rectangle O = new Rectangle();
+                O = dr.Detected(TBO[2], bmp);
+                if (B.Width == 0)
                 {
-                    //string str = Tools.JsonFormatTool.ConvertJsonString(Newtonsoft.Json.JsonConvert.SerializeObject(_listsubjects));
-                    //File.WriteAllText("detectFeatureSet.json", str);
-                    List<subject> ls = Newtonsoft.Json.JsonConvert.DeserializeObject<List<subject>>(File.ReadAllText("detectFeatureSet.json"));
-                    
-
+                    Rectangle R = TBO[1];
+                    R.Inflate(R.Width / 2, R.Height / 5);
+                    //bmpB = (Bitmap)bmp.Clone(R, bmp.PixelFormat);
+                    B = dr.Detected(R, bmp);
+                    if (B.Width == 0)
+                    {
+                        MessageBox.Show("检测特征点B失败");
+                        return new StringBuilder();
+                    }
                 }
+                sb.Append(_angle.SetPaper(T.Location, B.Location, O.Location) + ","); //校验角度
 
-				Rectangle r1 = dr.Detected(cr1, bmp);
-				Rectangle r2 = dr.Detected(cr2, bmp);
-                if (File.Exists("detectFeatureSet.json"))
+                Bitmap nbmp = (Bitmap)bmp.Clone(CorrectRect, bmp.PixelFormat);
+                nbmp.Save(s.Replace("LJH\\", "LJH\\Correct\\"));
+
+                //计算选择题
+                AutoComputeXZT acx = new AutoComputeXZT(_artemplate, _angle, nbmp);
+                sb.Append(acx.ComputeXZT(str)); //选择题
+                //计算二维码				
+                if (_artemplate.Dic.ContainsKey("考号") && _artemplate.Dic["考号"].Count > 0)
                 {
-                    _angle.SetPaper(_angle.Angle1());
-                    sb.Append( _angle.Angle1()  + ",");
-                }
-                else
-                    sb.Append(_angle.SetPaper(CorrectRect.Location, r1.Location, r2.Location) + ","); //校验角度
-
-				Bitmap nbmp = (Bitmap)bmp.Clone(CorrectRect, bmp.PixelFormat);
-				nbmp.Save(s.Replace("LJH\\", "LJH\\Correct\\"));
-				
-				//计算选择题
-				AutoComputeXZT acx = new AutoComputeXZT(_artemplate, _angle, nbmp);
-				sb.Append(acx.ComputeXZT(str)); //选择题
-				//计算二维码
-				
-				if(_artemplate.Dic.ContainsKey("考号") && _artemplate.Dic["考号"].Count>0){
-					KaoHaoChoiceArea kha = (KaoHaoChoiceArea)(_artemplate.Dic["考号"][0]);
-					if(kha.Type=="条形码"){
-						Rectangle Ir = kha.ImgArea;
+                    KaoHaoChoiceArea kha = (KaoHaoChoiceArea)(_artemplate.Dic["考号"][0]);
+                    if (kha.Type == "条形码")
+                    {
+                        Rectangle Ir = kha.ImgArea;
                         //Ir.Offset(CorrectRect.Location);
-						Bitmap barmap = (Bitmap)nbmp.Clone( kha.ImgArea,nbmp.PixelFormat);
-						barmap.Save("f:\\aa.tif");
-						ZXing.Result rs = _br.Decode(barmap);
-						if(rs!=null){
-							sb.Append(","+rs.Text);
-						}
-					}
-				}
-			}
+                        Bitmap barmap = (Bitmap)nbmp.Clone(kha.ImgArea, nbmp.PixelFormat);
+                        barmap.Save("f:\\aa.tif");
+                        ZXing.Result rs = _br.Decode(barmap);
+                        if (rs != null)
+                        {
+                            sb.Append("," + rs.Text);
+                        }
+                    }
+                }
+            }
 			else
 			{
 				//检测失败

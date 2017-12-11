@@ -29,9 +29,8 @@ namespace ScanTemplate
                 Point nL = _angle.GetCorrectPoint(r.X, r.Y);
                 //((Bitmap)_src.Clone(r, _src.PixelFormat)).Save("f:\\img\\"+num+"_beforeoffset.jpg");
                 r.Location = nL;
-                //((Bitmap)_src.Clone(r, _src.PixelFormat)).Save("f:\\img\\" + num + "_offset2.jpg");
-            	
-            	Bitmap bmp = (Bitmap)_src.Clone(r,_src.PixelFormat);
+                //((Bitmap)_src.Clone(r, _src.PixelFormat)).Save("f:\\img\\" + num + "_offset2.jpg");            	
+                Bitmap bmp = (Bitmap)_src.Clone(r, _src.PixelFormat);
                 //BitmapData bmpdata = _src.LockBits(r,ImageLockMode.ReadOnly,_src.PixelFormat);
                 //暂不采用该方法
             	Rectangle rp = new Rectangle(0,0,sca.Size.Width,sca.Size.Height);

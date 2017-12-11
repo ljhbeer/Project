@@ -17,9 +17,9 @@ namespace ScanTemplate
             get
             {
                 return new List<Point>(){
-                    _listFeatureRectangles[0].Location,
-                    _listFeatureRectangles[1].Location,
-                    _listFeatureRectangles[2].Location};
+                    _listFeatureRectangles[0].Location, //T
+                    _listFeatureRectangles[1].Location, //B
+                    _listFeatureRectangles[2].Location}; //other
             }
         }
         public List<Rectangle> ListFeatureRectangle
@@ -29,26 +29,15 @@ namespace ScanTemplate
                 return _listFeatureRectangles;
             }
         }
+       
         public MyDetectFeatureRectAngle(System.Drawing.Bitmap bmp)
         {
             this._src = bmp;
             if (_src != null)
             {
-                _listsubjects = new List<subject>(){
-                new subject("左上",new  Rectangle(50, 80, 250, 100)),
-                new subject("右上",new  Rectangle(bmp.Width-300, 80, 300, 100)),
-                new subject("左下",new  Rectangle(50, bmp.Height-280, 250, 100)) };
-                _listFeatureRectangles = new List<Rectangle>();
-
-                if (File.Exists("detectFeatureSet.json"))
-                {
-                    //string str = Tools.JsonFormatTool.ConvertJsonString(Newtonsoft.Json.JsonConvert.SerializeObject(_listsubjects));
-                    //File.WriteAllText("detectFeatureSet.json", str);
-                    List<subject> ls = Newtonsoft.Json.JsonConvert.DeserializeObject<List<subject>>(File.ReadAllText("detectFeatureSet.json"));
-                    _listsubjects.Clear();
-                    _listsubjects = ls;
-                }
-
+                AutoDetectRectAnge adr = new AutoDetectRectAnge();
+                adr.InitDetectRectAngel(bmp.Size);
+                _listsubjects = adr.GetSubjects();
                 Detect3Point();
             }
             //Bitmap newbmp = (Bitmap)_src.Clone(CorrectRect, _src.PixelFormat);
@@ -56,6 +45,7 @@ namespace ScanTemplate
         }
         public void Detect3Point()
         {
+            _listFeatureRectangles = new List<Rectangle>();
             foreach (subject sub in _listsubjects)
             {
                 Rectangle r = DetectFeatureRect(sub);
@@ -68,39 +58,50 @@ namespace ScanTemplate
                 MessageBox.Show("特征点检测失败");
                 return;
             }
-
-            CorrectRect = new Rectangle(_listFeatureRectangles[0].Location,
-                new Size(_listFeatureRectangles[1].Right - _listFeatureRectangles[0].Left,
-                    _listFeatureRectangles[2].Bottom - _listFeatureRectangles[0].Top));
-
-            //
-
-            if (File.Exists("detectFeatureSet.json"))
+            Rectangle T = _listFeatureRectangles[0];
+            Rectangle B = _listFeatureRectangles[1];
+            Rectangle O = _listFeatureRectangles[2];
+            string Ostr = _listsubjects[2].ToString();
+            if(Ostr.StartsWith("L"))
             {
-                if (CorrectRect.Width < 0 || CorrectRect.X + CorrectRect.Width > 0)
-                {
-                    CorrectRect = new Rectangle(_listFeatureRectangles[1].Location,
-                new Size(_listFeatureRectangles[0].Right - _listFeatureRectangles[1].Left,
-                    _listFeatureRectangles[2].Bottom - _listFeatureRectangles[0].Top));
-                    //CorrectRect = new Rectangle(CorrectRect.X + CorrectRect.Width, CorrectRect.Y, -CorrectRect.Width, CorrectRect.Height);                   
-                }
+                CorrectRect = new Rectangle( O.X,T.Y, T.Right - O.Left, B.Bottom -T.Top);
+            }else
+            {
+                CorrectRect = new Rectangle(T.X, T.Y, O.Right - T.Left, B.Bottom - T.Top);
             }
         }
-        public Rectangle Detected(Bitmap bmp)
+        public Rectangle Detected(Bitmap bmp,List<Rectangle> TBO)
         {
-            Rectangle r = DetectFeatureRect(_listsubjects[0],bmp);
-            
-            if (r.Width == 0)
+            Rectangle T = DetectFeatureRect(_listsubjects[0], bmp);   // T             
+            if (T.Width == 0)
                 return new Rectangle();
-            r.Width = CorrectRect.Width;
-            r.Height = CorrectRect.Height;
-            //TODO:
-            if (File.Exists("detectFeatureSet.json"))
             {
-                if ( r.X >r.Width)
-                    r.X -= r.Width;
+                Rectangle FT = _listFeatureRectangles[0];
+                Rectangle FB = _listFeatureRectangles[1];
+                Rectangle FO = _listFeatureRectangles[2];
+                FB.Offset(-FT.X, -FT.Y);
+                FO.Offset(-FT.X, -FT.Y);
+                FB.Offset(T.Location);
+                FO.Offset(T.Location);
+
+                //FB.Offset(-FB.Width / 2, -FB.Height / 2);
+                //FO.Offset(-FO.Width / 2, -FO.Height / 2);
+                FB.Inflate(FB.Width/2,FB.Height/2);
+                FO.Inflate(FO.Width/2,FO.Height/2);
+
+                TBO.Add(T);
+                TBO.Add(FB);
+                TBO.Add(FO);
             }
-            return r;
+            T.Width = CorrectRect.Width;
+            T.Height = CorrectRect.Height;
+
+            string Ostr = _listsubjects[2].ToString();
+            if (Ostr.StartsWith("L"))
+            {
+                T.X = T.Left - CorrectRect.Width;
+            }
+            return T;
         }
         public Rectangle Detected(Rectangle subrect, Bitmap src)
         {
@@ -416,5 +417,114 @@ namespace ScanTemplate
         private List<subject> _listsubjects;
         private List<Rectangle> _listFeatureRectangles;
 
+    }
+    public class AutoDetectRectAnge
+    {
+        public Rectangle Top;
+        public Rectangle Bottom;
+        public Rectangle Other;
+        private List<Rectangle> _P; // _P[0]  LT      _P[1]  LB       _p[2] RT    _p[3]  RB
+        public AutoDetectRectAnge()
+        {
+            _P = new List<Rectangle>();
+            _P.Add(new Rectangle());
+            _P.Add(new Rectangle());
+            _P.Add(new Rectangle());
+            _P.Add(new Rectangle());
+        }
+        public void Clear()
+        {
+            Top = Bottom = _P[0] = _P[1] = _P[2] = _P[3] = new Rectangle();
+        }
+        public void InitDetectRectAngel(Size size)
+        {
+            List<Rectangle> listrect = new List<Rectangle>()
+                {
+                    new  Rectangle(50, 80, 250, 100),
+                    new  Rectangle(size.Width-300, 80, 300, 100),
+                    new  Rectangle(50, size.Height-280, 250, 100)
+                };
+            if (File.Exists("detectFeatureSet.json"))
+            {
+                //string str = Tools.JsonFormatTool.ConvertJsonString(Newtonsoft.Json.JsonConvert.SerializeObject(Lr));
+                //File.WriteAllText("detectFeatureSet.json", str);
+                listrect = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Rectangle>>(File.ReadAllText("detectFeatureSet.json"));
+            }
+            ComputTBO(listrect);
+        }
+
+        public  void ComputTBO(List<Rectangle> listrect)
+        {
+            Clear();
+            Point Mid = GetMidPoint(listrect);
+            foreach (Rectangle r in listrect) //_P[0]  LT      _P[1]  LB       _p[2] RT    _p[3]  RB
+            {
+                if (r.X < Mid.X) // L
+                {
+                    if (r.Y < Mid.Y)  // T 
+                        _P[0] = r;
+                    else //B
+                        _P[1] = r;
+                }
+                else  // R
+                {
+                    if (r.Y < Mid.Y)  // T 
+                        _P[2] = r;
+                    else //B
+                        _P[3] = r;
+                }
+            }
+            if (_P[0].Width == 0 && _P[2].Width == 0 || _P[1].Width == 0 && _P[3].Width == 0)
+                return;
+            if (_P[0].Width * _P[1].Width == 0)
+            {
+                Top = _P[2];
+                Bottom = _P[3];
+                if (_P[0].Width == 0)
+                    Other = _P[1];
+                else
+                    Other = _P[0];
+            }
+            else
+            {
+                Top = _P[0];
+                Bottom = _P[1];
+                if (_P[2].Width == 0)
+                    Other = _P[3];
+                else
+                    Other = _P[2];
+            }
+        }
+        public List<Point> TBO()
+        {
+            return new List<Point>()
+            {
+                Top.Location,Bottom.Location,Other.Location
+            };
+        }
+        private Point GetMidPoint(List<Rectangle> listrect)
+        {
+            if(listrect.Count<2)
+                 throw new NotImplementedException();
+            int xmid = (listrect.Select(r => r.Left).Min() + listrect.Select(r => r.Right).Max()) / 2;
+            int ymid = (listrect.Select(r => r.Top).Min() + listrect.Select(r => r.Bottom).Max()) / 2;
+            return new Point(xmid, ymid);
+        }
+        public  List<subject> GetSubjects()
+        {
+            string othername = "L";
+            if (Other.X * 2 > Top.X + Bottom.X)
+                othername = "R";
+            if (Other.Y * 2 > Top.Y + Bottom.Y)
+                othername += "B";
+            else
+                othername += "T";
+            return new List<subject>()
+            {
+                new subject( "Top",Top),
+                new subject("Botton",Bottom),
+                new subject(othername,Other)
+            };
+        }
     }
 }

@@ -34,6 +34,9 @@
             this.listBox1 = new System.Windows.Forms.ListBox();
             this.buttonBeginYJ = new System.Windows.Forms.Button();
             this.textBoxWorkPath = new System.Windows.Forms.TextBox();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.buttonImportImage = new System.Windows.Forms.Button();
+            this.buttonExportResult = new System.Windows.Forms.Button();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.dgv = new System.Windows.Forms.DataGridView();
@@ -43,20 +46,17 @@
             this.buttonShowStudents = new System.Windows.Forms.Button();
             this.panel3 = new System.Windows.Forms.Panel();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.panel1 = new System.Windows.Forms.Panel();
-            this.buttonExportResult = new System.Windows.Forms.Button();
-            this.buttonImportImage = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
+            this.panel1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv)).BeginInit();
             this.panel3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
-            this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // splitContainer1
@@ -138,6 +138,36 @@
             this.textBoxWorkPath.Size = new System.Drawing.Size(92, 21);
             this.textBoxWorkPath.TabIndex = 3;
             this.textBoxWorkPath.Text = "E:\\Scan\\LJH\\s1025";
+            // 
+            // panel1
+            // 
+            this.panel1.Controls.Add(this.buttonImportImage);
+            this.panel1.Controls.Add(this.buttonExportResult);
+            this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel1.Location = new System.Drawing.Point(3, 367);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(103, 36);
+            this.panel1.TabIndex = 14;
+            // 
+            // buttonImportImage
+            // 
+            this.buttonImportImage.Location = new System.Drawing.Point(60, 3);
+            this.buttonImportImage.Name = "buttonImportImage";
+            this.buttonImportImage.Size = new System.Drawing.Size(43, 29);
+            this.buttonImportImage.TabIndex = 9;
+            this.buttonImportImage.Text = "图片";
+            this.buttonImportImage.UseVisualStyleBackColor = true;
+            this.buttonImportImage.Click += new System.EventHandler(this.buttonImportImage_Click);
+            // 
+            // buttonExportResult
+            // 
+            this.buttonExportResult.Location = new System.Drawing.Point(0, 0);
+            this.buttonExportResult.Name = "buttonExportResult";
+            this.buttonExportResult.Size = new System.Drawing.Size(62, 33);
+            this.buttonExportResult.TabIndex = 8;
+            this.buttonExportResult.Text = "导出成绩";
+            this.buttonExportResult.UseVisualStyleBackColor = true;
+            this.buttonExportResult.Click += new System.EventHandler(this.buttonExportResult_Click);
             // 
             // tableLayoutPanel2
             // 
@@ -257,36 +287,6 @@
             this.pictureBox1.MouseEnter += new System.EventHandler(this.pictureBox1_MouseEnter);
             this.pictureBox1.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.pictureBox1_MouseWheel);
             // 
-            // panel1
-            // 
-            this.panel1.Controls.Add(this.buttonImportImage);
-            this.panel1.Controls.Add(this.buttonExportResult);
-            this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel1.Location = new System.Drawing.Point(3, 367);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(103, 36);
-            this.panel1.TabIndex = 14;
-            // 
-            // buttonExportResult
-            // 
-            this.buttonExportResult.Location = new System.Drawing.Point(0, 0);
-            this.buttonExportResult.Name = "buttonExportResult";
-            this.buttonExportResult.Size = new System.Drawing.Size(62, 33);
-            this.buttonExportResult.TabIndex = 8;
-            this.buttonExportResult.Text = "导出成绩";
-            this.buttonExportResult.UseVisualStyleBackColor = true;
-            this.buttonExportResult.Click += new System.EventHandler(this.buttonExportResult_Click);
-            // 
-            // buttonImportImage
-            // 
-            this.buttonImportImage.Location = new System.Drawing.Point(59, 3);
-            this.buttonImportImage.Name = "buttonImportImage";
-            this.buttonImportImage.Size = new System.Drawing.Size(44, 29);
-            this.buttonImportImage.TabIndex = 9;
-            this.buttonImportImage.Text = "图片";
-            this.buttonImportImage.UseVisualStyleBackColor = true;
-            this.buttonImportImage.Click += new System.EventHandler(this.buttonImportImage_Click);
-            // 
             // FormYJTools
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -302,12 +302,12 @@
             this.splitContainer1.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
+            this.panel1.ResumeLayout(false);
             this.tableLayoutPanel2.ResumeLayout(false);
             this.tableLayoutPanel3.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgv)).EndInit();
             this.panel3.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
-            this.panel1.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }

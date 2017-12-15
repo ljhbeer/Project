@@ -101,6 +101,10 @@ namespace ScanTemplate.FormYJ
                 MessageBox.Show("还有试题没有给分");
             }
 		}
+        private void buttonSubmitMulti2_Click(object sender, EventArgs e)
+        {
+            buttonSubmitMulti.PerformClick();
+        }
 		private void YueJuan()
         {
 			ShowItemsInDgv();
@@ -139,7 +143,52 @@ namespace ScanTemplate.FormYJ
         			e.CellStyle.BackColor =  Color.Red;
                 }
 			}
-		}		
+		}
+        private void buttonAllSetZerobuttonSetAllZero_Click(object sender, EventArgs e)
+        {
+            int score = 0;
+            for (int index = 0; index < dgvs.ColumnCount; index++)
+            {
+                if (_ColState[index] == score)
+                {
+                    for (int i = 0; i < dgvs.Rows.Count; i++)
+                    {
+                        if (!(dgvs.Rows[i].Cells[index - score - 2].Value is DBNull)) //ID
+                            dgvs.Rows[i].Cells[index-score].Value = score;
+                    }
+                }
+            }
+            dgvs.Invalidate();
+        }
+        private void buttonallsetmaxscore_Click(object sender, EventArgs e)
+        {
+            int score = _SR.ActiveSubject.Score;
+            for (int index = 0; index < dgvs.ColumnCount; index++)
+            {
+                if (_ColState[index] == score)
+                {
+                    for (int i = 0; i < dgvs.Rows.Count; i++)
+                    {
+                        if(! (dgvs.Rows[i].Cells[index - score-2].Value is DBNull) ) //ID
+                        dgvs.Rows[i].Cells[index-score].Value = score;
+                    }
+                }
+            }
+            dgvs.Invalidate();
+        }
+        private void checkBoxLoadSetZero_CheckedChanged(object sender, EventArgs e)
+        {
+            CheckBox box = (CheckBox)sender;
+            if (box.Checked)
+                checkBoxLoadSetMaxScore.Checked = false;
+        }
+        private void checkBoxLoadSetMaxScore_CheckedChanged(object sender, EventArgs e)
+        {
+            CheckBox box = (CheckBox)sender;
+            if (box.Checked)
+                checkBoxLoadSetZero.Checked = false;
+        }
+
 		private void InitDtshow(int cntx){
 			List<string> titles = new List<string>();		
 			for(int x=0; x<cntx; x++){
@@ -197,7 +246,15 @@ namespace ScanTemplate.FormYJ
                     dr["图片" + xx] = _SR.GetBitMap(S);
                 }
                 if (S==null) break;
-            }			
+            }
+            if (checkBoxLoadSetZero.Checked)
+            {
+                buttonAllSetZerobuttonSetAllZero.PerformClick();
+            }
+            else if (checkBoxLoadSetMaxScore.Checked)
+            {
+                buttonallsetmaxscore.PerformClick();
+            }
 		}		
 		private bool checkallsetscore() // 还有 其他行
         {

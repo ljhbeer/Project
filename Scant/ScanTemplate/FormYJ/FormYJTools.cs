@@ -152,6 +152,14 @@ namespace ScanTemplate.FormYJ
                 //Tztitle += t.ToString() + ",";
             }
 
+            if (!Directory.Exists("F:\\Out\\" + _exam.Name))
+            {
+                Directory.CreateDirectory("F:\\Out\\" + _exam.Name);
+            }
+            else
+            {
+                MessageBox.Show("已存在文件夹"+ _exam.Name + "! 继续将覆盖该文件夹内的文件！！ 请确认！！ ");
+            }
            
             foreach (Student S in _students.students)
             {

@@ -39,10 +39,15 @@ namespace ScanTemplate.FormYJ
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.dgvs = new System.Windows.Forms.DataGridView();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.checkBoxAutoLoadNext = new System.Windows.Forms.CheckBox();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.textBoxShow = new System.Windows.Forms.TextBox();
             this.buttonSubmitMulti = new System.Windows.Forms.Button();
-            this.checkBoxAutoLoadNext = new System.Windows.Forms.CheckBox();
+            this.buttonAllSetZerobuttonSetAllZero = new System.Windows.Forms.Button();
+            this.buttonallsetmaxscore = new System.Windows.Forms.Button();
+            this.checkBoxLoadSetZero = new System.Windows.Forms.CheckBox();
+            this.checkBoxLoadSetMaxScore = new System.Windows.Forms.CheckBox();
+            this.buttonSubmitMulti2 = new System.Windows.Forms.Button();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvs)).BeginInit();
             this.panel1.SuspendLayout();
@@ -85,6 +90,11 @@ namespace ScanTemplate.FormYJ
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.buttonSubmitMulti2);
+            this.panel1.Controls.Add(this.checkBoxLoadSetMaxScore);
+            this.panel1.Controls.Add(this.checkBoxLoadSetZero);
+            this.panel1.Controls.Add(this.buttonallsetmaxscore);
+            this.panel1.Controls.Add(this.buttonAllSetZerobuttonSetAllZero);
             this.panel1.Controls.Add(this.checkBoxAutoLoadNext);
             this.panel1.Controls.Add(this.comboBox1);
             this.panel1.Controls.Add(this.textBoxShow);
@@ -93,6 +103,16 @@ namespace ScanTemplate.FormYJ
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(732, 24);
             this.panel1.TabIndex = 13;
+            // 
+            // checkBoxAutoLoadNext
+            // 
+            this.checkBoxAutoLoadNext.AutoSize = true;
+            this.checkBoxAutoLoadNext.Location = new System.Drawing.Point(92, 5);
+            this.checkBoxAutoLoadNext.Name = "checkBoxAutoLoadNext";
+            this.checkBoxAutoLoadNext.Size = new System.Drawing.Size(108, 16);
+            this.checkBoxAutoLoadNext.TabIndex = 13;
+            this.checkBoxAutoLoadNext.Text = "自动载入下一题";
+            this.checkBoxAutoLoadNext.UseVisualStyleBackColor = true;
             // 
             // comboBox1
             // 
@@ -105,9 +125,10 @@ namespace ScanTemplate.FormYJ
             // 
             // textBoxShow
             // 
-            this.textBoxShow.Location = new System.Drawing.Point(296, 3);
+            this.textBoxShow.Dock = System.Windows.Forms.DockStyle.Right;
+            this.textBoxShow.Location = new System.Drawing.Point(561, 0);
             this.textBoxShow.Name = "textBoxShow";
-            this.textBoxShow.Size = new System.Drawing.Size(418, 21);
+            this.textBoxShow.Size = new System.Drawing.Size(171, 21);
             this.textBoxShow.TabIndex = 12;
             // 
             // buttonSubmitMulti
@@ -121,15 +142,57 @@ namespace ScanTemplate.FormYJ
             this.buttonSubmitMulti.UseVisualStyleBackColor = true;
             this.buttonSubmitMulti.Click += new System.EventHandler(this.ButtonSubmitMultiClick);
             // 
-            // checkBoxAutoLoadNext
+            // buttonAllSetZerobuttonSetAllZero
             // 
-            this.checkBoxAutoLoadNext.AutoSize = true;
-            this.checkBoxAutoLoadNext.Location = new System.Drawing.Point(178, 6);
-            this.checkBoxAutoLoadNext.Name = "checkBoxAutoLoadNext";
-            this.checkBoxAutoLoadNext.Size = new System.Drawing.Size(108, 16);
-            this.checkBoxAutoLoadNext.TabIndex = 13;
-            this.checkBoxAutoLoadNext.Text = "自动载入下一题";
-            this.checkBoxAutoLoadNext.UseVisualStyleBackColor = true;
+            this.buttonAllSetZerobuttonSetAllZero.Location = new System.Drawing.Point(335, 0);
+            this.buttonAllSetZerobuttonSetAllZero.Name = "buttonAllSetZerobuttonSetAllZero";
+            this.buttonAllSetZerobuttonSetAllZero.Size = new System.Drawing.Size(58, 24);
+            this.buttonAllSetZerobuttonSetAllZero.TabIndex = 14;
+            this.buttonAllSetZerobuttonSetAllZero.Text = "全零分";
+            this.buttonAllSetZerobuttonSetAllZero.UseVisualStyleBackColor = true;
+            this.buttonAllSetZerobuttonSetAllZero.Click += new System.EventHandler(this.buttonAllSetZerobuttonSetAllZero_Click);
+            // 
+            // buttonallsetmaxscore
+            // 
+            this.buttonallsetmaxscore.Location = new System.Drawing.Point(387, 0);
+            this.buttonallsetmaxscore.Name = "buttonallsetmaxscore";
+            this.buttonallsetmaxscore.Size = new System.Drawing.Size(51, 24);
+            this.buttonallsetmaxscore.TabIndex = 14;
+            this.buttonallsetmaxscore.Text = "全满分";
+            this.buttonallsetmaxscore.UseVisualStyleBackColor = true;
+            this.buttonallsetmaxscore.Click += new System.EventHandler(this.buttonallsetmaxscore_Click);
+            // 
+            // checkBoxLoadSetZero
+            // 
+            this.checkBoxLoadSetZero.AutoSize = true;
+            this.checkBoxLoadSetZero.Location = new System.Drawing.Point(195, 5);
+            this.checkBoxLoadSetZero.Name = "checkBoxLoadSetZero";
+            this.checkBoxLoadSetZero.Size = new System.Drawing.Size(66, 16);
+            this.checkBoxLoadSetZero.TabIndex = 15;
+            this.checkBoxLoadSetZero.Text = "载入0分";
+            this.checkBoxLoadSetZero.UseVisualStyleBackColor = true;
+            this.checkBoxLoadSetZero.CheckedChanged += new System.EventHandler(this.checkBoxLoadSetZero_CheckedChanged);
+            // 
+            // checkBoxLoadSetMaxScore
+            // 
+            this.checkBoxLoadSetMaxScore.AutoSize = true;
+            this.checkBoxLoadSetMaxScore.Location = new System.Drawing.Point(263, 5);
+            this.checkBoxLoadSetMaxScore.Name = "checkBoxLoadSetMaxScore";
+            this.checkBoxLoadSetMaxScore.Size = new System.Drawing.Size(72, 16);
+            this.checkBoxLoadSetMaxScore.TabIndex = 15;
+            this.checkBoxLoadSetMaxScore.Text = "载入满分";
+            this.checkBoxLoadSetMaxScore.UseVisualStyleBackColor = true;
+            this.checkBoxLoadSetMaxScore.CheckedChanged += new System.EventHandler(this.checkBoxLoadSetMaxScore_CheckedChanged);
+            // 
+            // buttonSubmitMulti2
+            // 
+            this.buttonSubmitMulti2.Location = new System.Drawing.Point(436, 0);
+            this.buttonSubmitMulti2.Name = "buttonSubmitMulti2";
+            this.buttonSubmitMulti2.Size = new System.Drawing.Size(51, 24);
+            this.buttonSubmitMulti2.TabIndex = 16;
+            this.buttonSubmitMulti2.Text = "提交";
+            this.buttonSubmitMulti2.UseVisualStyleBackColor = true;
+            this.buttonSubmitMulti2.Click += new System.EventHandler(this.buttonSubmitMulti2_Click);
             // 
             // FormFullScreenYJ
             // 
@@ -153,5 +216,10 @@ namespace ScanTemplate.FormYJ
 		private System.Windows.Forms.DataGridView dgvs;
 		private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.CheckBox checkBoxAutoLoadNext;
+        private System.Windows.Forms.Button buttonallsetmaxscore;
+        private System.Windows.Forms.Button buttonAllSetZerobuttonSetAllZero;
+        private System.Windows.Forms.CheckBox checkBoxLoadSetMaxScore;
+        private System.Windows.Forms.CheckBox checkBoxLoadSetZero;
+        private System.Windows.Forms.Button buttonSubmitMulti2;
 	}
 }

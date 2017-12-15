@@ -34,7 +34,7 @@ namespace ScanTemplate
                 //BitmapData bmpdata = _src.LockBits(r,ImageLockMode.ReadOnly,_src.PixelFormat);
                 //暂不采用该方法
             	Rectangle rp = new Rectangle(0,0,sca.Size.Width,sca.Size.Height);
-                int validblackcnt = rp.Width * rp.Height * 7 / 20;
+                int validblackcnt = rp.Width * rp.Height * 8 / 20;
             	foreach(List<Point> lp in sca.list){
             		List<int> blackpixs = new List<int>();
             		foreach(Point p in lp){

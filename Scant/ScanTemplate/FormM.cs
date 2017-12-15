@@ -160,13 +160,17 @@ namespace ScanTemplate
 		//暂时不起作用
 		private void VerifyKaoHao()
 		{
+            if (!_artemplate.Dic.ContainsKey("考号") || _artemplate.Dic["考号"].Count == 0)
+            {
+                return;
+            }
 			DataTable dt = Tools.DataTableTools.ConstructDataTable(new string[] {
 			                                                       	"学号",
 			                                                       	"图片",
 			                                                       	"姓名",
 			                                                       	"是否修改"
 			                                                       });
-			Rectangle r = _artemplate.Dic["考号"][0].ImgArea;
+            Rectangle r = _artemplate.Dic["考号"][0].ImgArea;
 			foreach (DataRow dr in _rundt.Rows) {
 				if (dr["考号"].ToString() == "") {
 					string fn = dr["文件名"].ToString().Replace("LJH\\", "LJH\\Correct\\");
@@ -608,7 +612,10 @@ namespace ScanTemplate
 				string value = dr["x" + (i + 1)].ToString();
 				if (value.Length != 1 || !"ABCD".Contains(value)) {
 					DataRow ndr = dt.NewRow();
-					ndr["学号"] = new ValueTag(dr["考号"].ToString(), dr);
+                    string xuehao = "";
+                    if(dr.Table.Columns.Contains("考号"))
+                        xuehao =dr["考号"].ToString();
+                    ndr["学号"] = new ValueTag(xuehao, dr);
 					ndr["题号"] = "x" + (i + 1);
 					Rectangle r = _artemplate.XztRect[i];
 					//r.Location = _angle.GetCorrectPoint(r.X,r.Y);

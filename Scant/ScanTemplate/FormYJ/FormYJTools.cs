@@ -99,6 +99,87 @@ namespace ScanTemplate.FormYJ
             Student S =(Student) ((ValueTag)dgv[0, e.RowIndex].Value).Tag;
             pictureBox1.Image = TemplateTools.DrawInfoBmp(S.Src.Clone( S.SrcCorrectRect,S.Src.PixelFormat) , _template, null);
         }
+        private void buttonImportImage_Click(object sender, EventArgs e)
+        {
+            List<float > maxscore = new List<float>();
+            List<string> optionanswer = new List<string>();
+            if (!(CheckOptionAnswer(maxscore, optionanswer)
+                && CheckResult()))
+                return;
+            ///////////////
+            List<Rectangle> listrect = new List<Rectangle>();
+			foreach (Area I in _template.Dic["特征点"])
+			{
+				listrect.Add(I.ImgArea );
+			}
+            if (listrect.Count != 3)
+                return;
+            AutoDetectRectAnge adr = new AutoDetectRectAnge();
+            adr.ComputTBO(listrect);
+            AutoAngle angle = new AutoAngle(adr.TBO());
+
+
+            //题组
+            List<TzArea> ltz = new List<TzArea>();
+            foreach (Area I in _template.Dic["题组"])
+            {
+                ltz.Add((TzArea)I);
+            }
+            Rectangle zfrect = _template.Dic["姓名"][0].Rect;
+            zfrect.Offset(zfrect.Width,0);
+            zfrect.Width = 0;
+            zfrect.Height = 0;
+
+
+            Rectangle xztrect = _template.Dic["选择题"][0].Rect;
+            xztrect.Offset(-30, -50);
+            xztrect.Width = 1;
+            xztrect.Height = 1;
+            ltz.Add(new TzArea(zfrect, ""));
+            ltz.Add(new TzArea(xztrect, ""));
+
+
+            List<List<Imgsubject>> Tz = new List<List<Imgsubject>>();
+            foreach (TzArea t in _template.Dic["题组"])
+            {
+                List<Imgsubject> L = new List<Imgsubject>();
+                foreach (Imgsubject i in _examdata.SR._Imgsubjects.Subjects)
+                {
+                    if (t.ImgArea.Contains(i.Rect))
+                        L.Add(i);
+                }
+                Tz.Add(L);
+                //Tztitle += t.ToString() + ",";
+            }
+
+           
+            foreach (Student S in _students.students)
+            {
+                float sum = 0;
+                S.OutXzt(optionanswer, maxscore, ref sum);
+                float fsum = _examdata.SR._Result.Sum(rr => rr[S.Index]);
+                int zfsum =(int) (sum + fsum);
+
+                int tzindex = 0;
+                foreach (List<Imgsubject> L in Tz)
+                {
+                    string name = L.Select(I => _examdata.SR._Result[I.Index][S.Index]).Sum() + "分";
+                    ltz[tzindex].SetName( name);
+                    tzindex++;
+                }
+                ltz[tzindex].SetName(zfsum.ToString());
+                tzindex++;
+                ltz[tzindex].SetName( sum.ToString());
+
+                Bitmap bmp = TemplateTools.DrawInfoBmp(S,_examdata.SR,angle,optionanswer, ltz );
+                bmp.Save("F:\\Out\\" + _exam.Name + "\\" + S.ID + ".jpg");
+            }
+
+        }
+        private void buttonExportResult_Click(object sender, EventArgs e)
+        {
+            buttonModifyData_Click(sender, e);
+        }
         private void buttonModifyData_Click(object sender, EventArgs e)
         {//导出成绩
             if(_activeitem == null) return;
@@ -422,6 +503,7 @@ namespace ScanTemplate.FormYJ
             panel3.Invalidate();
             panel3.AutoScrollPosition = new Point(-S.X, -S.Y);
         }
+
     }
     public class Examdata
     {

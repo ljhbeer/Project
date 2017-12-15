@@ -651,6 +651,13 @@ namespace ScanTemplate.FormYJ
         private Rectangle _SrcCorrectRect;
         private Bitmap _src;
         public int Index { get; set; }
+
+        public bool CorrectXzt(int index, string answer)
+        {
+            if (index < 0 || index > _XZT.Count)
+                return false;
+            return _XZT[index] == answer;
+        }
     }
     public class ImgbinManagesubjects
     {

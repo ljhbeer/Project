@@ -83,6 +83,16 @@ namespace ScanTemplate.FormYJ
                     if (bbreak) break;
                 } //MessageBox.Show("已更新" + sum + "条数据");
                 _SR.LoadNextStudents();
+
+                if(_SR.Students.Count==0  && checkBoxAutoLoadNext.Checked)
+                {
+                    int selectindex = comboBox1.SelectedIndex;
+                    if (selectindex != -1 && selectindex+1<comboBox1.Items.Count)
+                    {
+                        comboBox1.SelectedIndex = selectindex+1;
+                        return;
+                    }
+                }
                 ShowItemsInDgv();
                 textBoxShow.Text = "本题未完成阅卷份数" + _SR.Students.Count + " 满分为" +_SR.ActiveSubject.Score + "分";        
             }

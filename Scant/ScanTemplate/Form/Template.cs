@@ -6,6 +6,7 @@ using System.IO;
 using System.Xml;
 using System.Drawing;
 using System.Windows.Forms;
+using ScanTemplate.FormYJ;
 
 namespace ARTemplate
 {
@@ -302,12 +303,14 @@ namespace ARTemplate
 		public string GetTemplateName()
 		{
 			string str = "";
-			if(_dic.ContainsKey("选择题"))
-				str+= "选择题"+_dic["选择题"].Count;			
-			if(_dic.ContainsKey("非选择题"))
-				str+= "_非选择题"+_dic["非选择题"].Count;
-			if(Correctrect!=null)
-				str+="_"+Correctrect.ToString("-");
+            if (_dic.ContainsKey("选择题"))
+                str += "X" + XztRect.Count;//_dic["选择题"].Count;
+            //str += "选择题" + _dic["选择题"].Count;
+            if (_dic.ContainsKey("非选择题"))
+                str += "_K" + _dic["非选择题"].Count;
+            //str += "_非选择题" + _dic["非选择题"].Count;
+            //if(Correctrect!=null)
+            //    str+="_"+Correctrect.ToString("-");
 			return str;
 		}
         public String NodeName { get { return "TEMPLATE"; } }
@@ -402,6 +405,64 @@ namespace ARTemplate
                             }
                         }
                     }
+            }
+            return bmp;
+        }
+        public static Bitmap DrawInfoBmp(Student S, StudentsResultData SR, ScanTemplate.AutoAngle angle, List<string> optionanswer, List<TzArea> ltz)
+        {
+            Bitmap src = S.Src.Clone(S.SrcCorrectRect, S.Src.PixelFormat); //bmp = src.Clone(new Rectangle(0, 0, src.Width, src.Height), System.Drawing.Imaging.PixelFormat.Format24bppRgb);
+            Bitmap bmp = ConvertFormat.ConvertToRGB(src);
+            angle.SetPaper(S.Angle);
+            using (Graphics g = Graphics.FromImage(bmp))
+            {
+                Pen pen = Pens.Red;
+                Brush dark = Brushes.Black;
+                Brush white = Brushes.White;
+                Brush Red = Brushes.Red;
+                Font font = new Font( SystemFonts.DefaultFont.SystemFontName,25,FontStyle.Bold);
+                Font font1 = new Font(SystemFonts.DefaultFont.SystemFontName, 16, FontStyle.Bold);
+               
+
+                foreach (Optionsubject I in SR._Optionsubjects.OptionSubjects)
+                {
+                    Rectangle r = I.Rect;
+                    Point p = angle.GetCorrectPoint(r.X, r.Y);
+                    r.Location = p;
+                    g.DrawRectangle(pen, I.Rect);
+                    g.DrawRectangle(pen, r );
+
+                    //g.DrawRectangle(pen, rr);
+                    int OKindex = "ABCD".IndexOf(optionanswer[I.Index]);
+                    if (OKindex >= 0)
+                    {
+                        Rectangle rr = new Rectangle(I.List[OKindex], I.Size);
+                        rr.Offset(p); 
+                        if(S.CorrectXzt(I.Index, optionanswer[I.Index]))
+                            g.DrawString("√", font1, Red, rr.Location);
+                        else
+                            g.DrawString("×", font1, Red, rr.Location);
+                    }
+                }
+
+                foreach (Imgsubject I in SR._Imgsubjects.Subjects)
+                {                    
+                    //g.DrawRectangle(pen, I.Rect);
+                    Point p = I.Rect.Location;
+                    int offsetx = I.Rect.Width * 3 / 10;
+                    p.X = I.Rect.Right - offsetx > 0 ? I.Rect.Right - offsetx :  I.Rect.Right;
+                    p.Y += I.Rect.Height*3/10;
+
+                    if(SR._Result[I.Index][ S.Index] == 0)
+                        g.DrawString("×", font, Red, p);
+                    else
+                        g.DrawString("√", font, Red, p);
+                   
+                }
+                foreach (TzArea I in ltz)
+                {
+                    g.DrawRectangle(pen, I.Rect);
+                    g.DrawString(I.ToString(), font, Red, I.Rect.Location);
+                }
             }
             return bmp;
         }

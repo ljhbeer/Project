@@ -32,7 +32,6 @@
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.buttonRefresh = new System.Windows.Forms.Button();
             this.listBox1 = new System.Windows.Forms.ListBox();
-            this.buttonExportResult = new System.Windows.Forms.Button();
             this.buttonBeginYJ = new System.Windows.Forms.Button();
             this.textBoxWorkPath = new System.Windows.Forms.TextBox();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
@@ -44,6 +43,9 @@
             this.buttonShowStudents = new System.Windows.Forms.Button();
             this.panel3 = new System.Windows.Forms.Panel();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.buttonExportResult = new System.Windows.Forms.Button();
+            this.buttonImportImage = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -54,6 +56,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.dgv)).BeginInit();
             this.panel3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // splitContainer1
@@ -76,29 +79,29 @@
             // tableLayoutPanel1
             // 
             this.tableLayoutPanel1.ColumnCount = 2;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 55.83756F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 44.16244F));
             this.tableLayoutPanel1.Controls.Add(this.buttonRefresh, 1, 0);
             this.tableLayoutPanel1.Controls.Add(this.listBox1, 0, 1);
-            this.tableLayoutPanel1.Controls.Add(this.buttonExportResult, 0, 2);
             this.tableLayoutPanel1.Controls.Add(this.buttonBeginYJ, 1, 2);
             this.tableLayoutPanel1.Controls.Add(this.textBoxWorkPath, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.panel1, 0, 2);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 3;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 42F));
             this.tableLayoutPanel1.Size = new System.Drawing.Size(197, 406);
             this.tableLayoutPanel1.TabIndex = 0;
             // 
             // buttonRefresh
             // 
             this.buttonRefresh.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.buttonRefresh.Location = new System.Drawing.Point(101, 3);
+            this.buttonRefresh.Location = new System.Drawing.Point(112, 3);
             this.buttonRefresh.Name = "buttonRefresh";
-            this.buttonRefresh.Size = new System.Drawing.Size(93, 24);
+            this.buttonRefresh.Size = new System.Drawing.Size(82, 24);
             this.buttonRefresh.TabIndex = 13;
             this.buttonRefresh.Text = "刷新";
             this.buttonRefresh.UseVisualStyleBackColor = true;
@@ -112,27 +115,16 @@
             this.listBox1.ItemHeight = 12;
             this.listBox1.Location = new System.Drawing.Point(3, 33);
             this.listBox1.Name = "listBox1";
-            this.listBox1.Size = new System.Drawing.Size(191, 340);
+            this.listBox1.Size = new System.Drawing.Size(191, 328);
             this.listBox1.TabIndex = 6;
             this.listBox1.SelectedIndexChanged += new System.EventHandler(this.listBox1_SelectedIndexChanged);
-            // 
-            // buttonExportResult
-            // 
-            this.buttonExportResult.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.buttonExportResult.Location = new System.Drawing.Point(3, 379);
-            this.buttonExportResult.Name = "buttonExportResult";
-            this.buttonExportResult.Size = new System.Drawing.Size(92, 24);
-            this.buttonExportResult.TabIndex = 7;
-            this.buttonExportResult.Text = "导出成绩";
-            this.buttonExportResult.UseVisualStyleBackColor = true;
-            this.buttonExportResult.Click += new System.EventHandler(this.buttonModifyData_Click);
             // 
             // buttonBeginYJ
             // 
             this.buttonBeginYJ.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.buttonBeginYJ.Location = new System.Drawing.Point(101, 379);
+            this.buttonBeginYJ.Location = new System.Drawing.Point(112, 367);
             this.buttonBeginYJ.Name = "buttonBeginYJ";
-            this.buttonBeginYJ.Size = new System.Drawing.Size(93, 24);
+            this.buttonBeginYJ.Size = new System.Drawing.Size(82, 36);
             this.buttonBeginYJ.TabIndex = 7;
             this.buttonBeginYJ.Text = "开始阅卷";
             this.buttonBeginYJ.UseVisualStyleBackColor = true;
@@ -265,6 +257,36 @@
             this.pictureBox1.MouseEnter += new System.EventHandler(this.pictureBox1_MouseEnter);
             this.pictureBox1.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.pictureBox1_MouseWheel);
             // 
+            // panel1
+            // 
+            this.panel1.Controls.Add(this.buttonImportImage);
+            this.panel1.Controls.Add(this.buttonExportResult);
+            this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel1.Location = new System.Drawing.Point(3, 367);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(103, 36);
+            this.panel1.TabIndex = 14;
+            // 
+            // buttonExportResult
+            // 
+            this.buttonExportResult.Location = new System.Drawing.Point(0, 0);
+            this.buttonExportResult.Name = "buttonExportResult";
+            this.buttonExportResult.Size = new System.Drawing.Size(62, 33);
+            this.buttonExportResult.TabIndex = 8;
+            this.buttonExportResult.Text = "导出成绩";
+            this.buttonExportResult.UseVisualStyleBackColor = true;
+            this.buttonExportResult.Click += new System.EventHandler(this.buttonExportResult_Click);
+            // 
+            // buttonImportImage
+            // 
+            this.buttonImportImage.Location = new System.Drawing.Point(59, 3);
+            this.buttonImportImage.Name = "buttonImportImage";
+            this.buttonImportImage.Size = new System.Drawing.Size(44, 29);
+            this.buttonImportImage.TabIndex = 9;
+            this.buttonImportImage.Text = "图片";
+            this.buttonImportImage.UseVisualStyleBackColor = true;
+            this.buttonImportImage.Click += new System.EventHandler(this.buttonImportImage_Click);
+            // 
             // FormYJTools
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -285,6 +307,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.dgv)).EndInit();
             this.panel3.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            this.panel1.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -294,7 +317,6 @@
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.ListBox listBox1;
-        private System.Windows.Forms.Button buttonExportResult;
         private System.Windows.Forms.Button buttonBeginYJ;
         private System.Windows.Forms.TextBox textBoxWorkPath;
         private System.Windows.Forms.Button buttonRefresh;
@@ -307,5 +329,8 @@
         private System.Windows.Forms.Panel panel3;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Button buttonShowStudents;
+        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Button buttonImportImage;
+        private System.Windows.Forms.Button buttonExportResult;
     }
 }

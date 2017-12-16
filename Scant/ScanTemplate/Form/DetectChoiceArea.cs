@@ -67,29 +67,29 @@ namespace ARTemplate
             }
             else
             {
-                if (RemoveAndCheck(xposlen, 4) && RemoveAndCheck(yposlen, choicecount))
+                if (RemoveAndCheck(xposlen, 10) && RemoveAndCheck(yposlen, choicecount))
                 {
-                    //m_choicepoint = new List<List<Point>>();
-                    //int sum = 0;
-                    //for (int i = 1; i < xposlen.Count; i += 2)
-                    //{
-                    //    sum += xposlen[i] * xposlen[i];
-                    //}
-                    //choicesize.Width = (int)Math.Sqrt(sum * 2 / xposlen.Count);
-                    //sum = 0;
-                    //for (int i = 1; i < yposlen.Count; i += 2)
-                    //{
-                    //    sum += yposlen[i] * yposlen[i];
-                    //}
-                    //choicesize.Height = (int)Math.Sqrt(sum * 2 / yposlen.Count);
+                    m_choicepoint = new List<List<Point>>();
+                    int sum = 0;
+                    for (int i = 1; i < xposlen.Count; i += 2)
+                    {
+                        sum += xposlen[i] * xposlen[i];
+                    }
+                    choicesize.Width = (int)Math.Sqrt(sum * 2 / xposlen.Count);
+                    sum = 0;
+                    for (int i = 1; i < yposlen.Count; i += 2)
+                    {
+                        sum += yposlen[i] * yposlen[i];
+                    }
+                    choicesize.Height = (int)Math.Sqrt(sum * 2 / yposlen.Count);
 
-                    //for (int i = 0; i < yposlen.Count; i += 2)
-                    //{
-                    //    List<Point> c = new List<Point>();
-                    //    for (int j = 0; j < xposlen.Count; j += 2)
-                    //        c.Add(new Point(xposlen[j], yposlen[i]));
-                    //    m_choicepoint.Add(c);
-                    //}
+                    for (int i = 0; i < yposlen.Count; i += 2)
+                    {
+                        List<Point> c = new List<Point>();
+                        for (int j = 0; j < xposlen.Count; j += 2)
+                            c.Add(new Point(xposlen[j], yposlen[i]));
+                        m_choicepoint.Add(c);
+                    }
                     return true;
                 }
                

@@ -27,6 +27,25 @@ namespace ARTemplate
             Init();
             Reset();
             template.SetDataToNode(m_tn);
+            toolStripComboBoxKHFormat.SelectedIndex = 0;
+            if (t.Dic.ContainsKey("考号") && t.Dic["考号"].Count == 1)
+            {
+                KaoHaoChoiceArea kh = (KaoHaoChoiceArea)t.Dic["考号"][0];
+                switch (kh.Type) //数字means横向 涂卡
+                {
+                    case "条形码": toolStripComboBoxKHFormat.SelectedIndex = 0; break;
+                    case "3": toolStripComboBoxKHFormat.SelectedIndex = 1; break;
+                    case "4": toolStripComboBoxKHFormat.SelectedIndex = 2; break;
+                    case "5": toolStripComboBoxKHFormat.SelectedIndex = 3; break;
+                    case "6": toolStripComboBoxKHFormat.SelectedIndex = 4; break;
+                    case "7": toolStripComboBoxKHFormat.SelectedIndex = 5; break;
+                    case "8": toolStripComboBoxKHFormat.SelectedIndex = 6; break;
+                    case "9": toolStripComboBoxKHFormat.SelectedIndex = 7; break;
+                    case "10": toolStripComboBoxKHFormat.SelectedIndex = 8; break;
+                    default: toolStripComboBoxKHFormat.SelectedIndex = 0; break;
+                }
+            }
+
         }
         private void Init()
         {
@@ -368,13 +387,36 @@ namespace ARTemplate
             int cnt = m_tn.Nodes[keyname].GetNodeCount(false) ;
             if (!ExistDeFineSelection(keyname))
             {
+                string type = toolStripComboBoxKHFormat.SelectedItem.ToString();
+                type = type.Substring(3);
+                if (type.Contains("涂卡"))
+                {
+                    type = type.Substring(2,type.Length-3);
+                    if(!"1023456789".Contains(type))
+                        return;
+                }
                 if (cnt == 0)
                 {
+
                     Rectangle m_Imgselection = zoombox.BoxToImgSelection(MT.Selection);
                     TreeNode t = new TreeNode();
                     t.Name = t.Text = keyname;
-                    t.Tag = new KaoHaoChoiceArea( m_Imgselection,t.Name,"条形码");
-                    m_tn.Nodes[keyname].Nodes.Add(t);
+                    if (type == "条形码")
+                    {
+                        t.Tag = new KaoHaoChoiceArea(m_Imgselection, t.Name, type);
+                        m_tn.Nodes[keyname].Nodes.Add(t);
+                    }
+                    else
+                    {
+                        int count = Convert.ToInt32(type); //位数
+                        Bitmap bitmap = GetDrawedbyBlackWhiteBitMap();
+                        DetectChoiceArea dca = new DetectChoiceArea(bitmap, count);
+                        if (dca.DetectKH(false))
+                        {                        
+                            t.Tag = new KaoHaoChoiceArea(m_Imgselection, t.Name, type, dca.Choicepoint, dca.Choicesize);  
+                            m_tn.Nodes[keyname].Nodes.Add(t);
+                        }
+                    }
                 }
                 else
                 {
@@ -448,24 +490,7 @@ namespace ARTemplate
                     return;
                 }
                 {//仅支持 横向
-                    Bitmap bitmap = ((Bitmap)(pictureBox1.Image)).Clone(m_Imgselection, PixelFormat.Format24bppRgb);
-                    using (Graphics g = Graphics.FromImage(bitmap))
-                    {
-                        foreach (string s in new string[] { "选区变黑", "选区变白" })
-                            foreach (TreeNode tt in m_tn.Nodes[s].Nodes)
-                                if (tt.Tag != null)
-                                {
-                                    Area I = (Area)(tt.Tag);
-                                    Rectangle r = I.ImgArea;
-                                    r.Intersect(m_Imgselection);
-                                    if (r.Width > 0)
-                                    {
-                                        r.Offset(-m_Imgselection.X, -m_Imgselection.Y);
-                                        g.FillRectangle(Brushes.Black, r);
-                                    }
-                                }
-                    }
-
+                    Bitmap bitmap = GetDrawedbyBlackWhiteBitMap();
                     DetectChoiceArea dca = new DetectChoiceArea(bitmap, count);
                     if (dca.Detect())
                     {
@@ -475,11 +500,30 @@ namespace ARTemplate
                         m_tn.Nodes[keyname].Nodes.Add(t);
                     }
                     //else 
-                    //{
                     //    bitmap.Save("f:\\" + choosename + ".jpg");
-                    //}
                 }
             }
+        }
+        private Bitmap GetDrawedbyBlackWhiteBitMap()
+        {
+            Bitmap bitmap = ((Bitmap)(pictureBox1.Image)).Clone(m_Imgselection, PixelFormat.Format24bppRgb);
+            using (Graphics g = Graphics.FromImage(bitmap))
+            {
+                foreach (string s in new string[] { "选区变黑", "选区变白" })
+                    foreach (TreeNode tt in m_tn.Nodes[s].Nodes)
+                        if (tt.Tag != null)
+                        {
+                            Area I = (Area)(tt.Tag);
+                            Rectangle r = I.ImgArea;
+                            r.Intersect(m_Imgselection);
+                            if (r.Width > 0)
+                            {
+                                r.Offset(-m_Imgselection.X, -m_Imgselection.Y);
+                                g.FillRectangle(Brushes.Black, r);
+                            }
+                        }
+            }
+            return bitmap;
         }
         private void CompleteDeFineUnChoose()
         {
@@ -665,7 +709,5 @@ namespace ARTemplate
         private Template template;
         private double _OriginWith;
         private float  _defaultunchoosescore;
-
-
     }
 }

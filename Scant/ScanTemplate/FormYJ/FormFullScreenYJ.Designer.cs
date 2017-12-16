@@ -39,15 +39,15 @@ namespace ScanTemplate.FormYJ
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.dgvs = new System.Windows.Forms.DataGridView();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.buttonSubmitMulti2 = new System.Windows.Forms.Button();
+            this.checkBoxLoadSetMaxScore = new System.Windows.Forms.CheckBox();
+            this.checkBoxLoadSetZero = new System.Windows.Forms.CheckBox();
+            this.buttonallsetmaxscore = new System.Windows.Forms.Button();
+            this.buttonAllSetZerobuttonSetAllZero = new System.Windows.Forms.Button();
             this.checkBoxAutoLoadNext = new System.Windows.Forms.CheckBox();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.textBoxShow = new System.Windows.Forms.TextBox();
             this.buttonSubmitMulti = new System.Windows.Forms.Button();
-            this.buttonAllSetZerobuttonSetAllZero = new System.Windows.Forms.Button();
-            this.buttonallsetmaxscore = new System.Windows.Forms.Button();
-            this.checkBoxLoadSetZero = new System.Windows.Forms.CheckBox();
-            this.checkBoxLoadSetMaxScore = new System.Windows.Forms.CheckBox();
-            this.buttonSubmitMulti2 = new System.Windows.Forms.Button();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvs)).BeginInit();
             this.panel1.SuspendLayout();
@@ -104,6 +104,58 @@ namespace ScanTemplate.FormYJ
             this.panel1.Size = new System.Drawing.Size(732, 24);
             this.panel1.TabIndex = 13;
             // 
+            // buttonSubmitMulti2
+            // 
+            this.buttonSubmitMulti2.Location = new System.Drawing.Point(436, 0);
+            this.buttonSubmitMulti2.Name = "buttonSubmitMulti2";
+            this.buttonSubmitMulti2.Size = new System.Drawing.Size(51, 24);
+            this.buttonSubmitMulti2.TabIndex = 16;
+            this.buttonSubmitMulti2.Text = "提交";
+            this.buttonSubmitMulti2.UseVisualStyleBackColor = true;
+            this.buttonSubmitMulti2.Click += new System.EventHandler(this.buttonSubmitMulti2_Click);
+            // 
+            // checkBoxLoadSetMaxScore
+            // 
+            this.checkBoxLoadSetMaxScore.AutoSize = true;
+            this.checkBoxLoadSetMaxScore.Location = new System.Drawing.Point(263, 5);
+            this.checkBoxLoadSetMaxScore.Name = "checkBoxLoadSetMaxScore";
+            this.checkBoxLoadSetMaxScore.Size = new System.Drawing.Size(72, 16);
+            this.checkBoxLoadSetMaxScore.TabIndex = 15;
+            this.checkBoxLoadSetMaxScore.Text = "载入满分";
+            this.checkBoxLoadSetMaxScore.UseVisualStyleBackColor = true;
+            this.checkBoxLoadSetMaxScore.CheckedChanged += new System.EventHandler(this.checkBoxLoadSetMaxScore_CheckedChanged);
+            // 
+            // checkBoxLoadSetZero
+            // 
+            this.checkBoxLoadSetZero.AutoSize = true;
+            this.checkBoxLoadSetZero.Location = new System.Drawing.Point(195, 5);
+            this.checkBoxLoadSetZero.Name = "checkBoxLoadSetZero";
+            this.checkBoxLoadSetZero.Size = new System.Drawing.Size(66, 16);
+            this.checkBoxLoadSetZero.TabIndex = 15;
+            this.checkBoxLoadSetZero.Text = "载入0分";
+            this.checkBoxLoadSetZero.UseVisualStyleBackColor = true;
+            this.checkBoxLoadSetZero.CheckedChanged += new System.EventHandler(this.checkBoxLoadSetZero_CheckedChanged);
+            // 
+            // buttonallsetmaxscore
+            // 
+            this.buttonallsetmaxscore.Location = new System.Drawing.Point(387, 0);
+            this.buttonallsetmaxscore.Name = "buttonallsetmaxscore";
+            this.buttonallsetmaxscore.Size = new System.Drawing.Size(51, 24);
+            this.buttonallsetmaxscore.TabIndex = 14;
+            this.buttonallsetmaxscore.Text = "全满分";
+            this.buttonallsetmaxscore.UseVisualStyleBackColor = true;
+            this.buttonallsetmaxscore.Click += new System.EventHandler(this.buttonallsetmaxscore_Click);
+            // 
+            // buttonAllSetZerobuttonSetAllZero
+            // 
+            this.buttonAllSetZerobuttonSetAllZero.Location = new System.Drawing.Point(335, 0);
+            this.buttonAllSetZerobuttonSetAllZero.Name = "buttonAllSetZerobuttonSetAllZero";
+            this.buttonAllSetZerobuttonSetAllZero.Size = new System.Drawing.Size(58, 24);
+            this.buttonAllSetZerobuttonSetAllZero.TabIndex = 14;
+            this.buttonAllSetZerobuttonSetAllZero.Text = "全零分";
+            this.buttonAllSetZerobuttonSetAllZero.UseVisualStyleBackColor = true;
+            this.buttonAllSetZerobuttonSetAllZero.Click += new System.EventHandler(this.buttonAllSetZerobuttonSetAllZero_Click);
+            // 
             // checkBoxAutoLoadNext
             // 
             this.checkBoxAutoLoadNext.AutoSize = true;
@@ -141,58 +193,6 @@ namespace ScanTemplate.FormYJ
             this.buttonSubmitMulti.Text = "提交";
             this.buttonSubmitMulti.UseVisualStyleBackColor = true;
             this.buttonSubmitMulti.Click += new System.EventHandler(this.ButtonSubmitMultiClick);
-            // 
-            // buttonAllSetZerobuttonSetAllZero
-            // 
-            this.buttonAllSetZerobuttonSetAllZero.Location = new System.Drawing.Point(335, 0);
-            this.buttonAllSetZerobuttonSetAllZero.Name = "buttonAllSetZerobuttonSetAllZero";
-            this.buttonAllSetZerobuttonSetAllZero.Size = new System.Drawing.Size(58, 24);
-            this.buttonAllSetZerobuttonSetAllZero.TabIndex = 14;
-            this.buttonAllSetZerobuttonSetAllZero.Text = "全零分";
-            this.buttonAllSetZerobuttonSetAllZero.UseVisualStyleBackColor = true;
-            this.buttonAllSetZerobuttonSetAllZero.Click += new System.EventHandler(this.buttonAllSetZerobuttonSetAllZero_Click);
-            // 
-            // buttonallsetmaxscore
-            // 
-            this.buttonallsetmaxscore.Location = new System.Drawing.Point(387, 0);
-            this.buttonallsetmaxscore.Name = "buttonallsetmaxscore";
-            this.buttonallsetmaxscore.Size = new System.Drawing.Size(51, 24);
-            this.buttonallsetmaxscore.TabIndex = 14;
-            this.buttonallsetmaxscore.Text = "全满分";
-            this.buttonallsetmaxscore.UseVisualStyleBackColor = true;
-            this.buttonallsetmaxscore.Click += new System.EventHandler(this.buttonallsetmaxscore_Click);
-            // 
-            // checkBoxLoadSetZero
-            // 
-            this.checkBoxLoadSetZero.AutoSize = true;
-            this.checkBoxLoadSetZero.Location = new System.Drawing.Point(195, 5);
-            this.checkBoxLoadSetZero.Name = "checkBoxLoadSetZero";
-            this.checkBoxLoadSetZero.Size = new System.Drawing.Size(66, 16);
-            this.checkBoxLoadSetZero.TabIndex = 15;
-            this.checkBoxLoadSetZero.Text = "载入0分";
-            this.checkBoxLoadSetZero.UseVisualStyleBackColor = true;
-            this.checkBoxLoadSetZero.CheckedChanged += new System.EventHandler(this.checkBoxLoadSetZero_CheckedChanged);
-            // 
-            // checkBoxLoadSetMaxScore
-            // 
-            this.checkBoxLoadSetMaxScore.AutoSize = true;
-            this.checkBoxLoadSetMaxScore.Location = new System.Drawing.Point(263, 5);
-            this.checkBoxLoadSetMaxScore.Name = "checkBoxLoadSetMaxScore";
-            this.checkBoxLoadSetMaxScore.Size = new System.Drawing.Size(72, 16);
-            this.checkBoxLoadSetMaxScore.TabIndex = 15;
-            this.checkBoxLoadSetMaxScore.Text = "载入满分";
-            this.checkBoxLoadSetMaxScore.UseVisualStyleBackColor = true;
-            this.checkBoxLoadSetMaxScore.CheckedChanged += new System.EventHandler(this.checkBoxLoadSetMaxScore_CheckedChanged);
-            // 
-            // buttonSubmitMulti2
-            // 
-            this.buttonSubmitMulti2.Location = new System.Drawing.Point(436, 0);
-            this.buttonSubmitMulti2.Name = "buttonSubmitMulti2";
-            this.buttonSubmitMulti2.Size = new System.Drawing.Size(51, 24);
-            this.buttonSubmitMulti2.TabIndex = 16;
-            this.buttonSubmitMulti2.Text = "提交";
-            this.buttonSubmitMulti2.UseVisualStyleBackColor = true;
-            this.buttonSubmitMulti2.Click += new System.EventHandler(this.buttonSubmitMulti2_Click);
             // 
             // FormFullScreenYJ
             // 

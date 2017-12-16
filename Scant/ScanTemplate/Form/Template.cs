@@ -148,6 +148,29 @@ namespace ARTemplate
                             Rectangle r = Tools.StringTools.StringToRectangle(rect.InnerText);
                             if (Type == "条形码")
                                 _dic[name].Add(new KaoHaoChoiceArea(r, "考号", Type));
+                            else if ("1023456789".Contains(Type))
+                            {
+                                XmlNode xname = node.SelectSingleNode("NAME");
+                                XmlNode xsize = node.SelectSingleNode("SIZE");
+                                if ( xname != null && xsize != null)
+                                {
+                                    Size size = Tools.StringTools.StringToSize(xsize.InnerText);
+                                    List<List<Point>> llp = new List<List<Point>>();
+                                    foreach (XmlNode node1 in node.ChildNodes)
+                                    {
+                                        if (node1.Name == "SINGLE")
+                                        {
+                                            List<Point> listp = new List<Point>();
+                                            foreach (XmlNode node2 in node1.ChildNodes)
+                                            {
+                                                listp.Add(Tools.StringTools.StringToPoint(node2.InnerText));
+                                            }
+                                            llp.Add(listp);
+                                        }
+                                    }
+                                    _dic[name].Add(new KaoHaoChoiceArea(r, "考号", Type, llp, size));
+                                }
+                            }
                         }
                     }
                     else if (ENname == "FEATUREPOINTSAREA")

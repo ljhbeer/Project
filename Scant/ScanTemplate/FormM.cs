@@ -464,7 +464,7 @@ namespace ScanTemplate
                 nbmp.Save(s.Replace("LJH\\", "LJH\\Correct\\"));
 
                 //计算选择题
-                AutoComputeXZT acx = new AutoComputeXZT(_artemplate, _angle, nbmp);
+                AutoComputeXZTKH acx = new AutoComputeXZTKH(_artemplate, _angle, nbmp);
                 sb.Append(acx.ComputeXZT(str)); //选择题
                 //计算二维码				
                 if (_artemplate.Dic.ContainsKey("考号") && _artemplate.Dic["考号"].Count > 0)
@@ -473,14 +473,18 @@ namespace ScanTemplate
                     if (kha.Type == "条形码")
                     {
                         Rectangle Ir = kha.ImgArea;
-                        //Ir.Offset(CorrectRect.Location);
                         Bitmap barmap = (Bitmap)nbmp.Clone(kha.ImgArea, nbmp.PixelFormat);
                         //barmap.Save("f:\\aa.tif");
+                        //Ir.Offset(CorrectRect.Location);
                         ZXing.Result rs = _br.Decode(barmap);
                         if (rs != null)
                         {
                             sb.Append("," + rs.Text);
                         }
+                    }
+                    else if ("1023456789".Contains(kha.Type))
+                    {
+                        sb.Append("," + acx.ComputeKH(kha, _angle, nbmp));
                     }
                 }
             }
@@ -494,7 +498,11 @@ namespace ScanTemplate
 		}
 		public void RunDetectAllImg(){
 			StringBuilder sb = new StringBuilder();
-			_titlepos = ConstructTitlePos(ref _xztpos);
+			_titlepos = ConstructTitlePos(_exporttitle);
+
+            if (_titlepos.ContainsKey("选择题"))
+                _xztpos = _titlepos["选择题"];
+            _titlepos.Remove("选择题");
 			foreach (string s in _runnameList)
 			{
 				_runmsg = DetectAllImg(_rundr, s).ToString();
@@ -564,32 +572,33 @@ namespace ScanTemplate
 			int xztpos = 0;
 			string[] ls = File.ReadAllLines(dataname);
 			// 应该根据第一行标题来进行
-			Dictionary<string, int> titlepos = ConstructTitlePos(ref xztpos);
+            List<string> titles = ls[0].Split(',').ToList();
+			Dictionary<string, int> titlepos = ConstructTitlePos( titles );
+            if(titlepos.ContainsKey("选择题"))
+                xztpos = titlepos["选择题"];
+            titlepos.Remove("选择题");
 			for (int i = 1; i < ls.Length; i++) {
 				string[] ss = ls[i].Split(',');
 				DataRow dr = _rundt.NewRow();
 				
-				MsgToDr(titlepos, xztpos, ss, ref dr);
+				MsgToDr(titlepos,titles, xztpos, ss, ref dr);
 				_rundt.Rows.Add(dr);
 			}
 		}
-		private Dictionary<string, int> ConstructTitlePos(ref int xztpos)
+		private Dictionary<string, int> ConstructTitlePos(List<string> Titles)
 		{
 			Dictionary<string, int> titlepos = new Dictionary<string, int>();
-			xztpos = 0;
-			for (int i = 0; i < _exporttitle.Count; i++) {
-				if (_exporttitle[i] == "选择题") {
-					xztpos = i;
-				} else {
-					titlepos[_exporttitle[i]] = i;
-				}
+            //xztpos = 0;
+            for (int i = 0; i < Titles.Count; i++)
+            {
+                titlepos[Titles[i]] = i;
 			}
 			return titlepos;
 		}
-		private void MsgToDr(Dictionary<string, int> titlepos, int xztpos, string[] ss, ref DataRow dr)
+		private void MsgToDr(Dictionary<string, int> titlepos, List<string> Titles, int xztpos, string[] ss, ref DataRow dr)
 		{
 			dr["序号"] = _rundt.Rows.Count + 1;
-			if (ss.Length == _exporttitle.Count) {
+			if (ss.Length == Titles.Count) {
 				foreach (KeyValuePair<string, int> kv in titlepos) {
 					if (kv.Key.Contains("校验"))
 						dr[kv.Key] = Convert.ToDouble(ss[kv.Value]);
@@ -632,7 +641,7 @@ namespace ScanTemplate
 			string[] ss = _runmsg.Trim().Split(',');
 
 			DataRow dr = _rundt.NewRow();
-			MsgToDr(_titlepos, _xztpos, ss, ref dr);
+			MsgToDr(_titlepos,_exporttitle, _xztpos, ss, ref dr);
 //			dr["文件名"] = ss[0];
 //			dr["校验"] = Convert.ToDouble( ss[2] );
 //			dr["序号"]=_rundt.Rows.Count+1;

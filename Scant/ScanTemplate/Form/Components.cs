@@ -110,6 +110,14 @@ namespace ARTemplate
             this.Name = name;
             this.Type = type; // 条形码  ，  填涂横向， 填涂纵向
         }
+        public KaoHaoChoiceArea(Rectangle m_Imgselection, string name, string type, List<List<Point>> list, Size size)
+        {
+            this.Rect = m_Imgselection;
+            this.Name = name;
+            this.Type = type;
+            this.list = list;
+            this.Size = size;
+        }
         public override bool HasSubArea()
         {
             if (Type == "条形码")
@@ -117,7 +125,7 @@ namespace ARTemplate
             return true;
         }
         public override Rectangle[] ImgSubArea() {
-            if (Type == "填涂横向" || Type == "填涂纵向")
+            if ("1023456789".Contains(Type))                                    //(Type == "填涂横向" || Type == "填涂纵向")
             {
                 int count = 0;
                 foreach (List<Point> l in list)
@@ -131,13 +139,13 @@ namespace ARTemplate
                     foreach (Point p in l)
                     {
                         rv[i] = new Rectangle(p, Size);
+                        //rv[i].Offset(Rect.Location);
                         i++;
                     }
                 }
                 return rv; 
             }
             return null;
-            
         }
         public override string ToXmlString() //分Type
         {
@@ -145,7 +153,7 @@ namespace ARTemplate
                 + Name.ToXmlString("NAME"); //+ "<SIZE>" + size.Width + "," + size.Height + "</SIZE>"
             if (Type == "条形码")
                 str += "";
-            else if (Type == "填涂横向" || Type == "填涂纵向")
+            else if("1023456789".Contains(Type)) // (Type == "填涂横向" || Type == "填涂纵向")
             { 
                 int i = 0;
                 str += Size.ToXmlString();

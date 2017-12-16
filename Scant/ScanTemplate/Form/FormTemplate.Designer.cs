@@ -44,18 +44,20 @@
             this.toolStripButtonZoomout = new System.Windows.Forms.ToolStripButton();
             this.toolStripButtonZoomin = new System.Windows.Forms.ToolStripButton();
             this.toolStripButtonZoomMouse = new System.Windows.Forms.ToolStripButton();
-            this.toolStripButtonZoomNone = new System.Windows.Forms.ToolStripButton();
             this.toolStripButtonWhite = new System.Windows.Forms.ToolStripButton();
             this.toolStripButtonToDark = new System.Windows.Forms.ToolStripButton();
-            this.toolStripButtonCloseAndOutImages = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButtonSetGroup = new System.Windows.Forms.ToolStripButton();
             this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.treeView1 = new System.Windows.Forms.TreeView();
             this.panel1 = new System.Windows.Forms.Panel();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.textBoxMessage = new System.Windows.Forms.TextBox();
+            this.toolStrip2 = new System.Windows.Forms.ToolStrip();
+            this.toolStripButtonCloseAndOutImages = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButtonZoomNone = new System.Windows.Forms.ToolStripButton();
+            this.toolStripComboBoxKHFormat = new System.Windows.Forms.ToolStripComboBox();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
-            this.toolStripButtonSetGroup = new System.Windows.Forms.ToolStripButton();
             this.toolStrip1.SuspendLayout();
             this.toolStripContainer1.ContentPanel.SuspendLayout();
             this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
@@ -63,6 +65,7 @@
             this.tableLayoutPanel1.SuspendLayout();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            this.toolStrip2.SuspendLayout();
             this.SuspendLayout();
             // 
             // imageList1
@@ -93,14 +96,12 @@
             this.toolStripButtonZoomout,
             this.toolStripButtonZoomin,
             this.toolStripButtonZoomMouse,
-            this.toolStripButtonZoomNone,
             this.toolStripButtonWhite,
             this.toolStripButtonToDark,
-            this.toolStripButtonSetGroup,
-            this.toolStripButtonCloseAndOutImages});
+            this.toolStripButtonSetGroup});
             this.toolStrip1.Location = new System.Drawing.Point(3, 0);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(870, 25);
+            this.toolStrip1.Size = new System.Drawing.Size(701, 25);
             this.toolStrip1.TabIndex = 1;
             // 
             // toolStripButtonSaveTemplate
@@ -197,16 +198,6 @@
             this.toolStripButtonZoomMouse.Text = "Zoom";
             this.toolStripButtonZoomMouse.Click += new System.EventHandler(this.toolStripButtonZoomMouse_Click);
             // 
-            // toolStripButtonZoomNone
-            // 
-            this.toolStripButtonZoomNone.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.toolStripButtonZoomNone.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonZoomNone.Image")));
-            this.toolStripButtonZoomNone.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButtonZoomNone.Name = "toolStripButtonZoomNone";
-            this.toolStripButtonZoomNone.Size = new System.Drawing.Size(33, 22);
-            this.toolStripButtonZoomNone.Text = "还原";
-            this.toolStripButtonZoomNone.Click += new System.EventHandler(this.toolStripButtonZoomNone_Click);
-            // 
             // toolStripButtonWhite
             // 
             this.toolStripButtonWhite.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
@@ -227,15 +218,15 @@
             this.toolStripButtonToDark.Text = "选区变黑";
             this.toolStripButtonToDark.Click += new System.EventHandler(this.toolStripButtonToDark_Click);
             // 
-            // toolStripButtonCloseAndOutImages
+            // toolStripButtonSetGroup
             // 
-            this.toolStripButtonCloseAndOutImages.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.toolStripButtonCloseAndOutImages.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonCloseAndOutImages.Image")));
-            this.toolStripButtonCloseAndOutImages.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButtonCloseAndOutImages.Name = "toolStripButtonCloseAndOutImages";
-            this.toolStripButtonCloseAndOutImages.Size = new System.Drawing.Size(57, 22);
-            this.toolStripButtonCloseAndOutImages.Text = "保存退出";
-            this.toolStripButtonCloseAndOutImages.Click += new System.EventHandler(this.toolStripButtonCloseAndOutImages_Click);
+            this.toolStripButtonSetGroup.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.toolStripButtonSetGroup.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonSetGroup.Image")));
+            this.toolStripButtonSetGroup.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButtonSetGroup.Name = "toolStripButtonSetGroup";
+            this.toolStripButtonSetGroup.Size = new System.Drawing.Size(57, 22);
+            this.toolStripButtonSetGroup.Text = "设置题组";
+            this.toolStripButtonSetGroup.Click += new System.EventHandler(this.toolStripButtonSetGroup_Click);
             // 
             // toolStripContainer1
             // 
@@ -254,6 +245,7 @@
             // toolStripContainer1.TopToolStripPanel
             // 
             this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.toolStrip1);
+            this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.toolStrip2);
             // 
             // tableLayoutPanel1
             // 
@@ -313,15 +305,53 @@
             this.textBoxMessage.Size = new System.Drawing.Size(151, 21);
             this.textBoxMessage.TabIndex = 2;
             // 
-            // toolStripButtonSetGroup
+            // toolStrip2
             // 
-            this.toolStripButtonSetGroup.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.toolStripButtonSetGroup.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonSetGroup.Image")));
-            this.toolStripButtonSetGroup.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButtonSetGroup.Name = "toolStripButtonSetGroup";
-            this.toolStripButtonSetGroup.Size = new System.Drawing.Size(105, 22);
-            this.toolStripButtonSetGroup.Text = "设置非选择题题组";
-            this.toolStripButtonSetGroup.Click += new System.EventHandler(this.toolStripButtonSetGroup_Click);
+            this.toolStrip2.Dock = System.Windows.Forms.DockStyle.None;
+            this.toolStrip2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripButtonCloseAndOutImages,
+            this.toolStripButtonZoomNone,
+            this.toolStripComboBoxKHFormat});
+            this.toolStrip2.Location = new System.Drawing.Point(704, 0);
+            this.toolStrip2.Name = "toolStrip2";
+            this.toolStrip2.Size = new System.Drawing.Size(248, 25);
+            this.toolStrip2.TabIndex = 2;
+            // 
+            // toolStripButtonCloseAndOutImages
+            // 
+            this.toolStripButtonCloseAndOutImages.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.toolStripButtonCloseAndOutImages.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonCloseAndOutImages.Image")));
+            this.toolStripButtonCloseAndOutImages.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButtonCloseAndOutImages.Name = "toolStripButtonCloseAndOutImages";
+            this.toolStripButtonCloseAndOutImages.Size = new System.Drawing.Size(57, 22);
+            this.toolStripButtonCloseAndOutImages.Text = "保存退出";
+            this.toolStripButtonCloseAndOutImages.Click += new System.EventHandler(this.toolStripButtonCloseAndOutImages_Click);
+            // 
+            // toolStripButtonZoomNone
+            // 
+            this.toolStripButtonZoomNone.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.toolStripButtonZoomNone.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonZoomNone.Image")));
+            this.toolStripButtonZoomNone.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButtonZoomNone.Name = "toolStripButtonZoomNone";
+            this.toolStripButtonZoomNone.Size = new System.Drawing.Size(33, 22);
+            this.toolStripButtonZoomNone.Text = "还原";
+            this.toolStripButtonZoomNone.Click += new System.EventHandler(this.toolStripButtonZoomNone_Click);
+            // 
+            // toolStripComboBoxKHFormat
+            // 
+            this.toolStripComboBoxKHFormat.Items.AddRange(new object[] {
+            "考号-条形码",
+            "考号-涂卡3位",
+            "考号-涂卡4位",
+            "考号-涂卡5位",
+            "考号-涂卡6位",
+            "考号-涂卡7位",
+            "考号-涂卡8位",
+            "考号-涂卡9位",
+            "考号-涂卡10位"});
+            this.toolStripComboBoxKHFormat.Name = "toolStripComboBoxKHFormat";
+            this.toolStripComboBoxKHFormat.Size = new System.Drawing.Size(121, 25);
+            this.toolStripComboBoxKHFormat.Text = "考号格式";
             // 
             // FormTemplate
             // 
@@ -343,6 +373,8 @@
             this.tableLayoutPanel1.PerformLayout();
             this.panel1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            this.toolStrip2.ResumeLayout(false);
+            this.toolStrip2.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -365,7 +397,6 @@
         private System.Windows.Forms.TextBox textBoxMessage;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.ToolStripButton toolStripButtonZoomin;
-        private System.Windows.Forms.ToolStripButton toolStripButtonZoomNone;
         private System.Windows.Forms.ToolStripButton toolStripButtonZoomout;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.ToolStripButton toolStripButtonWhite;
@@ -373,9 +404,12 @@
         private System.Windows.Forms.ToolStripButton toolStripButtonZoomMouse;
         private System.Windows.Forms.ToolStripButton toolStripButtonSaveTemplate;
         private System.Windows.Forms.ToolStripButton toolStripButtonImportTemplate;
-        private System.Windows.Forms.ToolStripButton toolStripButtonCloseAndOutImages;
         private System.Windows.Forms.ToolStripButton toolStripButtonName;
         private System.Windows.Forms.ToolStripButton toolStripButtonSetGroup;
+        private System.Windows.Forms.ToolStrip toolStrip2;
+        private System.Windows.Forms.ToolStripButton toolStripButtonCloseAndOutImages;
+        private System.Windows.Forms.ToolStripButton toolStripButtonZoomNone;
+        private System.Windows.Forms.ToolStripComboBox toolStripComboBoxKHFormat;
     }
 }
 

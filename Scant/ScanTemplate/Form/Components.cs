@@ -23,7 +23,11 @@ namespace ARTemplate
                     strValue = f.StrValue;
                 else if (keyname == "选择题" || keyname == "非选择题")
                     IntValue = f.IntValue;
-
+                else if (keyname == "自定义")
+                {
+                    IntValue = f.IntValue;
+                    strValue = f.StrValue;
+                }
                 if (f.StrValue == "" || f.IntValue < 0)
                     return false;
                 return true;
@@ -300,6 +304,69 @@ namespace ARTemplate
         {
             return _name;
         }
+    }
+    public class CustomArea : Area
+    {
+        public CustomArea(Rectangle m_Imgselection, string name, string type, List<List<Point>> list, Size size)
+        {
+            this.Rect = m_Imgselection;
+            this.Name = name;
+            this.Type = type;
+            this.list = list;
+            this.Size = size;
+        }
+        public override bool HasSubArea()
+        {
+            return true;
+        }
+        public override Rectangle[] ImgSubArea()
+        {
+            if ("1023456789".Contains(Type))                                    //(Type == "填涂横向" || Type == "填涂纵向")
+            {
+                int count = 0;
+                foreach (List<Point> l in list)
+                    count += l.Count;
+                if (count == 0) return null;
+
+                Rectangle[] rv = new Rectangle[count];
+                int i = 0;
+                foreach (List<Point> l in list)
+                {
+                    foreach (Point p in l)
+                    {
+                        rv[i] = new Rectangle(p, Size);
+                        //rv[i].Offset(Rect.Location);
+                        i++;
+                    }
+                }
+                return rv;
+            }
+            return null;
+        }
+        public override string ToXmlString() //分Type
+        {
+            String str = Type.ToXmlString("TYPE") + Rect.ToXmlString()
+                + Name.ToXmlString("NAME"); //+ "<SIZE>" + size.Width + "," + size.Height + "</SIZE>"
+            if ("1023456789".Contains(Type)) // (Type == "填涂横向" || Type == "填涂纵向")
+            {
+                int i = 0;
+                str += Size.ToXmlString();
+                foreach (List<Point> lp in list)
+                {
+                    str += "<SINGLE ID=\"" + i++ + "\">" + string.Join("", lp.Select(r => r.ToXmlString())) + "</SINGLE>";
+                }
+            }
+            return str;
+        }
+        public override String ToString()
+        {
+            return Name;
+        }
+        public string Name { get; set; }
+        public string Type { get; set; }
+        // "填涂横向" || Type == "填涂纵向"
+        public List<List<Point>> list;
+        public Size Size;
     }
     public class ZoomBox
     {

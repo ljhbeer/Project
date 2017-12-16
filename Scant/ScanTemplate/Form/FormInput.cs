@@ -20,6 +20,7 @@ namespace ARTemplate
             // TODO: Complete member initialization
             this.keyname = keyname;
             InitializeComponent();
+            label2.Visible = textBox2.Visible = false;
             if (keyname == "考试名称")
             {
                 label1.Text = "请输入本次考试名称";
@@ -34,6 +35,14 @@ namespace ARTemplate
             {
                 label1.Text = "请输入每个空的分值，必须大于0,也可以以后统一输入";
                 textBox1.Text = "2";
+            }
+            else if (keyname == "自定义")
+            {
+                label1.Text = "请输入自定义名称";
+                textBox1.Text = "座位号";
+                label2.Text = "输入选项数";
+                textBox2.Text = "10";
+                label2.Visible = textBox2.Visible = true; ;
             }
         }
         private void buttonOK_Click(object sender, EventArgs e)
@@ -51,6 +60,18 @@ namespace ARTemplate
                 catch
                 {
                     IntValue = -1;
+                }
+            }
+            else if (keyname == "自定义")
+            {
+                try
+                {
+                    StrValue = textBox1.Text.Trim();
+                    IntValue = Convert.ToInt32(textBox2.Text);
+                }
+                catch
+                {
+                    IntValue = -2;
                 }
             }
             this.DialogResult = System.Windows.Forms.DialogResult.OK;

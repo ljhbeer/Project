@@ -34,6 +34,8 @@
             this.panel2 = new System.Windows.Forms.Panel();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
+            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
             this.tableLayoutPanel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.SuspendLayout();
@@ -54,12 +56,12 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 28F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 35F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(269, 138);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(298, 158);
             this.tableLayoutPanel1.TabIndex = 1;
             // 
             // buttonOK
             // 
-            this.buttonOK.Location = new System.Drawing.Point(37, 106);
+            this.buttonOK.Location = new System.Drawing.Point(52, 126);
             this.buttonOK.Name = "buttonOK";
             this.buttonOK.Size = new System.Drawing.Size(94, 29);
             this.buttonOK.TabIndex = 0;
@@ -69,7 +71,7 @@
             // 
             // buttonCancel
             // 
-            this.buttonCancel.Location = new System.Drawing.Point(137, 106);
+            this.buttonCancel.Location = new System.Drawing.Point(152, 126);
             this.buttonCancel.Name = "buttonCancel";
             this.buttonCancel.Size = new System.Drawing.Size(94, 29);
             this.buttonCancel.TabIndex = 0;
@@ -80,17 +82,19 @@
             // panel2
             // 
             this.tableLayoutPanel1.SetColumnSpan(this.panel2, 2);
+            this.panel2.Controls.Add(this.textBox2);
+            this.panel2.Controls.Add(this.label2);
             this.panel2.Controls.Add(this.textBox1);
             this.panel2.Controls.Add(this.label1);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel2.Location = new System.Drawing.Point(37, 31);
+            this.panel2.Location = new System.Drawing.Point(52, 31);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(194, 69);
+            this.panel2.Size = new System.Drawing.Size(194, 89);
             this.panel2.TabIndex = 0;
             // 
             // textBox1
             // 
-            this.textBox1.Location = new System.Drawing.Point(18, 29);
+            this.textBox1.Location = new System.Drawing.Point(23, 20);
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(159, 21);
             this.textBox1.TabIndex = 1;
@@ -98,17 +102,35 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(5, 2);
+            this.label1.Location = new System.Drawing.Point(5, 3);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(89, 12);
             this.label1.TabIndex = 0;
             this.label1.Text = "请输入选择题数";
             // 
+            // textBox2
+            // 
+            this.textBox2.Location = new System.Drawing.Point(22, 64);
+            this.textBox2.Name = "textBox2";
+            this.textBox2.Size = new System.Drawing.Size(159, 21);
+            this.textBox2.TabIndex = 3;
+            this.textBox2.Visible = false;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(4, 47);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(89, 12);
+            this.label2.TabIndex = 2;
+            this.label2.Text = "请输入选择题数";
+            this.label2.Visible = false;
+            // 
             // FormInput
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(279, 148);
+            this.ClientSize = new System.Drawing.Size(306, 164);
             this.Controls.Add(this.tableLayoutPanel1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Name = "FormInput";
@@ -129,5 +151,7 @@
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.Label label2;
     }
 }

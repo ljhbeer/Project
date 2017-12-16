@@ -58,6 +58,7 @@
             this.toolStripButtonZoomNone = new System.Windows.Forms.ToolStripButton();
             this.toolStripComboBoxKHFormat = new System.Windows.Forms.ToolStripComboBox();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
+            this.toolStripButtonCustomDefine = new System.Windows.Forms.ToolStripButton();
             this.toolStrip1.SuspendLayout();
             this.toolStripContainer1.ContentPanel.SuspendLayout();
             this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
@@ -98,10 +99,11 @@
             this.toolStripButtonZoomMouse,
             this.toolStripButtonWhite,
             this.toolStripButtonToDark,
-            this.toolStripButtonSetGroup});
+            this.toolStripButtonSetGroup,
+            this.toolStripButtonCustomDefine});
             this.toolStrip1.Location = new System.Drawing.Point(3, 0);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(701, 25);
+            this.toolStrip1.Size = new System.Drawing.Size(681, 25);
             this.toolStrip1.TabIndex = 1;
             // 
             // toolStripButtonSaveTemplate
@@ -128,16 +130,16 @@
             // 
             this.toolStripButtonDP.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButtonDP.Name = "toolStripButtonDP";
-            this.toolStripButtonDP.Size = new System.Drawing.Size(69, 22);
-            this.toolStripButtonDP.Text = "定义特征点";
+            this.toolStripButtonDP.Size = new System.Drawing.Size(57, 22);
+            this.toolStripButtonDP.Text = "DF特征点";
             this.toolStripButtonDP.Click += new System.EventHandler(this.toolStripButtonDP_Click);
             // 
             // toolStripButtonDId
             // 
             this.toolStripButtonDId.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButtonDId.Name = "toolStripButtonDId";
-            this.toolStripButtonDId.Size = new System.Drawing.Size(57, 22);
-            this.toolStripButtonDId.Text = "定义考号";
+            this.toolStripButtonDId.Size = new System.Drawing.Size(33, 22);
+            this.toolStripButtonDId.Text = "考号";
             this.toolStripButtonDId.Click += new System.EventHandler(this.toolStripButtonDId_Click);
             // 
             // toolStripButtonName
@@ -146,24 +148,24 @@
             this.toolStripButtonName.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonName.Image")));
             this.toolStripButtonName.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButtonName.Name = "toolStripButtonName";
-            this.toolStripButtonName.Size = new System.Drawing.Size(57, 22);
-            this.toolStripButtonName.Text = "定义姓名";
+            this.toolStripButtonName.Size = new System.Drawing.Size(33, 22);
+            this.toolStripButtonName.Text = "姓名";
             this.toolStripButtonName.Click += new System.EventHandler(this.toolStripButtonName_Click);
             // 
             // toolStripButtonDX
             // 
             this.toolStripButtonDX.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButtonDX.Name = "toolStripButtonDX";
-            this.toolStripButtonDX.Size = new System.Drawing.Size(69, 22);
-            this.toolStripButtonDX.Text = "定义选择题";
+            this.toolStripButtonDX.Size = new System.Drawing.Size(45, 22);
+            this.toolStripButtonDX.Text = "选择题";
             this.toolStripButtonDX.Click += new System.EventHandler(this.toolStripButtonDX_Click);
             // 
             // toolStripButtonDF
             // 
             this.toolStripButtonDF.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButtonDF.Name = "toolStripButtonDF";
-            this.toolStripButtonDF.Size = new System.Drawing.Size(69, 22);
-            this.toolStripButtonDF.Text = "定义非选择";
+            this.toolStripButtonDF.Size = new System.Drawing.Size(57, 22);
+            this.toolStripButtonDF.Text = "非选择题";
             this.toolStripButtonDF.Click += new System.EventHandler(this.toolStripButtonDF_Click);
             // 
             // toolStripButtonZoomout
@@ -312,9 +314,9 @@
             this.toolStripButtonCloseAndOutImages,
             this.toolStripButtonZoomNone,
             this.toolStripComboBoxKHFormat});
-            this.toolStrip2.Location = new System.Drawing.Point(704, 0);
+            this.toolStrip2.Location = new System.Drawing.Point(689, 0);
             this.toolStrip2.Name = "toolStrip2";
-            this.toolStrip2.Size = new System.Drawing.Size(248, 25);
+            this.toolStrip2.Size = new System.Drawing.Size(225, 25);
             this.toolStrip2.TabIndex = 2;
             // 
             // toolStripButtonCloseAndOutImages
@@ -352,6 +354,16 @@
             this.toolStripComboBoxKHFormat.Name = "toolStripComboBoxKHFormat";
             this.toolStripComboBoxKHFormat.Size = new System.Drawing.Size(121, 25);
             this.toolStripComboBoxKHFormat.Text = "考号格式";
+            // 
+            // toolStripButtonCustomDefine
+            // 
+            this.toolStripButtonCustomDefine.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.toolStripButtonCustomDefine.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonCustomDefine.Image")));
+            this.toolStripButtonCustomDefine.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButtonCustomDefine.Name = "toolStripButtonCustomDefine";
+            this.toolStripButtonCustomDefine.Size = new System.Drawing.Size(45, 22);
+            this.toolStripButtonCustomDefine.Text = "自定义";
+            this.toolStripButtonCustomDefine.Click += new System.EventHandler(this.toolStripButtonCustomDefine_Click);
             // 
             // FormTemplate
             // 
@@ -410,6 +422,7 @@
         private System.Windows.Forms.ToolStripButton toolStripButtonCloseAndOutImages;
         private System.Windows.Forms.ToolStripButton toolStripButtonZoomNone;
         private System.Windows.Forms.ToolStripComboBox toolStripComboBoxKHFormat;
+        private System.Windows.Forms.ToolStripButton toolStripButtonCustomDefine;
     }
 }
 

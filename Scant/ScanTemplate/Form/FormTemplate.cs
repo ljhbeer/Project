@@ -15,7 +15,7 @@ using ScanTemplate;
 namespace ARTemplate
 {
     [Flags]
-    enum Act : short { None = 0, DefinePoint = 1, DefineId = 2, DefineChoose = 4, DefineUnChoose = 8, DefineName = 16, Zoomin, Zoomout, SeclectionToWhite, SeclectionToDark, ZoomMouse, SelectionToGroup };
+    enum Act : short { None = 0, DefinePoint = 1, DefineId = 2, DefineChoose = 4, DefineUnChoose = 8, DefineName = 16, Zoomin, Zoomout, SeclectionToWhite, SeclectionToDark, ZoomMouse, SelectionToGroup, DefineCustom };
     public delegate void CompleteMouseMove(bool bcompleted);
 
     public partial class FormTemplate : Form
@@ -78,7 +78,7 @@ namespace ARTemplate
 
 
             m_tn.Text = "网上阅卷";
-            TreeNode[] vt = new TreeNode[8];
+            TreeNode[] vt = new TreeNode[9];
             for (int i = 0; i < vt.Count(); i++)
                 vt[i] = new TreeNode();
             vt[0].Name = vt[0].Text = "特征点";
@@ -89,6 +89,7 @@ namespace ARTemplate
             vt[5].Name = vt[5].Text = "选区变白";
             vt[6].Name = vt[6].Text = "选区变黑";
             vt[7].Name = vt[7].Text = "题组";
+            vt[8].Name = vt[8].Text = "自定义";
             m_tn.Nodes.AddRange(vt);
             treeView1.Nodes.Add(m_tn);
             treeView1.ExpandAll();
@@ -186,7 +187,7 @@ namespace ARTemplate
             if (m_act == Act.DefinePoint || m_act == Act.DefineId || m_act == Act.DefineName||
                 m_act == Act.DefineChoose || m_act == Act.DefineUnChoose||
                 m_act == Act.SeclectionToDark || m_act == Act.SeclectionToWhite ||
-                m_act == Act.SelectionToGroup )
+                m_act == Act.SelectionToGroup || m_act == Act.DefineCustom  )
             {
                 MT.StartDraw(true);
                 //MT.completevent += CompleteSelection;
@@ -242,6 +243,12 @@ namespace ARTemplate
                 m_act = Act.SelectionToGroup;
             toolStripButton_Click(sender, e);
         }
+        private void toolStripButtonCustomDefine_Click(object sender, EventArgs e)
+        {
+            if (!((ToolStripButton)sender).Checked)
+                m_act = Act.DefineCustom;
+            toolStripButton_Click(sender, e);
+        }
         private void CompleteSelection(bool bcomplete)
         {
             if (bcomplete)
@@ -258,12 +265,11 @@ namespace ARTemplate
                     case Act.SeclectionToDark: CompleteSelectionToDark(); break;
                     case Act.DefineName: CompleteDeFineName(); break;
                     case Act.SelectionToGroup: CompleteSelectionGroup(); break;
+                    case Act.DefineCustom: CompleteDefineCustom(); break;
                 }
             }
             pictureBox1.Invalidate();
         }
-
-       
         private void pictureBox1_MouseUp(object sender, MouseEventArgs e)
         {
             if (pictureBox1.Image == null) return;
@@ -309,7 +315,7 @@ namespace ARTemplate
                 Brush white = Brushes.White;
                 Brush Red = Brushes.Red;
                 Font font = DefaultFont;
-                foreach (string s in new string[] { "特征点", "考号","姓名", "选择题", "非选择题", "选区变黑", "选区变白","题组" })
+                foreach (string s in new string[] { "特征点", "考号","姓名", "选择题", "非选择题", "选区变黑", "选区变白","题组","自定义" })
                 {
                     foreach (TreeNode t in m_tn.Nodes[s].Nodes)
                     {
@@ -602,6 +608,40 @@ namespace ARTemplate
                 }
             }
         }
+        private void CompleteDefineCustom()
+        {
+            Rectangle m_Imgselection = zoombox.BoxToImgSelection(MT.Selection);
+            String keyname = "自定义";
+            // 区域不做选择
+            int count = 0;
+            string name = "座位号";
+            if (InputBox.Input("自定义"))
+            {
+                count = InputBox.IntValue;
+                name = InputBox.strValue;
+            }
+            else
+            {
+                return;
+            }
+
+            if(name == "座位号")
+            {
+                TreeNode t = new TreeNode();
+                int cnt = m_tn.Nodes[keyname].GetNodeCount(false) + 1;
+
+                Bitmap bitmap = GetDrawedbyBlackWhiteBitMap();
+                DetectChoiceArea dca = new DetectChoiceArea(bitmap, count);
+                if (dca.DetectCustomDF(false))
+                {
+                    string type = count.ToString();
+                    t.Name = t.Text = name + cnt;
+                    t.Tag = new KaoHaoChoiceArea(m_Imgselection, t.Name,type, dca.Choicepoint, dca.Choicesize);
+                    m_tn.Nodes[keyname].Nodes.Add(t);
+                }
+               
+            }
+        }
         private bool ExistDeFineSelection(String keyname)
         {
             Rectangle rect = m_Imgselection;
@@ -709,5 +749,6 @@ namespace ARTemplate
         private Template template;
         private double _OriginWith;
         private float  _defaultunchoosescore;
+
     }
 }

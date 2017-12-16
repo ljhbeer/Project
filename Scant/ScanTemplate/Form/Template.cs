@@ -51,7 +51,7 @@ namespace ARTemplate
         }
         public void ResetData(bool clearFeaturePoint=true)
         { //"特征点",不能清除
-            foreach (string s in new string[] {"特征点",  "考号", "姓名", "选择题", "非选择题", "选区变黑", "选区变白" ,"题组"})
+            foreach (string s in new string[] {"特征点",  "考号", "姓名", "选择题", "非选择题", "选区变黑", "选区变白" ,"题组","自定义"})
                 if (_dic.ContainsKey(s))
                 {
                     if (!clearFeaturePoint && s == "特征点")
@@ -88,7 +88,7 @@ namespace ARTemplate
             root.AppendChild(path);
             path.InnerXml = Imgsize.ToXmlString() + _imagefilename.ToXmlString("PATH")+Correctrect.ToXmlString().ToXmlString("CORRECTRECT");
 
-            foreach (string s in new string[] { "特征点-FEATUREPOINTSAREA", "考号-KAOHAOAREA", "姓名-NAMEAREA", "选择题-SINGLECHOICES", "非选择题-UNCHOOSES", "选区变黑-BLACKAREA", "选区变白-WHITEAREA","题组-UNCHOOSEGROUP" })
+            foreach (string s in new string[] { "特征点-FEATUREPOINTSAREA", "考号-KAOHAOAREA", "姓名-NAMEAREA", "选择题-SINGLECHOICES", "非选择题-UNCHOOSES", "选区变黑-BLACKAREA", "选区变白-WHITEAREA","题组-UNCHOOSEGROUP","自定义-CUSTOMDEFINE" })
             {
                 string name = s.Substring(0, s.IndexOf("-"));
                 string ENname = s.Substring(s.IndexOf("-")+1);
@@ -127,7 +127,7 @@ namespace ARTemplate
                 //////if (bitmap.Size != imgsize)
                 //////    return false;
                 //////_src = bitmap;
-                foreach (string s in new string[] { "特征点-FEATUREPOINTSAREA", "考号-KAOHAOAREA", "姓名-NAMEAREA", "选择题-SINGLECHOICES", "非选择题-UNCHOOSES", "选区变黑-BLACKAREA", "选区变白-WHITEAREA", "题组-UNCHOOSEGROUP" })
+                foreach (string s in new string[] { "特征点-FEATUREPOINTSAREA", "考号-KAOHAOAREA", "姓名-NAMEAREA", "选择题-SINGLECHOICES", "非选择题-UNCHOOSES", "选区变黑-BLACKAREA", "选区变白-WHITEAREA", "题组-UNCHOOSEGROUP", "自定义-CUSTOMDEFINE" })
                 {
                     string name = s.Substring(0, s.IndexOf("-"));
                     string ENname = s.Substring(s.IndexOf("-")+1);
@@ -173,6 +173,43 @@ namespace ARTemplate
                             }
                         }
                     }
+                    else if (ENname == "CUSTOMDEFINE")
+                    {
+                        foreach (XmlNode node in list)
+                        {
+                            //XmlNode node = list[0];
+                            XmlNode type = node.SelectSingleNode("TYPE");
+                            XmlNode rect = node.SelectSingleNode("Rectangle");
+                            if (type == null || rect == null)
+                                continue;
+                            string Type = type.InnerText;
+                            Rectangle r = Tools.StringTools.StringToRectangle(rect.InnerText);
+                            if ("1023456789".Contains(Type))
+                            {
+                                XmlNode xname = node.SelectSingleNode("NAME");
+                                XmlNode xsize = node.SelectSingleNode("SIZE");
+                                if (xname != null && xsize != null)
+                                {
+                                    string strname = xname.InnerText;
+                                    Size size = Tools.StringTools.StringToSize(xsize.InnerText);
+                                    List<List<Point>> llp = new List<List<Point>>();
+                                    foreach (XmlNode node1 in node.ChildNodes)
+                                    {
+                                        if (node1.Name == "SINGLE")
+                                        {
+                                            List<Point> listp = new List<Point>();
+                                            foreach (XmlNode node2 in node1.ChildNodes)
+                                            {
+                                                listp.Add(Tools.StringTools.StringToPoint(node2.InnerText));
+                                            }
+                                            llp.Add(listp);
+                                        }
+                                    }
+                                    _dic[name].Add(new CustomArea(r, strname, Type, llp, size));
+                                }
+                            }
+                        }
+                    }
                     else if (ENname == "FEATUREPOINTSAREA")
                     {
                         List<Rectangle> lr = new List<Rectangle>();
@@ -191,7 +228,7 @@ namespace ARTemplate
                         XmlNode rect = list[0].SelectSingleNode("Rectangle");
                         if (rect != null)
                         {
-                            Rectangle r = Tools.StringTools.StringToRectangle(rect.InnerText);                          
+                            Rectangle r = Tools.StringTools.StringToRectangle(rect.InnerText);
                             _dic[name].Add(new NameArea(r));
                         }
                     }
@@ -222,7 +259,7 @@ namespace ARTemplate
                                         llp.Add(listp);
                                     }
                                 }
-                                _dic[name].Add(new SingleChoiceArea(r,strname,llp,size));
+                                _dic[name].Add(new SingleChoiceArea(r, strname, llp, size));
                             }
                         }
                     }
@@ -233,12 +270,12 @@ namespace ARTemplate
                             XmlNode rect = node.SelectSingleNode("Rectangle");
                             XmlNode xname = node.SelectSingleNode("NAME");
                             XmlNode xscore = node.SelectSingleNode("SCORE");
-                            if (rect != null && xname!=null  && xscore!=null)
+                            if (rect != null && xname != null && xscore != null)
                             {
                                 Rectangle r = Tools.StringTools.StringToRectangle(rect.InnerText);
                                 string strname = xname.InnerText;
-                                float score =(float) Convert.ToDouble(xscore.InnerText);
-                                _dic[name].Add(new UnChoose(score,strname,r));
+                                float score = (float)Convert.ToDouble(xscore.InnerText);
+                                _dic[name].Add(new UnChoose(score, strname, r));
                             }
                         }
                     }
@@ -265,17 +302,18 @@ namespace ARTemplate
                                 _dic[name].Add(new TempArea(r, "选区变白"));
                             }
                         }
-                    }else if (ENname == "UNCHOOSEGROUP")
+                    }
+                    else if (ENname == "UNCHOOSEGROUP")
                     {
                         foreach (XmlNode node in list)
                         {
                             XmlNode rect = node.SelectSingleNode("Rectangle");
                             XmlNode xname = node.SelectSingleNode("NAME");
-                            if (rect != null && xname!=null )
+                            if (rect != null && xname != null)
                             {
                                 Rectangle r = Tools.StringTools.StringToRectangle(rect.InnerText);
                                 string strname = xname.InnerText;
-                                _dic[name].Add(new TzArea(r,strname));
+                                _dic[name].Add(new TzArea(r, strname));
                             }
                         }
                     }
@@ -290,7 +328,7 @@ namespace ARTemplate
         }       
         public void SetDataToNode(TreeNode m_tn)
         {
-            foreach (string s in new string[] { "特征点", "考号", "姓名", "选择题", "非选择题", "选区变黑", "选区变白","题组" })
+            foreach (string s in new string[] { "特征点", "考号", "姓名", "选择题", "非选择题", "选区变黑", "选区变白","题组","自定义" })
             {
                 TreeNodeCollection tc = m_tn.Nodes[s].Nodes;
                 if(_dic.ContainsKey(s))
@@ -300,7 +338,7 @@ namespace ARTemplate
                     int cnt = tc.Count + 1;
                     t.Name = cnt.ToString();
                     t.Text =s + cnt;
-                    if (s == "非选择题")
+                    if ( "非选择题|题组|自定义".Contains(s))
                         t.Text = I.ToString();
                     t.Tag =I;
                     tc.Add(t);

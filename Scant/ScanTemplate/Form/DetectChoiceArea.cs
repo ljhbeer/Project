@@ -17,6 +17,87 @@ namespace ARTemplate
             this.choicesize = new Size(0,0);
         }
 
+        public bool DetectCustomDF(Boolean vertical)
+        {
+            List<int> xposlen, yposlen;
+            Rectangle rt = new Rectangle(0, 0, _src.Size.Width, _src.Size.Height);
+            int[] ycnt = BitmapTools.CountYPixsum(_src, rt);
+            int[] xcnt = BitmapTools.CountXPixsum(_src, rt);
+
+            ycnt = ycnt.Select(r => _src.Width - r).ToArray();
+            xcnt = xcnt.Select(r => _src.Height - r).ToArray();
+
+            int ymin = (int)Math.Ceiling(ycnt.Where(r => r > 0).Average()/1.5);
+            int xmin = (int)Math.Ceiling(xcnt.Where(r => r > 0).Average() / 1.5);
+            yposlen = BitmapTools.SectionCount(ycnt, ymin, _src.Width, 2);
+            xposlen = BitmapTools.SectionCount(xcnt, xmin, _src.Height, 2);
+            if (xposlen.Count == 0 || yposlen.Count == 0)
+                return false;
+            MergeSection(yposlen);
+            MergeSection(xposlen);
+
+            int optioncount = choicecount;
+            if (vertical)
+            {
+                xposlen = BitmapTools.SectionCount(xcnt, xmin, _src.Height, 2);
+                if (RemoveAndCheck(xposlen, 1) && RemoveAndCheck(yposlen, optioncount))
+                {
+                    m_choicepoint = new List<List<Point>>();
+                    int sum = 0;
+                    for (int i = 1; i < xposlen.Count; i += 2)
+                    {
+                        sum += xposlen[i] * xposlen[i];
+                    }
+                    choicesize.Width = (int)Math.Sqrt(sum * 2 / xposlen.Count);
+                    sum = 0;
+                    for (int i = 1; i < yposlen.Count; i += 2)
+                    {
+                        sum += yposlen[i] * yposlen[i];
+                    }
+                    choicesize.Height = (int)Math.Sqrt(sum * 2 / yposlen.Count);
+
+                    for (int i = 0; i < yposlen.Count; i += 2)
+                    {
+                        List<Point> c = new List<Point>();
+                        for (int j = 0; j < xposlen.Count; j += 2)
+                            c.Add(new Point(xposlen[j], yposlen[i]));
+                        m_choicepoint.Add(c);
+                    }
+                    return true;
+                }
+            }
+            else
+            {
+                if (RemoveAndCheck(xposlen, optioncount) && RemoveAndCheck(yposlen, 1))
+                {
+                    m_choicepoint = new List<List<Point>>();
+                    int sum = 0;
+                    for (int i = 1; i < xposlen.Count; i += 2)
+                    {
+                        sum += xposlen[i] * xposlen[i];
+                    }
+                    choicesize.Width = (int)Math.Sqrt(sum * 2 / xposlen.Count);
+                    sum = 0;
+                    for (int i = 1; i < yposlen.Count; i += 2)
+                    {
+                        sum += yposlen[i] * yposlen[i];
+                    }
+                    choicesize.Height = (int)Math.Sqrt(sum * 2 / yposlen.Count);
+
+                    for (int i = 0; i < yposlen.Count; i += 2)
+                    {
+                        List<Point> c = new List<Point>();
+                        for (int j = 0; j < xposlen.Count; j += 2)
+                            c.Add(new Point(xposlen[j], yposlen[i]));
+                        m_choicepoint.Add(c);
+                    }
+                    return true;
+                }
+
+            }
+            //DrawToFile(xcnt);
+            return false;
+        }
         public bool DetectKH(Boolean vertical) //垂直排列
         {
             List<int> xposlen, yposlen;

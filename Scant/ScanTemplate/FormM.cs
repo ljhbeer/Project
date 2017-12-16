@@ -487,6 +487,22 @@ namespace ScanTemplate
                         sb.Append("," + acx.ComputeKH(kha, _angle, nbmp));
                     }
                 }
+                //计算座位号
+                if (_artemplate.Dic.ContainsKey("自定义") && _artemplate.Dic["自定义"].Count > 0)
+                {
+                    StringBuilder tsb = new StringBuilder();
+                    foreach (Area I in _artemplate.Dic["自定义"])
+                    {
+                        CustomArea ca = (CustomArea)I;
+                        if ("1023456789".Contains(ca.Type))
+                        {
+                            AutoComputeXZTKH acxzdy = new AutoComputeXZTKH(_artemplate, _angle, nbmp);
+                            //sb.Append("," + acx.ComputeCustomDF(ca, _angle, nbmp));
+                            tsb.Append(acx.ComputeCustomDF(ca, _angle, nbmp) + "|");
+                        }
+                    }
+                    sb.Append("," + tsb);
+                }
             }
 			else
 			{

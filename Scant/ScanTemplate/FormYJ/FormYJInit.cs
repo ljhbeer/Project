@@ -575,7 +575,13 @@ namespace ScanTemplate.FormYJ
             this.Angle = Convert.ToDouble( dr["校验角度"].ToString());
             this.Name =  dr["姓名"].ToString();
             if (dr.Table.Columns.Contains("考号"))
-                this.KH = Convert.ToInt32(dr["考号"].ToString());
+            {
+                string skh = dr["考号"].ToString();
+                if (skh.Contains("-"))
+                    this.KH = 0;
+                else
+                    this.KH = Convert.ToInt32(dr["考号"].ToString());
+            }
             this._XZT = new List<string>();
             for (int i = 1; i < XZTcount+1; i++)
             {

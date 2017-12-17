@@ -317,10 +317,30 @@ namespace ScanTemplate
 			//TODO： 检测是否导入已有数据
 			if (!File.Exists(dataname))
 				return;
-			InitRundt(_artemplate);
+            InitExportTitleAndRunDataTable(_artemplate);
 			dgv.DataSource = _rundt;
 			InitDgvUI();
-			InitDgvData(dataname);
+
+            string[] ls = File.ReadAllLines(dataname);
+            List<string> titles = ls[0].Split(',').ToList();
+
+            List<string> except1 = _exporttitle.Except(titles).ToList();
+            List<string> except2 = titles.Except(_exporttitle).ToList();
+            // 应该根据第一行标题来进行
+            if (except2.Count == 0)
+            {
+                //if (except1.Count > 0)
+                    _exporttitle = titles;
+                _titlepos = ConstructTitlePos(titles);
+                if (_titlepos.ContainsKey("选择题"))
+                    _xztpos =_titlepos["选择题"];
+                _titlepos.Remove("选择题");
+			    InitDgvData(ls);
+            }
+            else
+            {
+                MessageBox.Show("模版不匹配");
+            }
 		}
 		private void pictureBox1_MouseEnter(object sender, EventArgs e)
 		{
@@ -405,8 +425,8 @@ namespace ScanTemplate
 			string dir = fi.Directory.FullName.Replace("LJH\\", "LJH\\Correct\\");
 			if (!Directory.Exists(dir))
 				Directory.CreateDirectory(dir);
-			
-			InitRundt(_artemplate);
+
+            InitExportTitleAndRunDataTable(_artemplate);
 			dgv.DataSource = _rundt;
 			InitDgvUI();
 			_rundr=dr;
@@ -415,26 +435,32 @@ namespace ScanTemplate
 			Thread thread=new Thread(new ThreadStart(RunDetectAllImg));
 			thread.Start();
 		}
-		private StringBuilder DetectAllImg(MyDetectFeatureRectAngle dr, string s,List<string> title=null)
-		{
-			if(dr==null ){
-				title.Clear();
-				title.Add("文件名");
-				title.Add("CorrectRect");
-				title.Add("校验角度");
-				title.Add("选择题");
-				if(_artemplate.Dic.ContainsKey("考号") && _artemplate.Dic["考号"].Count>0)
-					title.Add("考号");
-				return null;
-			}
+		public void RunDetectAllImg(){
+			StringBuilder sb = new StringBuilder();
+			_titlepos = ConstructTitlePos(_exporttitle);
 
+            if (_titlepos.ContainsKey("选择题"))
+                _xztpos = _titlepos["选择题"];
+            _titlepos.Remove("选择题");
+			foreach (string s in _runnameList)
+			{
+				_runmsg = DetectAllImg(_rundr, s).ToString();
+				sb.Append(_runmsg);
+				this.Invoke(new MyInvoke(ShowMsg));
+				Thread.Sleep(10);
+			}
+			_exportdata = sb.ToString();
+			this.Invoke(new MyInvoke(ExportData));
+		}
+		private StringBuilder DetectAllImg(MyDetectFeatureRectAngle dr, string s)
+		{			
 			Bitmap bmp = (Bitmap)Bitmap.FromFile(s);
-            string str = s.Substring(s.Length - 7, 3);
-			//MyDetectFeatureRectAngle dr = new MyDetectFeatureRectAngle(bmp);
+            string str = s.Substring(s.Length - 7, 3);		
             List<Rectangle> TBO = new List<Rectangle>();
 			Rectangle CorrectRect = dr.Detected(bmp,TBO);
 			StringBuilder sb = new StringBuilder();
-			sb.Append(s + "," +  CorrectRect.ToString("-") + ",");// 文件名 CorrectRect
+
+			sb.Append(s + "," +  CorrectRect.ToString("-") );// 文件名 , CorrectRect
 			if (CorrectRect.Width > 0 && TBO.Count==3)
             {
                 Rectangle T = TBO[0];
@@ -458,15 +484,11 @@ namespace ScanTemplate
                 B.Offset(offset);
                 O.Offset(offset);
 
-                sb.Append(_angle.SetPaper(T.Location, B.Location, O.Location) + ","); //校验角度
-
+                sb.Append("," + _angle.SetPaper(T.Location, B.Location, O.Location)); //校验角度
                 Bitmap nbmp = (Bitmap)bmp.Clone(CorrectRect, bmp.PixelFormat);
                 nbmp.Save(s.Replace("LJH\\", "LJH\\Correct\\"));
 
-                //计算选择题
-                AutoComputeXZTKH acx = new AutoComputeXZTKH(_artemplate, _angle, nbmp);
-                sb.Append(acx.ComputeXZT(str)); //选择题
-                //计算二维码				
+                AutoComputeXZTKH acx = new AutoComputeXZTKH(_artemplate, _angle, nbmp); 
                 if (_artemplate.Dic.ContainsKey("考号") && _artemplate.Dic["考号"].Count > 0)
                 {
                     KaoHaoChoiceArea kha = (KaoHaoChoiceArea)(_artemplate.Dic["考号"][0]);
@@ -479,14 +501,17 @@ namespace ScanTemplate
                         ZXing.Result rs = _br.Decode(barmap);
                         if (rs != null)
                         {
-                            sb.Append("," + rs.Text);
+                            sb.Append("," + rs.Text+",-");  //考号-条形码 姓名-未知 MsgtoDr中处理
                         }
                     }
                     else if ("1023456789".Contains(kha.Type))
                     {
-                        sb.Append("," + acx.ComputeKH(kha, _angle, nbmp));
+                        sb.Append("," + acx.ComputeKH(kha, _angle, nbmp)+",-");   //考号-涂卡 姓名-未知 MsgtoDr中处理
                     }
                 }
+
+                sb.Append(","+acx.ComputeXZT(str)); //选择题
+
                 //计算座位号
                 if (_artemplate.Dic.ContainsKey("自定义") && _artemplate.Dic["自定义"].Count > 0)
                 {
@@ -501,7 +526,7 @@ namespace ScanTemplate
                             tsb.Append(acx.ComputeCustomDF(ca, _angle, nbmp) + "|");
                         }
                     }
-                    sb.Append("," + tsb);
+                    sb.Append("," + tsb); //自定义
                 }
             }
 			else
@@ -511,23 +536,6 @@ namespace ScanTemplate
 			sb.AppendLine();
 			return sb;
 			//MessageBox.Show(sb.ToString());
-		}
-		public void RunDetectAllImg(){
-			StringBuilder sb = new StringBuilder();
-			_titlepos = ConstructTitlePos(_exporttitle);
-
-            if (_titlepos.ContainsKey("选择题"))
-                _xztpos = _titlepos["选择题"];
-            _titlepos.Remove("选择题");
-			foreach (string s in _runnameList)
-			{
-				_runmsg = DetectAllImg(_rundr, s).ToString();
-				sb.Append(_runmsg);
-				this.Invoke(new MyInvoke(ShowMsg));
-				Thread.Sleep(10);
-			}
-			_exportdata = sb.ToString();
-			this.Invoke(new MyInvoke(ExportData));
 		}
 		private void ExportData()
 		{
@@ -563,48 +571,61 @@ namespace ScanTemplate
                 else
                     dc.Width = 60;
 		}
-		private void InitRundt(Template _artemplate)
-		{
-			int xztcnt = 0;
-			if (_artemplate.Dic.ContainsKey("选择题")) {
-				foreach (Area I in _artemplate.Dic["选择题"]) {
-					xztcnt += ((SingleChoiceArea)I).Count;
-				}
-			}
-			List<string> colnames = new List<string> {"序号","姓名"};
-			//init _exporttitle
-			if(_exporttitle==null)
-				_exporttitle = new List<string>();
-			DetectAllImg(null,"",_exporttitle);
-			
-			colnames.AddRange( _exporttitle);
-			colnames.Remove("选择题");
-			for (int i = 0; i < xztcnt; i++)
-				colnames.Add("x" + (i + 1));
-			_rundt = Tools.DataTableTools.ConstructDataTable(colnames.ToArray());
-		}
-		private void InitDgvData(string dataname)
-		{
-			int xztpos = 0;
-			string[] ls = File.ReadAllLines(dataname);
-			// 应该根据第一行标题来进行
-            List<string> titles = ls[0].Split(',').ToList();
-			Dictionary<string, int> titlepos = ConstructTitlePos( titles );
-            if(titlepos.ContainsKey("选择题"))
-                xztpos = titlepos["选择题"];
-            titlepos.Remove("选择题");
-			for (int i = 1; i < ls.Length; i++) {
-				string[] ss = ls[i].Split(',');
-				DataRow dr = _rundt.NewRow();
-				
-				MsgToDr(titlepos,titles, xztpos, ss, ref dr);
-				_rundt.Rows.Add(dr);
-			}
-		}
+        private void InitDgvData( string[] ls)
+        {
+            for (int i = 1; i < ls.Length; i++)
+            {
+                string[] ss = ls[i].Split(',');
+                DataRow dr = _rundt.NewRow();
+
+                MsgToDr(_titlepos,_exporttitle, _xztpos, ss, ref dr);
+                _rundt.Rows.Add(dr);
+            }
+        }
+        private void InitExportTitleAndRunDataTable(Template t)
+        {
+            List<string> colnames = new List<string> { "序号"};          
+            _exporttitle = TitlesFromTemplate(t); //not contains 非选择题
+            colnames.AddRange(_exporttitle);
+            if (colnames.Contains("选择题"))
+            {
+                colnames.Remove("选择题");
+                for (int i = 0; i <t.XztRect.Count; i++)
+                    colnames.Add("x" + (i + 1));
+            }
+            _rundt = Tools.DataTableTools.ConstructDataTable(colnames.ToArray());
+        }
+        private List<string> TitlesFromTemplate(Template t)
+        {
+            if (t == null)
+                return null;
+            List<string> titles = new List<string>();
+            titles.Clear();
+            titles.Add("文件名");
+            titles.Add("CorrectRect");
+            titles.Add("校验角度");
+            string item = "考号";
+            if (t.Dic.ContainsKey(item) && t.Dic[item].Count > 0)
+            {
+                titles.Add(item);
+                titles.Add("姓名");
+            }
+            //item = "非选择题";
+            //if (t.Dic.ContainsKey(item) && t.Dic[item].Count > 0)
+            //    titles.Add(item);
+
+            item = "选择题";
+            if (t.Dic.ContainsKey(item) && t.Dic[item].Count > 0)
+                titles.Add(item);
+
+            item = "自定义";
+            if (t.Dic.ContainsKey(item) && t.Dic[item].Count > 0)
+                titles.Add(item);
+            return titles;
+        }		
 		private Dictionary<string, int> ConstructTitlePos(List<string> Titles)
 		{
 			Dictionary<string, int> titlepos = new Dictionary<string, int>();
-            //xztpos = 0;
             for (int i = 0; i < Titles.Count; i++)
             {
                 titlepos[Titles[i]] = i;

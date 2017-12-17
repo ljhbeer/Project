@@ -165,14 +165,15 @@ namespace ScanTemplate
                 return;
             }
 			DataTable dt = Tools.DataTableTools.ConstructDataTable(new string[] {
-			                                                       	"学号",
+			                                                       	"考号",
 			                                                       	"图片",
-			                                                       	"姓名",
+                                                                    "姓名",
+			                                                       	"新考号",
 			                                                       	"是否修改"
 			                                                       });
             Rectangle r = _artemplate.Dic["考号"][0].ImgArea;
 			foreach (DataRow dr in _rundt.Rows) {
-				if (dr["考号"].ToString() == "") {
+				if (dr["考号"].ToString().Contains("-")) {
 					string fn = dr["文件名"].ToString().Replace("LJH\\", "LJH\\Correct\\");
 					if (File.Exists(fn)) {
 						double angle = (double)(dr["校验角度"]);
@@ -180,11 +181,12 @@ namespace ScanTemplate
 						if (_angle != null)
 							_angle.SetPaper(angle);
 						DataRow ndr = dt.NewRow();
-						ndr["学号"] = new ValueTag(dr["考号"].ToString(), dr);
+						ndr["考号"] = new ValueTag(dr["考号"].ToString(), dr);
 
 						Bitmap nbmp = bmp.Clone(r, bmp.PixelFormat);
-						ndr["图片"] = nbmp;
-						ndr["姓名"] = "";
+                        ndr["图片"] = nbmp;
+                        ndr["姓名"] = "";
+                        ndr["新考号"] = "";
 						ndr["是否修改"] = false;
 						dt.Rows.Add(ndr);
 					}
@@ -192,7 +194,7 @@ namespace ScanTemplate
 			}
 			if(dt.Rows.Count>0){
 				MessageBox.Show("暂未实现，待修改");
-				FormVerify f = new FormVerify(dt);
+				FormVerify f = new FormVerify(dt,"考号");
 				if (f.ShowDialog() != System.Windows.Forms.DialogResult.OK) {
 					MessageBox.Show("校验失败");
 				}
@@ -238,7 +240,7 @@ namespace ScanTemplate
 				}
 				if (b || runcnt == _rundt.Rows.Count) {
 					if (dt.Rows.Count > 20 || (runcnt == _rundt.Rows.Count && dt.Rows.Count > 0)) {
-						FormVerify f = new FormVerify(dt);
+						FormVerify f = new FormVerify(dt,"选择题");
 						if (f.ShowDialog() != System.Windows.Forms.DialogResult.OK) {
 							MessageBox.Show("校验失败");
 						}
@@ -310,6 +312,35 @@ namespace ScanTemplate
 			InitTemplate(templatefilename);
 			InitListBoxData(templatefilename);
 		}
+        private void listBoxData_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (listBoxData.SelectedIndex == -1) return;
+            string dataname = ((ValueTag)listBoxData.SelectedItem).Tag.ToString();
+            //TODO： 检测是否导入已有数据
+            if (!File.Exists(dataname))
+                return;
+            if (e.KeyCode == Keys.H) //输出 F:\\out\\img.html
+            {
+                StringBuilder sb = new StringBuilder();
+                string img = "<img src=\"[img]\"  /> \r\n";
+                string[] ss = File.ReadAllLines(dataname);
+                if (ss.Length > 1 && ss[0].StartsWith("文件名"))
+                {
+                    for (int i = 1; i < ss.Length; i++)
+                    {
+                        string f = ss[i].Substring(0, ss[i].IndexOf("."));
+                        f = f.Substring(f.LastIndexOf("\\"));
+                        f = f.Substring(f.IndexOf("-"));
+                        f = f.Substring(f.Length - 3);
+                        f = Convert.ToInt32(f).ToString()+".jpg";
+
+                        sb.Append(img.Replace("[img]", f));
+                    }
+                }
+                File.WriteAllText("F:\\out\\ Img.html", sb.ToString());
+                MessageBox.Show(" 已生成文件 F:\\out\\ Img.html");
+            }
+        }
 		private void listBoxData_SelectedIndexChanged(object sender, EventArgs e)
 		{
 			if (listBoxData.SelectedIndex == -1) return;

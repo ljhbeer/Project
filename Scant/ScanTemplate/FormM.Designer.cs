@@ -184,6 +184,7 @@
             this.listBoxData.Size = new System.Drawing.Size(228, 100);
             this.listBoxData.TabIndex = 10;
             this.listBoxData.SelectedIndexChanged += new System.EventHandler(this.listBoxData_SelectedIndexChanged);
+            this.listBoxData.KeyUp += new System.Windows.Forms.KeyEventHandler(this.listBoxData_KeyUp);
             // 
             // buttonScan
             // 

@@ -32,6 +32,7 @@ namespace ScanTemplate
 		private List<string> _exporttitle;
 		private Dictionary<string, int> _titlepos;
 		private int _xztpos;
+        private TemplateSets _tss;
 		public FormM()
 		{
 			InitializeComponent();
@@ -71,6 +72,11 @@ namespace ScanTemplate
 			}            
             string exampath = _workpath.Substring(0, _workpath.LastIndexOf("\\")) + "\\Exam";
             g_cfg.SetWorkPath(exampath);
+
+            //
+
+            _tss = new TemplateSets();
+            _tss.Init(comboBoxTemplate.Items, templatepath);
 		}
         private void buttonRefresh_Click(object sender, EventArgs e)
         {
@@ -253,29 +259,6 @@ namespace ScanTemplate
 				}
 			}
 		}
-		private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
-		{
-			if (listBox1.SelectedIndex == -1) return;
-			string templatename = listBox1.SelectedItem.ToString();
-			string txt = templatename.Substring(templatename.LastIndexOf("\\") + 1);
-            AutoDetectRectAnge.FeatureSetPath = templatename;
-			bool unselected = true;
-            for (int i = 0; i < comboBoxTemplate.Items.Count; i++)
-            {
-                if (comboBoxTemplate.Items[i].ToString().StartsWith(txt))
-                {
-                    comboBoxTemplate.SelectedIndex = i;
-                    string templatefilename = ((ValueTag)comboBoxTemplate.SelectedItem).Tag.ToString();
-					if (_artemplate == null)
-						InitTemplate(templatefilename);
-					InitListBoxData(templatefilename );
-					unselected = false;
-					break;
-				}
-			}
-			if(unselected)
-                comboBoxTemplate.SelectedIndex = -1;
-		}
 		private void InitTemplate(string templatefilename)
 		{
 			{
@@ -299,18 +282,18 @@ namespace ScanTemplate
 		}
 		private void InitListBoxData(string templatefilename)
 		{
-			string dataname = templatefilename.Replace(".xml", ".txt");
-			string dir = templatefilename.Substring(0, templatefilename.LastIndexOf("\\"));
-            List<string> data = FileTools.NameListFromDir(dir, ".txt");
-			data = data.Where(r => r.Contains(templatefilename.Replace(".xml", ""))).ToList();
-			listBoxData.Items.Clear();
-			foreach (string s in data)
-			{
-				string value = s.Substring(s.LastIndexOf("\\")+1);
-				listBoxData.Items.Add(new ValueTag(value,s));
-			}
+            TemplateSet ts = _tss.GetTSFromTemplateName(templatefilename);
+            string path = _tss.TemplatePath() + "\\" + ts.dstpathname;
+            if(Directory.Exists(path)){
+                List<string> data = FileTools.NameListFromDir(path, ".txt");
+                listBoxData.Items.Clear();
+                foreach (string s in data)
+                {
+                    string value = s.Substring(s.LastIndexOf("\\") + 1);
+                    listBoxData.Items.Add(new ValueTag(value, s));
+                }
+            }
 		}
-
         private void comboBoxTemplate_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (comboBoxTemplate.SelectedIndex == -1) return;
@@ -318,6 +301,29 @@ namespace ScanTemplate
             InitTemplate(templatefilename);
             InitListBoxData(templatefilename);
         }
+		private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			if (listBox1.SelectedIndex == -1) return;
+			string templatename = listBox1.SelectedItem.ToString();
+			string txt = templatename.Substring(templatename.LastIndexOf("\\") + 1);
+            AutoDetectRectAnge.FeatureSetPath = templatename;
+			bool unselected = true;
+            for (int i = 0; i < comboBoxTemplate.Items.Count; i++)
+            {
+                if (comboBoxTemplate.Items[i].ToString().StartsWith(txt))
+                {
+                    comboBoxTemplate.SelectedIndex = i;
+                    string templatefilename = ((ValueTag)comboBoxTemplate.SelectedItem).Tag.ToString();
+					if (_artemplate == null)
+						InitTemplate(templatefilename);
+					InitListBoxData(templatefilename );
+					unselected = false;
+					break;
+				}
+			}
+			if(unselected)
+                comboBoxTemplate.SelectedIndex = -1;
+		}
         private void listBoxData_KeyUp(object sender, KeyEventArgs e)
         {
             if (listBoxData.SelectedIndex == -1) return;
@@ -863,5 +869,121 @@ namespace ScanTemplate
         {
             return Name + "_" + Number + "_" + Path; ;
         }
+    }
+    public class TemplateSets
+    {
+        public TemplateSets()
+        {
+            _templatedic = new Dictionary<string, TemplateSet>();
+            _srcpathdic = new Dictionary<string, TemplateSet>();
+            list = new List<TemplateSet>();
+            InitDic();
+        }
+        public void InitDic()
+        {
+            _srcpathdic.Clear();
+            _templatedic.Clear();
+            foreach (TemplateSet ts in list)
+            {
+                _srcpathdic[ts.srcpathname] = ts;
+                _templatedic[ts.templatename] = ts;
+            }
+        }
+        public TemplateSet GetTSFromSrcPath(string srcpathname)
+        {
+            if (_srcpathdic.ContainsKey(srcpathname))
+                return _srcpathdic[srcpathname];
+            return null;
+        }
+        public TemplateSet GetTSFromTemplateName(string templatename)
+        {
+            if (templatename.Contains("\\"))
+                templatename = templatename.Substring(templatename.LastIndexOf("\\") + 1);
+            if (_templatedic.ContainsKey(templatename))
+                return _templatedic[templatename];
+            return null;
+        }
+
+        public void Init(ComboBox.ObjectCollection objectCollection, string templatepath)
+        {
+            _templateworkpath = templatepath;
+            string jsonfilename = templatepath + "\\templatesets.json";
+            if (File.Exists(jsonfilename)) // Read and Check
+            {
+                list = Newtonsoft.Json.JsonConvert.DeserializeObject<List<TemplateSet>>(File.ReadAllText(jsonfilename));
+                InitDic();
+                //Check
+
+            }
+            else // Construct and Save
+            {
+                list.Clear();
+                foreach (Object O in objectCollection)
+                {
+                    try
+                    {
+                        string tag = (string)(((ValueTag)O).Tag);
+                        string templatename = (string)(((ValueTag)O).Value);
+                        string dstpath = templatename.Substring(0, templatename.IndexOf('.'));
+                        if (dstpath.Contains("-"))
+                        {
+                            string pdst = dstpath.Substring(0, dstpath.IndexOf("-"));
+                            if (dstpath.Contains("_"))
+                            {
+                                string sdst = dstpath.Substring(dstpath.IndexOf("_"));
+                                dstpath = pdst + sdst;
+                            }
+                        }
+                        else if (dstpath.Contains("_"))
+                        {
+                            dstpath = dstpath.Substring(dstpath.IndexOf("_")+1);
+                        }
+
+                        string str = File.ReadAllText(tag);
+                        string srcpath = str.Substring(str.IndexOf("<PATH>") + 6, str.IndexOf("</PATH>") - str.IndexOf("<PATH>") - 6);
+                        srcpath = srcpath.Substring(0, srcpath.LastIndexOf("\\"));
+                        _srcrootpath = srcpath.Substring(0, srcpath.LastIndexOf("\\"));
+                        srcpath = srcpath.Substring(srcpath.LastIndexOf("\\") + 1);
+                        list.Add(new TemplateSet(srcpath, templatename, dstpath));
+                    }
+                    catch (Exception ee)
+                    {
+                        MessageBox.Show(ee.Message);
+                    }
+                }
+                InitDic();
+                //Save 
+                string str1 = Tools.JsonFormatTool.ConvertJsonString(Newtonsoft.Json.JsonConvert.SerializeObject(list));
+                File.WriteAllText( jsonfilename, str1);
+            }
+        }
+        public List<TemplateSet> list { get; set; }
+        private Dictionary<string, TemplateSet> _templatedic;
+        private Dictionary<string, TemplateSet> _srcpathdic;
+
+        private string _templateworkpath;
+        private string _srcrootpath;
+
+        public string TemplatePath()
+        {
+            return _templateworkpath;
+        }
+        public string SrcRootPath()
+        {
+            return _srcrootpath;
+        }
+    }
+    public class TemplateSet
+    {
+        public string srcpathname;
+        public string templatename;
+        public string dstpathname;
+        public TemplateSet(string srcpathname, string templatename, string dstpathname)
+        {
+            this.srcpathname = srcpathname;
+            this.templatename = templatename;
+            this.dstpathname = dstpathname;
+        }
+        
     }
 }

@@ -125,7 +125,7 @@ namespace ScanTemplate.FormYJ
             {
                 ltz.Add((TzArea)I);
             }
-            Rectangle zfrect = _template.Dic["姓名"][0].Rect;
+            Rectangle zfrect = _template.Dic["校对"][0].Rect;
             zfrect.Offset(zfrect.Width,0);
             zfrect.Width = 0;
             zfrect.Height = 0;
@@ -182,7 +182,7 @@ namespace ScanTemplate.FormYJ
                 Bitmap bmp = TemplateTools.DrawInfoBmp(S,_examdata.SR,angle,optionanswer, ltz );
                 bmp.Save("F:\\Out\\" + _exam.Name + "\\" + S.ID + ".jpg");
             }
-
+            MessageBox.Show("已输出到F:\\Out\\"+_exam.Name);
         }
         private void buttonExportResult_Click(object sender, EventArgs e)
         {

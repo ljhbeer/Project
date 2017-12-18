@@ -62,12 +62,13 @@ namespace ScanTemplate
 				listBox1.Items.Add(s);
 			}
 			string templatepath = _workpath.Substring( 0,_workpath.LastIndexOf("\\"))+"\\Template";
-            listBoxTemplate.Items.Clear();
+
+            comboBoxTemplate.Items.Clear();
             foreach (string s in FileTools.NameListFromDir(templatepath, ".xml"))
 			{
 				string value = s.Substring(s.LastIndexOf("\\")+1);
-				listBoxTemplate.Items.Add( new ValueTag(value,s));
-			}
+                comboBoxTemplate.Items.Add(new ValueTag(value, s));
+			}            
             string exampath = _workpath.Substring(0, _workpath.LastIndexOf("\\")) + "\\Exam";
             g_cfg.SetWorkPath(exampath);
 		}
@@ -109,7 +110,7 @@ namespace ScanTemplate
 		private void ButtonUseTemplateClick(object sender, System.EventArgs e)
 		{
 			if (listBox1.SelectedIndex == -1) return;
-			if(listBoxTemplate.SelectedIndex==-1){
+			if(comboBoxTemplate.SelectedIndex==-1){
 				MessageBox.Show("还未选择模板");
 				return ;
 			}
@@ -118,14 +119,15 @@ namespace ScanTemplate
             List<string> nameList = FileTools.NameListFromDir(path);
 			if (nameList.Count == 0) return;
 			string filename = nameList[0];
-			
-			string templatefile =((ValueTag) listBoxTemplate.SelectedItem).Tag.ToString();
+
+            string templatefile = ((ValueTag)comboBoxTemplate.SelectedItem).Tag.ToString();
 			CreateTemplate(filename,templatefile);
 		}
 		private void ButtonScanClick(object sender, EventArgs e)
 		{
 			if (listBox1.SelectedIndex == -1) return;
-			if(listBoxTemplate.SelectedIndex==-1){
+            if (comboBoxTemplate.SelectedIndex == -1)
+            {
 				MessageBox.Show("还未选择模板");
 				return ;
 			}
@@ -258,10 +260,12 @@ namespace ScanTemplate
 			string txt = templatename.Substring(templatename.LastIndexOf("\\") + 1);
             AutoDetectRectAnge.FeatureSetPath = templatename;
 			bool unselected = true;
-			for(int i=0; i<listBoxTemplate.Items.Count; i++){
-				if(listBoxTemplate.Items[i].ToString().StartsWith(txt)){
-					listBoxTemplate.SelectedIndex = i;
-					string templatefilename = ((ValueTag)listBoxTemplate.SelectedItem).Tag.ToString();
+            for (int i = 0; i < comboBoxTemplate.Items.Count; i++)
+            {
+                if (comboBoxTemplate.Items[i].ToString().StartsWith(txt))
+                {
+                    comboBoxTemplate.SelectedIndex = i;
+                    string templatefilename = ((ValueTag)comboBoxTemplate.SelectedItem).Tag.ToString();
 					if (_artemplate == null)
 						InitTemplate(templatefilename);
 					InitListBoxData(templatefilename );
@@ -270,7 +274,7 @@ namespace ScanTemplate
 				}
 			}
 			if(unselected)
-				listBoxTemplate.SelectedIndex = -1;
+                comboBoxTemplate.SelectedIndex = -1;
 		}
 		private void InitTemplate(string templatefilename)
 		{
@@ -306,13 +310,14 @@ namespace ScanTemplate
 				listBoxData.Items.Add(new ValueTag(value,s));
 			}
 		}
-		private void listBoxTemplate_SelectedIndexChanged(object sender, EventArgs e)
-		{
-			if (listBoxTemplate.SelectedIndex == -1) return;
-			string templatefilename = ((ValueTag)listBoxTemplate.SelectedItem).Tag.ToString();
-			InitTemplate(templatefilename);
-			InitListBoxData(templatefilename);
-		}
+
+        private void comboBoxTemplate_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (comboBoxTemplate.SelectedIndex == -1) return;
+            string templatefilename = ((ValueTag)comboBoxTemplate.SelectedItem).Tag.ToString();
+            InitTemplate(templatefilename);
+            InitListBoxData(templatefilename);
+        }
         private void listBoxData_KeyUp(object sender, KeyEventArgs e)
         {
             if (listBoxData.SelectedIndex == -1) return;
@@ -749,6 +754,7 @@ namespace ScanTemplate
 			}
 			return new List<string>();
 		}
+
 	}
 	public class ValueTag
 	{

@@ -34,11 +34,12 @@
             this.TLP = new System.Windows.Forms.TableLayoutPanel();
             this.dgv = new System.Windows.Forms.DataGridView();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.comboBoxTemplate = new System.Windows.Forms.ComboBox();
             this.buttonRefresh = new System.Windows.Forms.Button();
-            this.textBox1 = new System.Windows.Forms.TextBox();
             this.listBoxData = new System.Windows.Forms.ListBox();
             this.buttonScan = new System.Windows.Forms.Button();
-            this.listBoxTemplate = new System.Windows.Forms.ListBox();
             this.buttonUseTemplate = new System.Windows.Forms.Button();
             this.buttonGo = new System.Windows.Forms.Button();
             this.listBox1 = new System.Windows.Forms.ListBox();
@@ -140,11 +141,12 @@
             // 
             this.panel1.AutoScroll = true;
             this.panel1.BackColor = System.Drawing.SystemColors.Control;
+            this.panel1.Controls.Add(this.label3);
+            this.panel1.Controls.Add(this.label2);
+            this.panel1.Controls.Add(this.comboBoxTemplate);
             this.panel1.Controls.Add(this.buttonRefresh);
-            this.panel1.Controls.Add(this.textBox1);
             this.panel1.Controls.Add(this.listBoxData);
             this.panel1.Controls.Add(this.buttonScan);
-            this.panel1.Controls.Add(this.listBoxTemplate);
             this.panel1.Controls.Add(this.buttonUseTemplate);
             this.panel1.Controls.Add(this.buttonGo);
             this.panel1.Controls.Add(this.listBox1);
@@ -157,6 +159,33 @@
             this.panel1.Size = new System.Drawing.Size(245, 607);
             this.panel1.TabIndex = 2;
             // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(8, 336);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(65, 12);
+            this.label3.TabIndex = 15;
+            this.label3.Text = "已导入数据";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(8, 54);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(29, 12);
+            this.label2.TabIndex = 14;
+            this.label2.Text = "模板";
+            // 
+            // comboBoxTemplate
+            // 
+            this.comboBoxTemplate.FormattingEnabled = true;
+            this.comboBoxTemplate.Location = new System.Drawing.Point(8, 74);
+            this.comboBoxTemplate.Name = "comboBoxTemplate";
+            this.comboBoxTemplate.Size = new System.Drawing.Size(224, 20);
+            this.comboBoxTemplate.TabIndex = 13;
+            this.comboBoxTemplate.SelectedIndexChanged += new System.EventHandler(this.comboBoxTemplate_SelectedIndexChanged);
+            // 
             // buttonRefresh
             // 
             this.buttonRefresh.Location = new System.Drawing.Point(65, 6);
@@ -167,48 +196,30 @@
             this.buttonRefresh.UseVisualStyleBackColor = true;
             this.buttonRefresh.Click += new System.EventHandler(this.buttonRefresh_Click);
             // 
-            // textBox1
-            // 
-            this.textBox1.Location = new System.Drawing.Point(8, 389);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(228, 21);
-            this.textBox1.TabIndex = 11;
-            this.textBox1.Text = "已导入数据";
-            // 
             // listBoxData
             // 
             this.listBoxData.FormattingEnabled = true;
             this.listBoxData.ItemHeight = 12;
-            this.listBoxData.Location = new System.Drawing.Point(8, 416);
+            this.listBoxData.Location = new System.Drawing.Point(8, 356);
             this.listBoxData.Name = "listBoxData";
-            this.listBoxData.Size = new System.Drawing.Size(228, 100);
+            this.listBoxData.Size = new System.Drawing.Size(228, 160);
             this.listBoxData.TabIndex = 10;
             this.listBoxData.SelectedIndexChanged += new System.EventHandler(this.listBoxData_SelectedIndexChanged);
             this.listBoxData.KeyUp += new System.Windows.Forms.KeyEventHandler(this.listBoxData_KeyUp);
             // 
             // buttonScan
             // 
-            this.buttonScan.Location = new System.Drawing.Point(8, 522);
+            this.buttonScan.Location = new System.Drawing.Point(6, 522);
             this.buttonScan.Name = "buttonScan";
-            this.buttonScan.Size = new System.Drawing.Size(135, 32);
+            this.buttonScan.Size = new System.Drawing.Size(135, 29);
             this.buttonScan.TabIndex = 9;
             this.buttonScan.Text = "使用现有模板扫描";
             this.buttonScan.UseVisualStyleBackColor = true;
             this.buttonScan.Click += new System.EventHandler(this.ButtonScanClick);
             // 
-            // listBoxTemplate
-            // 
-            this.listBoxTemplate.FormattingEnabled = true;
-            this.listBoxTemplate.ItemHeight = 12;
-            this.listBoxTemplate.Location = new System.Drawing.Point(8, 247);
-            this.listBoxTemplate.Name = "listBoxTemplate";
-            this.listBoxTemplate.Size = new System.Drawing.Size(228, 136);
-            this.listBoxTemplate.TabIndex = 8;
-            this.listBoxTemplate.SelectedIndexChanged += new System.EventHandler(this.listBoxTemplate_SelectedIndexChanged);
-            // 
             // buttonUseTemplate
             // 
-            this.buttonUseTemplate.Location = new System.Drawing.Point(101, 209);
+            this.buttonUseTemplate.Location = new System.Drawing.Point(98, 101);
             this.buttonUseTemplate.Name = "buttonUseTemplate";
             this.buttonUseTemplate.Size = new System.Drawing.Size(135, 29);
             this.buttonUseTemplate.TabIndex = 7;
@@ -218,7 +229,7 @@
             // 
             // buttonGo
             // 
-            this.buttonGo.Location = new System.Drawing.Point(8, 209);
+            this.buttonGo.Location = new System.Drawing.Point(7, 102);
             this.buttonGo.Name = "buttonGo";
             this.buttonGo.Size = new System.Drawing.Size(87, 29);
             this.buttonGo.TabIndex = 6;
@@ -230,9 +241,9 @@
             // 
             this.listBox1.FormattingEnabled = true;
             this.listBox1.ItemHeight = 12;
-            this.listBox1.Location = new System.Drawing.Point(8, 58);
+            this.listBox1.Location = new System.Drawing.Point(8, 133);
             this.listBox1.Name = "listBox1";
-            this.listBox1.Size = new System.Drawing.Size(228, 148);
+            this.listBox1.Size = new System.Drawing.Size(224, 196);
             this.listBox1.TabIndex = 5;
             this.listBox1.SelectedIndexChanged += new System.EventHandler(this.listBox1_SelectedIndexChanged);
             // 
@@ -376,7 +387,6 @@
         }
         private System.Windows.Forms.Button buttonScan;
         private System.Windows.Forms.Button buttonUseTemplate;
-        private System.Windows.Forms.ListBox listBoxTemplate;
 
         #endregion
 
@@ -396,10 +406,12 @@
         private System.Windows.Forms.ListBox listBox1;
         private System.Windows.Forms.Button buttonGo;
         private System.Windows.Forms.Panel panel3;
-        private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.ListBox listBoxData;
         private System.Windows.Forms.Button buttonVerify;
         private System.Windows.Forms.Button buttonCreateYJData;
-        private System.Windows.Forms.Button buttonRefresh;        
+        private System.Windows.Forms.Button buttonRefresh;
+        private System.Windows.Forms.ComboBox comboBoxTemplate;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label label3;        
     }
 }

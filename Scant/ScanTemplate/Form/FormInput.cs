@@ -26,6 +26,14 @@ namespace ARTemplate
                 label1.Text = "请输入本次考试名称";
                 textBox1.Text = "";
             }
+            else if (keyname == "校对")
+            {
+                label1.Visible = textBox1.Visible = false;
+                comboBox1.Visible = true;
+                comboBox1.Location = textBox1.Location;
+                if(comboBox1.Items.Count>0)
+                comboBox1.SelectedIndex = 0;
+            }
             else if (keyname == "选择题")
             {
                 label1.Text = "请输入选择题的个数";
@@ -49,7 +57,14 @@ namespace ARTemplate
         {
             if (keyname == "考试名称")
             {
-              StrValue =  textBox1.Text;
+                StrValue =  textBox1.Text;
+            }
+            else if (keyname == "校对")
+            {
+                if (comboBox1.SelectedIndex == -1)
+                    StrValue = "";
+                else 
+                    StrValue = comboBox1.SelectedItem.ToString();
             }
             else if (keyname == "选择题" || keyname == "非选择题")
             {

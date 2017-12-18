@@ -82,7 +82,7 @@ namespace ARTemplate
             for (int i = 0; i < vt.Count(); i++)
                 vt[i] = new TreeNode();
             vt[0].Name = vt[0].Text = "特征点";
-            vt[1].Name = vt[1].Text = "姓名";
+            vt[1].Name = vt[1].Text = "校对";
             vt[2].Name = vt[2].Text = "考号";
             vt[3].Name = vt[3].Text = "选择题";
             vt[4].Name = vt[4].Text = "非选择题";
@@ -318,7 +318,7 @@ namespace ARTemplate
                 Brush white = Brushes.White;
                 Brush Red = Brushes.Red;
                 Font font = DefaultFont;
-                foreach (string s in new string[] { "特征点", "考号","姓名", "选择题", "非选择题", "选区变黑", "选区变白","题组","自定义" })
+                foreach (string s in new string[] { "特征点", "考号","校对", "选择题", "非选择题", "选区变黑", "选区变白","题组","自定义" })
                 {
                     foreach (TreeNode t in m_tn.Nodes[s].Nodes)
                     {
@@ -466,19 +466,20 @@ namespace ARTemplate
         }
         private void CompleteDeFineName()
         {
-             String keyname = "姓名";
+            //TODO: 每个条目一项
+             String keyname = "校对";
              TreeNode t = new TreeNode();
              int cnt = m_tn.Nodes[keyname].GetNodeCount(false);
-             if (cnt == 0)
+             if(InputBox.Input( keyname ) && InputBox.strValue!="")
              {
-                 t.Name = t.Text = keyname;
+                 t.Name = t.Text = InputBox.strValue;
                  Rectangle m_Imgselection = zoombox.BoxToImgSelection(MT.Selection);
-                 t.Tag = new NameArea(m_Imgselection);
+                 t.Tag = new NameArea(m_Imgselection,t.Name);
                  m_tn.Nodes[keyname].Nodes.Add(t);
              }
              else
              {
-                 MessageBox.Show("请先删除，姓名区域只有一项");
+                 MessageBox.Show("请重新输入");
              }
         }
         private void CompleteDeFineChoose()

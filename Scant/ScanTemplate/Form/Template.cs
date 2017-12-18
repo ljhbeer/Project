@@ -51,7 +51,7 @@ namespace ARTemplate
         }
         public void ResetData(bool clearFeaturePoint=true)
         { //"特征点",不能清除
-            foreach (string s in new string[] {"特征点",  "考号", "姓名", "选择题", "非选择题", "选区变黑", "选区变白" ,"题组","自定义"})
+            foreach (string s in new string[] {"特征点",  "考号", "校对", "选择题", "非选择题", "选区变黑", "选区变白" ,"题组","自定义"})
                 if (_dic.ContainsKey(s))
                 {
                     if (!clearFeaturePoint && s == "特征点")
@@ -88,7 +88,7 @@ namespace ARTemplate
             root.AppendChild(path);
             path.InnerXml = Imgsize.ToXmlString() + _imagefilename.ToXmlString("PATH")+Correctrect.ToXmlString().ToXmlString("CORRECTRECT");
 
-            foreach (string s in new string[] { "特征点-FEATUREPOINTSAREA", "考号-KAOHAOAREA", "姓名-NAMEAREA", "选择题-SINGLECHOICES", "非选择题-UNCHOOSES", "选区变黑-BLACKAREA", "选区变白-WHITEAREA","题组-UNCHOOSEGROUP","自定义-CUSTOMDEFINE" })
+            foreach (string s in new string[] { "特征点-FEATUREPOINTSAREA", "考号-KAOHAOAREA", "校对-NAMEAREA", "选择题-SINGLECHOICES", "非选择题-UNCHOOSES", "选区变黑-BLACKAREA", "选区变白-WHITEAREA","题组-UNCHOOSEGROUP","自定义-CUSTOMDEFINE" })
             {
                 string name = s.Substring(0, s.IndexOf("-"));
                 string ENname = s.Substring(s.IndexOf("-")+1);
@@ -127,7 +127,7 @@ namespace ARTemplate
                 //////if (bitmap.Size != imgsize)
                 //////    return false;
                 //////_src = bitmap;
-                foreach (string s in new string[] { "特征点-FEATUREPOINTSAREA", "考号-KAOHAOAREA", "姓名-NAMEAREA", "选择题-SINGLECHOICES", "非选择题-UNCHOOSES", "选区变黑-BLACKAREA", "选区变白-WHITEAREA", "题组-UNCHOOSEGROUP", "自定义-CUSTOMDEFINE" })
+                foreach (string s in new string[] { "特征点-FEATUREPOINTSAREA", "考号-KAOHAOAREA", "校对-NAMEAREA", "选择题-SINGLECHOICES", "非选择题-UNCHOOSES", "选区变黑-BLACKAREA", "选区变白-WHITEAREA", "题组-UNCHOOSEGROUP", "自定义-CUSTOMDEFINE" })
                 {
                     string name = s.Substring(0, s.IndexOf("-"));
                     string ENname = s.Substring(s.IndexOf("-")+1);
@@ -225,11 +225,18 @@ namespace ARTemplate
                     else if (ENname == "NAMEAREA")
                     {
                         if (list.Count == 0) continue;
-                        XmlNode rect = list[0].SelectSingleNode("Rectangle");
-                        if (rect != null)
+                        foreach (XmlNode node in list)
                         {
-                            Rectangle r = Tools.StringTools.StringToRectangle(rect.InnerText);
-                            _dic[name].Add(new NameArea(r));
+                            XmlNode rect = node.SelectSingleNode("Rectangle");
+                            XmlNode xname = node.SelectSingleNode("NAME");
+                            if (rect != null)
+                            {
+                                string itemname = "姓名";
+                                if (xname != null)
+                                    itemname = xname.InnerText;
+                                Rectangle r = Tools.StringTools.StringToRectangle(rect.InnerText);
+                                _dic[name].Add(new NameArea(r, itemname));
+                            }
                         }
                     }
                     else if (ENname == "SINGLECHOICES")
@@ -328,7 +335,7 @@ namespace ARTemplate
         }       
         public void SetDataToNode(TreeNode m_tn)
         {
-            foreach (string s in new string[] { "特征点", "考号", "姓名", "选择题", "非选择题", "选区变黑", "选区变白","题组","自定义" })
+            foreach (string s in new string[] { "特征点", "考号", "校对", "选择题", "非选择题", "选区变黑", "选区变白","题组","自定义" })
             {
                 TreeNodeCollection tc = m_tn.Nodes[s].Nodes;
                 if(_dic.ContainsKey(s))
@@ -338,7 +345,7 @@ namespace ARTemplate
                     int cnt = tc.Count + 1;
                     t.Name = cnt.ToString();
                     t.Text =s + cnt;
-                    if ( "非选择题|题组|自定义".Contains(s))
+                    if ( "非选择题|题组|自定义|校对".Contains(s))
                         t.Text = I.ToString();
                     t.Tag =I;
                     tc.Add(t);
@@ -456,7 +463,7 @@ namespace ARTemplate
                 Brush Red = Brushes.Red;
                 Font font = SystemFonts.DefaultFont;
 
-                foreach (string s in new string[] { "特征点", "考号", "姓名", "选择题", "非选择题" })
+                foreach (string s in new string[] { "特征点", "考号", "校对", "选择题", "非选择题" })
                     if (_artemplate.Dic.ContainsKey(s))
                     {
                         int cnt = 0;

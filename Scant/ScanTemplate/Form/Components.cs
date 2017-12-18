@@ -19,7 +19,7 @@ namespace ARTemplate
             FormInput f = new FormInput(keyname);
             if (f.ShowDialog() == DialogResult.OK)
             {
-                if (keyname == "考试名称")
+                if (keyname == "考试名称" || keyname == "校对")
                     strValue = f.StrValue;
                 else if (keyname == "选择题" || keyname == "非选择题")
                     IntValue = f.IntValue;
@@ -32,6 +32,8 @@ namespace ARTemplate
                     return false;
                 return true;
             }
+            f.Dispose();
+            f = null;
             return false;
         }
         public static string strValue;
@@ -259,11 +261,22 @@ namespace ARTemplate
         private float score;
         private string _name;
     }
-    public class NameArea : Area
+    public class NameArea : Area //校对
     {
-        public NameArea(Rectangle rect)
+        private string _name;
+        public NameArea(Rectangle rect,string name)
         {
             this.Rect = rect;
+            this._name = name;
+        }
+        public string Name { get { return _name; } }
+        public override String ToString()
+        {
+            return _name;
+        }
+        public override string ToXmlString()
+        {
+            return Rect.ToXmlString() + _name.ToXmlString("NAME");
         }
     }
     public class TempArea : Area

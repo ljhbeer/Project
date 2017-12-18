@@ -10,17 +10,17 @@ namespace ScanTemplate
     class AutoComputeXZTKH
     {
         private ARTemplate.Template _artemplate;
-        private AutoAngle _angle;
+        //private AutoAngle _angle;
         private System.Drawing.Bitmap _src;
 
-        public AutoComputeXZTKH(ARTemplate.Template _artemplate, AutoAngle _angle, System.Drawing.Bitmap bmp)
+        public AutoComputeXZTKH(ARTemplate.Template _artemplate, System.Drawing.Bitmap bmp)
         {            
             this._artemplate = _artemplate;
-            this._angle = _angle;
+            //this._angle = _angle;
             this._src = bmp;
         }
 
-        public string  ComputeXZT(string num = "")
+        public string ComputeXZT(string num1, AutoAngle _angle)
         {
             StringBuilder sb = new StringBuilder();
             foreach(SingleChoiceArea sca in _artemplate.SingleAreas)
@@ -48,7 +48,7 @@ namespace ScanTemplate
             }
             return sb.ToString();
         }
-        public string ComputeCustomDF(CustomArea sca, AutoAngle _angle, Bitmap nbmp) // 改用接口 //KH
+        public string ComputeCustomDF(CustomArea sca, AutoAngle _angle ) // 改用接口 //KH
         {
             StringBuilder sb = new StringBuilder();
             {
@@ -77,7 +77,7 @@ namespace ScanTemplate
             }
             return sb.ToString();
         }
-        public string ComputeKH(KaoHaoChoiceArea sca, AutoAngle _angle, Bitmap nbmp)  //只支持横向
+        public string ComputeKH(KaoHaoChoiceArea sca, AutoAngle _angle)  //只支持横向
         {
             StringBuilder sb = new StringBuilder();
             {

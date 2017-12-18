@@ -102,7 +102,10 @@ namespace ARTemplate
         	string path = fi.Directory.Parent.Parent.FullName + "\\template\\";
         	if(!Directory.Exists(path))
         		Directory.CreateDirectory(path);
-        	string filename = path+fi.Directory.Name+"_"+template.GetTemplateName()+".xml";
+            string dn = fi.Directory.Name;
+            if(dn.Contains('-'))
+                dn = dn.Substring(0,dn.IndexOf('-'));
+        	string filename = path+dn+"_"+template.GetTemplateName()+".xml";
        
             SaveFileDialog saveFileDialog2 = new SaveFileDialog();
             saveFileDialog2.FileName = filename;
@@ -636,7 +639,7 @@ namespace ARTemplate
                 {
                     string type = count.ToString();
                     t.Name = t.Text = name + cnt;
-                    t.Tag = new KaoHaoChoiceArea(m_Imgselection, t.Name,type, dca.Choicepoint, dca.Choicesize);
+                    t.Tag = new CustomArea(m_Imgselection, t.Name,type, dca.Choicepoint, dca.Choicesize);
                     m_tn.Nodes[keyname].Nodes.Add(t);
                 }
                

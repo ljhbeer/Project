@@ -363,12 +363,28 @@ namespace ARTemplate
         }        
 		public string GetTemplateName()
 		{
-			string str = "";
+            string str = "";
+            if (_dic.ContainsKey("考号") && _dic["考号"].Count>0)
+                str += "IDName_";//_dic["选择题"].Count;
             if (_dic.ContainsKey("选择题"))
                 str += "X" + XztRect.Count;//_dic["选择题"].Count;
             //str += "选择题" + _dic["选择题"].Count;
             if (_dic.ContainsKey("非选择题"))
                 str += "_K" + _dic["非选择题"].Count;
+
+            if (_dic.ContainsKey("自定义") && _dic["自定义"].Count > 0)
+            {
+                int zw = 0;
+                foreach (Area I in _dic["自定义"])
+                {
+                    if (I.ToString().Contains("座位"))
+                    {
+                        zw++;
+                    }
+                }
+                if (zw > 0)
+                    str += "_ZW" + zw;
+            }
             //str += "_非选择题" + _dic["非选择题"].Count;
             //if(Correctrect!=null)
             //    str+="_"+Correctrect.ToString("-");

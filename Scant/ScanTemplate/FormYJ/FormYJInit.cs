@@ -527,6 +527,7 @@ namespace ScanTemplate.FormYJ
                 _khdic[s.KH] = s;
             }
         }
+       
         public Student StudentFromID(int ID)
         {
             return _iddic[ID];
@@ -558,6 +559,7 @@ namespace ScanTemplate.FormYJ
         private Dictionary<int, Student> _khdic;
         // Can be null
         private DataTable _studt;
+      
     }
     [JsonObject(MemberSerialization.OptOut)]
     public class Student
@@ -664,6 +666,91 @@ namespace ScanTemplate.FormYJ
                 return false;
             return _XZT[index] == answer;
         }
+    }
+    public class StudentBases
+    {
+        public StudentBases(string listfilename)
+        {
+            InitStudentBase(listfilename);
+        }
+        public void InitStudentBase(string listfilename)
+        {
+            HasStudentBase = false;
+            string msg = "";
+            if (File.Exists(listfilename))
+            {
+                String[] ss = File.ReadAllLines(listfilename);
+                if (ss.Length > 2 && ss[0].Contains("班级,姓名,考号"))
+                {
+                    bool haserror = false;
+                    HasStudentBase = true;
+                    _studentbases = new List<StudentBase>();
+                    _khbasedic = new Dictionary<int, StudentBase>();
+                    _classiddic = new Dictionary<int, List<StudentBase>>();
+                    for (int i = 1; i < ss.Length; i++)
+                    {
+                        string[] items = ss[i].Split(',');
+                        if (items.Length == 3)
+                        {
+                            int classid = Convert.ToInt32(items[0]);
+                            int kh = Convert.ToInt32(items[2]);
+                            StudentBase sb = new StudentBase(classid, items[1], kh);
+                            _studentbases.Add(sb);
+                            if (!_khbasedic.ContainsKey(kh))
+                                _khbasedic[kh] = sb;
+                            if (!_classiddic.ContainsKey(classid))
+                                _classiddic[classid] = new List<StudentBase>();
+                            if (!_classiddic[classid].Contains(sb))
+                                _classiddic[classid].Add(sb);
+                            else
+                            {
+                                haserror = true;
+                                msg += "Line: " + i + "\t重复添加对象：kh=" + sb.KH + "\r\n";
+                            }
+
+                        }
+                        else
+                        {
+                            haserror = true;
+                            msg += "Line: " + i + "\t" + ss[i] + "\r\n";
+                        }
+                    }
+                    if (haserror)
+                    {
+                        MessageBox.Show("以下条目中存在错误，每行超过3个项目\r\n" + msg);
+                    }
+                }
+            }
+        }
+        public List<StudentBase> GetClassStudent(int classid)
+        {
+            if (HasStudentBase && _classiddic.ContainsKey(classid))
+                return _classiddic[classid];
+            return new List<StudentBase>();
+        }
+        public string GetName(int kh)
+        {
+            if (HasStudentBase && _khbasedic.ContainsKey(kh))
+                return _khbasedic[kh].Name;
+            return "";
+        }
+
+        public bool HasStudentBase { get; set; }
+        private List<StudentBase> _studentbases;
+        private Dictionary<int, StudentBase> _khbasedic;
+        private Dictionary<int, List<StudentBase>> _classiddic;
+    }
+    public class StudentBase
+    {
+        public StudentBase(int classid, string name, int  kh)
+        {
+            this.Classid = classid;
+            this.Name = name;
+            this.KH = kh;
+        }
+        public int Classid { get; set; }
+        public string Name { get; set; }
+        public int KH { get; set; }
     }
     public class ImgbinManagesubjects
     {

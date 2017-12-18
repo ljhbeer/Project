@@ -13,6 +13,7 @@ using System.Threading;
 using ZXing.Common;
 using ZXing;
 using Tools;
+using ScanTemplate.FormYJ;
 namespace ScanTemplate
 {
 	public delegate void MyInvoke( );
@@ -438,7 +439,11 @@ namespace ScanTemplate
 					_artemplate.Clear();
 				
 				_artemplate = new ARTemplate.Template(filename, bmp, dr.CorrectRect);
-				_angle = new AutoAngle(dr.ListPoint); //或者导入时 设置
+                List<Point> zeroListPoint = new List<Point>();
+                for(int i=0; i<dr.ListPoint.Count; i++){
+                    zeroListPoint.Add(new Point(dr.ListPoint[i].X - dr.CorrectRect.X, dr.ListPoint[i].Y - dr.CorrectRect.Y));
+                }
+				_angle = new AutoAngle(zeroListPoint); //或者导入时 设置
 				if(templatefilename!="" && File.Exists(templatefilename)){
 					_artemplate.Load(templatefilename);
 				}
@@ -519,7 +524,7 @@ namespace ScanTemplate
                 Bitmap nbmp = (Bitmap)bmp.Clone(CorrectRect, bmp.PixelFormat);
                 nbmp.Save(s.Replace("LJH\\", "LJH\\Correct\\"));
 
-                AutoComputeXZTKH acx = new AutoComputeXZTKH(_artemplate, _angle, nbmp); 
+                AutoComputeXZTKH acx = new AutoComputeXZTKH(_artemplate, nbmp); 
                 if (_artemplate.Dic.ContainsKey("考号") && _artemplate.Dic["考号"].Count > 0)
                 {
                     KaoHaoChoiceArea kha = (KaoHaoChoiceArea)(_artemplate.Dic["考号"][0]);
@@ -532,16 +537,29 @@ namespace ScanTemplate
                         ZXing.Result rs = _br.Decode(barmap);
                         if (rs != null)
                         {
-                            sb.Append("," + rs.Text+",-");  //考号-条形码 姓名-未知 MsgtoDr中处理
+                            sb.Append("," + rs.Text );  //考号-条形码 姓名-未知 MsgtoDr中处理
+                            if(g_cfg.Studentbases.HasStudentBase)
+                                sb.Append( ","+g_cfg.Studentbases.GetName( Convert.ToInt32(rs.Text)));
+                            else
+                                sb.Append(",-");
                         }
                     }
                     else if ("1023456789".Contains(kha.Type))
                     {
-                        sb.Append("," + acx.ComputeKH(kha, _angle, nbmp)+",-");   //考号-涂卡 姓名-未知 MsgtoDr中处理
+                        string kh = acx.ComputeKH(kha, _angle);
+                        if(kh.Contains("-"))
+                            sb.Append("," + kh+",-");   //考号-涂卡 姓名-未知 MsgtoDr中处理
+                        else
+                        {
+                             if(g_cfg.Studentbases.HasStudentBase)
+                                sb.Append( "," + kh+","+g_cfg.Studentbases.GetName( Convert.ToInt32(kh)));
+                            else
+                                sb.Append("," + kh+",-");
+                        }
                     }
                 }
 
-                sb.Append(","+acx.ComputeXZT(str)); //选择题
+                sb.Append(","+acx.ComputeXZT(str,_angle)); //选择题
 
                 //计算座位号
                 if (_artemplate.Dic.ContainsKey("自定义") && _artemplate.Dic["自定义"].Count > 0)
@@ -552,9 +570,9 @@ namespace ScanTemplate
                         CustomArea ca = (CustomArea)I;
                         if ("1023456789".Contains(ca.Type))
                         {
-                            AutoComputeXZTKH acxzdy = new AutoComputeXZTKH(_artemplate, _angle, nbmp);
+                            AutoComputeXZTKH acxzdy = new AutoComputeXZTKH(_artemplate, nbmp);
                             //sb.Append("," + acx.ComputeCustomDF(ca, _angle, nbmp));
-                            tsb.Append(acx.ComputeCustomDF(ca, _angle, nbmp) + "|");
+                            tsb.Append(acx.ComputeCustomDF(ca, _angle) + "|");
                         }
                     }
                     sb.Append("," + tsb); //自定义
@@ -769,6 +787,7 @@ namespace ScanTemplate
         public  void SetWorkPath(string exampath)
         {
             this._workpath = exampath;
+            Studentbases= new StudentBases(StudentBaseFileName());
             LoadConfig();
         }
         private void LoadConfig( )
@@ -820,6 +839,13 @@ namespace ScanTemplate
         public List<ExamInfo> _examinfo;
         private string _filename;
         private string _workpath;
+
+        private  string StudentBaseFileName()
+        {
+            return _workpath.Replace("Exam" , "StudentBaseList.txt");
+        }
+
+        public StudentBases Studentbases { get; set; }
     }
     public class ExamInfo
     {

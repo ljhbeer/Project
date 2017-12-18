@@ -206,7 +206,10 @@ namespace ARTemplate
             } 
             return rv; 
         }
-
+        public override string ToString()
+        {
+            return _name;
+        }
         public override string ToXmlString()
         {
             String str = Rect.ToXmlString() + _name.ToXmlString("NAME")+Size.ToXmlString();

@@ -53,6 +53,7 @@
             this.buttonRightHide = new System.Windows.Forms.Button();
             this.buttonCreateYJData = new System.Windows.Forms.Button();
             this.buttonVerify = new System.Windows.Forms.Button();
+            this.buttonVerifyname = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -300,17 +301,19 @@
             // 
             // tableLayoutPanel2
             // 
-            this.tableLayoutPanel2.ColumnCount = 6;
+            this.tableLayoutPanel2.ColumnCount = 7;
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 50F));
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 50F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 68F));
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 50F));
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 50F));
             this.tableLayoutPanel2.Controls.Add(this.buttonLeftHide, 0, 0);
-            this.tableLayoutPanel2.Controls.Add(this.buttonRightHide, 5, 0);
-            this.tableLayoutPanel2.Controls.Add(this.buttonCreateYJData, 2, 0);
+            this.tableLayoutPanel2.Controls.Add(this.buttonRightHide, 6, 0);
             this.tableLayoutPanel2.Controls.Add(this.buttonVerify, 1, 0);
+            this.tableLayoutPanel2.Controls.Add(this.buttonCreateYJData, 3, 0);
+            this.tableLayoutPanel2.Controls.Add(this.buttonVerifyname, 2, 0);
             this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 622);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
@@ -343,7 +346,7 @@
             // 
             // buttonCreateYJData
             // 
-            this.buttonCreateYJData.Location = new System.Drawing.Point(103, 3);
+            this.buttonCreateYJData.Location = new System.Drawing.Point(171, 3);
             this.buttonCreateYJData.Name = "buttonCreateYJData";
             this.buttonCreateYJData.Size = new System.Drawing.Size(135, 22);
             this.buttonCreateYJData.TabIndex = 9;
@@ -360,6 +363,16 @@
             this.buttonVerify.Text = "校验";
             this.buttonVerify.UseVisualStyleBackColor = true;
             this.buttonVerify.Click += new System.EventHandler(this.buttonVerify_Click);
+            // 
+            // buttonVerifyname
+            // 
+            this.buttonVerifyname.Location = new System.Drawing.Point(103, 3);
+            this.buttonVerifyname.Name = "buttonVerifyname";
+            this.buttonVerifyname.Size = new System.Drawing.Size(62, 22);
+            this.buttonVerifyname.TabIndex = 10;
+            this.buttonVerifyname.Text = "核对姓名";
+            this.buttonVerifyname.UseVisualStyleBackColor = true;
+            this.buttonVerifyname.Click += new System.EventHandler(this.buttonVerifyname_Click);
             // 
             // FormM
             // 
@@ -412,6 +425,7 @@
         private System.Windows.Forms.Button buttonRefresh;
         private System.Windows.Forms.ComboBox comboBoxTemplate;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Label label3;        
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Button buttonVerifyname;        
     }
 }

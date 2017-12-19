@@ -154,6 +154,15 @@ namespace ScanTemplate
 			VerifyXzt();
 			this.Show();
 		}
+        private void buttonVerifyname_Click(object sender, EventArgs e)
+        {
+            if (_artemplate == null || _rundt == null || _rundt.Rows.Count == 0)
+                return;
+            this.Hide();
+            VerifyName();
+            this.Show();
+        }
+
         private void buttonCreateYJData_Click(object sender, EventArgs e)
         {
             if (_artemplate == null || _rundt == null || _rundt.Rows.Count == 0)
@@ -164,7 +173,102 @@ namespace ScanTemplate
             
             this.Show();
         }
-		//暂时不起作用
+
+        private void VerifyName()
+        {
+            if (!_artemplate.Dic.ContainsKey("考号") || _artemplate.Dic["考号"].Count == 0)
+            {
+                return;
+            }
+            DataTable dt = Tools.DataTableTools.ConstructDataTable(new string[] {
+			                                                       	"OID考号",			                                                  
+			                                                       	"图片姓名",
+                                                                    "姓名",
+			                                                       	"新考号",
+			                                                       	"是否修改"
+			                                                       });
+            Rectangle r = _artemplate.Dic["考号"][0].ImgArea;
+            Rectangle rxm = new Rectangle();
+            if (_artemplate.Dic["校对"].Count > 0)
+            {
+                foreach (Area I in _artemplate.Dic["校对"])
+                {
+                    if (I.ToString().Contains("姓名"))
+                    {
+                        rxm = I.Rect;
+                    }
+                }
+            }
+            foreach (DataRow dr in _rundt.Rows)
+            {
+                if (!dr["考号"].ToString().Contains("-"))
+                {
+                    string fn = dr["文件名"].ToString().Replace("LJH\\", "LJH\\Correct\\");
+                    if (File.Exists(fn))
+                    {
+                        double angle = (double)(dr["校验角度"]);
+                        Bitmap bmp = (Bitmap)Bitmap.FromFile(fn);
+                        if (_angle != null)
+                            _angle.SetPaper(angle);
+                        DataRow ndr = dt.NewRow();
+                        ndr["OID考号"] = new ValueTag(dr["考号"].ToString(), dr);
+                        int kh = Convert.ToInt32(dr["考号"].ToString());
+                        if (FormM.g_cfg.Studentbases.HasStudentBase)
+                        {
+                            string name = FormM.g_cfg.Studentbases.GetName(kh);
+                            ndr["姓名"] = name;
+                        }
+                        ndr["是否修改"] = false;
+                        if (rxm.Width > 0)
+                        {
+                            ndr["图片姓名"] = bmp.Clone(rxm, bmp.PixelFormat);
+                        }
+                        dt.Rows.Add(ndr);
+                    }
+                }
+            }
+            if (dt.Rows.Count > 0)
+            {
+                //MessageBox.Show("暂未实现，待修改");
+                FormVerify f = new FormVerify(dt, "核对姓名");
+                if (f.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+                {
+                    MessageBox.Show("未校验");
+                }
+                else
+                {
+                    if (f.Changed)
+                    {
+                        string filename = ((ValueTag)listBoxData.SelectedItem).Tag.ToString();
+                        string[] ss = File.ReadAllLines(filename);
+                        try
+                        {
+                            for (int i = 1; i < ss.Length; i++)
+                            {
+                                string[] item = ss[i].Split(',');
+                                if (item[3].Contains("-"))
+                                {
+                                    DataRow[] drs = _rundt.Select("文件名='" + item[0] + "'");
+                                    if (drs.Length == 1)
+                                    {
+                                        item[3] = drs[0]["考号"].ToString();
+                                        item[4] = drs[0]["姓名"].ToString();
+                                        ss[i] = string.Join(",", item);
+                                    }
+                                }
+                            }
+                            //File.WriteAllText(filename + "_1", string.Join("\r\n", ss));
+                        }
+                        catch (Exception ee)
+                        {
+                            MessageBox.Show("未保存更改，因为" + ee.Message);
+                        }
+                    }
+                }
+                //修改之后
+                dt.Rows.Clear();
+            }
+        }
 		private void VerifyKaoHao()
 		{
             if (!_artemplate.Dic.ContainsKey("考号") || _artemplate.Dic["考号"].Count == 0)
@@ -389,7 +493,7 @@ namespace ScanTemplate
             //TODO： 检测是否导入已有数据
             if (!File.Exists(dataname))
                 return;
-            if (e.KeyCode == Keys.H) //输出 F:\\out\\img.html
+            if (e.KeyCode == Keys.H) //输出 F:\\out\\img.html 
             {
                 StringBuilder sb = new StringBuilder();
                 string img = "<img src=\"[img]\"  /> \r\n";
@@ -398,13 +502,20 @@ namespace ScanTemplate
                 {
                     for (int i = 1; i < ss.Length; i++)
                     {
-                        string f = ss[i].Substring(0, ss[i].IndexOf("."));
-                        f = f.Substring(f.LastIndexOf("\\"));
-                        f = f.Substring(f.IndexOf("-"));
-                        f = f.Substring(f.Length - 3);
-                        f = Convert.ToInt32(f).ToString()+".jpg";
-
-                        sb.Append(img.Replace("[img]", f));
+                        string[] item = ss[i].Split(',');
+                        if (item[4].Contains("-"))
+                        {
+                            string f = ss[0].Substring(0, ss[i].IndexOf("."));
+                            f = f.Substring(f.LastIndexOf("\\"));
+                            f = f.Substring(f.IndexOf("-"));
+                            f = f.Substring(f.Length - 3);
+                            f = Convert.ToInt32(f).ToString() + ".jpg";
+                            sb.Append(img.Replace("[img]", f));
+                        }
+                        else
+                        {
+                            sb.Append(img.Replace("[img]", item[4]+".jpg"));
+                        }
                     }
                 }
                 File.WriteAllText("F:\\out\\ Img.html", sb.ToString());
@@ -659,11 +770,13 @@ namespace ScanTemplate
 		{
 			FileInfo fi = new FileInfo(_artemplate.Filename);
 			string path = fi.Directory.Parent.Parent.FullName + "\\template\\";
-			string filename = path + fi.Directory.Name + "_" + _artemplate.GetTemplateName() + ".txt";
-			if (File.Exists(filename))
+            path += _artemplate.GetTemplateName() + "\\";
+            DirectoryInfo dir = new DirectoryInfo( listBox1.SelectedItem.ToString());
+            string filename = path + dir.Name + ".txt";
+			if (true)
 			{
 				SaveFileDialog saveFileDialog2 = new SaveFileDialog();
-				saveFileDialog2.FileName = filename;
+				saveFileDialog2.FileName = path;
 				saveFileDialog2.Filter = "txt files (*.txt)|*.txt";
 				saveFileDialog2.Title = "Save Data file";
 				if (saveFileDialog2.ShowDialog() == DialogResult.OK)
@@ -819,6 +932,7 @@ namespace ScanTemplate
 			return new List<string>();
 		}
 
+       
 	}
 	public class ValueTag
 	{

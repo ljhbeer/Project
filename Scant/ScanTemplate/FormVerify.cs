@@ -27,7 +27,11 @@ namespace ScanTemplate
             }
             else if (type == "考号")
             {
-                _ColState = new List<int>() { 0, 0, 0, 0,0, 20, 0, 0, 0, 0, 0 };
+                _ColState = new List<int>() { 0, 0, 0, 0, 0, 20, 0, 0, 0, 0, 0 };
+            }
+            else if (type == "核对姓名")
+            {
+                _ColState = new List<int>() { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
             }
 			InitializeComponent();
 			dgv.DataSource = dt;
@@ -73,6 +77,21 @@ namespace ScanTemplate
                 dgv.Columns["图片"].Width = 300;
                 dgv.Columns["图片姓名"].Width = 100;
                 dgv.Columns["图片考号"].Width = 120;
+                dgv.Columns["姓名"].Width = 60;
+                dgv.Columns["新考号"].Width = 40;
+                dgv.Columns["是否修改"].Width = 0;
+            }
+            else if (_type == "核对姓名")
+            {
+                dgv.RowTemplate.Height = 30;
+                dgv.DataSource = null;
+                dgv.DataSource = _dt;
+                //((DataGridViewImageColumn)(dgv.Columns["图片"])).ImageLayout = DataGridViewImageCellLayout.Zoom;
+                foreach (DataGridViewColumn dc in dgv.Columns)
+                    if (dc.Name.Contains("图片"))
+                        ((DataGridViewImageColumn)(dc)).ImageLayout = DataGridViewImageCellLayout.Zoom;
+                dgv.Columns["OID考号"].Width = 60;
+                dgv.Columns["图片姓名"].Width = 100;
                 dgv.Columns["姓名"].Width = 60;
                 dgv.Columns["新考号"].Width = 40;
                 dgv.Columns["是否修改"].Width = 0;

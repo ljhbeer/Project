@@ -26,6 +26,7 @@ namespace ScanTemplate.FormYJ
         private void FormYJTools_Load(object sender, EventArgs e)
         {
             InitExamInfos();
+            FormM.g_cfg.SetWorkPath(_workpath.Replace("s1025","Exam"));
         }
         private void buttonRefresh_Click(object sender, EventArgs e)
         {
@@ -180,7 +181,17 @@ namespace ScanTemplate.FormYJ
                 ltz[tzindex].SetName( sum.ToString());
 
                 Bitmap bmp = TemplateTools.DrawInfoBmp(S,_examdata.SR,angle,optionanswer, ltz );
-                bmp.Save("F:\\Out\\" + _exam.Name + "\\" + S.ID + ".jpg");
+
+                string filename = "F:\\Out\\" + _exam.Name + "\\" + S.ID + ".jpg";
+                if (FormM.g_cfg.Studentbases.HasStudentBase)
+                {
+                    if (S.KH > 1)
+                    {
+                        string name = FormM.g_cfg.Studentbases.GetName(S.KH);
+                        filename = "F:\\Out\\" + _exam.Name + "\\" + S.ID + "_" + name + ".jpg";
+                    }
+                }
+                bmp.Save(filename);
             }
             MessageBox.Show("已输出到F:\\Out\\"+_exam.Name);
         }

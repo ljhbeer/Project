@@ -62,6 +62,12 @@
     <Compile Include="FormChoose.Designer.cs">
       <DependentUpon>FormChoose.cs</DependentUpon>
     </Compile>
+    <Compile Include="Form\FormInputComboBox.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form\FormInputComboBox.Designer.cs">
+      <DependentUpon>FormInputComboBox.cs</DependentUpon>
+    </Compile>
     <Compile Include="FormM.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -123,6 +129,9 @@
     <Compile Include="tools\DataTableTools.cs" />
     <EmbeddedResource Include="FormChoose.resx">
       <DependentUpon>FormChoose.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Form\FormInputComboBox.resx">
+      <DependentUpon>FormInputComboBox.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FormM.resx">
       <DependentUpon>FormM.cs</DependentUpon>

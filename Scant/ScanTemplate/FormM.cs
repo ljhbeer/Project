@@ -115,19 +115,17 @@ namespace ScanTemplate
 		}
 		private void ButtonUseTemplateClick(object sender, System.EventArgs e)
 		{
-			if (listBox1.SelectedIndex == -1) return;
-			if(comboBoxTemplate.SelectedIndex==-1){
-				MessageBox.Show("还未选择模板");
-				return ;
-			}
-			
-			string path = listBox1.SelectedItem.ToString();
-            List<string> nameList = FileTools.NameListFromDir(path);
-			if (nameList.Count == 0) return;
-			string filename = nameList[0];
+            if (InputBox.Input("模板",comboBoxTemplate.Items) && InputBox.strValue!= "")
+            {
+                string path = listBox1.SelectedItem.ToString();
+                List<string> nameList = FileTools.NameListFromDir(path);
+                if (nameList.Count == 0) return;
+                string filename = nameList[0];
 
-            string templatefile = ((ValueTag)comboBoxTemplate.SelectedItem).Tag.ToString();
-			CreateTemplate(filename,templatefile);
+                string templatefile =  _tss.TemplatePath() + "\\"+ InputBox.strValue;//((ValueTag)comboBoxTemplate.SelectedItem).Tag.ToString();
+                //InitTemplate(  templatefile);
+                CreateTemplate(filename, templatefile);
+            }
 		}
 		private void ButtonScanClick(object sender, EventArgs e)
 		{
@@ -174,13 +172,31 @@ namespace ScanTemplate
                 return;
             }
 			DataTable dt = Tools.DataTableTools.ConstructDataTable(new string[] {
-			                                                       	"考号",
+			                                                       	"OID考号",
 			                                                       	"图片",
+			                                                       	"图片姓名",
+			                                                       	"图片考号",
                                                                     "姓名",
 			                                                       	"新考号",
 			                                                       	"是否修改"
 			                                                       });
             Rectangle r = _artemplate.Dic["考号"][0].ImgArea;
+            Rectangle rxm = new Rectangle();
+            Rectangle rkh = new Rectangle();
+            if(_artemplate.Dic["校对"].Count>0)
+            {
+                foreach (Area I in _artemplate.Dic["校对"])
+                {
+                    if (I.ToString().Contains("姓名"))
+                    {
+                        rxm = I.Rect;
+                    }else
+                    if (I.ToString().Contains("学号"))
+                    {
+                        rkh = I.Rect;
+                    }
+                }
+            }
 			foreach (DataRow dr in _rundt.Rows) {
 				if (dr["考号"].ToString().Contains("-")) {
 					string fn = dr["文件名"].ToString().Replace("LJH\\", "LJH\\Correct\\");
@@ -190,13 +206,23 @@ namespace ScanTemplate
 						if (_angle != null)
 							_angle.SetPaper(angle);
 						DataRow ndr = dt.NewRow();
-						ndr["考号"] = new ValueTag(dr["考号"].ToString(), dr);
-
-						Bitmap nbmp = bmp.Clone(r, bmp.PixelFormat);
-                        ndr["图片"] = nbmp;
+                        ndr["OID考号"] = new ValueTag(dr["考号"].ToString(), dr);
+                        if (r.Width > 0)
+                        {
+                            ndr["图片"] = bmp.Clone(r, bmp.PixelFormat);
+                        }
                         ndr["姓名"] = "";
                         ndr["新考号"] = "";
 						ndr["是否修改"] = false;
+
+                        if (rxm.Width > 0)
+                        {
+                            ndr["图片姓名"] = bmp.Clone(rxm, bmp.PixelFormat);
+                        }
+                        if (rkh.Width > 0)
+                        {
+                            ndr["图片考号"] = bmp.Clone(rkh, bmp.PixelFormat);
+                        }
 						dt.Rows.Add(ndr);
 					}
 				}
@@ -204,9 +230,40 @@ namespace ScanTemplate
 			if(dt.Rows.Count>0){
 				MessageBox.Show("暂未实现，待修改");
 				FormVerify f = new FormVerify(dt,"考号");
-				if (f.ShowDialog() != System.Windows.Forms.DialogResult.OK) {
-					MessageBox.Show("校验失败");
-				}
+                if (f.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+                {
+                    MessageBox.Show("未校验");
+                }
+                else
+                {
+                    if (f.Changed)
+                    {
+                        string filename = ((ValueTag)listBoxData.SelectedItem).Tag.ToString();
+                        string[] ss = File.ReadAllLines(filename);
+                        try
+                        {
+                            for (int i = 1; i < ss.Length; i++)
+                            {
+                                string[] item = ss[i].Split(',');
+                                if (item[3].Contains("-"))
+                                {
+                                    DataRow[] drs = _rundt.Select("文件名='" + item[0] + "'");
+                                    if (drs.Length == 1)
+                                    {
+                                        item[3] = drs[0]["考号"].ToString();
+                                        item[4] = drs[0]["姓名"].ToString();
+                                        ss[i] = string.Join(",", item);
+                                    }
+                                }
+                            }
+                            File.WriteAllText(filename + "_1", string.Join("\r\n", ss));
+                        }
+                        catch (Exception ee)
+                        {
+                            MessageBox.Show("未保存更改，因为" + ee.Message);
+                        }
+                    }
+                }
 				//修改之后
 				dt.Rows.Clear();
 			}
@@ -296,32 +353,33 @@ namespace ScanTemplate
 		}
         private void comboBoxTemplate_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (comboBoxTemplate.SelectedIndex == -1) return;
-            string templatefilename = ((ValueTag)comboBoxTemplate.SelectedItem).Tag.ToString();
-            InitTemplate(templatefilename);
-            InitListBoxData(templatefilename);
+            if (comboBoxTemplate.SelectedIndex == -1)
+            {
+                listBoxData.Items.Clear();
+            }
+            else
+            {
+                string templatefilename = ((ValueTag)comboBoxTemplate.SelectedItem).Tag.ToString();
+                InitTemplate(templatefilename);
+                InitListBoxData(templatefilename);
+            }
         }
 		private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
 		{
 			if (listBox1.SelectedIndex == -1) return;
-			string templatename = listBox1.SelectedItem.ToString();
-			string txt = templatename.Substring(templatename.LastIndexOf("\\") + 1);
-            AutoDetectRectAnge.FeatureSetPath = templatename;
-			bool unselected = true;
-            for (int i = 0; i < comboBoxTemplate.Items.Count; i++)
+            string srcpath = listBox1.SelectedItem.ToString();
+            AutoDetectRectAnge.FeatureSetPath = srcpath;
+            string srcshortpath = srcpath.Substring(srcpath.LastIndexOf("\\") + 1);
+            TemplateSet ts = _tss.GetTSFromSrcPath(srcshortpath);
+            if (ts != null)
             {
-                if (comboBoxTemplate.Items[i].ToString().StartsWith(txt))
-                {
-                    comboBoxTemplate.SelectedIndex = i;
-                    string templatefilename = ((ValueTag)comboBoxTemplate.SelectedItem).Tag.ToString();
-					if (_artemplate == null)
-						InitTemplate(templatefilename);
-					InitListBoxData(templatefilename );
-					unselected = false;
-					break;
-				}
-			}
-			if(unselected)
+                foreach (Object item in comboBoxTemplate.Items)
+                    if (item.ToString() == ts.templatename)
+                    {
+                        comboBoxTemplate.SelectedItem = item;
+                    }
+            }
+            else
                 comboBoxTemplate.SelectedIndex = -1;
 		}
         private void listBoxData_KeyUp(object sender, KeyEventArgs e)

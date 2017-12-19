@@ -18,6 +18,7 @@ namespace ScanTemplate
         private string _type;
 		public FormVerify(DataTable  dt,string type)
 		{
+            this.Changed = false;
 			this._dt = dt;
             this._type = type;
             if (type == "选择题")
@@ -26,7 +27,7 @@ namespace ScanTemplate
             }
             else if (type == "考号")
             {
-                _ColState = new List<int>() { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+                _ColState = new List<int>() { 0, 0, 0, 0,0, 20, 0, 0, 0, 0, 0 };
             }
 			InitializeComponent();
 			dgv.DataSource = dt;
@@ -39,8 +40,14 @@ namespace ScanTemplate
 		{
             if (_type == "选择题")
             {
-                ((DataGridViewImageColumn)(dgv.Columns["图片"])).ImageLayout = DataGridViewImageCellLayout.Zoom;
+                //((DataGridViewImageColumn)(dgv.Columns["图片"])).ImageLayout = DataGridViewImageCellLayout.Zoom;
 			    dgv.RowTemplate.Height = 30;
+                dgv.DataSource = null;
+                dgv.DataSource = _dt;
+                foreach (DataGridViewColumn dc in dgv.Columns)
+                    if (dc.Name.Contains("图片"))
+                        ((DataGridViewImageColumn)(dc)).ImageLayout = DataGridViewImageCellLayout.Zoom;
+
                 dgv.Columns["学号"].Width = 80;
                 dgv.Columns["题号"].Width = 30;
                 dgv.Columns["图片"].Width = 200;
@@ -57,10 +64,16 @@ namespace ScanTemplate
 			    dgv.RowTemplate.Height = 90;
                 dgv.DataSource = null;
                 dgv.DataSource = _dt;
-                ((DataGridViewImageColumn)(dgv.Columns["图片"])).ImageLayout = DataGridViewImageCellLayout.Zoom;
-                dgv.Columns["考号"].Width = 60;
+                //((DataGridViewImageColumn)(dgv.Columns["图片"])).ImageLayout = DataGridViewImageCellLayout.Zoom;
+                foreach (DataGridViewColumn dc in dgv.Columns)
+                    if (dc.Name.Contains("图片"))
+                        ((DataGridViewImageColumn)(dc)).ImageLayout = DataGridViewImageCellLayout.Zoom;
+
+                dgv.Columns["OID考号"].Width = 60;
                 dgv.Columns["图片"].Width = 300;
-                dgv.Columns["姓名"].Width = 40;
+                dgv.Columns["图片姓名"].Width = 100;
+                dgv.Columns["图片考号"].Width = 120;
+                dgv.Columns["姓名"].Width = 60;
                 dgv.Columns["新考号"].Width = 40;
                 dgv.Columns["是否修改"].Width = 0;
             }
@@ -134,11 +147,59 @@ namespace ScanTemplate
                         string th = dr["题号"].ToString();
                         if (origindr[th].ToString() != dr["你的答案"].ToString())
                             origindr[th] = dr["你的答案"];
+                        Changed = true;
+                    }
+                }
+            }
+            else if (_type == "考号")
+            {
+                foreach (DataRow dr in _dt.Rows)
+                {
+                    if ((bool)dr["是否修改"])
+                    {
+                        Changed = true;
+                        break;
                     }
                 }
             }
 			this.DialogResult = DialogResult.OK;
 			this.Close();
 		}
-	}
+
+        private void dgv_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+        {
+            try
+            {
+                if (_type == "考号")
+                {
+                    int kh = Convert.ToInt32(dgv[e.ColumnIndex, e.RowIndex].Value);
+                    DataRow dr = ((DataTable)dgv.DataSource).Rows[e.RowIndex];
+                    DataRow origindr = (DataRow)(((ValueTag)dr["OID考号"]).Tag);
+
+                    if (FormM.g_cfg.Studentbases.HasStudentBase)
+                    {
+                        string name = FormM.g_cfg.Studentbases.GetName(kh);
+                        dr["OID考号"] = new ValueTag(kh.ToString(), origindr);
+                        dr["姓名"] = name;
+                        origindr["考号"] = kh;
+                        origindr["姓名"] = name;
+                        dr["是否修改"] = true;
+                    }
+                }
+            }
+            catch (Exception ee)
+            {
+                MessageBox.Show(ee.Message);
+            }
+
+        }
+        private void dgv_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e)
+        {
+            if(! (_type == "考号" && _ColState[e.ColumnIndex] > 10))
+            {
+                e.Cancel = true;
+            }
+        }
+        public bool Changed { get; set; }
+    }
 }

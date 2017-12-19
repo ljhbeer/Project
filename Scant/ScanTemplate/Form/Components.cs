@@ -36,9 +36,19 @@ namespace ARTemplate
             f = null;
             return false;
         }
+        public static bool Input(string keyname, ComboBox.ObjectCollection objectCollection)
+        {
+            FormInputComboBox f = new FormInputComboBox(keyname, objectCollection);
+            if (f.ShowDialog() == DialogResult.OK)
+            {
+                strValue = f.StrValue;
+            }
+            return true;
+        }
         public static string strValue;
         public static int IntValue;
         public static float FloatValue;
+
     }
     public class Area
     {

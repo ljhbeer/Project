@@ -191,5 +191,14 @@ namespace Tools
                     namelist.Add(f.FullName);
             return namelist;
         }
+        public static List<string> SubDirNameListFromDir(string fidir)
+        {
+            List<string> namelist = new List<string>();
+            System.IO.DirectoryInfo dirinfo = new System.IO.DirectoryInfo(fidir);
+            //string ext = fi.Extension;
+            foreach (System.IO.DirectoryInfo f in dirinfo.GetDirectories())           
+                    namelist.Add(f.Name);
+            return namelist;
+        }
     }
 }

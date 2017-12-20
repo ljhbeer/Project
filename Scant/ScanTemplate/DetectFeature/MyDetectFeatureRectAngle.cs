@@ -446,6 +446,8 @@ namespace ScanTemplate
             if (FeatureSetPath != "")
             {
                 string filename = FeatureSetPath + ".detectFeatureSet.json";
+                if(!File.Exists(filename))
+                    filename = FeatureSetPath.Substring(0,FeatureSetPath.LastIndexOf("\\")+1) + "default.detectFeatureSet.json";
                 if (File.Exists(filename))
                 {
                     //string str = Tools.JsonFormatTool.ConvertJsonString(Newtonsoft.Json.JsonConvert.SerializeObject(Lr));

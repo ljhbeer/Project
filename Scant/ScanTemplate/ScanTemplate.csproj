@@ -125,6 +125,7 @@
     <Compile Include="DetectFeature\MyDetectFeatureRectAngle.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ScanConfig.cs" />
     <Compile Include="tools\BitmapTools.cs" />
     <Compile Include="tools\DataTableTools.cs" />
     <EmbeddedResource Include="FormChoose.resx">

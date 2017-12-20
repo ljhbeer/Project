@@ -34,15 +34,20 @@
             this.TLP = new System.Windows.Forms.TableLayoutPanel();
             this.dgv = new System.Windows.Forms.DataGridView();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
+            this.buttonCreateYJData = new System.Windows.Forms.Button();
+            this.buttonVerify = new System.Windows.Forms.Button();
+            this.buttonVerifyname = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
             this.comboBoxTemplate = new System.Windows.Forms.ComboBox();
             this.buttonRefresh = new System.Windows.Forms.Button();
-            this.listBoxData = new System.Windows.Forms.ListBox();
+            this.listBoxScantData = new System.Windows.Forms.ListBox();
+            this.buttonReScan = new System.Windows.Forms.Button();
             this.buttonScan = new System.Windows.Forms.Button();
             this.buttonUseTemplate = new System.Windows.Forms.Button();
-            this.buttonGo = new System.Windows.Forms.Button();
-            this.listBox1 = new System.Windows.Forms.ListBox();
+            this.buttonCreateTemplate = new System.Windows.Forms.Button();
+            this.listBoxUnScanDir = new System.Windows.Forms.ListBox();
             this.label1 = new System.Windows.Forms.Label();
             this.buttonworkpath = new System.Windows.Forms.Button();
             this.textBoxWorkPath = new System.Windows.Forms.TextBox();
@@ -51,9 +56,6 @@
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.buttonLeftHide = new System.Windows.Forms.Button();
             this.buttonRightHide = new System.Windows.Forms.Button();
-            this.buttonCreateYJData = new System.Windows.Forms.Button();
-            this.buttonVerify = new System.Windows.Forms.Button();
-            this.buttonVerifyname = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -142,15 +144,20 @@
             // 
             this.panel1.AutoScroll = true;
             this.panel1.BackColor = System.Drawing.SystemColors.Control;
+            this.panel1.Controls.Add(this.label4);
             this.panel1.Controls.Add(this.label3);
+            this.panel1.Controls.Add(this.buttonCreateYJData);
+            this.panel1.Controls.Add(this.buttonVerify);
+            this.panel1.Controls.Add(this.buttonVerifyname);
             this.panel1.Controls.Add(this.label2);
             this.panel1.Controls.Add(this.comboBoxTemplate);
             this.panel1.Controls.Add(this.buttonRefresh);
-            this.panel1.Controls.Add(this.listBoxData);
+            this.panel1.Controls.Add(this.listBoxScantData);
+            this.panel1.Controls.Add(this.buttonReScan);
             this.panel1.Controls.Add(this.buttonScan);
             this.panel1.Controls.Add(this.buttonUseTemplate);
-            this.panel1.Controls.Add(this.buttonGo);
-            this.panel1.Controls.Add(this.listBox1);
+            this.panel1.Controls.Add(this.buttonCreateTemplate);
+            this.panel1.Controls.Add(this.listBoxUnScanDir);
             this.panel1.Controls.Add(this.label1);
             this.panel1.Controls.Add(this.buttonworkpath);
             this.panel1.Controls.Add(this.textBoxWorkPath);
@@ -160,19 +167,56 @@
             this.panel1.Size = new System.Drawing.Size(245, 607);
             this.panel1.TabIndex = 2;
             // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(13, 55);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(65, 12);
+            this.label4.TabIndex = 15;
+            this.label4.Text = "未扫描目录";
+            // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(8, 336);
+            this.label3.Location = new System.Drawing.Point(8, 247);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(65, 12);
+            this.label3.Size = new System.Drawing.Size(77, 12);
             this.label3.TabIndex = 15;
-            this.label3.Text = "已导入数据";
+            this.label3.Text = "已扫描的数据";
+            // 
+            // buttonCreateYJData
+            // 
+            this.buttonCreateYJData.Location = new System.Drawing.Point(187, 566);
+            this.buttonCreateYJData.Name = "buttonCreateYJData";
+            this.buttonCreateYJData.Size = new System.Drawing.Size(53, 38);
+            this.buttonCreateYJData.TabIndex = 9;
+            this.buttonCreateYJData.Text = "生成阅卷数据";
+            this.buttonCreateYJData.UseVisualStyleBackColor = true;
+            this.buttonCreateYJData.Click += new System.EventHandler(this.buttonCreateYJData_Click);
+            // 
+            // buttonVerify
+            // 
+            this.buttonVerify.Location = new System.Drawing.Point(65, 566);
+            this.buttonVerify.Name = "buttonVerify";
+            this.buttonVerify.Size = new System.Drawing.Size(43, 38);
+            this.buttonVerify.TabIndex = 4;
+            this.buttonVerify.Text = "校验";
+            this.buttonVerify.UseVisualStyleBackColor = true;
+            // 
+            // buttonVerifyname
+            // 
+            this.buttonVerifyname.Location = new System.Drawing.Point(126, 566);
+            this.buttonVerifyname.Name = "buttonVerifyname";
+            this.buttonVerifyname.Size = new System.Drawing.Size(43, 38);
+            this.buttonVerifyname.TabIndex = 10;
+            this.buttonVerifyname.Text = "核对姓名";
+            this.buttonVerifyname.UseVisualStyleBackColor = true;
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(8, 54);
+            this.label2.Location = new System.Drawing.Point(14, 195);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(29, 12);
             this.label2.TabIndex = 14;
@@ -181,11 +225,10 @@
             // comboBoxTemplate
             // 
             this.comboBoxTemplate.FormattingEnabled = true;
-            this.comboBoxTemplate.Location = new System.Drawing.Point(8, 74);
+            this.comboBoxTemplate.Location = new System.Drawing.Point(52, 191);
             this.comboBoxTemplate.Name = "comboBoxTemplate";
-            this.comboBoxTemplate.Size = new System.Drawing.Size(224, 20);
+            this.comboBoxTemplate.Size = new System.Drawing.Size(184, 20);
             this.comboBoxTemplate.TabIndex = 13;
-            this.comboBoxTemplate.SelectedIndexChanged += new System.EventHandler(this.comboBoxTemplate_SelectedIndexChanged);
             // 
             // buttonRefresh
             // 
@@ -197,56 +240,63 @@
             this.buttonRefresh.UseVisualStyleBackColor = true;
             this.buttonRefresh.Click += new System.EventHandler(this.buttonRefresh_Click);
             // 
-            // listBoxData
+            // listBoxScantData
             // 
-            this.listBoxData.FormattingEnabled = true;
-            this.listBoxData.ItemHeight = 12;
-            this.listBoxData.Location = new System.Drawing.Point(8, 356);
-            this.listBoxData.Name = "listBoxData";
-            this.listBoxData.Size = new System.Drawing.Size(228, 160);
-            this.listBoxData.TabIndex = 10;
-            this.listBoxData.SelectedIndexChanged += new System.EventHandler(this.listBoxData_SelectedIndexChanged);
-            this.listBoxData.KeyUp += new System.Windows.Forms.KeyEventHandler(this.listBoxData_KeyUp);
+            this.listBoxScantData.FormattingEnabled = true;
+            this.listBoxScantData.ItemHeight = 12;
+            this.listBoxScantData.Location = new System.Drawing.Point(3, 265);
+            this.listBoxScantData.Name = "listBoxScantData";
+            this.listBoxScantData.Size = new System.Drawing.Size(239, 292);
+            this.listBoxScantData.TabIndex = 10;
+            this.listBoxScantData.SelectedIndexChanged += new System.EventHandler(this.listBoxData_SelectedIndexChanged);
+            // 
+            // buttonReScan
+            // 
+            this.buttonReScan.Location = new System.Drawing.Point(4, 566);
+            this.buttonReScan.Name = "buttonReScan";
+            this.buttonReScan.Size = new System.Drawing.Size(43, 38);
+            this.buttonReScan.TabIndex = 9;
+            this.buttonReScan.Text = "重新扫描";
+            this.buttonReScan.UseVisualStyleBackColor = true;
+            this.buttonReScan.Click += new System.EventHandler(this.ButtonScanClick);
             // 
             // buttonScan
             // 
-            this.buttonScan.Location = new System.Drawing.Point(6, 522);
+            this.buttonScan.Location = new System.Drawing.Point(160, 215);
             this.buttonScan.Name = "buttonScan";
-            this.buttonScan.Size = new System.Drawing.Size(135, 29);
+            this.buttonScan.Size = new System.Drawing.Size(79, 29);
             this.buttonScan.TabIndex = 9;
-            this.buttonScan.Text = "使用现有模板扫描";
+            this.buttonScan.Text = "扫描";
             this.buttonScan.UseVisualStyleBackColor = true;
             this.buttonScan.Click += new System.EventHandler(this.ButtonScanClick);
             // 
             // buttonUseTemplate
             // 
-            this.buttonUseTemplate.Location = new System.Drawing.Point(98, 101);
+            this.buttonUseTemplate.Location = new System.Drawing.Point(79, 215);
             this.buttonUseTemplate.Name = "buttonUseTemplate";
-            this.buttonUseTemplate.Size = new System.Drawing.Size(135, 29);
+            this.buttonUseTemplate.Size = new System.Drawing.Size(78, 29);
             this.buttonUseTemplate.TabIndex = 7;
-            this.buttonUseTemplate.Text = "使用现有配套模板";
+            this.buttonUseTemplate.Text = "套用模板";
             this.buttonUseTemplate.UseVisualStyleBackColor = true;
-            this.buttonUseTemplate.Click += new System.EventHandler(this.ButtonUseTemplateClick);
             // 
-            // buttonGo
+            // buttonCreateTemplate
             // 
-            this.buttonGo.Location = new System.Drawing.Point(7, 102);
-            this.buttonGo.Name = "buttonGo";
-            this.buttonGo.Size = new System.Drawing.Size(87, 29);
-            this.buttonGo.TabIndex = 6;
-            this.buttonGo.Text = "创建新模板";
-            this.buttonGo.UseVisualStyleBackColor = true;
-            this.buttonGo.Click += new System.EventHandler(this.buttonGo_Click);
+            this.buttonCreateTemplate.Location = new System.Drawing.Point(9, 215);
+            this.buttonCreateTemplate.Name = "buttonCreateTemplate";
+            this.buttonCreateTemplate.Size = new System.Drawing.Size(69, 29);
+            this.buttonCreateTemplate.TabIndex = 6;
+            this.buttonCreateTemplate.Text = "创建模板";
+            this.buttonCreateTemplate.UseVisualStyleBackColor = true;
+            this.buttonCreateTemplate.Click += new System.EventHandler(this.buttonCreateTemplate_Click);
             // 
-            // listBox1
+            // listBoxUnScanDir
             // 
-            this.listBox1.FormattingEnabled = true;
-            this.listBox1.ItemHeight = 12;
-            this.listBox1.Location = new System.Drawing.Point(8, 133);
-            this.listBox1.Name = "listBox1";
-            this.listBox1.Size = new System.Drawing.Size(224, 196);
-            this.listBox1.TabIndex = 5;
-            this.listBox1.SelectedIndexChanged += new System.EventHandler(this.listBox1_SelectedIndexChanged);
+            this.listBoxUnScanDir.FormattingEnabled = true;
+            this.listBoxUnScanDir.ItemHeight = 12;
+            this.listBoxUnScanDir.Location = new System.Drawing.Point(10, 76);
+            this.listBoxUnScanDir.Name = "listBoxUnScanDir";
+            this.listBoxUnScanDir.Size = new System.Drawing.Size(224, 112);
+            this.listBoxUnScanDir.TabIndex = 5;
             // 
             // label1
             // 
@@ -273,7 +323,7 @@
             this.textBoxWorkPath.Name = "textBoxWorkPath";
             this.textBoxWorkPath.Size = new System.Drawing.Size(228, 21);
             this.textBoxWorkPath.TabIndex = 3;
-            this.textBoxWorkPath.Text = "E:\\Scan\\LJH\\s1025";
+            this.textBoxWorkPath.Text = "E:\\Scan\\s1025";
             // 
             // panel3
             // 
@@ -311,9 +361,6 @@
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 50F));
             this.tableLayoutPanel2.Controls.Add(this.buttonLeftHide, 0, 0);
             this.tableLayoutPanel2.Controls.Add(this.buttonRightHide, 6, 0);
-            this.tableLayoutPanel2.Controls.Add(this.buttonVerify, 1, 0);
-            this.tableLayoutPanel2.Controls.Add(this.buttonCreateYJData, 3, 0);
-            this.tableLayoutPanel2.Controls.Add(this.buttonVerifyname, 2, 0);
             this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 622);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
@@ -343,36 +390,6 @@
             this.buttonRightHide.Text = ">>";
             this.buttonRightHide.UseVisualStyleBackColor = true;
             this.buttonRightHide.Click += new System.EventHandler(this.buttonRightHide_Click);
-            // 
-            // buttonCreateYJData
-            // 
-            this.buttonCreateYJData.Location = new System.Drawing.Point(171, 3);
-            this.buttonCreateYJData.Name = "buttonCreateYJData";
-            this.buttonCreateYJData.Size = new System.Drawing.Size(135, 22);
-            this.buttonCreateYJData.TabIndex = 9;
-            this.buttonCreateYJData.Text = "生成阅卷数据";
-            this.buttonCreateYJData.UseVisualStyleBackColor = true;
-            this.buttonCreateYJData.Click += new System.EventHandler(this.buttonCreateYJData_Click);
-            // 
-            // buttonVerify
-            // 
-            this.buttonVerify.Location = new System.Drawing.Point(53, 3);
-            this.buttonVerify.Name = "buttonVerify";
-            this.buttonVerify.Size = new System.Drawing.Size(44, 22);
-            this.buttonVerify.TabIndex = 4;
-            this.buttonVerify.Text = "校验";
-            this.buttonVerify.UseVisualStyleBackColor = true;
-            this.buttonVerify.Click += new System.EventHandler(this.buttonVerify_Click);
-            // 
-            // buttonVerifyname
-            // 
-            this.buttonVerifyname.Location = new System.Drawing.Point(103, 3);
-            this.buttonVerifyname.Name = "buttonVerifyname";
-            this.buttonVerifyname.Size = new System.Drawing.Size(62, 22);
-            this.buttonVerifyname.TabIndex = 10;
-            this.buttonVerifyname.Text = "核对姓名";
-            this.buttonVerifyname.UseVisualStyleBackColor = true;
-            this.buttonVerifyname.Click += new System.EventHandler(this.buttonVerifyname_Click);
             // 
             // FormM
             // 
@@ -416,16 +433,18 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox textBoxWorkPath;
         private System.Windows.Forms.Button buttonworkpath;
-        private System.Windows.Forms.ListBox listBox1;
-        private System.Windows.Forms.Button buttonGo;
+        private System.Windows.Forms.ListBox listBoxUnScanDir;
+        private System.Windows.Forms.Button buttonCreateTemplate;
         private System.Windows.Forms.Panel panel3;
-        private System.Windows.Forms.ListBox listBoxData;
+        private System.Windows.Forms.ListBox listBoxScantData;
         private System.Windows.Forms.Button buttonVerify;
         private System.Windows.Forms.Button buttonCreateYJData;
         private System.Windows.Forms.Button buttonRefresh;
         private System.Windows.Forms.ComboBox comboBoxTemplate;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Button buttonVerifyname;        
+        private System.Windows.Forms.Button buttonVerifyname;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Button buttonReScan;        
     }
 }

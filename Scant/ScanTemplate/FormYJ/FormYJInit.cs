@@ -319,7 +319,7 @@ namespace ScanTemplate.FormYJ
             panel3.Invalidate();
             panel3.AutoScrollPosition = new Point(-S.X, -S.Y);
         }
-    }
+    }    
     public class Optionsubjects
     {
         public Optionsubjects()

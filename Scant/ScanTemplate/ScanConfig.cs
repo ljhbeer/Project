@@ -200,6 +200,11 @@ namespace ScanTemplate
         {
             return _filename;
         }
+
+        public Template Template()
+        {
+            return new Template(_filename);
+        }
     }
     public class TemplateShow
     {
@@ -210,6 +215,7 @@ namespace ScanTemplate
         private AutoAngle _angle;
         private string _fullpath;
         private string _dirname;
+        private TemplateInfo ti;
     
         public TemplateShow(string fullpath,string dirname, string imgfilename)
         {
@@ -221,6 +227,12 @@ namespace ScanTemplate
             AutoDetectRectAnge.FeatureSetPath = _fullpath;
             this._dr = new MyDetectFeatureRectAngle(_src);
             this.OK = CreateTemplate();
+        }
+        public TemplateShow(TemplateInfo ti)
+        {
+            this.ti = ti;
+            _artemplate = ti.Template();
+            OK = true;
         }
 
         private bool CreateTemplate()

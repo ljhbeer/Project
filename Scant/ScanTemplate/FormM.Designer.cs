@@ -45,7 +45,7 @@
             this.listBoxScantData = new System.Windows.Forms.ListBox();
             this.buttonReScan = new System.Windows.Forms.Button();
             this.buttonScan = new System.Windows.Forms.Button();
-            this.buttonUseTemplate = new System.Windows.Forms.Button();
+            this.buttonMatchTemplate = new System.Windows.Forms.Button();
             this.buttonCreateTemplate = new System.Windows.Forms.Button();
             this.listBoxUnScanDir = new System.Windows.Forms.ListBox();
             this.label1 = new System.Windows.Forms.Label();
@@ -155,7 +155,7 @@
             this.panel1.Controls.Add(this.listBoxScantData);
             this.panel1.Controls.Add(this.buttonReScan);
             this.panel1.Controls.Add(this.buttonScan);
-            this.panel1.Controls.Add(this.buttonUseTemplate);
+            this.panel1.Controls.Add(this.buttonMatchTemplate);
             this.panel1.Controls.Add(this.buttonCreateTemplate);
             this.panel1.Controls.Add(this.listBoxUnScanDir);
             this.panel1.Controls.Add(this.label1);
@@ -270,14 +270,15 @@
             this.buttonScan.UseVisualStyleBackColor = true;
             this.buttonScan.Click += new System.EventHandler(this.ButtonScanClick);
             // 
-            // buttonUseTemplate
+            // buttonMatchTemplate
             // 
-            this.buttonUseTemplate.Location = new System.Drawing.Point(79, 215);
-            this.buttonUseTemplate.Name = "buttonUseTemplate";
-            this.buttonUseTemplate.Size = new System.Drawing.Size(78, 29);
-            this.buttonUseTemplate.TabIndex = 7;
-            this.buttonUseTemplate.Text = "套用模板";
-            this.buttonUseTemplate.UseVisualStyleBackColor = true;
+            this.buttonMatchTemplate.Location = new System.Drawing.Point(79, 215);
+            this.buttonMatchTemplate.Name = "buttonMatchTemplate";
+            this.buttonMatchTemplate.Size = new System.Drawing.Size(78, 29);
+            this.buttonMatchTemplate.TabIndex = 7;
+            this.buttonMatchTemplate.Text = "套用模板";
+            this.buttonMatchTemplate.UseVisualStyleBackColor = true;
+            this.buttonMatchTemplate.Click += new System.EventHandler(this.buttonMatchTemplate_Click);
             // 
             // buttonCreateTemplate
             // 
@@ -416,7 +417,7 @@
 
         }
         private System.Windows.Forms.Button buttonScan;
-        private System.Windows.Forms.Button buttonUseTemplate;
+        private System.Windows.Forms.Button buttonMatchTemplate;
 
         #endregion
 

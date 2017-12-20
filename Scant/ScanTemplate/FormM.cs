@@ -175,5 +175,22 @@ namespace ScanTemplate
                 }
             }
         }
+        private void buttonMatchTemplate_Click(object sender, EventArgs e)
+        {
+            if (listBoxUnScanDir.SelectedIndex == -1 || comboBoxTemplate.SelectedIndex == -1) return;
+            TemplateInfo ti = (TemplateInfo)comboBoxTemplate.SelectedItem;
+            UnScan dir = (UnScan)listBoxUnScanDir.SelectedItem;
+            List<string> nameList = dir.ImgList();
+            if (nameList.Count > 0)
+            {
+                sc.Templateshow = new TemplateShow(ti);
+                if (sc.Templateshow.OK)
+                {
+                    this.Hide();
+                    new FormTemplate(sc.Templateshow.Template).ShowDialog();
+                    this.Show();
+                }
+            }
+        }
 	}	
 }

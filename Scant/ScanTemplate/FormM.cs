@@ -21,10 +21,12 @@ namespace ScanTemplate
 	{
         public static Config g_cfg = new Config();
         private ScanConfig sc;
+        private DataTable _rundt;
+        private Scan _scan;
 		public FormM()
 		{
-			InitializeComponent();		
-          
+			InitializeComponent();
+            _rundt = null;
 		}
 		private void FormM_Load(object sender, EventArgs e)
 		{            
@@ -64,21 +66,65 @@ namespace ScanTemplate
 			string str = textBoxWorkPath.Text;
 			if (Directory.Exists(str))
                 FormM_Load(null, e);
-		}		
+		}
+        private void buttonCreateTemplate_Click(object sender, EventArgs e)
+        {
+            if (listBoxUnScanDir.SelectedIndex == -1) return;
+            UnScan dir = (UnScan)listBoxUnScanDir.SelectedItem;
+            List<string> nameList = dir.ImgList();
+            if (nameList.Count > 0)
+            {
+                sc.Templateshow = new TemplateShow(dir.FullPath, dir.DirName, nameList[0]);
+                if (sc.Templateshow.OK)
+                {
+                    this.Hide();
+                    new FormTemplate(sc.Templateshow.Template).ShowDialog();
+                    this.Show();
+                }
+            }
+        }
+        private void buttonMatchTemplate_Click(object sender, EventArgs e)
+        {
+            if (listBoxUnScanDir.SelectedIndex == -1 || comboBoxTemplate.SelectedIndex == -1)
+            {
+				MessageBox.Show("未选择目录或者模板");
+                return;
+            }
+            TemplateInfo ti = (TemplateInfo)comboBoxTemplate.SelectedItem;
+            UnScan dir = (UnScan)listBoxUnScanDir.SelectedItem;
+            List<string> nameList = dir.ImgList();
+            if (nameList.Count > 0)
+            {
+                sc.Templateshow = new TemplateShow(dir.FullPath, dir.DirName, nameList[0], ti);
+                if (sc.Templateshow.OK)
+                {
+                    this.Hide();
+                    new FormTemplate(sc.Templateshow.Template).ShowDialog();
+                    this.Show();
+                }
+            }
+        }
 		private void ButtonScanClick(object sender, EventArgs e)
 		{
-			if (listBoxUnScanDir.SelectedIndex == -1) return;
-            if (comboBoxTemplate.SelectedIndex == -1)
+			if (listBoxUnScanDir.SelectedIndex == -1 || comboBoxTemplate.SelectedIndex == -1)
             {
-				MessageBox.Show("还未选择模板");
-				return ;
-			}
-            //string path = listBoxUnScanDir.SelectedItem.ToString();
-            //List<string> nameList = FileTools.NameListFromDir(path);
-            //if (nameList.Count == 0) return;
-            //Bitmap bmp = (Bitmap)Bitmap.FromFile(_artemplate.Filename);
-            //MyDetectFeatureRectAngle dr = new MyDetectFeatureRectAngle(bmp);
-            //DetectAllImgs(dr, nameList);			
+				MessageBox.Show("未选择目录或者模板");
+                return;
+            }
+            TemplateInfo ti = (TemplateInfo)comboBoxTemplate.SelectedItem;
+            UnScan dir = (UnScan)listBoxUnScanDir.SelectedItem;
+            List<string> nameList = dir.ImgList();
+            if (nameList.Count > 0)
+            {
+                AutoDetectRectAnge.FeatureSetPath = dir.FullPath;
+                _scan = new Scan(sc,ti.TemplateFileName, nameList,dir.FullPath);
+                _rundt = Tools.DataTableTools.ConstructDataTable( _scan.ColNames.ToArray() );
+                dgv.DataSource = _rundt;
+                InitDgvUI();
+                _scan.DgSaveScanData = new DelegateSaveScanData( ExportData );
+                _scan.DgShowScanMsg = new DelegateShowScanMsg( ShowMsg);
+                _scan.DoScan();
+            }
 		}
         private void buttonCreateYJData_Click(object sender, EventArgs e)
         {
@@ -146,8 +192,85 @@ namespace ScanTemplate
 			S.Offset((int)(e.X * (1 - rat)), (int)(e.Y * (1 - rat)));
 			panel3.Invalidate();
 			panel3.AutoScrollPosition = new Point(-S.X, -S.Y);
-		}		
-		
+		}
+        private void InitDgvUI()
+        {
+            foreach (DataGridViewColumn dc in dgv.Columns)
+                if (dc.Name.StartsWith("x"))
+                    dc.Width = 20;
+                else if (dc.Name == "序号")
+                    dc.Width = 30;
+                else
+                    dc.Width = 60;
+        }
+        public void ShowMsg(string  msg)
+        {
+            string[] ss = msg.Trim().Split(',');
+            DataRow dr = _rundt.NewRow();
+            MsgToDr(ss, ref dr);
+            _rundt.Rows.Add(dr);
+        }
+        private void ExportData(string exportdata)
+        {
+            if (InputBox.Input("考试名称"))
+            {
+                string examname = InputBox.strValue;              
+                string Datafilename = _scan.ScanDataPath + "\\data.txt";
+                string NewTemplatename = _scan.ScanDataPath + "template.xml";
+                string NewImgsPath = _scan.ScanDataPath + "\\img";
+                File.WriteAllText(_scan.ScanDataPath + "\\"+examname+".exam", examname);
+                File.WriteAllText(Datafilename, string.Join(",",_scan.ExportTitles) + "\r\n" + exportdata);
+                Directory.Move(_scan.SourcePath       ,NewImgsPath);
+                File.Copy(_scan.TemplateName, NewTemplatename);
+            }
+        }
+        private void MsgToDr(string[] ss, ref DataRow dr)
+        {
+            dr["序号"] = _rundt.Rows.Count + 1;
+            if (ss.Length == _scan.ExportTitles.Count)
+            {
+                foreach (KeyValuePair<string, int> kv in _scan.Titlepos)
+                {
+                    if (kv.Key.Contains("校验"))
+                        dr[kv.Key] = Convert.ToDouble(ss[kv.Value]);
+                    else
+                        dr[kv.Key] = ss[kv.Value];
+                }
+                if (_scan.Xztpos > 0)
+                {
+                    string[] xx = ss[_scan.Xztpos].Split(new string[] { "|" }, StringSplitOptions.RemoveEmptyEntries);
+                    for (int ii = 0; ii < xx.Length; ii++)
+                        dr["x" + (ii + 1)] = xx[ii];
+                }
+            }
+        }
+        private void AddDataToDt(DataRow dr, Bitmap bmp, DataTable dt)
+        {
+            //double angle = (double)(dr["校验角度"]);
+            //if (_angle != null)
+            //    _angle.SetPaper(angle);
+            //for (int i = 0; i < _artemplate.XztRect.Count; i++)
+            //{
+            //    string value = dr["x" + (i + 1)].ToString();
+            //    if (value.Length != 1 || !"ABCD".Contains(value))
+            //    {
+            //        DataRow ndr = dt.NewRow();
+            //        string xuehao = "";
+            //        if (dr.Table.Columns.Contains("考号"))
+            //            xuehao = dr["考号"].ToString();
+            //        ndr["学号"] = new ValueTag(xuehao, dr);
+            //        ndr["题号"] = "x" + (i + 1);
+            //        Rectangle r = _artemplate.XztRect[i];
+            //        //r.Location = _angle.GetCorrectPoint(r.X,r.Y);
+            //        Bitmap nbmp = bmp.Clone(r, bmp.PixelFormat);
+            //        ndr["图片"] = nbmp;
+            //        ndr["你的答案"] = value;
+            //        ndr["是否多选"] = false;
+            //        ndr["是否修改"] = false;
+            //        dt.Rows.Add(ndr);
+            //    }
+            //}
+        }
 		private List<string> NameListFromFile(string filename)
 		{
 			if (File.Exists(filename))
@@ -158,39 +281,5 @@ namespace ScanTemplate
 			}
 			return new List<string>();
 		}
-
-        private void buttonCreateTemplate_Click(object sender, EventArgs e)
-        {
-            if ( listBoxUnScanDir .SelectedIndex == -1) return;
-            UnScan dir =(UnScan) listBoxUnScanDir.SelectedItem;
-            List<string> nameList = dir.ImgList();
-            if (nameList.Count > 0)
-            {
-                sc.Templateshow = new TemplateShow(dir.FullPath,dir.DirName,nameList[0]);
-                if (sc.Templateshow.OK)
-                {
-                    this.Hide();                   
-                    new FormTemplate(sc.Templateshow.Template).ShowDialog();
-                    this.Show();
-                }
-            }
-        }
-        private void buttonMatchTemplate_Click(object sender, EventArgs e)
-        {
-            if (listBoxUnScanDir.SelectedIndex == -1 || comboBoxTemplate.SelectedIndex == -1) return;
-            TemplateInfo ti = (TemplateInfo)comboBoxTemplate.SelectedItem;
-            UnScan dir = (UnScan)listBoxUnScanDir.SelectedItem;
-            List<string> nameList = dir.ImgList();
-            if (nameList.Count > 0)
-            {
-                sc.Templateshow = new TemplateShow(ti);
-                if (sc.Templateshow.OK)
-                {
-                    this.Hide();
-                    new FormTemplate(sc.Templateshow.Template).ShowDialog();
-                    this.Show();
-                }
-            }
-        }
 	}	
 }

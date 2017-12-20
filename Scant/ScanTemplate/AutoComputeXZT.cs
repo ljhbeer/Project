@@ -10,7 +10,6 @@ namespace ScanTemplate
     class AutoComputeXZTKH
     {
         private ARTemplate.Template _artemplate;
-        //private AutoAngle _angle;
         private System.Drawing.Bitmap _src;
 
         public AutoComputeXZTKH(ARTemplate.Template _artemplate, System.Drawing.Bitmap bmp)
@@ -19,7 +18,6 @@ namespace ScanTemplate
             //this._angle = _angle;
             this._src = bmp;
         }
-
         public string ComputeXZT(string num1, AutoAngle _angle)
         {
             StringBuilder sb = new StringBuilder();
@@ -129,7 +127,5 @@ namespace ScanTemplate
                 return sb.ToString();
         	return "-";
         }
-
-
     }
 }

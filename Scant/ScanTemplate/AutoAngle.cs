@@ -58,9 +58,19 @@ namespace ScanTemplate
             }
         }
 
-        public  double Angle1()
+        public double Angle1
         {
-            return _Angle1;
+            get
+            {
+                return _Angle1;
+            }
+        }
+        public double Angle2
+        {
+            get
+            {
+                return _Angle2;
+            }
         }
     }
 }

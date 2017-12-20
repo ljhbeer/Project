@@ -4,9 +4,15 @@ using System.IO;
 using System.Linq;
 using System.Drawing;
 using ARTemplate;
+using System.Threading;
+using System.Text;
+using ZXing.Common;
+using ZXing;
 
 namespace ScanTemplate
 {
+    public delegate void DelegateShowScanMsg(string msg);
+    public delegate void DelegateSaveScanData(string data);
     public class Config
     {
         public Config()
@@ -79,19 +85,28 @@ namespace ScanTemplate
         private UnScans _unscans;
         private Templates _commontemplates;
         private ScanDatas _scandatas;
+        private ZXing.BarcodeReader _br;
         public ScanConfig(string workpath) //E:\Scan\s1025
         {
             Baseconfig = new BaseConfig(workpath);
             _unscans = new UnScans(Baseconfig.UnScanPath);
             _commontemplates = new Templates(Baseconfig.TemplatePath);
             _scandatas = new ScanDatas(Baseconfig.ScanDataPath);
-           
+
+            //for 二维码
+            DecodingOptions decodeOption = new DecodingOptions();
+            decodeOption.PossibleFormats = new List<BarcodeFormat>() {
+				BarcodeFormat.All_1D
+			};
+            _br = new BarcodeReader();
+            _br.Options = decodeOption;
         }
         public UnScans Unscans { get { return _unscans; } }
         public Templates CommonTemplates { get { return _commontemplates; } }
         public ScanDatas Scandatas { get { return _scandatas; } }
         public TemplateShow Templateshow { get; set; }   
         public BaseConfig Baseconfig { get; set; }
+        public ZXing.BarcodeReader BR { get { return _br; } }
     }
     public class BaseConfig
     {
@@ -200,11 +215,7 @@ namespace ScanTemplate
         {
             return _filename;
         }
-
-        public Template Template()
-        {
-            return new Template(_filename);
-        }
+        public string TemplateFileName { get { return _path + "\\" + _filename; } }
     }
     public class TemplateShow
     {
@@ -217,22 +228,17 @@ namespace ScanTemplate
         private string _dirname;
         private TemplateInfo ti;
     
-        public TemplateShow(string fullpath,string dirname, string imgfilename)
+        public TemplateShow(string fullpath,string dirname, string imgfilename, TemplateInfo ti=null)
         {
             this._fullpath = fullpath;
             this._imgfilename = imgfilename;
             this._dirname = dirname;
+            this.ti = ti;
             this._src = (Bitmap)Bitmap.FromFile(_imgfilename);
             
             AutoDetectRectAnge.FeatureSetPath = _fullpath;
             this._dr = new MyDetectFeatureRectAngle(_src);
             this.OK = CreateTemplate();
-        }
-        public TemplateShow(TemplateInfo ti)
-        {
-            this.ti = ti;
-            _artemplate = ti.Template();
-            OK = true;
         }
 
         private bool CreateTemplate()
@@ -240,7 +246,9 @@ namespace ScanTemplate
             if (_dr.Detected())
             {
                 //TODO: autoDetectRectAngle set static
-                _artemplate = new ARTemplate.Template(_imgfilename, _src, _dr.CorrectRect);
+                    _artemplate = new ARTemplate.Template(_imgfilename, _src, _dr.CorrectRect);
+                    if (ti != null)
+                        _artemplate.Load(ti.TemplateFileName);
                 List<Point> zeroListPoint = new List<Point>();
                 for (int i = 0; i < _dr.ListPoint.Count; i++)
                 {
@@ -254,6 +262,217 @@ namespace ScanTemplate
         }
         public Template Template { get { return _artemplate; } }
         public bool OK { get; set; }
+    }
+    public class Scan
+    {
+        private ScanConfig _sc;
+        private MyDetectFeatureRectAngle _dr;
+        private Template _template;
+        private AutoAngle _angle;
+        private string _templatename;
+        private List<string> _nameList;
+        private string _dirname;
+        private string _exportdata;
+        private Dictionary<string, int> _titlepos;
+        private int _xztpos;
+
+        public DelegateShowScanMsg DgShowScanMsg;
+        public DelegateSaveScanData DgSaveScanData;
+        private string _srcpath;
+        public Scan(ScanConfig sc,string templatename, List<string> nameList,string fulldirpath)
+        {
+            this.DgSaveScanData = null;
+            this.DgShowScanMsg = null;
+            _xztpos = -1;
+            _titlepos = null;
+            this._sc = sc;
+            this._templatename = templatename;
+            this._nameList = nameList;
+            this._dirname = fulldirpath.Substring(fulldirpath.LastIndexOf("\\")+1);
+            this._srcpath = fulldirpath;
+            Template t = new Template(_templatename);
+            _dr = new MyDetectFeatureRectAngle((Bitmap)Bitmap.FromFile(t.Filename));
+            if (!Directory.Exists(CorrectPath))
+                Directory.CreateDirectory(CorrectPath);
+            InitTemplate();
+        }
+        public void DoScan()
+        {
+            Thread thread = new Thread(new ThreadStart(RunScan));
+            thread.Start();
+        }
+        public void RunScan()
+        {
+            Msg = "";
+            StringBuilder sb = new StringBuilder();
+			foreach (string s in _nameList)
+			{
+				string _runmsg = DetectImg(s);
+				sb.Append(_runmsg);
+                if(DgShowScanMsg!=null)
+                DgShowScanMsg(_runmsg);//this.Invoke(new MyInvoke(ShowMsg));
+				Thread.Sleep(10);
+			}
+			_exportdata = sb.ToString();
+            if (DgSaveScanData != null)//this.Invoke(new MyInvoke(ExportData));
+                DgSaveScanData(_exportdata);
+        }
+        private string DetectImg(string s)
+        {
+            StringBuilder sb = new StringBuilder();
+            Bitmap orgsrc = (Bitmap)Bitmap.FromFile(s);
+            List<Rectangle> TBO = new List<Rectangle>();
+            Rectangle CorrectRect = _dr.Detected(orgsrc, TBO);
+            if (CorrectRect.Width > 0 && TBO.Count == 3)
+            {
+                if (!SetAngle(orgsrc, TBO,CorrectRect))
+                {
+                    Msg += s + "检测特征点B失败\r\n";
+                    return "";
+                }
+                sb.Append(s + "," + CorrectRect.ToString("-"));// 文件名 , CorrectRect
+                sb.Append("," + _angle.Angle2 ); //校验角度
+
+                Bitmap src = (Bitmap)orgsrc.Clone(CorrectRect, orgsrc.PixelFormat);
+                src.Save(CorrectPath + s.Substring(s.LastIndexOf("\\")));
+                AutoComputeXZTKH acx = new AutoComputeXZTKH(_template,src);
+                if (_template.HasOptions("考号"))
+                {
+                    KaoHaoChoiceArea kha = (KaoHaoChoiceArea)(_template.Dic["考号"][0]);
+                    if (kha.Type == "条形码")
+                    {
+                        Rectangle Ir = kha.ImgArea;
+                        Bitmap barmap = (Bitmap)src.Clone(kha.ImgArea, src.PixelFormat);
+                        //barmap.Save("f:\\aa.tif");
+                        //Ir.Offset(CorrectRect.Location);
+                        ZXing.Result rs = _sc.BR.Decode(barmap);
+                        if (rs != null)
+                        {
+                            sb.Append("," + rs.Text + ",-");  //考号-条形码 姓名-未知 MsgtoDr中处理
+                        }
+                    }
+                    else if ("1023456789".Contains(kha.Type))
+                    {
+                        sb.Append("," + acx.ComputeKH(kha, _angle) + ",-");   //考号-涂卡 姓名-未知 MsgtoDr中处理
+                    }
+                }
+                string str = s.Substring(s.Length - 7, 3);
+                sb.Append("," + acx.ComputeXZT(str,_angle)); //选择题
+                //计算座位号
+                if (_template.HasOptions("自定义"))
+                {
+                    StringBuilder tsb = new StringBuilder();
+                    foreach (Area I in _template.Dic["自定义"])
+                    {
+                        CustomArea ca = (CustomArea)I;
+                        if ("1023456789".Contains(ca.Type))
+                        {
+                            AutoComputeXZTKH acxzdy = new AutoComputeXZTKH(_template, src);
+                            //sb.Append("," + acx.ComputeCustomDF(ca, _angle, nbmp));
+                            tsb.Append(acx.ComputeCustomDF(ca, _angle) + "|");
+                        }
+                    }
+                    sb.Append("," + tsb); //自定义
+                }
+            }
+            else
+            {
+                //检测失败
+            }
+            sb.AppendLine();
+            return sb.ToString();
+        }
+        private bool SetAngle(Bitmap orgsrc, List<Rectangle> TBO, Rectangle CorrectRect)
+        {
+            Rectangle T = TBO[0];
+            Rectangle B = _dr.Detected(TBO[1], orgsrc);
+            Rectangle O = new Rectangle();
+            O = _dr.Detected(TBO[2], orgsrc);
+            if (B.Width == 0)
+            {
+                Rectangle R = TBO[1];
+                R.Inflate(R.Width / 2, R.Height / 5);
+                //bmpB = (Bitmap)bmp.Clone(R, bmp.PixelFormat);
+                B = _dr.Detected(R, orgsrc);
+                if (B.Width == 0)
+                {
+                    return false;
+                    //MessageBox.Show("检测特征点B失败");
+                    //Msg += s + "检测特征点B失败\r\n";
+                    //return "";
+                }
+            }
+            Point offset = new Point(-CorrectRect.X, -CorrectRect.Y);
+            T.Offset(offset);
+            B.Offset(offset);
+            O.Offset(offset);
+            _angle.SetPaper(T.Location, B.Location, O.Location);
+            return true;
+        }
+        public string CorrectPath { get { return _sc.Baseconfig.CorrectImgPath + "\\" + _dirname; } }
+        public List<string> ExportTitles { get { return _template.GetTitles(); } }
+        public List<string> ColNames
+        {
+            get
+            {
+                InitTitlePos();
+                List<string> colnames = new List<string> { "序号" };
+                colnames.AddRange(ExportTitles);
+                if (colnames.Contains("选择题"))
+                {
+                    colnames.Remove("选择题");
+                    for (int i = 0; i <_template.XztRect.Count; i++)
+                        colnames.Add("x" + (i + 1));
+                }
+                return colnames;
+            }
+        }
+
+        private void InitTitlePos()
+        {
+            if (_titlepos == null)
+            {
+                _titlepos = ConstructTitlePos(ExportTitles);
+                if (_titlepos.ContainsKey("选择题"))
+                    _xztpos = _titlepos["选择题"];
+                _titlepos.Remove("选择题");
+            }
+        }
+        private Dictionary<string, int> ConstructTitlePos(List<string> Titles)
+        {
+            Dictionary<string, int> titlepos = new Dictionary<string, int>();
+            for (int i = 0; i < Titles.Count; i++)
+            {
+                titlepos[Titles[i]] = i;
+            }
+            return titlepos;
+        }
+        private void InitTemplate()
+        {
+            Template t = new Template(_templatename);
+            if (t.Image != null)
+            {
+                _template = t;
+                List<Rectangle> listrect = new List<Rectangle>();
+                foreach (Area I in t.Dic["特征点"])
+                {
+                    listrect.Add(I.ImgArea);
+                }
+                if (listrect.Count == 3)
+                {
+                    AutoDetectRectAnge adr = new AutoDetectRectAnge();
+                    adr.ComputTBO(listrect);
+                    _angle = new AutoAngle(adr.TBO());
+                }
+            }
+        }
+        public string Msg { get; set; }
+        public Dictionary<string, int> Titlepos { get { return _titlepos; } }
+        public int Xztpos { get { return _xztpos; } }
+        public string ScanDataPath { get { return _sc.Baseconfig.ScanDataPath + "\\"+ _dirname; } }
+        public string DirName { get { return _dirname; } }
+        public string SourcePath { get { return _srcpath; } }
+        public string TemplateName { get { return _templatename; } }
     }
     public class ValueTag
     {

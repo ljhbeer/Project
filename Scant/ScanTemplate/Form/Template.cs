@@ -367,7 +367,37 @@ namespace ARTemplate
                 r.Offset(-cr.X,-cr.Y);
                 _dic[key].Add(new FeaturePoint(r, midpoint));
             }
-        }        
+        }
+        public List<string> GetTitles()
+        {
+            List<string> titles = new List<string>();
+            titles.Clear();
+            titles.Add("文件名");
+            titles.Add("CorrectRect");
+            titles.Add("校验角度");
+            string item = "考号";
+            if (Dic.ContainsKey(item) && Dic[item].Count > 0)
+            {
+                titles.Add(item);
+                titles.Add("姓名");
+            }
+            //item = "非选择题";
+            //if (t.Dic.ContainsKey(item) && t.Dic[item].Count > 0)
+            //    titles.Add(item);
+
+            item = "选择题";
+            if (Dic.ContainsKey(item) && Dic[item].Count > 0)
+                titles.Add(item);
+
+            item = "自定义";
+            if (Dic.ContainsKey(item) && Dic[item].Count > 0)
+                titles.Add(item);
+            return titles;
+        }
+        public bool HasOptions(string keyname)
+        {
+            return Dic.ContainsKey(keyname ) && Dic[keyname].Count > 0;
+        }
 		public string GetTemplateName()
 		{
             string str = "";

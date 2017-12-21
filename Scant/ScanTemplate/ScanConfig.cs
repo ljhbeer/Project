@@ -77,6 +77,10 @@ namespace ScanTemplate
                 _examinfo = f._examinfo;
                 //_workpath = f._workpath;
             }
+            else
+            {
+                _examinfo = new List<ExamInfo>();
+            }
         }
         public bool CheckExamInfoName(ExamInfo ei)
         {
@@ -184,7 +188,10 @@ namespace ScanTemplate
             {
                 List<string> examlist = Tools.FileTools.NameListFromDir(Fullpath, ".exam");
                 if (examlist.Count > 0)
-                    _examname = examlist[0].Substring(Fullpath.Length+1);
+                {
+                    _examname = examlist[0].Substring(Fullpath.Length + 1);
+                    _examname = _examname.Substring(0, _examname.Length - 5);
+                }
             }
         }
         public override string ToString()
@@ -299,8 +306,10 @@ namespace ScanTemplate
         public DelegateShowScanMsg DgShowScanMsg;
         public DelegateSaveScanData DgSaveScanData;
         private string _srcpath;
-        public Scan(ScanConfig sc,string templatename, List<string> nameList,string fulldirpath)
+        private bool _forscan;
+        public Scan(ScanConfig sc,string templatename, List<string> nameList,string fulldirpath,bool forscan=true)
         {
+            this._forscan = forscan;
             this.DgSaveScanData = null;
             this.DgShowScanMsg = null;
             _xztpos = -1;
@@ -311,6 +320,7 @@ namespace ScanTemplate
             this._dirname = fulldirpath.Substring(fulldirpath.LastIndexOf("\\")+1);
             this._srcpath = fulldirpath;
             Template t = new Template(_templatename);
+            if(forscan)
             _dr = new MyDetectFeatureRectAngle((Bitmap)Bitmap.FromFile(t.Filename));
             if (!Directory.Exists(CorrectPath))
                 Directory.CreateDirectory(CorrectPath);
@@ -340,7 +350,8 @@ namespace ScanTemplate
         private string DetectImg(string s)
         {
             StringBuilder sb = new StringBuilder();
-            Bitmap orgsrc = (Bitmap)Bitmap.FromFile(s);
+            System.IO.FileStream fs = new System.IO.FileStream(s,System.IO.FileMode.Open, System.IO.FileAccess.Read);
+            Bitmap orgsrc = (Bitmap)System.Drawing.Image.FromStream(fs);
             List<Rectangle> TBO = new List<Rectangle>();
             Rectangle CorrectRect = _dr.Detected(orgsrc, TBO);
             if (CorrectRect.Width > 0 && TBO.Count == 3)
@@ -413,6 +424,7 @@ namespace ScanTemplate
                 //检测失败
             }
             sb.AppendLine();
+            fs.Close();
             return sb.ToString();
         }
         private bool SetAngle(Bitmap orgsrc, List<Rectangle> TBO, Rectangle CorrectRect)

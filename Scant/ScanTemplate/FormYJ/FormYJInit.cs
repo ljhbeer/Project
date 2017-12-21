@@ -15,9 +15,10 @@ namespace ScanTemplate.FormYJ
 {
     public partial class FormYJInit : Form
     {
-        public FormYJInit(ExamConfig g, Template _artemplate, DataTable _rundt, AutoAngle _angle, string _workpath)
+        public FormYJInit(ExamConfig g, Template _artemplate, DataTable _rundt, AutoAngle _angle, string _workpath,string ExamName)
         {
             this.g = g;
+            this._examname = ExamName;
             this._artemplate = _artemplate;
             this._rundt = _rundt;
             this._angle = _angle;
@@ -155,46 +156,33 @@ namespace ScanTemplate.FormYJ
         }
         private void buttonCreateYJData_Click(object sender, EventArgs e)
         {
-            string examname = "";
             if (!File.Exists(_artemplate.XmlFileName))
             {
                 MessageBox.Show("模板文件名不在无法导出数据，请先保存模板再创建阅卷数据");
                 return;
             }
-            if (InputBox.Input("考试名称"))
-                examname = InputBox.strValue;
+            ExamInfo ei = new ExamInfo();
+            ei.Name = _examname;
+            ei.TemplateFileName = _artemplate.XmlFileName;              
+            if (g.CheckExamInfoName(ei))
+            {
+                AcceptXztDataTableModified();
+                Exam exam = new Exam(_Students, _Imgsubjects,_Optionsubjects, ei.Path);
+                exam.Name = _examname;
+                if (!Directory.Exists(ei.Path))
+                    Directory.CreateDirectory(ei.Path);
+                ImgbinManagesubjects ims = new ImgbinManagesubjects(_Students, _Imgsubjects);
+                ims.SaveBitmapFixedDataToData(ei.Path);
+                //TODO: 实现 exam.checkindex
+                g.AddExamInfo(ei);
+                g.SaveConfig("config.json");
+                string str = Tools.JsonFormatTool.ConvertJsonString(Newtonsoft.Json.JsonConvert.SerializeObject(exam));
+                File.WriteAllText(g.ExamPath + "\\"+ei.Name+".json", str);
+            }
             else
             {
-                MessageBox.Show("未设置名称");
-                return;
+                MessageBox.Show("考试名称存在重复，请重新设置");
             }
-            {
-                ExamInfo ei = new ExamInfo();
-                ei.Name = examname;
-                ei.TemplateFileName = _artemplate.XmlFileName;
-              
-                if (g.CheckExamInfoName(ei))
-                {
-                    AcceptXztDataTableModified();
-                    Exam exam = new Exam(_Students, _Imgsubjects,_Optionsubjects, ei.Path);
-                    exam.Name = examname;
-                    if (!Directory.Exists(ei.Path))
-                        Directory.CreateDirectory(ei.Path);
-                    ImgbinManagesubjects ims = new ImgbinManagesubjects(_Students, _Imgsubjects);
-                    ims.SaveBitmapFixedDataToData(ei.Path);
-                    //TODO: 实现 exam.checkindex
-                    g.AddExamInfo(ei);
-                    g.SaveConfig("config.json");
-                    string str = Tools.JsonFormatTool.ConvertJsonString(Newtonsoft.Json.JsonConvert.SerializeObject(exam));
-                    File.WriteAllText(g.ExamPath + "\\"+ei.Name+".json", str);
-                }
-                else
-                {
-                    MessageBox.Show("考试名称存在重复，请重新设置");
-                }
-
-            }
-
         }
         private void AcceptXztDataTableModified()
         {
@@ -316,6 +304,7 @@ namespace ScanTemplate.FormYJ
         private Optionsubjects _Optionsubjects;
         private string _workpath;
         private ExamConfig g;
+        private string _examname;
     }    
     public class Optionsubjects
     {

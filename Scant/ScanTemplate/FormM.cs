@@ -137,7 +137,7 @@ namespace ScanTemplate
                 if(_scan!=null){
                     _scan.Clear();
                 }
-                _scan = new Scan(_sc,sd.TemplateFileName,sd.ImgList,sd.Fullpath);
+                _scan = new Scan(_sc,sd.TemplateFileName,sd.ImgList,sd.Fullpath,false);
                 _rundt = Tools.DataTableTools.ConstructDataTable(_scan.ColNames.ToArray());
                 dgv.DataSource = _rundt;
                 InitDgvUI();
@@ -230,6 +230,7 @@ namespace ScanTemplate
             DataRow dr = _rundt.NewRow();
             MsgToDr(ss, ref dr);
             _rundt.Rows.Add(dr);
+            this.Invoke(new MyInvoke(MyRefreshDgv));
         }
         private void ExportData(string exportdata)
         {
@@ -238,18 +239,16 @@ namespace ScanTemplate
                 string examname = InputBox.strValue;              
                 string Datafilename = _scan.ScanDataPath + "\\data.txt";
                 string NewTemplatename = _scan.ScanDataPath + "\\template.xml";
-                string NewImgsPath = _scan.ScanDataPath ;
-                if (!Directory.Exists(_scan.ScanDataPath))
+                string NewImgsPath = _scan.ScanDataPath +"\\img";     
+                if (!Directory.Exists(_scan.ScanDataPath))    //文件是否被使用
                     Directory.CreateDirectory(_scan.ScanDataPath);
-                //文件是否被使用
-                //Directory.Move(_scan.SourcePath, NewImgsPath);
-                //Directory.Move(NewImgsPath + "\\" + _scan.DirName, NewImgsPath + "\\img");
-                File.Copy(_scan.TemplateName, NewTemplatename);
+                Directory.Move(_scan.SourcePath, NewImgsPath);     
+                File.Copy(_scan.TemplateName,NewTemplatename,true);
                 File.WriteAllText(_scan.ScanDataPath + "\\"+examname+".exam", examname);
                
                 exportdata = exportdata.Replace(_scan.SourcePath, _scan.ScanDataPath + "\\img");
-                File.WriteAllText(Datafilename, string.Join(",",_scan.ExportTitles) + "\r\n" + exportdata);
-
+                File.WriteAllText(Datafilename, string.Join(",", _scan.ExportTitles) + "\r\n" + exportdata);
+                this.Invoke(new MyInvoke(MyRefresh));
             }
         }
         private void MsgToDr(string[] ss, ref DataRow dr)
@@ -311,7 +310,14 @@ namespace ScanTemplate
 			}
 			return new List<string>();
 		}
-
+        public void MyRefresh()
+        {
+            buttonRefresh.PerformClick();
+        }
+        public void MyRefreshDgv()
+        {
+            dgv.InvalidateRow(dgv.RowCount - 1);
+        }
         private void buttonReScan_Click(object sender, EventArgs e)
         {
             MessageBox.Show("未实现");
@@ -335,12 +341,13 @@ namespace ScanTemplate
         }
         private void buttonCreateYJData_Click(object sender, EventArgs e)
         {
-            if (_scan == null || _rundt == null || _rundt.Rows.Count == 0)
+            if (_scan == null || _rundt == null || _rundt.Rows.Count == 0 || listBoxScantData.SelectedIndex==-1)
                 return;
             this.Hide();
             _sc.Examconfig = new ExamConfig();
             _sc.Examconfig.SetWorkPath(_sc.Baseconfig.ExamPath);
-            FormYJ.FormYJInit f = new FormYJ.FormYJInit(_sc.Examconfig, _scan.Template, _rundt,_scan.Angle, _sc.Baseconfig.ScanDataPath);
+            ScanData sd = (ScanData)listBoxScantData.SelectedItem;
+            FormYJ.FormYJInit f = new FormYJ.FormYJInit(_sc.Examconfig, _scan.Template, _rundt,_scan.Angle, _sc.Baseconfig.ScanDataPath,sd.ExamName);
             f.ShowDialog();
             this.Show();
         }
@@ -511,7 +518,6 @@ namespace ScanTemplate
             }
             if (dt.Rows.Count > 0)
             {
-                MessageBox.Show("暂未实现，待修改");
                 FormVerify f = new FormVerify(_sc, dt, "考号");
                 if (f.ShowDialog() != System.Windows.Forms.DialogResult.OK)
                 {

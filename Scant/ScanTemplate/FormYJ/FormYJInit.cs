@@ -15,12 +15,9 @@ namespace ScanTemplate.FormYJ
 {
     public partial class FormYJInit : Form
     {
-        public FormYJInit()
+        public FormYJInit(ExamConfig g, Template _artemplate, DataTable _rundt, AutoAngle _angle, string _workpath)
         {
-            InitializeComponent();
-        }
-        public FormYJInit(Template _artemplate, DataTable _rundt, AutoAngle _angle, string _workpath)
-        {
+            this.g = g;
             this._artemplate = _artemplate;
             this._rundt = _rundt;
             this._angle = _angle;
@@ -175,7 +172,7 @@ namespace ScanTemplate.FormYJ
                 ExamInfo ei = new ExamInfo();
                 ei.Name = examname;
                 ei.TemplateFileName = _artemplate.XmlFileName;
-                Config g = FormM.g_cfg;
+              
                 if (g.CheckExamInfoName(ei))
                 {
                     AcceptXztDataTableModified();
@@ -264,21 +261,6 @@ namespace ScanTemplate.FormYJ
                 }
             }
         }
-
-        private Template _artemplate;
-        private DataTable _rundt;
-        private AutoAngle _angle;
-        private DataTable _dtsetxzt;
-        private DataTable _dtsetfxzt;
-        private Bitmap _src;
-        private int _AvgUnImgWith;
-        private int _AvgUnImgHeight;
-
-        private Students _Students;
-        private Imgsubjects _Imgsubjects;
-        private Optionsubjects _Optionsubjects;
-        private string _workpath;
-
         private void pictureBox1_MouseEnter(object sender, EventArgs e)
         {
             pictureBox1.Focus();
@@ -319,6 +301,21 @@ namespace ScanTemplate.FormYJ
             panel3.Invalidate();
             panel3.AutoScrollPosition = new Point(-S.X, -S.Y);
         }
+
+        private Template _artemplate;
+        private DataTable _rundt;
+        private AutoAngle _angle;
+        private DataTable _dtsetxzt;
+        private DataTable _dtsetfxzt;
+        private Bitmap _src;
+        private int _AvgUnImgWith;
+        private int _AvgUnImgHeight;
+
+        private Students _Students;
+        private Imgsubjects _Imgsubjects;
+        private Optionsubjects _Optionsubjects;
+        private string _workpath;
+        private ExamConfig g;
     }    
     public class Optionsubjects
     {

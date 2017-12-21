@@ -19,7 +19,6 @@ namespace ScanTemplate
 	public delegate void MyInvoke( );
 	public partial class FormM : Form
 	{
-        public static Config g_cfg = new Config();
         private ScanConfig sc;
         private DataTable _rundt;
         private Scan _scan;
@@ -336,7 +335,7 @@ namespace ScanTemplate
             if (_scan == null || _rundt == null || _rundt.Rows.Count == 0)
                 return;
             this.Hide();
-            FormYJ.FormYJInit f = new FormYJ.FormYJInit(_scan.Template, _rundt,_scan.Angle, sc.Baseconfig.ScanDataPath);
+            FormYJ.FormYJInit f = new FormYJ.FormYJInit(sc.Examconfig, _scan.Template, _rundt,_scan.Angle, sc.Baseconfig.ScanDataPath);
             f.ShowDialog();
             this.Show();
         }
@@ -381,9 +380,9 @@ namespace ScanTemplate
                         DataRow ndr = dt.NewRow();
                         ndr["OID考号"] = new ValueTag(dr["考号"].ToString(), dr);
                         int kh = Convert.ToInt32(dr["考号"].ToString());
-                        if (FormM.g_cfg.Studentbases.HasStudentBase)
+                        if (sc.Studentbases.HasStudentBase)
                         {
-                            string name = FormM.g_cfg.Studentbases.GetName(kh);
+                            string name = sc.Studentbases.GetName(kh);
                             ndr["姓名"] = name;
                         }
                         ndr["是否修改"] = false;

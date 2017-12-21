@@ -12,18 +12,71 @@ using ZXing;
 namespace ScanTemplate
 {
     public delegate void DelegateShowScanMsg(string msg);
-    public delegate void DelegateSaveScanData(string data);
-    public class Config
+    public delegate void DelegateSaveScanData(string data);   
+    public class ScanConfig
     {
-        public Config()
+        private UnScans _unscans;
+        private Templates _commontemplates;
+        private ScanDatas _scandatas;
+        private ZXing.BarcodeReader _br;
+        public ScanConfig(string workpath) //E:\Scan\s1025
         {
-            _examinfo = new List<ExamInfo>();
+            Baseconfig = new BaseConfig(workpath);
+            _unscans = new UnScans(Baseconfig.UnScanPath);
+            _commontemplates = new Templates(Baseconfig.TemplatePath);
+            _scandatas = new ScanDatas(Baseconfig.ScanDataPath);
+
+            //for 二维码
+            DecodingOptions decodeOption = new DecodingOptions();
+            decodeOption.PossibleFormats = new List<BarcodeFormat>() {
+				BarcodeFormat.All_1D
+			};
+            _br = new BarcodeReader();
+            _br.Options = decodeOption;
+            //studentbase
+            Studentbases = new FormYJ.StudentBases( Baseconfig.StudentList +"\\StudentBaseList.txt");
+        }
+        public UnScans Unscans { get { return _unscans; } }
+        public Templates CommonTemplates { get { return _commontemplates; } }
+        public ScanDatas Scandatas { get { return _scandatas; } }
+        public TemplateShow Templateshow { get; set; }   
+        public BaseConfig Baseconfig { get; set; }
+        public ZXing.BarcodeReader BR { get { return _br; } }
+        public FormYJ.StudentBases Studentbases { get; set; }
+        //
+        public ExamConfig Examconfig { get; set; }
+    }
+    public class BaseConfig
+    {
+        private string _workpath;
+        public BaseConfig(string workpath) //  //E:\Scan\s1025
+        {
+            this._workpath = workpath;
+        }
+        public string Workpath { get { return _workpath; } }
+        public string UnScanPath { get { return _workpath; } }
+        public string ScanDataPath { get { return _workpath.Replace("\\s1025","\\LJH\\s1025"); } }
+        public string TemplatePath { get { return _workpath.Replace("\\s1025", "\\LJH\\Template"); } }
+        public string ExamPath { get { return _workpath.Replace("\\s1025","\\LJH\\Exam"); } }
+        public string CorrectImgPath { get { return _workpath.Replace("\\s1025","\\LJH\\Correct\\s1025"); } }
+        public string StudentList { get { return _workpath.Replace("\\s1025", "\\LJH"); } }
+    }
+    public class ExamConfig
+    {
+        public ExamConfig()
+        {
         }
         public void SetWorkPath(string exampath)
         {
             this._workpath = exampath;
-            Studentbases = new ScanTemplate.FormYJ.StudentBases(StudentBaseFileName());
-            LoadConfig();
+            string filename = _workpath + "\\config.json";
+            if (File.Exists(filename))
+            {
+                this._filename = filename;
+                ExamConfig f = Newtonsoft.Json.JsonConvert.DeserializeObject<ExamConfig>(File.ReadAllText(_filename));
+                _examinfo = f._examinfo;
+                //_workpath = f._workpath;
+            }
         }
         public bool CheckExamInfoName(ExamInfo ei)
         {
@@ -60,67 +113,9 @@ namespace ScanTemplate
         {
             get { return _workpath; }
         }
-        public ScanTemplate.FormYJ.StudentBases Studentbases { get; set; }
-        private void LoadConfig()
-        {
-            string filename = _workpath + "\\config.json";
-            if (File.Exists(filename))
-            {
-                this._filename = filename;
-                Config f = Newtonsoft.Json.JsonConvert.DeserializeObject<Config>(File.ReadAllText(_filename));
-                //_examinfo = f._examinfo;
-                //_workpath = f._workpath;
-            }
-        }
-        private string StudentBaseFileName()
-        {
-            return _workpath.Replace("Exam", "StudentBaseList.txt");
-        }
         public List<ExamInfo> _examinfo;
-        private string _workpath;
         private string _filename;
-    }
-    public class ScanConfig
-    {
-        private UnScans _unscans;
-        private Templates _commontemplates;
-        private ScanDatas _scandatas;
-        private ZXing.BarcodeReader _br;
-        public ScanConfig(string workpath) //E:\Scan\s1025
-        {
-            Baseconfig = new BaseConfig(workpath);
-            _unscans = new UnScans(Baseconfig.UnScanPath);
-            _commontemplates = new Templates(Baseconfig.TemplatePath);
-            _scandatas = new ScanDatas(Baseconfig.ScanDataPath);
-
-            //for 二维码
-            DecodingOptions decodeOption = new DecodingOptions();
-            decodeOption.PossibleFormats = new List<BarcodeFormat>() {
-				BarcodeFormat.All_1D
-			};
-            _br = new BarcodeReader();
-            _br.Options = decodeOption;
-        }
-        public UnScans Unscans { get { return _unscans; } }
-        public Templates CommonTemplates { get { return _commontemplates; } }
-        public ScanDatas Scandatas { get { return _scandatas; } }
-        public TemplateShow Templateshow { get; set; }   
-        public BaseConfig Baseconfig { get; set; }
-        public ZXing.BarcodeReader BR { get { return _br; } }
-    }
-    public class BaseConfig
-    {
         private string _workpath;
-        public BaseConfig(string workpath) //  //E:\Scan\s1025
-        {
-            this._workpath = workpath;
-        }
-        public string Workpath { get { return _workpath; } }
-        public string UnScanPath { get { return _workpath; } }
-        public string ScanDataPath { get { return _workpath.Replace("\\s1025","\\LJH\\s1025"); } }
-        public string TemplatePath { get { return _workpath.Replace("\\s1025", "\\LJH\\Template"); } }
-        public string ExamPath { get { return _workpath.Replace("\\s1025","\\LJH\\Exam"); } }
-        public string CorrectImgPath { get { return _workpath.Replace("\\s1025","\\LJH\\Correct\\s1025"); } }
     }
     public class UnScans
     {
@@ -373,12 +368,25 @@ namespace ScanTemplate
                         ZXing.Result rs = _sc.BR.Decode(barmap);
                         if (rs != null)
                         {
-                            sb.Append("," + rs.Text + ",-");  //考号-条形码 姓名-未知 MsgtoDr中处理
+                            sb.Append("," + rs.Text);  //考号-条形码 姓名 MsgtoDr中处理
+                            if ( _sc. Studentbases.HasStudentBase)
+                                sb.Append("," + _sc.Studentbases.GetName(Convert.ToInt32(rs.Text)));
+                            else
+                                sb.Append(",-");
                         }
                     }
                     else if ("1023456789".Contains(kha.Type))
                     {
-                        sb.Append("," + acx.ComputeKH(kha, _angle) + ",-");   //考号-涂卡 姓名-未知 MsgtoDr中处理
+                        string kh = acx.ComputeKH(kha, _angle);
+                        if (kh.Contains("-"))
+                            sb.Append("," + kh + ",-");   //考号-涂卡 姓名-未知 MsgtoDr中处理
+                        else
+                        {
+                            if (_sc.Studentbases.HasStudentBase)
+                                sb.Append("," + kh + "," + _sc.Studentbases.GetName(Convert.ToInt32(kh)));
+                            else
+                                sb.Append("," + kh + ",-");
+                        }
                     }
                 }
                 string str = s.Substring(s.Length - 7, 3);

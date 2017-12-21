@@ -137,7 +137,7 @@
             this.textBoxWorkPath.ReadOnly = true;
             this.textBoxWorkPath.Size = new System.Drawing.Size(92, 21);
             this.textBoxWorkPath.TabIndex = 3;
-            this.textBoxWorkPath.Text = "E:\\Scan\\LJH\\s1025";
+            this.textBoxWorkPath.Text = "E:\\Scan\\s1025";
             // 
             // panel1
             // 

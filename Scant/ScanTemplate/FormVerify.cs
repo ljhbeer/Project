@@ -13,12 +13,14 @@ namespace ScanTemplate
 {
 	public partial class FormVerify : Form
 	{
+        private ScanConfig _sc;
 		private DataTable  _dt;
 		private List<int> _ColState;
         private string _type;
-		public FormVerify(DataTable  dt,string type)
+		public FormVerify(ScanConfig sc,DataTable  dt,string type)
 		{
             this.Changed = false;
+            this._sc = sc;
 			this._dt = dt;
             this._type = type;
             if (type == "选择题")
@@ -195,9 +197,9 @@ namespace ScanTemplate
                     DataRow dr = ((DataTable)dgv.DataSource).Rows[e.RowIndex];
                     DataRow origindr = (DataRow)(((ValueTag)dr["OID考号"]).Tag);
 
-                    if (FormM.g_cfg.Studentbases.HasStudentBase)
+                    if (_sc.Studentbases.HasStudentBase)
                     {
-                        string name = FormM.g_cfg.Studentbases.GetName(kh);
+                        string name =_sc.Studentbases.GetName(kh);
                         dr["OID考号"] = new ValueTag(kh.ToString(), origindr);
                         dr["姓名"] = name;
                         origindr["考号"] = kh;

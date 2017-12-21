@@ -19,7 +19,7 @@ namespace ScanTemplate
 	public delegate void MyInvoke( );
 	public partial class FormM : Form
 	{
-        private ScanConfig sc;
+        private ScanConfig _sc;
         private DataTable _rundt;
         private Scan _scan;
 		public FormM()
@@ -31,13 +31,13 @@ namespace ScanTemplate
 		{            
             if ( Directory.Exists(textBoxWorkPath.Text))
             {
-                sc = new ScanConfig(textBoxWorkPath.Text);
+                _sc = new ScanConfig(textBoxWorkPath.Text);
                 listBoxUnScanDir.Items.Clear();
                 comboBoxTemplate.Items.Clear();
                 listBoxScantData.Items.Clear();
-                listBoxUnScanDir.Items.AddRange(sc.Unscans.Unscans.ToArray());
-                comboBoxTemplate.Items.AddRange(sc.CommonTemplates.CommonTemplates.ToArray());
-                listBoxScantData.Items.AddRange(sc.Scandatas.Scandatas.ToArray());
+                listBoxUnScanDir.Items.AddRange(_sc.Unscans.Unscans.ToArray());
+                comboBoxTemplate.Items.AddRange(_sc.CommonTemplates.CommonTemplates.ToArray());
+                listBoxScantData.Items.AddRange(_sc.Scandatas.Scandatas.ToArray());
             }
 		}
         private void buttonRefresh_Click(object sender, EventArgs e)
@@ -73,11 +73,11 @@ namespace ScanTemplate
             List<string> nameList = dir.ImgList();
             if (nameList.Count > 0)
             {
-                sc.Templateshow = new TemplateShow(dir.FullPath, dir.DirName, nameList[0]);
-                if (sc.Templateshow.OK)
+                _sc.Templateshow = new TemplateShow(dir.FullPath, dir.DirName, nameList[0]);
+                if (_sc.Templateshow.OK)
                 {
                     this.Hide();
-                    new FormTemplate(sc.Templateshow.Template).ShowDialog();
+                    new FormTemplate(_sc.Templateshow.Template).ShowDialog();
                     this.Show();
                 }
             }
@@ -94,11 +94,11 @@ namespace ScanTemplate
             List<string> nameList = dir.ImgList();
             if (nameList.Count > 0)
             {
-                sc.Templateshow = new TemplateShow(dir.FullPath, dir.DirName, nameList[0], ti);
-                if (sc.Templateshow.OK)
+                _sc.Templateshow = new TemplateShow(dir.FullPath, dir.DirName, nameList[0], ti);
+                if (_sc.Templateshow.OK)
                 {
                     this.Hide();
-                    new FormTemplate(sc.Templateshow.Template).ShowDialog();
+                    new FormTemplate(_sc.Templateshow.Template).ShowDialog();
                     this.Show();
                 }
             }
@@ -116,7 +116,7 @@ namespace ScanTemplate
             if (nameList.Count > 0)
             {
                 AutoDetectRectAnge.FeatureSetPath = dir.FullPath;
-                _scan = new Scan(sc,ti.TemplateFileName, nameList,dir.FullPath);
+                _scan = new Scan(_sc,ti.TemplateFileName, nameList,dir.FullPath);
                 _rundt = Tools.DataTableTools.ConstructDataTable( _scan.ColNames.ToArray() );
                 dgv.DataSource = _rundt;
                 InitDgvUI();
@@ -137,7 +137,7 @@ namespace ScanTemplate
                 if(_scan!=null){
                     _scan.Clear();
                 }
-                _scan = new Scan(sc,sd.TemplateFileName,sd.ImgList,sd.Fullpath);
+                _scan = new Scan(_sc,sd.TemplateFileName,sd.ImgList,sd.Fullpath);
                 _rundt = Tools.DataTableTools.ConstructDataTable(_scan.ColNames.ToArray());
                 dgv.DataSource = _rundt;
                 InitDgvUI();
@@ -238,11 +238,12 @@ namespace ScanTemplate
                 string examname = InputBox.strValue;              
                 string Datafilename = _scan.ScanDataPath + "\\data.txt";
                 string NewTemplatename = _scan.ScanDataPath + "\\template.xml";
-                string NewImgsPath = _scan.ScanDataPath + "\\img";
+                string NewImgsPath = _scan.ScanDataPath ;
                 if (!Directory.Exists(_scan.ScanDataPath))
                     Directory.CreateDirectory(_scan.ScanDataPath);
                 //文件是否被使用
                 //Directory.Move(_scan.SourcePath, NewImgsPath);
+                //Directory.Move(NewImgsPath + "\\" + _scan.DirName, NewImgsPath + "\\img");
                 File.Copy(_scan.TemplateName, NewTemplatename);
                 File.WriteAllText(_scan.ScanDataPath + "\\"+examname+".exam", examname);
                
@@ -273,30 +274,32 @@ namespace ScanTemplate
         }
         private void AddDataToDt(DataRow dr, Bitmap bmp, DataTable dt)
         {
-            //double angle = (double)(dr["校验角度"]);
-            //if (_angle != null)
-            //    _angle.SetPaper(angle);
-            //for (int i = 0; i < _artemplate.XztRect.Count; i++)
-            //{
-            //    string value = dr["x" + (i + 1)].ToString();
-            //    if (value.Length != 1 || !"ABCD".Contains(value))
-            //    {
-            //        DataRow ndr = dt.NewRow();
-            //        string xuehao = "";
-            //        if (dr.Table.Columns.Contains("考号"))
-            //            xuehao = dr["考号"].ToString();
-            //        ndr["学号"] = new ValueTag(xuehao, dr);
-            //        ndr["题号"] = "x" + (i + 1);
-            //        Rectangle r = _artemplate.XztRect[i];
-            //        //r.Location = _angle.GetCorrectPoint(r.X,r.Y);
-            //        Bitmap nbmp = bmp.Clone(r, bmp.PixelFormat);
-            //        ndr["图片"] = nbmp;
-            //        ndr["你的答案"] = value;
-            //        ndr["是否多选"] = false;
-            //        ndr["是否修改"] = false;
-            //        dt.Rows.Add(ndr);
-            //    }
-            //}
+            Template _artemplate = _scan.Template;
+            AutoAngle _angle = _scan.Angle;
+            double angle = (double)(dr["校验角度"]);
+            if (_angle != null)
+                _angle.SetPaper(angle);
+            for (int i = 0; i < _artemplate.XztRect.Count; i++)
+            {
+                string value = dr["x" + (i + 1)].ToString();
+                if (value.Length != 1 || !"ABCD".Contains(value))
+                {
+                    DataRow ndr = dt.NewRow();
+                    string xuehao = "";
+                    if (dr.Table.Columns.Contains("考号"))
+                        xuehao = dr["考号"].ToString();
+                    ndr["学号"] = new ValueTag(xuehao, dr);
+                    ndr["题号"] = "x" + (i + 1);
+                    Rectangle r = _artemplate.XztRect[i];
+                    //r.Location = _angle.GetCorrectPoint(r.X,r.Y);
+                    Bitmap nbmp = bmp.Clone(r, bmp.PixelFormat);
+                    ndr["图片"] = nbmp;
+                    ndr["你的答案"] = value;
+                    ndr["是否多选"] = false;
+                    ndr["是否修改"] = false;
+                    dt.Rows.Add(ndr);
+                }
+            }
         }
 		private List<string> NameListFromFile(string filename)
 		{
@@ -335,7 +338,9 @@ namespace ScanTemplate
             if (_scan == null || _rundt == null || _rundt.Rows.Count == 0)
                 return;
             this.Hide();
-            FormYJ.FormYJInit f = new FormYJ.FormYJInit(sc.Examconfig, _scan.Template, _rundt,_scan.Angle, sc.Baseconfig.ScanDataPath);
+            _sc.Examconfig = new ExamConfig();
+            _sc.Examconfig.SetWorkPath(_sc.Baseconfig.ExamPath);
+            FormYJ.FormYJInit f = new FormYJ.FormYJInit(_sc.Examconfig, _scan.Template, _rundt,_scan.Angle, _sc.Baseconfig.ScanDataPath);
             f.ShowDialog();
             this.Show();
         }
@@ -370,7 +375,7 @@ namespace ScanTemplate
             {
                 if (!dr["考号"].ToString().Contains("-"))
                 {
-                    string fn = dr["文件名"].ToString().Replace("LJH\\", "LJH\\Correct\\");
+                    string fn = dr["文件名"].ToString().Replace("LJH\\", "LJH\\Correct\\").Replace("\\img","");
                     if (File.Exists(fn))
                     {
                         double angle = (double)(dr["校验角度"]);
@@ -380,9 +385,9 @@ namespace ScanTemplate
                         DataRow ndr = dt.NewRow();
                         ndr["OID考号"] = new ValueTag(dr["考号"].ToString(), dr);
                         int kh = Convert.ToInt32(dr["考号"].ToString());
-                        if (sc.Studentbases.HasStudentBase)
+                        if (_sc.Studentbases.HasStudentBase)
                         {
-                            string name = sc.Studentbases.GetName(kh);
+                            string name = _sc.Studentbases.GetName(kh);
                             ndr["姓名"] = name;
                         }
                         ndr["是否修改"] = false;
@@ -397,7 +402,7 @@ namespace ScanTemplate
             if (dt.Rows.Count > 0)
             {
                 //MessageBox.Show("暂未实现，待修改");
-                FormVerify f = new FormVerify(dt, "核对姓名");
+                FormVerify f = new FormVerify(_sc,dt, "核对姓名");
                 if (f.ShowDialog() != System.Windows.Forms.DialogResult.OK)
                 {
                     MessageBox.Show("未校验");
@@ -475,7 +480,7 @@ namespace ScanTemplate
             {
                 if (dr["考号"].ToString().Contains("-"))
                 {
-                    string fn = dr["文件名"].ToString().Replace("LJH\\", "LJH\\Correct\\");
+                    string fn = dr["文件名"].ToString().Replace("LJH\\", "LJH\\Correct\\").Replace("\\img","");
                     if (File.Exists(fn))
                     {
                         double angle = (double)(dr["校验角度"]);
@@ -507,7 +512,7 @@ namespace ScanTemplate
             if (dt.Rows.Count > 0)
             {
                 MessageBox.Show("暂未实现，待修改");
-                FormVerify f = new FormVerify(dt, "考号");
+                FormVerify f = new FormVerify(_sc, dt, "考号");
                 if (f.ShowDialog() != System.Windows.Forms.DialogResult.OK)
                 {
                     MessageBox.Show("未校验");
@@ -516,8 +521,9 @@ namespace ScanTemplate
                 {
                     if (f.Changed)
                     {
-                        string filename = ((ValueTag)listBoxScantData.SelectedItem).Tag.ToString();
-                        string[] ss = File.ReadAllLines(filename);
+                        
+                        ScanData sd = (ScanData)listBoxScantData.SelectedItem;
+                        string[] ss = File.ReadAllLines(sd.DataFullName);// sd.ImgList.ToArray();
                         try
                         {
                             for (int i = 1; i < ss.Length; i++)
@@ -534,7 +540,7 @@ namespace ScanTemplate
                                     }
                                 }
                             }
-                            File.WriteAllText(filename + "_1", string.Join("\r\n", ss));
+                            File.WriteAllText(sd.DataFullName, string.Join("\r\n", ss));
                         }
                         catch (Exception ee)
                         {
@@ -579,7 +585,7 @@ namespace ScanTemplate
                 }
                 if (b)
                 {
-                    string fn = dr["文件名"].ToString().Replace("LJH\\", "LJH\\Correct\\");
+                    string fn = dr["文件名"].ToString().Replace("LJH\\", "LJH\\Correct\\").Replace("\\img", ""); ;
                     if (File.Exists(fn))
                     {
                         double angle = (double)(dr["校验角度"]);
@@ -593,7 +599,7 @@ namespace ScanTemplate
                 {
                     if (dt.Rows.Count > 20 || (runcnt == _rundt.Rows.Count && dt.Rows.Count > 0))
                     {
-                        FormVerify f = new FormVerify(dt, "选择题");
+                        FormVerify f = new FormVerify(_sc, dt, "选择题");
                         if (f.ShowDialog() != System.Windows.Forms.DialogResult.OK)
                         {
                             MessageBox.Show("校验失败");

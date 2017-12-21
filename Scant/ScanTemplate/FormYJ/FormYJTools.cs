@@ -13,6 +13,8 @@ namespace ScanTemplate.FormYJ
 {
     public partial class FormYJTools : Form
     {
+        private ScanConfig _sc;
+        ExamConfig g;
         public FormYJTools()
         {
             InitializeComponent();
@@ -25,8 +27,11 @@ namespace ScanTemplate.FormYJ
         }
         private void FormYJTools_Load(object sender, EventArgs e)
         {
+            _sc = new ScanConfig(textBoxWorkPath.Text);
+            _sc.Examconfig = new ExamConfig();
+            _sc.Examconfig.SetWorkPath( _sc.Baseconfig.ScanDataPath  .Replace("s1025","Exam"));
+            g = _sc.Examconfig;
             InitExamInfos();
-            FormM.g_cfg.SetWorkPath(_workpath.Replace("s1025","Exam"));
         }
         private void buttonRefresh_Click(object sender, EventArgs e)
         {
@@ -35,11 +40,10 @@ namespace ScanTemplate.FormYJ
         }
         private void InitExamInfos()
         {
-            string exampath = _workpath.Substring(0, _workpath.LastIndexOf("\\")) + "\\Exam\\";
-            string idindexpath = exampath + "config.json";
+            string idindexpath = _sc.Baseconfig.ExamPath + "\\config.json";
             if (!File.Exists(idindexpath))
                 return;
-            Config g = Newtonsoft.Json.JsonConvert.DeserializeObject<Config>(File.ReadAllText(idindexpath));
+            ExamConfig g = Newtonsoft.Json.JsonConvert.DeserializeObject<ExamConfig>(File.ReadAllText(idindexpath));
             listBox1.Items.AddRange(g._examinfo.ToArray());
         }
         private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
@@ -183,11 +187,11 @@ namespace ScanTemplate.FormYJ
                 Bitmap bmp = TemplateTools.DrawInfoBmp(S,_examdata.SR,angle,optionanswer, ltz );
 
                 string filename = "F:\\Out\\" + _exam.Name + "\\" + S.ID + ".jpg";
-                if (FormM.g_cfg.Studentbases.HasStudentBase)
+                if (_sc.Studentbases.HasStudentBase)
                 {
                     if (S.KH > 1)
                     {
-                        string name = FormM.g_cfg.Studentbases.GetName(S.KH);
+                        string name = _sc.Studentbases.GetName(S.KH);
                         filename = "F:\\Out\\" + _exam.Name + "\\" + S.ID + "_" + name + ".jpg";
                     }
                 }

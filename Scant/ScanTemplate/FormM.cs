@@ -317,6 +317,7 @@ namespace ScanTemplate
         public void MyRefreshDgv()
         {
             dgv.InvalidateRow(dgv.RowCount - 1);
+            dgv.FirstDisplayedScrollingRowIndex = dgv.RowCount - 1;
         }
         private void buttonReScan_Click(object sender, EventArgs e)
         {
@@ -347,7 +348,7 @@ namespace ScanTemplate
             _sc.Examconfig = new ExamConfig();
             _sc.Examconfig.SetWorkPath(_sc.Baseconfig.ExamPath);
             ScanData sd = (ScanData)listBoxScantData.SelectedItem;
-            FormYJ.FormYJInit f = new FormYJ.FormYJInit(_sc.Examconfig, _scan.Template, _rundt,_scan.Angle, _sc.Baseconfig.ScanDataPath,sd.ExamName);
+            FormYJ.FormYJInit f = new FormYJ.FormYJInit(_sc.Examconfig, _scan.Template, _rundt,_scan.Angle, _sc.Baseconfig.ScanDataPath,sd.ExamName,sd.Fullpath);
             f.ShowDialog();
             this.Show();
         }

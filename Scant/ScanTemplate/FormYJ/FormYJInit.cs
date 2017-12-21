@@ -15,10 +15,11 @@ namespace ScanTemplate.FormYJ
 {
     public partial class FormYJInit : Form
     {
-        public FormYJInit(ExamConfig g, Template _artemplate, DataTable _rundt, AutoAngle _angle, string _workpath,string ExamName)
+        public FormYJInit(ExamConfig g, Template _artemplate, DataTable _rundt, AutoAngle _angle, string _workpath,string ExamName,string Datafullpath)
         {
             this.g = g;
             this._examname = ExamName;
+            this._DataFullPath = Datafullpath;
             this._artemplate = _artemplate;
             this._rundt = _rundt;
             this._angle = _angle;
@@ -178,6 +179,7 @@ namespace ScanTemplate.FormYJ
                 g.SaveConfig("config.json");
                 string str = Tools.JsonFormatTool.ConvertJsonString(Newtonsoft.Json.JsonConvert.SerializeObject(exam));
                 File.WriteAllText(g.ExamPath + "\\"+ei.Name+".json", str);
+                File.WriteAllText(_DataFullPath + "\\已生成阅卷数据.txt", "");
             }
             else
             {
@@ -305,6 +307,7 @@ namespace ScanTemplate.FormYJ
         private string _workpath;
         private ExamConfig g;
         private string _examname;
+        private string _DataFullPath;
     }    
     public class Optionsubjects
     {

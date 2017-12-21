@@ -196,6 +196,8 @@ namespace ScanTemplate
         }
         public override string ToString()
         {
+            if (File.Exists(Fullpath + "\\已生成阅卷数据.txt"))
+                return _examname + " 已生成阅卷数据";
             return _examname;
         }
         public string Fullpath { get { return _path + "\\" + _dirname; } }

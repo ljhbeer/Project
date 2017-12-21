@@ -126,18 +126,28 @@ namespace ScanTemplate
                 _scan.DoScan();
             }
 		}
-        private void buttonCreateYJData_Click(object sender, EventArgs e)
-        {
-            //if (_artemplate == null || _rundt == null || _rundt.Rows.Count == 0)
-            //    return;
-            //this.Hide();
-            //FormYJ.FormYJInit f = new FormYJ.FormYJInit(_artemplate,_rundt,_angle,_workpath);
-            //f.ShowDialog();            
-            //this.Show();
-        }       
 		private void listBoxData_SelectedIndexChanged(object sender, EventArgs e)
 		{
-			if (listBoxScantData.SelectedIndex == -1) return;			
+			if (listBoxScantData.SelectedIndex == -1) return;
+            ScanData sd = (ScanData)listBoxScantData.SelectedItem;
+            if (File.Exists(sd.DataFullName))
+            {
+                string[] ls = File.ReadAllLines(sd.DataFullName);
+                List<string> titles = ls[0].Split(',').ToList();
+
+                if(_scan!=null){
+                    _scan.Clear();
+                }
+                _scan = new Scan(sc,sd.TemplateFileName,sd.ImgList,sd.Fullpath);
+                _rundt = Tools.DataTableTools.ConstructDataTable(_scan.ColNames.ToArray());
+                dgv.DataSource = _rundt;
+                InitDgvUI();
+                InitDgvData(ls);
+            }
+            else
+            {
+                MessageBox.Show("没有发现扫描数据");
+            }
 		}
 		private void pictureBox1_MouseEnter(object sender, EventArgs e)
 		{
@@ -167,17 +177,18 @@ namespace ScanTemplate
 		}
 		private void dgv_CellContentClick(object sender, DataGridViewCellEventArgs e)
 		{
-            //if (e.RowIndex == -1 || _rundt == null || e.ColumnIndex == -1 || _angle==null || _artemplate==null )
-            //    return;
-            //string fn = _rundt.Rows[e.RowIndex]["文件名"].ToString().Replace("LJH\\","LJH\\Correct\\");
-            //if (File.Exists(fn))
-            //{
-            //    double angle = (double)(_rundt.Rows[e.RowIndex]["校验角度"]);
-            //    Bitmap bmp =(Bitmap) Bitmap.FromFile(fn);
-            //    if (_angle != null)
-            //        _angle.SetPaper(angle);
-            //    pictureBox1.Image = ARTemplate.TemplateTools.DrawInfoBmp(bmp, _artemplate, _angle);
-            //}
+            if (e.RowIndex == -1 || _rundt == null || e.ColumnIndex == -1 || _scan == null)
+                return;
+            string fn = _rundt.Rows[e.RowIndex]["文件名"].ToString().Replace("LJH\\", "LJH\\Correct\\").Replace("\\img","");
+            if (File.Exists(fn))
+            {
+                double angle = (double)(_rundt.Rows[e.RowIndex]["校验角度"]);
+                Bitmap bmp = (Bitmap)Bitmap.FromFile(fn);
+            
+                if (_scan.Angle != null)
+                    _scan.Angle.SetPaper(angle);
+                pictureBox1.Image = ARTemplate.TemplateTools.DrawInfoBmp(bmp, _scan.Template, _scan.Angle);
+            }
 		}
 		private void Zoomrat(double rat, Point e)
 		{
@@ -203,6 +214,17 @@ namespace ScanTemplate
                 else
                     dc.Width = 60;
         }
+        private void InitDgvData(string[] ls)
+        {
+            for (int i = 1; i < ls.Length; i++)
+            {
+                string[] ss = ls[i].Split(',');
+                DataRow dr = _rundt.NewRow();
+
+                MsgToDr( ss, ref dr); 
+                _rundt.Rows.Add(dr);
+            }
+        }
         public void ShowMsg(string  msg)
         {
             string[] ss = msg.Trim().Split(',');
@@ -216,12 +238,18 @@ namespace ScanTemplate
             {
                 string examname = InputBox.strValue;              
                 string Datafilename = _scan.ScanDataPath + "\\data.txt";
-                string NewTemplatename = _scan.ScanDataPath + "template.xml";
+                string NewTemplatename = _scan.ScanDataPath + "\\template.xml";
                 string NewImgsPath = _scan.ScanDataPath + "\\img";
-                File.WriteAllText(_scan.ScanDataPath + "\\"+examname+".exam", examname);
-                File.WriteAllText(Datafilename, string.Join(",",_scan.ExportTitles) + "\r\n" + exportdata);
-                Directory.Move(_scan.SourcePath       ,NewImgsPath);
+                if (!Directory.Exists(_scan.ScanDataPath))
+                    Directory.CreateDirectory(_scan.ScanDataPath);
+                //文件是否被使用
+                //Directory.Move(_scan.SourcePath, NewImgsPath);
                 File.Copy(_scan.TemplateName, NewTemplatename);
+                File.WriteAllText(_scan.ScanDataPath + "\\"+examname+".exam", examname);
+               
+                exportdata = exportdata.Replace(_scan.SourcePath, _scan.ScanDataPath + "\\img");
+                File.WriteAllText(Datafilename, string.Join(",",_scan.ExportTitles) + "\r\n" + exportdata);
+
             }
         }
         private void MsgToDr(string[] ss, ref DataRow dr)
@@ -281,5 +309,301 @@ namespace ScanTemplate
 			}
 			return new List<string>();
 		}
+
+        private void buttonReScan_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("未实现");
+        }
+        private void buttonVerify_Click(object sender, EventArgs e)
+        {
+            if (_scan == null || _rundt == null || _rundt.Rows.Count == 0)
+                return;
+            this.Hide();
+            VerifyKaoHao();
+            VerifyXzt();
+            this.Show();
+        }
+        private void buttonVerifyname_Click(object sender, EventArgs e)
+        {
+            if (_scan == null || _rundt == null || _rundt.Rows.Count == 0)
+                return;
+            this.Hide();
+            VerifyName();
+            this.Show();
+        }
+        private void buttonCreateYJData_Click(object sender, EventArgs e)
+        {
+            if (_scan == null || _rundt == null || _rundt.Rows.Count == 0)
+                return;
+            this.Hide();
+            FormYJ.FormYJInit f = new FormYJ.FormYJInit(_scan.Template, _rundt,_scan.Angle, sc.Baseconfig.ScanDataPath);
+            f.ShowDialog();
+            this.Show();
+        }
+        private void VerifyName()
+        {
+            Template _artemplate = _scan.Template;
+            AutoAngle _angle = _scan.Angle;
+            if (!_artemplate.Dic.ContainsKey("考号") || _artemplate.Dic["考号"].Count == 0)
+            {
+                return;
+            }
+            DataTable dt = Tools.DataTableTools.ConstructDataTable(new string[] {
+			                                                       	"OID考号",			                                                  
+			                                                       	"图片姓名",
+                                                                    "姓名",
+			                                                       	"新考号",
+			                                                       	"是否修改"
+			                                                       });
+            Rectangle r = _artemplate.Dic["考号"][0].ImgArea;
+            Rectangle rxm = new Rectangle();
+            if (_artemplate.Dic["校对"].Count > 0)
+            {
+                foreach (Area I in _artemplate.Dic["校对"])
+                {
+                    if (I.ToString().Contains("姓名"))
+                    {
+                        rxm = I.Rect;
+                    }
+                }
+            }
+            foreach (DataRow dr in _rundt.Rows)
+            {
+                if (!dr["考号"].ToString().Contains("-"))
+                {
+                    string fn = dr["文件名"].ToString().Replace("LJH\\", "LJH\\Correct\\");
+                    if (File.Exists(fn))
+                    {
+                        double angle = (double)(dr["校验角度"]);
+                        Bitmap bmp = (Bitmap)Bitmap.FromFile(fn);
+                        if (_angle != null)
+                            _angle.SetPaper(angle);
+                        DataRow ndr = dt.NewRow();
+                        ndr["OID考号"] = new ValueTag(dr["考号"].ToString(), dr);
+                        int kh = Convert.ToInt32(dr["考号"].ToString());
+                        if (FormM.g_cfg.Studentbases.HasStudentBase)
+                        {
+                            string name = FormM.g_cfg.Studentbases.GetName(kh);
+                            ndr["姓名"] = name;
+                        }
+                        ndr["是否修改"] = false;
+                        if (rxm.Width > 0)
+                        {
+                            ndr["图片姓名"] = bmp.Clone(rxm, bmp.PixelFormat);
+                        }
+                        dt.Rows.Add(ndr);
+                    }
+                }
+            }
+            if (dt.Rows.Count > 0)
+            {
+                //MessageBox.Show("暂未实现，待修改");
+                FormVerify f = new FormVerify(dt, "核对姓名");
+                if (f.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+                {
+                    MessageBox.Show("未校验");
+                }
+                else
+                {
+                    if (f.Changed)
+                    {
+                        string filename = ((ValueTag)listBoxScantData.SelectedItem).Tag.ToString();
+                        string[] ss = File.ReadAllLines(filename);
+                        try
+                        {
+                            for (int i = 1; i < ss.Length; i++)
+                            {
+                                string[] item = ss[i].Split(',');
+                                if (item[3].Contains("-"))
+                                {
+                                    DataRow[] drs = _rundt.Select("文件名='" + item[0] + "'");
+                                    if (drs.Length == 1)
+                                    {
+                                        item[3] = drs[0]["考号"].ToString();
+                                        item[4] = drs[0]["姓名"].ToString();
+                                        ss[i] = string.Join(",", item);
+                                    }
+                                }
+                            }
+                            //File.WriteAllText(filename + "_1", string.Join("\r\n", ss));
+                        }
+                        catch (Exception ee)
+                        {
+                            MessageBox.Show("未保存更改，因为" + ee.Message);
+                        }
+                    }
+                }
+                //修改之后
+                dt.Rows.Clear();
+            }
+        }
+        private void VerifyKaoHao()
+        {
+            Template _artemplate = _scan.Template;
+            AutoAngle _angle = _scan.Angle;
+            if (!_artemplate.Dic.ContainsKey("考号") || _artemplate.Dic["考号"].Count == 0)
+            {
+                return;
+            }
+            DataTable dt = Tools.DataTableTools.ConstructDataTable(new string[] {
+			                                                       	"OID考号",
+			                                                       	"图片",
+			                                                       	"图片姓名",
+			                                                       	"图片考号",
+                                                                    "姓名",
+			                                                       	"新考号",
+			                                                       	"是否修改"
+			                                                       });
+            Rectangle r = _artemplate.Dic["考号"][0].ImgArea;
+            Rectangle rxm = new Rectangle();
+            Rectangle rkh = new Rectangle();
+            if (_artemplate.Dic["校对"].Count > 0)
+            {
+                foreach (Area I in _artemplate.Dic["校对"])
+                {
+                    if (I.ToString().Contains("姓名"))
+                    {
+                        rxm = I.Rect;
+                    }
+                    else
+                        if (I.ToString().Contains("学号"))
+                        {
+                            rkh = I.Rect;
+                        }
+                }
+            }
+            foreach (DataRow dr in _rundt.Rows)
+            {
+                if (dr["考号"].ToString().Contains("-"))
+                {
+                    string fn = dr["文件名"].ToString().Replace("LJH\\", "LJH\\Correct\\");
+                    if (File.Exists(fn))
+                    {
+                        double angle = (double)(dr["校验角度"]);
+                        Bitmap bmp = (Bitmap)Bitmap.FromFile(fn);
+                        if (_angle != null)
+                            _angle.SetPaper(angle);
+                        DataRow ndr = dt.NewRow();
+                        ndr["OID考号"] = new ValueTag(dr["考号"].ToString(), dr);
+                        if (r.Width > 0)
+                        {
+                            ndr["图片"] = bmp.Clone(r, bmp.PixelFormat);
+                        }
+                        ndr["姓名"] = "";
+                        ndr["新考号"] = "";
+                        ndr["是否修改"] = false;
+
+                        if (rxm.Width > 0)
+                        {
+                            ndr["图片姓名"] = bmp.Clone(rxm, bmp.PixelFormat);
+                        }
+                        if (rkh.Width > 0)
+                        {
+                            ndr["图片考号"] = bmp.Clone(rkh, bmp.PixelFormat);
+                        }
+                        dt.Rows.Add(ndr);
+                    }
+                }
+            }
+            if (dt.Rows.Count > 0)
+            {
+                MessageBox.Show("暂未实现，待修改");
+                FormVerify f = new FormVerify(dt, "考号");
+                if (f.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+                {
+                    MessageBox.Show("未校验");
+                }
+                else
+                {
+                    if (f.Changed)
+                    {
+                        string filename = ((ValueTag)listBoxScantData.SelectedItem).Tag.ToString();
+                        string[] ss = File.ReadAllLines(filename);
+                        try
+                        {
+                            for (int i = 1; i < ss.Length; i++)
+                            {
+                                string[] item = ss[i].Split(',');
+                                if (item[3].Contains("-"))
+                                {
+                                    DataRow[] drs = _rundt.Select("文件名='" + item[0] + "'");
+                                    if (drs.Length == 1)
+                                    {
+                                        item[3] = drs[0]["考号"].ToString();
+                                        item[4] = drs[0]["姓名"].ToString();
+                                        ss[i] = string.Join(",", item);
+                                    }
+                                }
+                            }
+                            File.WriteAllText(filename + "_1", string.Join("\r\n", ss));
+                        }
+                        catch (Exception ee)
+                        {
+                            MessageBox.Show("未保存更改，因为" + ee.Message);
+                        }
+                    }
+                }
+                //修改之后
+                dt.Rows.Clear();
+            }
+        }
+        private void VerifyXzt()
+        {
+            Template _artemplate = _scan.Template;
+            AutoAngle _angle = _scan.Angle;
+            DataTable dt = Tools.DataTableTools.ConstructDataTable(new string[] {
+			                                                       	"学号",
+			                                                       	"题号",
+			                                                       	"图片",
+			                                                       	"你的答案",
+			                                                       	"A",
+			                                                       	"B",
+			                                                       	"C",
+			                                                       	"D",
+			                                                       	"是否多选",
+			                                                       	"是否修改"
+			                                                       });
+            int xztcnt = _artemplate.XztRect.Count;
+            int runcnt = 0;
+            foreach (DataRow dr in _rundt.Rows)
+            {
+                runcnt++;
+                bool b = false;
+                int xi = 0;
+                for (; xi < xztcnt; xi++)
+                {
+                    if (!"ABCD".Contains(dr["x" + (xi + 1)].ToString()) || dr["x" + (xi + 1)].ToString().Length > 1)
+                    {
+                        b = true;
+                        break;
+                    }
+                }
+                if (b)
+                {
+                    string fn = dr["文件名"].ToString().Replace("LJH\\", "LJH\\Correct\\");
+                    if (File.Exists(fn))
+                    {
+                        double angle = (double)(dr["校验角度"]);
+                        Bitmap bmp = (Bitmap)Bitmap.FromFile(fn);
+                        if (_angle != null)
+                            _angle.SetPaper(angle);
+                        AddDataToDt(dr, bmp, dt);
+                    }
+                }
+                if (b || runcnt == _rundt.Rows.Count)
+                {
+                    if (dt.Rows.Count > 20 || (runcnt == _rundt.Rows.Count && dt.Rows.Count > 0))
+                    {
+                        FormVerify f = new FormVerify(dt, "选择题");
+                        if (f.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+                        {
+                            MessageBox.Show("校验失败");
+                        }
+                        //修改之后
+                        dt.Rows.Clear();
+                    }
+                }
+            }
+        }
 	}	
 }

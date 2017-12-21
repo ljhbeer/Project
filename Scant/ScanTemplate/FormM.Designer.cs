@@ -203,6 +203,7 @@
             this.buttonVerify.TabIndex = 4;
             this.buttonVerify.Text = "校验";
             this.buttonVerify.UseVisualStyleBackColor = true;
+            this.buttonVerify.Click += new System.EventHandler(this.buttonVerify_Click);
             // 
             // buttonVerifyname
             // 
@@ -212,6 +213,7 @@
             this.buttonVerifyname.TabIndex = 10;
             this.buttonVerifyname.Text = "核对姓名";
             this.buttonVerifyname.UseVisualStyleBackColor = true;
+            this.buttonVerifyname.Click += new System.EventHandler(this.buttonVerifyname_Click);
             // 
             // label2
             // 
@@ -258,7 +260,7 @@
             this.buttonReScan.TabIndex = 9;
             this.buttonReScan.Text = "重新扫描";
             this.buttonReScan.UseVisualStyleBackColor = true;
-            this.buttonReScan.Click += new System.EventHandler(this.ButtonScanClick);
+            this.buttonReScan.Click += new System.EventHandler(this.buttonReScan_Click);
             // 
             // buttonScan
             // 

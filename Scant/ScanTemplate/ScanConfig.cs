@@ -174,17 +174,42 @@ namespace ScanTemplate
     }
     public class ScanData
     {
-        private string dirname;
-        private string path;
+        private string _dirname;
+        private string _path;
+        private string _templatename;
+        private string _examname;
         public ScanData(string dirname, string path)
         {
-            this.dirname = dirname;
-            this.path = path;
+            this._dirname = dirname;
+            this._path = path;
+            this._templatename = path + "\\" + dirname + "\\template.xml";
+           
+            _examname = dirname;
+            if (Directory.Exists(Fullpath))
+            {
+                List<string> examlist = Tools.FileTools.NameListFromDir(Fullpath, ".exam");
+                if (examlist.Count > 0)
+                    _examname = examlist[0].Substring(Fullpath.Length+1);
+            }
         }
         public override string ToString()
         {
-            return dirname;
+            return _examname;
         }
+        public string Fullpath { get { return _path + "\\" + _dirname; } }
+        public string Imgpath { get { return _path + "\\" + _dirname + "\\img"; } }
+        public string DataFullName { get { return Fullpath + "\\data.txt"; } }
+        public string ExamName { get { return _examname; } }
+        public string TemplateFileName
+        {
+            get
+            {
+                if (!File.Exists(_templatename))
+                    return "";
+                return _templatename;
+            }
+        }
+        public List<string> ImgList { get { return  Tools.FileTools.NameListFromDir(Imgpath,".tif");} }
     }
     public class Templates
     {
@@ -473,6 +498,12 @@ namespace ScanTemplate
         public string DirName { get { return _dirname; } }
         public string SourcePath { get { return _srcpath; } }
         public string TemplateName { get { return _templatename; } }
+        public AutoAngle Angle { get { return _angle; } }
+        public Template Template { get { return _template; } }
+        public void Clear()
+        {
+            //TODO: ClearScanData
+        }
     }
     public class ValueTag
     {

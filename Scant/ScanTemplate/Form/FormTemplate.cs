@@ -23,12 +23,29 @@ namespace ARTemplate
         public FormTemplate( Template t)
         {
             InitializeComponent();
+            Init(t);
+        }
+        public FormTemplate()
+        {
+            InitializeComponent();
+            Init(null);
+        }
+        private void Init(Template t)
+        {
             template = t;
-            Init();
+            m_tn = new TreeNode();
+            m_Imgselection = new Rectangle(0, 0, 0, 0);
+            zoombox = new ZoomBox();
             Reset();
-            template.SetDataToNode(m_tn);
+            if(t!=null)
+            template.SetDataToNode(m_tn); 
+            InitComboBoxKH(t);
+        }
+        private void InitComboBoxKH(Template t)
+        {
+
             toolStripComboBoxKHFormat.SelectedIndex = 0;
-            if (t.Dic.ContainsKey("考号") && t.Dic["考号"].Count == 1)
+            if (t!=null && t.Dic.ContainsKey("考号") && t.Dic["考号"].Count == 1)
             {
                 KaoHaoChoiceArea kh = (KaoHaoChoiceArea)t.Dic["考号"][0];
                 switch (kh.Type) //数字means横向 涂卡
@@ -45,13 +62,6 @@ namespace ARTemplate
                     default: toolStripComboBoxKHFormat.SelectedIndex = 0; break;
                 }
             }
-
-        }
-        private void Init()
-        {
-            m_tn = new TreeNode();
-            m_Imgselection = new Rectangle(0, 0, 0, 0);
-            zoombox = new ZoomBox();
         }
         private void FormTemplate_Load(object sender, EventArgs e)
         {
@@ -67,15 +77,12 @@ namespace ARTemplate
         }
         private void Reset()
         {
-            //template.ResetData(false);
             m_tn.Nodes.Clear();
-            //MT.ClearEvent();
             m_Imgselection = new Rectangle(0, 0, 0, 0);
             _OriginWith = pictureBox1.Width;
             zoombox.Reset();
             m_act = Act.None;
             treeView1.Nodes.Clear();
-
 
             m_tn.Text = "网上阅卷";
             TreeNode[] vt = new TreeNode[9];
@@ -97,6 +104,7 @@ namespace ARTemplate
 
         private void toolStripButtonSaveTemplate_Click(object sender, EventArgs e)
         {
+            if (template == null) return;
         	UpdateTemplate();
         	FileInfo fi = new FileInfo(template.Filename);        	
         	string path = fi.Directory.Parent.Parent.FullName + "\\template\\";

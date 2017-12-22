@@ -316,8 +316,11 @@ namespace ScanTemplate
         }
         public void MyRefreshDgv()
         {
-            dgv.InvalidateRow(dgv.RowCount - 1);
-            dgv.FirstDisplayedScrollingRowIndex = dgv.RowCount - 1;
+            //cnt = dgv.RowCount;
+            int cnt = _rundt.Rows.Count;
+            dgv.InvalidateRow(cnt - 1);
+            //dgv.FirstDisplayedScrollingRowIndex = cnt - 1;
+            textBoxMsg.Text = "扫描第" + cnt + "号， 考号：" + _rundt.Rows[cnt - 1]["考号"] + " 姓名：" + _rundt.Rows[cnt - 1]["姓名"];
         }
         private void buttonReScan_Click(object sender, EventArgs e)
         {
@@ -350,6 +353,12 @@ namespace ScanTemplate
             ScanData sd = (ScanData)listBoxScantData.SelectedItem;
             FormYJ.FormYJInit f = new FormYJ.FormYJInit(_sc.Examconfig, _scan.Template, _rundt,_scan.Angle, _sc.Baseconfig.ScanDataPath,sd.ExamName,sd.Fullpath);
             f.ShowDialog();
+            this.Show();
+        }
+        private void buttonOpenTemplate_Click(object sender, EventArgs e)
+        {
+            this.Hide();
+            new FormTemplate().ShowDialog();
             this.Show();
         }
         private void VerifyName()

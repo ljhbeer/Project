@@ -56,6 +56,8 @@
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.buttonLeftHide = new System.Windows.Forms.Button();
             this.buttonRightHide = new System.Windows.Forms.Button();
+            this.textBoxMsg = new System.Windows.Forms.TextBox();
+            this.buttonOpenTemplate = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -354,22 +356,25 @@
             // 
             // tableLayoutPanel2
             // 
-            this.tableLayoutPanel2.ColumnCount = 7;
+            this.tableLayoutPanel2.ColumnCount = 8;
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 50F));
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 50F));
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 68F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 83F));
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 50F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 50F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 51F));
+            this.tableLayoutPanel2.Controls.Add(this.buttonOpenTemplate, 0, 0);
             this.tableLayoutPanel2.Controls.Add(this.buttonLeftHide, 0, 0);
-            this.tableLayoutPanel2.Controls.Add(this.buttonRightHide, 6, 0);
+            this.tableLayoutPanel2.Controls.Add(this.buttonRightHide, 7, 0);
+            this.tableLayoutPanel2.Controls.Add(this.textBoxMsg, 4, 0);
             this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 622);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.RowCount = 1;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 28F));
             this.tableLayoutPanel2.Size = new System.Drawing.Size(1258, 28);
             this.tableLayoutPanel2.TabIndex = 1;
             // 
@@ -386,13 +391,32 @@
             // 
             // buttonRightHide
             // 
-            this.buttonRightHide.Location = new System.Drawing.Point(1211, 3);
+            this.buttonRightHide.Location = new System.Drawing.Point(1210, 3);
             this.buttonRightHide.Name = "buttonRightHide";
             this.buttonRightHide.Size = new System.Drawing.Size(44, 17);
             this.buttonRightHide.TabIndex = 3;
             this.buttonRightHide.Text = ">>";
             this.buttonRightHide.UseVisualStyleBackColor = true;
             this.buttonRightHide.Click += new System.EventHandler(this.buttonRightHide_Click);
+            // 
+            // textBoxMsg
+            // 
+            this.textBoxMsg.BackColor = System.Drawing.SystemColors.InfoText;
+            this.textBoxMsg.ForeColor = System.Drawing.Color.Red;
+            this.textBoxMsg.Location = new System.Drawing.Point(254, 3);
+            this.textBoxMsg.Name = "textBoxMsg";
+            this.textBoxMsg.Size = new System.Drawing.Size(447, 21);
+            this.textBoxMsg.TabIndex = 4;
+            // 
+            // buttonOpenTemplate
+            // 
+            this.buttonOpenTemplate.Location = new System.Drawing.Point(53, 3);
+            this.buttonOpenTemplate.Name = "buttonOpenTemplate";
+            this.buttonOpenTemplate.Size = new System.Drawing.Size(43, 22);
+            this.buttonOpenTemplate.TabIndex = 10;
+            this.buttonOpenTemplate.Text = "模板";
+            this.buttonOpenTemplate.UseVisualStyleBackColor = true;
+            this.buttonOpenTemplate.Click += new System.EventHandler(this.buttonOpenTemplate_Click);
             // 
             // FormM
             // 
@@ -415,6 +439,7 @@
             this.panel3.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.tableLayoutPanel2.ResumeLayout(false);
+            this.tableLayoutPanel2.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -448,6 +473,8 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Button buttonVerifyname;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Button buttonReScan;        
+        private System.Windows.Forms.Button buttonReScan;
+        private System.Windows.Forms.TextBox textBoxMsg;
+        private System.Windows.Forms.Button buttonOpenTemplate;        
     }
 }

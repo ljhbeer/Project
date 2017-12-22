@@ -134,14 +134,21 @@ namespace ScanTemplate.FormYJ
 
             foreach (Imgsubject S in _Imgsubjects.Subjects)
             {
-                DataRow dr = dtset.NewRow();
-                dr["OID"] = new ValueTag(S.ID.ToString(), S);
-                dr["题组名称"] = S.Name;
-                dr["最大分值"] = S.Score;
-                _AvgUnImgHeight += S.Height;
-                _AvgUnImgWith += S.Width;
-                dr["图片"] = _src.Clone(S.Rect, _src.PixelFormat);
-                dtset.Rows.Add(dr);
+                try
+                {
+                    DataRow dr = dtset.NewRow();
+                    dr["OID"] = new ValueTag(S.ID.ToString(), S);
+                    dr["题组名称"] = S.Name;
+                    dr["最大分值"] = S.Score;
+                    _AvgUnImgHeight += S.Height;
+                    _AvgUnImgWith += S.Width;
+                    dr["图片"] = _src.Clone(S.Rect, _src.PixelFormat);
+                    dtset.Rows.Add(dr);
+                }
+                catch (Exception ee)
+                {
+                    ;
+                }
             }
             dtset.AcceptChanges();
             _AvgUnImgHeight /= _Imgsubjects.Subjects.Count;

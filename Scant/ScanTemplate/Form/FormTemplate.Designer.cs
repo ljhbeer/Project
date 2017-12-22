@@ -103,7 +103,7 @@
             this.toolStripButtonCustomDefine});
             this.toolStrip1.Location = new System.Drawing.Point(3, 25);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(697, 25);
+            this.toolStrip1.Size = new System.Drawing.Size(728, 25);
             this.toolStrip1.TabIndex = 1;
             // 
             // toolStripButtonSaveTemplate

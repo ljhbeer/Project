@@ -6,40 +6,31 @@ using System.IO;
 using System.Xml;
 using System.Drawing;
 using System.Windows.Forms;
+using Newtonsoft.Json;
 using ScanTemplate.FormYJ;
 
 namespace ARTemplate
 {
+    [JsonObject(MemberSerialization.OptIn)]
     public class Template
     {
         // "特征点", "考号","姓名", "选择题", "非选择题", "选区变黑", "选区变白"
         public Template(string imgpath, Bitmap bmp, Rectangle CorrectRect)
         {
             this._imagefilename = imgpath;
-            this._src = bmp.Clone( CorrectRect, bmp.PixelFormat);
+            this._src = bmp.Clone(CorrectRect, bmp.PixelFormat);
             this.Correctrect = CorrectRect;
             _xztRect = null;
             _dic = new Dictionary<string, List<Area>>();
-    
+
         }
-        public Template(String xmlFileName)
+
+        public void Clear()
         {
-            _src = null;
-            _dic = new Dictionary<string, List<Area>>();
-            if (Load(xmlFileName))
-            {
-                if (File.Exists(_imagefilename))
-                {
-                    _src = (Bitmap)Bitmap.FromFile(_imagefilename);
-                    _src = _src.Clone(Correctrect, _src.PixelFormat);
-                }
-            }
-        }
-        public void Clear(){
-        	ResetData();
-        	_dic.Clear();
-        	if(_src!=null)
-        		_src.Dispose();
+            ResetData();
+            _dic.Clear();
+            if (_src != null)
+                _src.Dispose();
         }
         public void ResetBitMap(string imgpath, Bitmap bmp, Rectangle CorrectRect)
         {
@@ -49,9 +40,9 @@ namespace ARTemplate
             if (_dic.ContainsKey("特征点"))
                 _dic["特征点"].Clear();
         }
-        public void ResetData(bool clearFeaturePoint=true)
+        public void ResetData(bool clearFeaturePoint = true)
         { //"特征点",不能清除
-            foreach (string s in new string[] {"特征点",  "考号", "校对", "选择题", "非选择题", "选区变黑", "选区变白" ,"题组","自定义"})
+            foreach (string s in new string[] { "特征点", "考号", "校对", "选择题", "非选择题", "选区变黑", "选区变白", "题组", "自定义" })
                 if (_dic.ContainsKey(s))
                 {
                     if (!clearFeaturePoint && s == "特征点")
@@ -69,70 +60,206 @@ namespace ARTemplate
                 _dic[name] = new List<Area>();
             _dic[name].Add(area);
         }
-       
-        public void Save(String xmlFileName)
+
+        public void Save(string jsonname)
         {
-            if (xmlFileName.ToLower().EndsWith(".xml"))
+            string str = Tools.JsonFormatTool.ConvertJsonString(Newtonsoft.Json.JsonConvert.SerializeObject(this));
+            File.WriteAllText(jsonname, str);
+        }
+        public bool Load(string jsonname)
+        {
+            TemplateData td = new TemplateData(jsonname);
+            if (td.Correctrect.Width > 0)
             {
-                XmlDocument xmlDoc = SaveToXmlDoc();
-                xmlDoc.Save(xmlFileName);
-                this._XmlFileName = xmlFileName;
+                _dic = td._dic;
+                Correctrect = td.Correctrect;
+            }
+            return false;
+        }
+        public void SetDataToNode(TreeNode m_tn)
+        {
+            foreach (string s in new string[] { "特征点", "考号", "校对", "选择题", "非选择题", "选区变黑", "选区变白", "题组", "自定义" })
+            {
+                TreeNodeCollection tc = m_tn.Nodes[s].Nodes;
+                if (_dic.ContainsKey(s))
+                    foreach (Area I in _dic[s])
+                    {
+                        TreeNode t = new TreeNode();
+                        int cnt = tc.Count + 1;
+                        t.Name = cnt.ToString();
+                        t.Text = s + cnt;
+                        if ("非选择题|题组|自定义|校对".Contains(s))
+                            t.Text = I.ToString();
+                        t.Tag = I;
+                        tc.Add(t);
+                    }
             }
         }
-        public XmlDocument SaveToXmlDoc()
+        public void SetFeaturePoint(List<Rectangle> list, Rectangle cr)
         {
-            XmlDocument xmlDoc = new XmlDocument();
-            XmlElement root = xmlDoc.CreateElement(NodeName);
-            xmlDoc.AppendChild(root);
-            XmlNode path = xmlDoc.CreateElement("BASE");
-            root.AppendChild(path);
-            path.InnerXml = Imgsize.ToXmlString() + _imagefilename.ToXmlString("PATH")+Correctrect.ToXmlString().ToXmlString("CORRECTRECT");
-
-            foreach (string s in new string[] { "特征点-FEATUREPOINTSAREA", "考号-KAOHAOAREA", "校对-NAMEAREA", "选择题-SINGLECHOICES", "非选择题-UNCHOOSES", "选区变黑-BLACKAREA", "选区变白-WHITEAREA","题组-UNCHOOSEGROUP","自定义-CUSTOMDEFINE" })
+            if (Correctrect.ToString() != cr.ToString())
+                return;
+            Point midpoint = new Point(cr.Width / 2, cr.Height / 2);
+            string key = "特征点";
+            if (!_dic.ContainsKey(key))
+                _dic[key] = new List<Area>();
+            _dic[key].Clear();
+            for (int i = 0; i < list.Count; i++)
             {
-                string name = s.Substring(0, s.IndexOf("-"));
-                string ENname = s.Substring(s.IndexOf("-")+1);
-                XmlNode  list = xmlDoc.CreateElement(ENname+"S");
-                root.AppendChild(list);
-                int i = 0;
-                if(_dic.ContainsKey(name))
-                foreach (Area I in _dic[name])
-                {
-                    XmlElement xe = xmlDoc.CreateElement(ENname);
-                    xe.SetAttribute("ID", i.ToString());
-                    xe.InnerXml = I.ToXmlString();
-                    list.AppendChild(xe);
-                    i++;
-                }
+                Rectangle r = list[i];
+                r.Offset(-cr.X, -cr.Y);
+                _dic[key].Add(new FeaturePoint(r, midpoint));
             }
-            return xmlDoc;
-        }     
-        public bool Load(String xmlFileName)
+        }
+        public List<string> GetTitles()
         {
-            ResetData();
+            List<string> titles = new List<string>();
+            titles.Clear();
+            titles.Add("文件名");
+            titles.Add("CorrectRect");
+            titles.Add("校验角度");
+            string item = "考号";
+            if (Dic.ContainsKey(item) && Dic[item].Count > 0)
+            {
+                titles.Add(item);
+                titles.Add("姓名");
+            }
+            //item = "非选择题";
+            //if (t.Dic.ContainsKey(item) && t.Dic[item].Count > 0)
+            //    titles.Add(item);
+
+            item = "选择题";
+            if (Dic.ContainsKey(item) && Dic[item].Count > 0)
+                titles.Add(item);
+
+            item = "自定义";
+            if (Dic.ContainsKey(item) && Dic[item].Count > 0)
+                titles.Add(item);
+            return titles;
+        }
+        public bool HasOptions(string keyname)
+        {
+            return Dic.ContainsKey(keyname) && Dic[keyname].Count > 0;
+        }
+        public string GetTemplateName()
+        {
+            string str = "";
+            if (_dic.ContainsKey("考号") && _dic["考号"].Count > 0)
+                str += "IDName_";//_dic["选择题"].Count;
+            if (_dic.ContainsKey("选择题"))
+                str += "X" + XztRect.Count;//_dic["选择题"].Count;
+            //str += "选择题" + _dic["选择题"].Count;
+            if (_dic.ContainsKey("非选择题"))
+                str += "_K" + _dic["非选择题"].Count;
+
+            if (_dic.ContainsKey("自定义") && _dic["自定义"].Count > 0)
+            {
+                int zw = 0;
+                foreach (Area I in _dic["自定义"])
+                {
+                    if (I.ToString().Contains("座位"))
+                    {
+                        zw++;
+                    }
+                }
+                if (zw > 0)
+                    str += "_ZW" + zw;
+            }
+            //str += "_非选择题" + _dic["非选择题"].Count;
+            //if(Correctrect!=null)
+            //    str+="_"+Correctrect.ToString("-");
+            return str;
+        }
+
+        public String NodeName { get { return "TEMPLATE"; } }
+        public Bitmap Image { get { return _src; } }
+        public List<Area> SingleAreas { get { return _dic["选择题"]; } }
+
+        public Size Imgsize
+        {
+            get { return _src.Size; }
+        }
+        public String Filename
+        {
+            get { return _imagefilename; }
+        }
+
+        public string XmlFileName { get { return _XmlFileName; } }
+        public Dictionary<string, List<Area>> Dic { get { return _dic; } }
+        public Dictionary<int, Rectangle> XztRect
+        {
+            get
+            {
+                if (_xztRect == null)
+                {
+                    _xztRect = new Dictionary<int, Rectangle>();
+                    int cnt = 0;
+                    if (_dic.ContainsKey("选择题"))
+                        foreach (Area I in _dic["选择题"])
+                        {
+                            if (I.HasSubArea())
+                            {
+                                int subcnt = 0;
+                                foreach (List<Point> lp in ((SingleChoiceArea)I).list)
+                                {
+                                    Rectangle r = I.ImgArea;
+                                    r.Height /= ((SingleChoiceArea)I).Count;
+                                    r.Y += subcnt * r.Height;
+                                    subcnt++;
+
+                                    _xztRect[cnt] = r;
+                                    cnt++;
+                                }
+                            }
+                        }
+                }
+                return _xztRect;
+            }
+        }
+
+        [JsonProperty]
+        public Rectangle Correctrect
+        {
+            get;
+            set;
+        }
+        [JsonProperty]
+        private Dictionary<string, List<Area>> _dic;
+        private Dictionary<int, Rectangle> _xztRect;
+        private Bitmap _src;
+        private string _imagefilename;
+        private string _XmlFileName;
+    }
+    public class ConvertTemplateData
+    {
+        public static bool Load(String xmlFileName)
+        {
+            Dictionary<string, List<Area>> _dic = new Dictionary<string, List<Area>>();
+            Rectangle Correctrect = new Rectangle();
             if (!xmlFileName.ToLower().EndsWith(".xml")) return false;
             if (!File.Exists(xmlFileName)) return false;
-            this._XmlFileName = xmlFileName;
+            //this._XmlFileName = xmlFileName;
             try
             {
+                String NodeName = "TEMPLATE";
+                Point midpoint = new Point(0, 0);
                 XmlDocument xmlDoc = new XmlDocument();
                 xmlDoc.Load(xmlFileName);
-                _imagefilename = xmlDoc.SelectSingleNode(NodeName + "/BASE/PATH").InnerText;
-                Size imgsize =Tools.StringTools. StringToSize(xmlDoc.SelectSingleNode(NodeName + "/BASE/SIZE").InnerText);
-                Point midpoint = new Point(imgsize.Width / 2, imgsize.Height / 2);
+
                 XmlNode xn = xmlDoc.SelectSingleNode(NodeName + "/BASE/CORRECTRECT");
                 if (xn != null)
+                {
                     Correctrect = Tools.StringTools.StringToRectangle(xn.InnerText);
-                //////Bitmap bitmap =(Bitmap) Bitmap.FromFile(_imagefilename);
-                //////if (bitmap.Size != imgsize)
-                //////    return false;
-                //////_src = bitmap;
+                    midpoint = new Point(Correctrect.Width / 2, Correctrect.Height / 2);
+                }
+                if (midpoint.X == 0) return false;
+
                 foreach (string s in new string[] { "特征点-FEATUREPOINTSAREA", "考号-KAOHAOAREA", "校对-NAMEAREA", "选择题-SINGLECHOICES", "非选择题-UNCHOOSES", "选区变黑-BLACKAREA", "选区变白-WHITEAREA", "题组-UNCHOOSEGROUP", "自定义-CUSTOMDEFINE" })
                 {
                     string name = s.Substring(0, s.IndexOf("-"));
-                    string ENname = s.Substring(s.IndexOf("-")+1);
-                    string path = (NodeName + "/[]/*").Replace("[]",ENname+"S");
-                    XmlNodeList  list = xmlDoc.SelectNodes(path);
+                    string ENname = s.Substring(s.IndexOf("-") + 1);
+                    string path = (NodeName + "/[]/*").Replace("[]", ENname + "S");
+                    XmlNodeList list = xmlDoc.SelectNodes(path);
                     _dic[name] = new List<Area>();
 
                     if (ENname == "KAOHAOAREA")
@@ -152,7 +279,7 @@ namespace ARTemplate
                             {
                                 XmlNode xname = node.SelectSingleNode("NAME");
                                 XmlNode xsize = node.SelectSingleNode("SIZE");
-                                if ( xname != null && xsize != null)
+                                if (xname != null && xsize != null)
                                 {
                                     Size size = Tools.StringTools.StringToSize(xsize.InnerText);
                                     List<List<Point>> llp = new List<List<Point>>();
@@ -326,158 +453,103 @@ namespace ARTemplate
                     }
                 }
             }
-            catch //(Exception ex)
+            catch
             {
-                ResetData();
                 return false;
             }
+            new TemplateData(_dic, Correctrect).Save(xmlFileName);
             return true;
-        }       
-        public void SetDataToNode(TreeNode m_tn)
+        }
+    }
+    public class TemplateData
+    {
+        [JsonProperty]
+        public Rectangle Correctrect { get; set; }
+        [JsonProperty]
+        public Dictionary<string, List<Area>> _dic;
+        public TemplateData(string jsonstr)
         {
-            foreach (string s in new string[] { "特征点", "考号", "校对", "选择题", "非选择题", "选区变黑", "选区变白","题组","自定义" })
+            TemplateObject To =
+            Newtonsoft.Json.JsonConvert.DeserializeObject<TemplateObject>(jsonstr);
+            ConvertToArea(To);
+        }
+        public TemplateData(Dictionary<string, List<Area>> _dic, Rectangle Correctrect)
+        {
+            this._dic = _dic;
+            this.Correctrect = Correctrect;
+        }
+        public void Save(string xmlfilename)
+        {
+            string str = Tools.JsonFormatTool.ConvertJsonString(Newtonsoft.Json.JsonConvert.SerializeObject(this));
+            string jsonname = xmlfilename + ".json";
+            File.WriteAllText(jsonname, str);
+        }
+        public void ConvertToArea(TemplateObject To)
+        {
+            Dictionary<string, List<Area>> dic = new Dictionary<string, List<Area>>();
+            foreach (KeyValuePair<string, object> item in To._dic)
             {
-                TreeNodeCollection tc = m_tn.Nodes[s].Nodes;
-                if(_dic.ContainsKey(s))
-                foreach (Area I in _dic[s])
+                switch (item.Key)
                 {
-                    TreeNode t = new TreeNode();
-                    int cnt = tc.Count + 1;
-                    t.Name = cnt.ToString();
-                    t.Text =s + cnt;
-                    if ( "非选择题|题组|自定义|校对".Contains(s))
-                        t.Text = I.ToString();
-                    t.Tag =I;
-                    tc.Add(t);
+                    case "特征点":
+                        dic[item.Key] = new List<Area>();
+                        foreach (FeaturePoint A in MyArea<FeaturePoint>.ConvertTo(item.Value))
+                            dic[item.Key].Add(A);
+                        break;
+                    case "考号":
+                        dic[item.Key] = new List<Area>();
+                        foreach (KaoHaoChoiceArea A in MyArea<KaoHaoChoiceArea>.ConvertTo(item.Value))
+                            dic[item.Key].Add(A);
+                        break;
+                    case "校对":
+                        dic[item.Key] = new List<Area>();
+                        foreach (NameArea A in MyArea<NameArea>.ConvertTo(item.Value))
+                            dic[item.Key].Add(A);
+                        break;
+                    case "选择题": dic[item.Key] = new List<Area>();
+                        foreach (SingleChoiceArea A in MyArea<SingleChoiceArea>.ConvertTo(item.Value))
+                            dic[item.Key].Add(A);
+                        break;
+                    case "非选择题": dic[item.Key] = new List<Area>();
+                        foreach (UnChoose A in MyArea<UnChoose>.ConvertTo(item.Value))
+                            dic[item.Key].Add(A);
+                        break;
+                    case "选区变黑": dic[item.Key] = new List<Area>();
+                        foreach (TempArea A in MyArea<TempArea>.ConvertTo(item.Value))
+                            dic[item.Key].Add(A);
+                        break;
+                    case "选区变白": dic[item.Key] = new List<Area>();
+                        foreach (TempArea A in MyArea<TempArea>.ConvertTo(item.Value))
+                            dic[item.Key].Add(A);
+                        break;
+                    case "题组": dic[item.Key] = new List<Area>();
+                        foreach (TzArea A in MyArea<TzArea>.ConvertTo(item.Value))
+                            dic[item.Key].Add(A);
+                        break;
+                    case "自定义": dic[item.Key] = new List<Area>();
+                        foreach (CustomArea A in MyArea<CustomArea>.ConvertTo(item.Value))
+                            dic[item.Key].Add(A);
+                        break;
                 }
-            }               
+            }
+            _dic = dic;
+            Correctrect = To.Correctrect;
         }
-        public void SetFeaturePoint(List<Rectangle> list, Rectangle cr)
+        public class MyArea<T>
         {
-            if( Correctrect.ToString() != cr.ToString() )
-                return;
-            Point midpoint = new Point(cr.Width / 2, cr.Height / 2);
-            string key = "特征点";
-            if (!_dic.ContainsKey(key))
-                _dic[key] = new List<Area>();
-            _dic[key].Clear();
-            for (int i = 0; i < list.Count; i++)
+            public static List<T> ConvertTo(object o)
             {
-                Rectangle r = list[i];
-                r.Offset(-cr.X,-cr.Y);
-                _dic[key].Add(new FeaturePoint(r, midpoint));
+                string str = o.ToString();
+                return Newtonsoft.Json.JsonConvert.DeserializeObject<List<T>>(str);
             }
         }
-        public List<string> GetTitles()
+        public class TemplateObject
         {
-            List<string> titles = new List<string>();
-            titles.Clear();
-            titles.Add("文件名");
-            titles.Add("CorrectRect");
-            titles.Add("校验角度");
-            string item = "考号";
-            if (Dic.ContainsKey(item) && Dic[item].Count > 0)
-            {
-                titles.Add(item);
-                titles.Add("姓名");
-            }
-            //item = "非选择题";
-            //if (t.Dic.ContainsKey(item) && t.Dic[item].Count > 0)
-            //    titles.Add(item);
-
-            item = "选择题";
-            if (Dic.ContainsKey(item) && Dic[item].Count > 0)
-                titles.Add(item);
-
-            item = "自定义";
-            if (Dic.ContainsKey(item) && Dic[item].Count > 0)
-                titles.Add(item);
-            return titles;
+            [JsonProperty]
+            public Rectangle Correctrect { get; set; }
+            [JsonProperty]
+            public Dictionary<string, object> _dic;
         }
-        public bool HasOptions(string keyname)
-        {
-            return Dic.ContainsKey(keyname ) && Dic[keyname].Count > 0;
-        }
-		public string GetTemplateName()
-		{
-            string str = "";
-            if (_dic.ContainsKey("考号") && _dic["考号"].Count>0)
-                str += "IDName_";//_dic["选择题"].Count;
-            if (_dic.ContainsKey("选择题"))
-                str += "X" + XztRect.Count;//_dic["选择题"].Count;
-            //str += "选择题" + _dic["选择题"].Count;
-            if (_dic.ContainsKey("非选择题"))
-                str += "_K" + _dic["非选择题"].Count;
-
-            if (_dic.ContainsKey("自定义") && _dic["自定义"].Count > 0)
-            {
-                int zw = 0;
-                foreach (Area I in _dic["自定义"])
-                {
-                    if (I.ToString().Contains("座位"))
-                    {
-                        zw++;
-                    }
-                }
-                if (zw > 0)
-                    str += "_ZW" + zw;
-            }
-            //str += "_非选择题" + _dic["非选择题"].Count;
-            //if(Correctrect!=null)
-            //    str+="_"+Correctrect.ToString("-");
-			return str;
-		}
-        public String NodeName { get { return "TEMPLATE"; } }
-        public Bitmap Image { get { return _src; } }
-        public List<Area> SingleAreas {get { return _dic["选择题"];}}
-        public Size Imgsize
-        {
-            get { return _src.Size; }
-        }
-        public String Filename
-        {
-            get { return _imagefilename; }
-        }
-        public Rectangle Correctrect
-        {
-            get;
-            set;
-        }
-        public string XmlFileName { get { return _XmlFileName; } }
-        public Dictionary<string, List<Area>> Dic { get { return _dic; } }
-        public Dictionary<int,Rectangle> XztRect{
-        	get{
-        		if(_xztRect==null){
-        			_xztRect = new Dictionary<int, Rectangle>();
-        			int cnt = 0;
-                    if (_dic.ContainsKey("选择题"))
-                        foreach (Area I in _dic["选择题"])
-                        {
-                            if (I.HasSubArea())
-                            {
-                                int subcnt = 0;
-                                foreach (List<Point> lp in ((SingleChoiceArea)I).list)
-                                {
-                                    Rectangle r = I.ImgArea;
-                                    r.Height /= ((SingleChoiceArea)I).Count;
-                                    r.Y += subcnt * r.Height;
-                                    subcnt++;
-
-                                    _xztRect[cnt] = r;
-                                    cnt++;
-                                }
-                            }
-                        }
-        		}
-        		return _xztRect;
-        	}
-        }
-        
-        private Dictionary< string, List<Area>> _dic;        
-        private Dictionary<int, Rectangle> _xztRect;
-        private Bitmap _src;
-        private string _imagefilename;
-        private string _XmlFileName;    	
     }
     public class TemplateTools
     {
@@ -485,7 +557,7 @@ namespace ARTemplate
         {
             Bitmap //bmp = src.Clone(new Rectangle(0, 0, src.Width, src.Height), System.Drawing.Imaging.PixelFormat.Format24bppRgb);
              bmp = ConvertFormat.ConvertToRGB(src);
-             using (Graphics g = Graphics.FromImage(bmp))
+            using (Graphics g = Graphics.FromImage(bmp))
             {
                 Pen pen = Pens.Red;
                 Brush dark = Brushes.Black;
@@ -533,9 +605,9 @@ namespace ARTemplate
                 Brush dark = Brushes.Black;
                 Brush white = Brushes.White;
                 Brush Red = Brushes.Red;
-                Font font = new Font( SystemFonts.DefaultFont.SystemFontName,25,FontStyle.Bold);
+                Font font = new Font(SystemFonts.DefaultFont.SystemFontName, 25, FontStyle.Bold);
                 Font font1 = new Font(SystemFonts.DefaultFont.SystemFontName, 16, FontStyle.Bold);
-               
+
 
                 foreach (Optionsubject I in SR._Optionsubjects.OptionSubjects)
                 {
@@ -543,15 +615,15 @@ namespace ARTemplate
                     Point p = angle.GetCorrectPoint(r.X, r.Y);
                     r.Location = p;
                     g.DrawRectangle(pen, I.Rect);
-                    g.DrawRectangle(pen, r );
+                    g.DrawRectangle(pen, r);
 
                     //g.DrawRectangle(pen, rr);
                     int OKindex = "ABCD".IndexOf(optionanswer[I.Index]);
                     if (OKindex >= 0)
                     {
                         Rectangle rr = new Rectangle(I.List[OKindex], I.Size);
-                        rr.Offset(p); 
-                        if(S.CorrectXzt(I.Index, optionanswer[I.Index]))
+                        rr.Offset(p);
+                        if (S.CorrectXzt(I.Index, optionanswer[I.Index]))
                             g.DrawString("√", font1, Red, rr.Location);
                         else
                             g.DrawString("×", font1, Red, rr.Location);
@@ -559,18 +631,18 @@ namespace ARTemplate
                 }
 
                 foreach (Imgsubject I in SR._Imgsubjects.Subjects)
-                {                    
+                {
                     //g.DrawRectangle(pen, I.Rect);
                     Point p = I.Rect.Location;
                     int offsetx = I.Rect.Width * 3 / 10;
-                    p.X = I.Rect.Right - offsetx > 0 ? I.Rect.Right - offsetx :  I.Rect.Right;
-                    p.Y += I.Rect.Height*3/10;
+                    p.X = I.Rect.Right - offsetx > 0 ? I.Rect.Right - offsetx : I.Rect.Right;
+                    p.Y += I.Rect.Height * 3 / 10;
 
-                    if(SR._Result[I.Index][ S.Index] == 0)
+                    if (SR._Result[I.Index][S.Index] == 0)
                         g.DrawString("×", font, Red, p);
                     else
                         g.DrawString("√", font, Red, p);
-                   
+
                 }
                 foreach (TzArea I in ltz)
                 {

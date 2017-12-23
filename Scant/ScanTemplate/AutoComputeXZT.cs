@@ -21,7 +21,7 @@ namespace ScanTemplate
         public string ComputeXZT(string num1, AutoAngle _angle)
         {
             StringBuilder sb = new StringBuilder();
-            foreach(SingleChoiceArea sca in _artemplate.SingleAreas)
+            foreach(SingleChoiceArea sca in _artemplate.Manageareas.SinglechoiceAreas.list)
             {
                 Rectangle r = sca.Rect;
                 Point nL = _angle.GetCorrectPoint(r.X, r.Y);

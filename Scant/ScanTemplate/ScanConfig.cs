@@ -272,21 +272,21 @@ namespace ScanTemplate
 
         private bool CreateTemplate()
         {
-            if (_dr.Detected())
-            {
-                //TODO: autoDetectRectAngle set static
-                    _artemplate = new ARTemplate.Template(_imgfilename, _src, _dr.CorrectRect);
-                    if (ti != null)
-                        _artemplate.Load(ti.TemplateFileName);
-                List<Point> zeroListPoint = new List<Point>();
-                for (int i = 0; i < _dr.ListPoint.Count; i++)
-                {
-                    zeroListPoint.Add(new Point(_dr.ListPoint[i].X - _dr.CorrectRect.X, _dr.ListPoint[i].Y - _dr.CorrectRect.Y));
-                }
-                _angle = new AutoAngle(zeroListPoint);
-                _artemplate.SetFeaturePoint(_dr.ListFeatureRectangle, _dr.CorrectRect);
-                return true;
-            }
+            //if (_dr.Detected())
+            //{
+            //    //TODO: autoDetectRectAngle set static
+            //        _artemplate = new ARTemplate.Template( _dr.CorrectRect);
+            //        if (ti != null)
+            //            _artemplate.Load(ti.TemplateFileName);
+            //    List<Point> zeroListPoint = new List<Point>();
+            //    for (int i = 0; i < _dr.ListPoint.Count; i++)
+            //    {
+            //        zeroListPoint.Add(new Point(_dr.ListPoint[i].X - _dr.CorrectRect.X, _dr.ListPoint[i].Y - _dr.CorrectRect.Y));
+            //    }
+            //    _angle = new AutoAngle(zeroListPoint);
+            //    _artemplate.SetFeaturePoint(_dr.ListFeatureRectangle, _dr.CorrectRect);
+            //    return true;
+            //}
             return false;
         }
         public Template Template { get { return _artemplate; } }
@@ -311,22 +311,22 @@ namespace ScanTemplate
         private bool _forscan;
         public Scan(ScanConfig sc,string templatename, List<string> nameList,string fulldirpath,bool forscan=true)
         {
-            this._forscan = forscan;
-            this.DgSaveScanData = null;
-            this.DgShowScanMsg = null;
-            _xztpos = -1;
-            _titlepos = null;
-            this._sc = sc;
-            this._templatename = templatename;
-            this._nameList = nameList;
-            this._dirname = fulldirpath.Substring(fulldirpath.LastIndexOf("\\")+1);
-            this._srcpath = fulldirpath;
-            Template t = new Template(_templatename);
-            if(forscan)
-            _dr = new MyDetectFeatureRectAngle((Bitmap)Bitmap.FromFile(t.Filename));
-            if (!Directory.Exists(CorrectPath))
-                Directory.CreateDirectory(CorrectPath);
-            InitTemplate();
+            //this._forscan = forscan;
+            //this.DgSaveScanData = null;
+            //this.DgShowScanMsg = null;
+            //_xztpos = -1;
+            //_titlepos = null;
+            //this._sc = sc;
+            //this._templatename = templatename;
+            //this._nameList = nameList;
+            //this._dirname = fulldirpath.Substring(fulldirpath.LastIndexOf("\\")+1);
+            //this._srcpath = fulldirpath;
+            //Template t = new Template(_templatename);
+            //if(forscan)
+            //_dr = new MyDetectFeatureRectAngle((Bitmap)Bitmap.FromFile(t.Filename));
+            //if (!Directory.Exists(CorrectPath))
+            //    Directory.CreateDirectory(CorrectPath);
+            //InitTemplate();
         }
         public void DoScan()
         {
@@ -369,7 +369,7 @@ namespace ScanTemplate
                 Bitmap src = (Bitmap)orgsrc.Clone(CorrectRect, orgsrc.PixelFormat);
                 src.Save(CorrectPath + s.Substring(s.LastIndexOf("\\")));
                 AutoComputeXZTKH acx = new AutoComputeXZTKH(_template,src);
-                if (_template.HasOptions("考号"))
+                if (_template.Manageareas.KaohaoChoiceAreas.HasItems())
                 {
                     KaoHaoChoiceArea kha = (KaoHaoChoiceArea)(_template.Dic["考号"][0]);
                     if (kha.Type == "条形码")
@@ -405,12 +405,11 @@ namespace ScanTemplate
                 string str = s.Substring(s.Length - 7, 3);
                 sb.Append("," + acx.ComputeXZT(str,_angle)); //选择题
                 //计算座位号
-                if (_template.HasOptions("自定义"))
+                if (_template.Manageareas.Customareas.HasItems())
                 {
                     StringBuilder tsb = new StringBuilder();
-                    foreach (Area I in _template.Dic["自定义"])
-                    {
-                        CustomArea ca = (CustomArea)I;
+                    foreach (CustomArea ca in _template.Manageareas.Customareas.list)
+                    {                      
                         if ("1023456789".Contains(ca.Type))
                         {
                             AutoComputeXZTKH acxzdy = new AutoComputeXZTKH(_template, src);
@@ -468,7 +467,7 @@ namespace ScanTemplate
                 if (colnames.Contains("选择题"))
                 {
                     colnames.Remove("选择题");
-                    for (int i = 0; i <_template.XztRect.Count; i++)
+                    for (int i = 0; i <_template.Manageareas.SinglechoiceAreas.Count; i++)
                         colnames.Add("x" + (i + 1));
                 }
                 return colnames;
@@ -496,22 +495,22 @@ namespace ScanTemplate
         }
         private void InitTemplate()
         {
-            Template t = new Template(_templatename);
-            if (t.Image != null)
-            {
-                _template = t;
-                List<Rectangle> listrect = new List<Rectangle>();
-                foreach (Area I in t.Dic["特征点"])
-                {
-                    listrect.Add(I.ImgArea);
-                }
-                if (listrect.Count == 3)
-                {
-                    AutoDetectRectAnge adr = new AutoDetectRectAnge();
-                    adr.ComputTBO(listrect);
-                    _angle = new AutoAngle(adr.TBO());
-                }
-            }
+            //Template t = new Template(_templatename);
+            //if (t.Image != null)
+            //{
+            //    _template = t;
+            //    List<Rectangle> listrect = new List<Rectangle>();
+            //    foreach (Area I in t.Dic["特征点"])
+            //    {
+            //        listrect.Add(I.ImgArea);
+            //    }
+            //    if (listrect.Count == 3)
+            //    {
+            //        AutoDetectRectAnge adr = new AutoDetectRectAnge();
+            //        adr.ComputTBO(listrect);
+            //        _angle = new AutoAngle(adr.TBO());
+            //    }
+            //}
         }
         public string Msg { get; set; }
         public Dictionary<string, int> Titlepos { get { return _titlepos; } }

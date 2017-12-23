@@ -37,8 +37,8 @@ namespace ARTemplate
             m_Imgselection = new Rectangle(0, 0, 0, 0);
             zoombox = new ZoomBox();
             Reset();
-            if(t!=null)
-            template.SetDataToNode(m_tn); 
+            if (t != null)
+                m_tn = t.GetTreeNode();
             InitComboBoxKH(t);
         }
         private void InitComboBoxKH(Template t)
@@ -65,7 +65,8 @@ namespace ARTemplate
         }
         private void FormTemplate_Load(object sender, EventArgs e)
         {
-            SetImage(template.Image);
+            // SetImage
+            //SetImage(template.Image);
         }
         private void SetImage(Bitmap image)
         {
@@ -104,32 +105,32 @@ namespace ARTemplate
 
         private void toolStripButtonSaveTemplate_Click(object sender, EventArgs e)
         {
-            if (template == null) return;
-        	UpdateTemplate();
-        	FileInfo fi = new FileInfo(template.Filename);        	
-        	string path = fi.Directory.Parent.Parent.FullName + "\\template\\";
-        	if(!Directory.Exists(path))
-        		Directory.CreateDirectory(path);
-            string dn = fi.Directory.Name;
-            if(dn.Contains('-'))
-                dn = dn.Substring(0,dn.IndexOf('-'));
-        	string filename = path+dn+"_"+template.GetTemplateName()+".xml";
+            //if (template == null) return;
+            //UpdateTemplate();
+
+            //string path = "";
+            //if(!Directory.Exists(path))
+            //    Directory.CreateDirectory(path);
+            //string dn = fi.Directory.Name;
+            //if(dn.Contains('-'))
+            //    dn = dn.Substring(0,dn.IndexOf('-'));
+            //string filename = path+dn+"_"+template.GetTemplateName()+".xml";
        
-            SaveFileDialog saveFileDialog2 = new SaveFileDialog();
-            saveFileDialog2.FileName = filename;
-            saveFileDialog2.Filter = "Xml files (*.xml)|*.xml";
-            saveFileDialog2.Title = "Save xml file";
-            if (saveFileDialog2.ShowDialog() == DialogResult.OK)
-            {
-                try
-                {
-                    template.Save(saveFileDialog2.FileName);
-                }
-                catch(Exception ex)
-                {
-                    MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            }
+            //SaveFileDialog saveFileDialog2 = new SaveFileDialog();
+            //saveFileDialog2.FileName = filename;
+            //saveFileDialog2.Filter = "Xml files (*.xml)|*.xml";
+            //saveFileDialog2.Title = "Save xml file";
+            //if (saveFileDialog2.ShowDialog() == DialogResult.OK)
+            //{
+            //    try
+            //    {
+            //        template.Save(saveFileDialog2.FileName);
+            //    }
+            //    catch(Exception ex)
+            //    {
+            //        MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            //    }
+            //}
         }
         private void toolStripButtonImportTemplate_Click(object sender, EventArgs e)
         {
@@ -691,7 +692,7 @@ namespace ARTemplate
             {
                 if (treeView1.SelectedNode.Text == "题组")
                 {
-                    int cnt = template.XztRect.Count+1;
+                    int cnt = template.Manageareas.SinglechoiceAreas.Count+1;
 
                     for (int i = 0; i < m_tn.Nodes["题组"].Nodes.Count; i++)
                     {
@@ -723,29 +724,17 @@ namespace ARTemplate
             m_act = Act.None;
             //MT.ClearEvent();
             m_Imgselection = new Rectangle(0, 0, 0, 0);
-            for (int i = 0; i < m_tn.Nodes.Count; i++)
-                m_tn.Nodes[i].Nodes.Clear();
-            template.SetDataToNode(m_tn);
+            m_tn.Nodes.Clear();
+            m_tn = template.GetTreeNode();
             if (pictureBox1.Image == null)
             {
-                pictureBox1.Image = template.Image;
+                //pictureBox1.Image = template.Image;
             }         
             zoombox.UpdateBoxScale(pictureBox1);
         }
         private void UpdateTemplate()
         {
-            template.ResetData();
-            // "特征点", "考号","姓名", "选择题", "非选择题", "选区变黑", "选区变白" 
-            foreach (TreeNode t in m_tn.Nodes)
-            {
-                foreach (TreeNode n in m_tn.Nodes[t.Name].Nodes)
-                {
-                    if (n.Tag != null)
-                    {
-                        template.AddArea((Area)n.Tag,t.Name);
-                    }
-                }
-            }
+            template.UpdateTreeNodes(m_tn);           
         }
         private void ShowMessage(string message)
         {

@@ -278,7 +278,7 @@ namespace ScanTemplate
             double angle = (double)(dr["校验角度"]);
             if (_angle != null)
                 _angle.SetPaper(angle);
-            for (int i = 0; i < _artemplate.XztRect.Count; i++)
+            for (int i = 0; i < _artemplate.Manageareas.SinglechoiceAreas.Count; i++)
             {
                 string value = dr["x" + (i + 1)].ToString();
                 if (value.Length != 1 || !"ABCD".Contains(value))
@@ -289,7 +289,7 @@ namespace ScanTemplate
                         xuehao = dr["考号"].ToString();
                     ndr["学号"] = new ValueTag(xuehao, dr);
                     ndr["题号"] = "x" + (i + 1);
-                    Rectangle r = _artemplate.XztRect[i];
+                    Rectangle r = _artemplate.Manageareas.SinglechoiceAreas.SingleRectangle(i);
                     //r.Location = _angle.GetCorrectPoint(r.X,r.Y);
                     Bitmap nbmp = bmp.Clone(r, bmp.PixelFormat);
                     ndr["图片"] = nbmp;
@@ -584,7 +584,7 @@ namespace ScanTemplate
 			                                                       	"是否多选",
 			                                                       	"是否修改"
 			                                                       });
-            int xztcnt = _artemplate.XztRect.Count;
+            int xztcnt = _artemplate.Manageareas.SinglechoiceAreas.Count;
             int runcnt = 0;
             foreach (DataRow dr in _rundt.Rows)
             {

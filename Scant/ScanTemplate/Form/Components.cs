@@ -5,6 +5,7 @@ using System.Text;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Data;
+using Newtonsoft.Json;
 
 namespace ARTemplate
 {
@@ -50,6 +51,7 @@ namespace ARTemplate
         public static float FloatValue;
 
     }
+     [JsonObject(MemberSerialization.OptIn)]
     public class Area
     {
         public Rectangle ImgArea { get { return Rect; } }
@@ -66,12 +68,16 @@ namespace ARTemplate
         {
             return Rect.ToXmlString();
         }
+         [JsonProperty]
         public Rectangle Rect;
+         [JsonIgnore]
+        public string TypeName { get; set; }
     }
     public class FeaturePoint : Area
     {
         public FeaturePoint(Rectangle r,Point midpoint) // 0,左上  1，右上  2左下 3又下
         {
+            TypeName = "特征点";
             this.Rect = r;
             if (r.X < midpoint.X)
             {
@@ -100,34 +106,19 @@ namespace ARTemplate
                 Rect.Width * 3, Rect.Height * 3);
         }       
         public int Direction { get; set; }
-    }
-    public class SingleChoice :  Area
-    {
-        private string text;
-        public SingleChoice(Rectangle rect, string text="")
-        {
-            this.Rect = rect;
-            this.text = text;
-        }       
-        public override string ToString()
-        {
-            return text;
-        }
-        public override string ToXmlString()
-        {
-            return base.ToXmlString() + text.ToXmlString("TXT");
-        }
-    }
+    }   
     public class KaoHaoChoiceArea : Area
     {
         public KaoHaoChoiceArea(Rectangle m_Imgselection, string name, string type)
         {
+            this.TypeName = "考号";
             this.Rect = m_Imgselection;
             this.Name = name;
             this.Type = type; // 条形码  ，  填涂横向， 填涂纵向
         }
         public KaoHaoChoiceArea(Rectangle m_Imgselection, string name, string type, List<List<Point>> list, Size size)
         {
+            this.TypeName = "考号";
             this.Rect = m_Imgselection;
             this.Name = name;
             this.Type = type;
@@ -190,11 +181,13 @@ namespace ARTemplate
     {
         public SingleChoiceArea(Rectangle  rect, string name)
         {
+            this.TypeName = "选择题";
             this.Rect = rect;
             this._name = name;
         }
         public SingleChoiceArea(Rectangle rect, string name, List<List<Point>> list, Size size)
         {
+            this.TypeName = "选择题";
             this.Rect = rect;
             this._name = name;
             this.list = list;
@@ -249,6 +242,7 @@ namespace ARTemplate
     {
         public UnChoose(float score, string name, Rectangle imgrect)
         {
+            this.TypeName = "非选择题";
             this.score = score;
             this._name = name;
             this.Rect = imgrect;
@@ -276,6 +270,7 @@ namespace ARTemplate
         private string _name;
         public NameArea(Rectangle rect,string name)
         {
+            this.TypeName = "校对";
             this.Rect = rect;
             this._name = name;
         }
@@ -295,10 +290,16 @@ namespace ARTemplate
         {
             this.Rect = rect;
             this._Name = name;
-            if(_Name.Contains("黑"))
+            if (_Name.Contains("黑"))
+            {
+                this.TypeName = "选区变黑";
                 _P = Brushes.Black;
+            }
             else
+            {
+                this.TypeName = "选区变白";
                 _P = Brushes.White;
+            }
         }
         public override  bool NeedFill() { return true; }
         public override  Brush FillPen() { return _P; }
@@ -313,6 +314,7 @@ namespace ARTemplate
     {
         public TzArea(Rectangle rect, string name)
         {
+            this.TypeName = "题组";
             this.Rect = rect;
             this._name = name;
         }
@@ -335,6 +337,7 @@ namespace ARTemplate
     {
         public CustomArea(Rectangle m_Imgselection, string name, string type, List<List<Point>> list, Size size)
         {
+            this.TypeName = "自定义";
             this.Rect = m_Imgselection;
             this.Name = name;
             this.Type = type;
@@ -394,6 +397,268 @@ namespace ARTemplate
         public List<List<Point>> list;
         public Size Size;
     }
+
+    public class Areas
+    {
+        public string TypeName { get; set; }
+        public List<Area> baselist { get; set; }
+        public bool HasItems()
+        {
+            if (baselist == null || baselist.Count == 0)
+                return false;
+            return true;
+        }
+    }
+    public class FeaturePoints : Areas
+    {
+        public FeaturePoints()
+        {
+            _list = null;
+        }
+        public FeaturePoints(List<Area> lista)
+        {
+            _list = null;
+           baselist = lista;
+        }
+        private List<FeaturePoint> _list;
+        public List<FeaturePoint> list
+        {
+            get
+            {
+                if (_list == null  && baselist != null)
+                {
+                    _list = new List<FeaturePoint>();
+                    foreach (Area A in baselist)
+                        _list.Add((FeaturePoint)A);
+                }
+                return _list;
+            }
+        }
+    }
+    public class KaoHaoChoiceAreas :Areas
+    {
+        public KaoHaoChoiceAreas()
+        {
+            _list = null;
+        }
+        public KaoHaoChoiceAreas(List<Area> lista)
+        {
+            _list = null;
+           baselist = lista;
+        }
+        private List<KaoHaoChoiceArea> _list;
+        public List<KaoHaoChoiceArea> list
+        {
+            get
+            {
+                if (_list == null && baselist != null)
+                {
+                    _list = new List<KaoHaoChoiceArea>();
+                    foreach (Area A in baselist)
+                        _list.Add((KaoHaoChoiceArea)A);
+                }
+                return _list;
+            }
+        }
+    }
+    public class SingleChoiceAreas : Areas
+    {
+        public SingleChoiceAreas()
+        {
+            _list = null;
+        }
+        public SingleChoiceAreas(List<Area> lista)
+        {
+            _list = null;
+           baselist = lista;
+        }
+        private List<SingleChoiceArea> _list;
+        public List<SingleChoiceArea> list
+        {
+            get
+            {
+                if (_list == null && baselist != null)
+                {
+                    _list = new List<SingleChoiceArea>();
+                    foreach (Area A in baselist)
+                        _list.Add((SingleChoiceArea)A);
+                }
+                return _list;
+            }
+        }
+
+        public int Count
+        {
+            get
+            {
+                if(list==null || list.Count==0)
+                return 0;
+                return _list.Sum(r => r.Count);
+            }
+        }
+
+        public Rectangle SingleRectangle(int i)
+        {
+            throw new NotImplementedException();
+        }
+    }
+    public class UnChooseAreas : Areas
+    {
+        public UnChooseAreas()
+        {
+            _list = null;
+        }
+        public UnChooseAreas(List<Area> lista)
+        {
+            _list = null;
+           baselist = lista;
+        }
+        private List<UnChoose> _list;
+        public List<UnChoose> list
+        {
+            get
+            {
+                if (_list == null && baselist != null)
+                {
+                    _list = new List<UnChoose>();
+                    foreach (Area A in baselist)
+                        _list.Add((UnChoose)A);
+                }
+                return _list;
+            }
+        }
+
+        public string Count { get; set; }
+    }
+    public class NameAreas : Areas
+    {
+        public NameAreas()
+        {
+            _list = null;
+        }
+        public NameAreas(List<Area> lista)
+        {
+            _list = null;
+           baselist = lista;
+        }
+        private List<NameArea> _list;
+        public List<NameArea> list
+        {
+            get
+            {
+                if (_list == null && baselist != null)
+                {
+                    _list = new List<NameArea>();
+                    foreach (Area A in baselist)
+                        _list.Add((NameArea)A);
+                }
+                return _list;
+            }
+        }
+    }
+    public class TempAreas : Areas
+    {
+        public TempAreas()
+        {
+            _list = null;
+        }
+        public TempAreas(List<Area> lista)
+        {
+            _list = null;
+           baselist = lista;
+        }
+        private List<TempArea> _list;
+        public List<TempArea> list
+        {
+            get
+            {
+                if (_list == null && baselist != null)
+                {
+                    _list = new List<TempArea>();
+                    foreach (Area A in baselist)
+                        _list.Add((TempArea)A);
+                }
+                return _list;
+            }
+        }
+    }
+    public class TzAreas : Areas
+    {
+        public TzAreas()
+        {
+            _list = null;
+        }
+        public TzAreas(List<Area> lista)
+        {
+            _list = null;
+           baselist = lista;
+        }
+        private List<TzArea> _list;
+        public List<TzArea> list
+        {
+            get
+            {
+                if (_list == null && baselist != null)
+                {
+                    _list = new List<TzArea>();
+                    foreach (Area A in baselist)
+                        _list.Add((TzArea)A);
+                }
+                return _list;
+            }
+        }
+    }
+    public class CustomAreas : Areas
+    {
+        public CustomAreas()
+        {
+            _list = null;
+        }
+        public CustomAreas(List<Area> lista)
+        {
+            _list = null;
+           baselist = lista;
+        }
+        private List<CustomArea> _list;
+        public List<CustomArea> list
+        {
+            get
+            {
+                if (_list == null && baselist != null)
+                {
+                    _list = new List<CustomArea>();
+                    foreach (Area A in baselist)
+                        _list.Add((CustomArea)A);
+                }
+                return _list;
+            }
+        }
+    }
+    public class ManageAreas
+    {
+        public ManageAreas()
+        {
+            FeaturePoints = new FeaturePoints();
+            KaohaoChoiceAreas = new KaoHaoChoiceAreas();
+            SinglechoiceAreas = new SingleChoiceAreas();
+            Unchooseareas = new UnChooseAreas();
+            Nameareas = new NameAreas();
+            BlackTempareas = new TempAreas();
+            WhiteTempareas = new TempAreas();
+            Tzareas = new TzAreas();
+            Customareas = new CustomAreas();
+        }
+        public FeaturePoints FeaturePoints { get; set; }
+        public KaoHaoChoiceAreas KaohaoChoiceAreas { get; set; }
+        public SingleChoiceAreas SinglechoiceAreas { get; set; }
+        public UnChooseAreas Unchooseareas { get; set; }
+        public NameAreas Nameareas { get; set; }
+        public TempAreas BlackTempareas { get; set; }
+        public TempAreas WhiteTempareas { get; set; }
+        public TzAreas Tzareas { get; set; }
+        public CustomAreas Customareas { get; set; }
+    }
+
     public class ZoomBox
     {
         public ZoomBox()

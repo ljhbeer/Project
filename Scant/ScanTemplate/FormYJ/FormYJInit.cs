@@ -17,19 +17,19 @@ namespace ScanTemplate.FormYJ
     {
         public FormYJInit(ExamConfig g, Template _artemplate, DataTable _rundt, AutoAngle _angle, string _workpath,string ExamName,string Datafullpath)
         {
-            this.g = g;
-            this._examname = ExamName;
-            this._DataFullPath = Datafullpath;
-            this._artemplate = _artemplate;
-            this._rundt = _rundt;
-            this._angle = _angle;
-            this._src = _artemplate.Image;
-            this._workpath = _workpath;
-            InitializeComponent();
-            InitStudents();
-            InitOptionImgSubjects();
-            dgv.DataSource = _rundt;
-            InitImage();
+            //this._src = _artemplate.Image;
+            //this.g = g;
+            //this._examname = ExamName;
+            //this._DataFullPath = Datafullpath;
+            //this._artemplate = _artemplate;
+            //this._rundt = _rundt;
+            //this._angle = _angle;
+            //this._workpath = _workpath;
+            //InitializeComponent();
+            //InitStudents();
+            //InitOptionImgSubjects();
+            //dgv.DataSource = _rundt;
+            //InitImage();
         }
         private void InitOptionImgSubjects()
         {
@@ -69,8 +69,8 @@ namespace ScanTemplate.FormYJ
         }
         private void InitImage()
         {
-            Bitmap bmp = (Bitmap)_artemplate.Image.Clone();
-            pictureBox1.Image = ARTemplate.TemplateTools.DrawInfoBmp(bmp,_artemplate,_angle);
+            //Bitmap bmp = (Bitmap)_artemplate.Image.Clone();
+            //pictureBox1.Image = ARTemplate.TemplateTools.DrawInfoBmp(bmp,_artemplate,_angle);
         }
         private void InitDgvUI()
         {
@@ -164,14 +164,14 @@ namespace ScanTemplate.FormYJ
         }
         private void buttonCreateYJData_Click(object sender, EventArgs e)
         {
-            if (!File.Exists(_artemplate.XmlFileName))
+            if (!File.Exists(_artemplate.FileName))
             {
                 MessageBox.Show("模板文件名不在无法导出数据，请先保存模板再创建阅卷数据");
                 return;
             }
             ExamInfo ei = new ExamInfo();
             ei.Name = _examname;
-            ei.TemplateFileName = _artemplate.XmlFileName;              
+            ei.TemplateFileName = _artemplate.FileName;              
             if (g.CheckExamInfoName(ei))
             {
                 AcceptXztDataTableModified();

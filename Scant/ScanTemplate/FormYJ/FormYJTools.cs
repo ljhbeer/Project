@@ -8,6 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.IO;
 using ARTemplate;
+using Tools;
 
 namespace ScanTemplate.FormYJ
 {
@@ -119,9 +120,11 @@ namespace ScanTemplate.FormYJ
 			}
             if (listrect.Count != 3)
                 return;
-            AutoDetectRectAnge adr = new AutoDetectRectAnge();
-            adr.ComputTBO(listrect);
-            AutoAngle angle = new AutoAngle(adr.TBO());
+            //AutoDetectRectAnge adr = new AutoDetectRectAnge();
+            //adr.ComputTBO(listrect);
+            
+            List<Rectangle> listTBO = AutoTBO.GetAutoTBORect(listrect);
+            AutoAngle angle = new AutoAngle(listTBO.Select(r=>r.Location).ToList());
 
 
             //题组

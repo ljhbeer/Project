@@ -8,6 +8,7 @@ using System.Threading;
 using System.Text;
 using ZXing.Common;
 using ZXing;
+using Tools;
 
 namespace ScanTemplate
 {
@@ -229,6 +230,11 @@ namespace ScanTemplate
             }
         }
         public List<TemplateInfo> CommonTemplates { get { return _commonTemplates; } }
+
+        internal static Template GetTemplate(string p)
+        {
+            throw new NotImplementedException();
+        }
     }
     public class TemplateInfo
     {
@@ -267,30 +273,21 @@ namespace ScanTemplate
             
             AutoDetectRectAnge.FeatureSetPath = _fullpath;
             this._dr = new MyDetectFeatureRectAngle(_src);
-            this.OK = CreateTemplate();
-        }
-
-        private bool CreateTemplate()
-        {
-            //if (_dr.Detected())
-            //{
-            //    //TODO: autoDetectRectAngle set static
-            //        _artemplate = new ARTemplate.Template( _dr.CorrectRect);
-            //        if (ti != null)
-            //            _artemplate.Load(ti.TemplateFileName);
-            //    List<Point> zeroListPoint = new List<Point>();
-            //    for (int i = 0; i < _dr.ListPoint.Count; i++)
-            //    {
-            //        zeroListPoint.Add(new Point(_dr.ListPoint[i].X - _dr.CorrectRect.X, _dr.ListPoint[i].Y - _dr.CorrectRect.Y));
-            //    }
-            //    _angle = new AutoAngle(zeroListPoint);
-            //    _artemplate.SetFeaturePoint(_dr.ListFeatureRectangle, _dr.CorrectRect);
-            //    return true;
-            //}
-            return false;
+            this.OK = _dr.DetectedOK;
+            if (_dr.DetectedOK )
+            {
+                if (ti == null)
+                {
+                    _artemplate = new Template(_dr.ListFeatureRectangle);
+                }
+                else
+                    _artemplate = Templates.GetTemplate(ti.TemplateFileName);
+            }
         }
         public Template Template { get { return _artemplate; } }
         public bool OK { get; set; }
+
+        public Bitmap Src { get { return _src; } }
     }
     public class Scan
     {

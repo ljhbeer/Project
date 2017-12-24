@@ -11,6 +11,7 @@ using System.Drawing.Imaging;
 //using AForge.Math.Geometry;
 using MovetoCTL;
 using ScanTemplate;
+using Tools;
 
 namespace ARTemplate
 {
@@ -27,6 +28,15 @@ namespace ARTemplate
         }
         public FormTemplate()
         {
+            InitializeComponent();
+            Init(null);
+        }
+
+        public FormTemplate(TemplateShow templateShow)
+        {
+            // TODO: Complete member initialization
+            this.templateShow = templateShow;
+
             InitializeComponent();
             Init(null);
         }
@@ -66,7 +76,7 @@ namespace ARTemplate
         private void FormTemplate_Load(object sender, EventArgs e)
         {
             // SetImage
-            //SetImage(template.Image);
+            SetImage(templateShow.Src);
         }
         private void SetImage(Bitmap image)
         {
@@ -750,6 +760,7 @@ namespace ARTemplate
         private Template template;
         private double _OriginWith;
         private float  _defaultunchoosescore;
+        private TemplateShow templateShow;
 
     }
 }

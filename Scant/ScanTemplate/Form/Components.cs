@@ -434,6 +434,17 @@ namespace ARTemplate
                 return _list;
             }
         }
+
+        public static List<Area> GetFeaturesfromTBO(List<Rectangle> listTBO)
+        {
+            List<Area> list = new List<Area>();
+            Point mid = Tools.AutoTBO.GetMidPoint(listTBO);
+            for (int i = 0; i < listTBO.Count; i++)
+            {
+                list.Add( new FeaturePoint( listTBO[i], mid));
+            }
+            return list;
+        }
     }
     public class KaoHaoChoiceAreas :Areas
     {

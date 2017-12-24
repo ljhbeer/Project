@@ -77,7 +77,7 @@ namespace ScanTemplate
                 if (_sc.Templateshow.OK)
                 {
                     this.Hide();
-                    new FormTemplate(_sc.Templateshow.Template).ShowDialog();
+                    new FormTemplate(_sc.Templateshow).ShowDialog();
                     this.Show();
                 }
             }
@@ -351,7 +351,7 @@ namespace ScanTemplate
             _sc.Examconfig = new ExamConfig();
             _sc.Examconfig.SetWorkPath(_sc.Baseconfig.ExamPath);
             ScanData sd = (ScanData)listBoxScantData.SelectedItem;
-            FormYJ.FormYJInit f = new FormYJ.FormYJInit(_sc.Examconfig, _scan.Template, _rundt,_scan.Angle, _sc.Baseconfig.ScanDataPath,sd.ExamName,sd.Fullpath);
+            FormYJ.FormYJInit f = new FormYJ.FormYJInit(_sc.Examconfig, _scan.Template, _rundt,_sc.Baseconfig.ScanDataPath,sd.ExamName,sd.Fullpath);
             f.ShowDialog();
             this.Show();
         }

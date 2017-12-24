@@ -8,16 +8,34 @@ using System.Drawing;
 using System.Windows.Forms;
 using Newtonsoft.Json;
 using ScanTemplate.FormYJ;
+using Tools;
 
 namespace ARTemplate
 {
     [JsonObject(MemberSerialization.OptIn)]
     public class Template
     {
-        public Template(Rectangle CorrectRect)
+        [JsonIgnore]
+        public Rectangle CorrectRect { get; set; }     
+        public Template(List<Rectangle> list)
         {
-            this.Correctrect = CorrectRect;
             _dic = new Dictionary<string, List<Area>>();
+            List<Rectangle> listTBO = AutoTBO.GetAutoTBORect(list);
+            _dic["特征点"] = FeaturePoints.GetFeaturesfromTBO(listTBO);
+            InitCorrectRect(listTBO);
+            _angle = new AutoAngle( list.Select(r => new Point(r.X - Correctrect.X,r.Y-Correctrect.Y)).ToList() ); 
+        }
+        private void InitCorrectRect(List<Rectangle> listTBO)
+        {
+            string Ostr = AutoDetectRectAnge.OtherName(listTBO);
+            if (Ostr.StartsWith("L"))
+            {
+                CorrectRect = new Rectangle(listTBO[2].X, listTBO[0].Y, listTBO[0].Right - listTBO[2].Left, listTBO[1].Bottom - listTBO[0].Top);
+            }
+            else
+            {
+                CorrectRect = new Rectangle(listTBO[0].X, listTBO[0].Y, listTBO[2].Right - listTBO[0].Left, listTBO[1].Bottom - listTBO[0].Top);
+            }
         }
        
         public void UpdateTreeNodes(TreeNode m_tn)
@@ -160,7 +178,7 @@ namespace ARTemplate
         [JsonProperty]
         private Dictionary<string, List<Area>> _dic;
         private ManageAreas _manageareas;
-
+        private AutoAngle _angle;
         public string FileName { get; set; }
         //public void SetFeaturePoint(List<Rectangle> list, Rectangle cr)
         //{
@@ -502,7 +520,7 @@ namespace ARTemplate
     }
     public class TemplateTools
     {
-        public static Bitmap DrawInfoBmp(Bitmap src, Template _artemplate, ScanTemplate.AutoAngle _angle)
+        public static Bitmap DrawInfoBmp(Bitmap src, Template _artemplate, AutoAngle _angle)
         {
             Bitmap //bmp = src.Clone(new Rectangle(0, 0, src.Width, src.Height), System.Drawing.Imaging.PixelFormat.Format24bppRgb);
              bmp = ConvertFormat.ConvertToRGB(src);
@@ -543,7 +561,7 @@ namespace ARTemplate
             }
             return bmp;
         }
-        public static Bitmap DrawInfoBmp(Student S, StudentsResultData SR, ScanTemplate.AutoAngle angle, List<string> optionanswer, List<TzArea> ltz)
+        public static Bitmap DrawInfoBmp(Student S, StudentsResultData SR, AutoAngle angle, List<string> optionanswer, List<TzArea> ltz)
         {
             Bitmap src = S.Src.Clone(S.SrcCorrectRect, S.Src.PixelFormat); //bmp = src.Clone(new Rectangle(0, 0, src.Width, src.Height), System.Drawing.Imaging.PixelFormat.Format24bppRgb);
             Bitmap bmp = ConvertFormat.ConvertToRGB(src);

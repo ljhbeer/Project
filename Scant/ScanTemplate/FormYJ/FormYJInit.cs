@@ -10,12 +10,13 @@ using ARTemplate;
 using System.IO;
 using System.Drawing.Imaging;
 using Newtonsoft.Json;
+using Tools;
 
 namespace ScanTemplate.FormYJ
 {
     public partial class FormYJInit : Form
     {
-        public FormYJInit(ExamConfig g, Template _artemplate, DataTable _rundt, AutoAngle _angle, string _workpath,string ExamName,string Datafullpath)
+        public FormYJInit(ExamConfig g, Template _artemplate, DataTable _rundt, string _workpath,string ExamName,string Datafullpath)
         {
             //this._src = _artemplate.Image;
             //this.g = g;

@@ -5,6 +5,7 @@ using System.Text;
 using ARTemplate;
 using System.Drawing.Imaging;
 using System.Drawing;
+using Tools;
 namespace ScanTemplate
 {
     class AutoComputeXZTKH

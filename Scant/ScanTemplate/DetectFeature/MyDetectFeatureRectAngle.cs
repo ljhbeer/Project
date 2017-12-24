@@ -12,15 +12,6 @@ namespace Tools
 {
     class MyDetectFeatureRectAngle
     {
-        public Rectangle CorrectRect { get; set; }     
-
-        public List<Rectangle> ListFeatureRectangle
-        {
-            get
-            {
-                return _listFeatureRectangles;
-            }
-        }
        
         public MyDetectFeatureRectAngle(System.Drawing.Bitmap bmp)
         {
@@ -30,6 +21,13 @@ namespace Tools
                 _listsubjects = AutoDetectRectAnge.GetSubjects(bmp.Size);
                 DetectedOK = Detect3Point();
             }
+        }
+        public MyDetectFeatureRectAngle(List<ARTemplate.FeaturePoint> list, Rectangle CorrectRect)
+        {
+            _listFeatureRectangles = list.Select(r => r.Rect).ToList();
+            if(list.Count>0)
+            _listsubjects = AutoDetectRectAnge.GetSubjects( list[0].Rect.Size );
+            this.CorrectRect = CorrectRect;
         }
         public bool Detect3Point()
         {
@@ -389,11 +387,19 @@ namespace Tools
             return "(" + r.X + "," + r.Y + "," + r.Width + "," + r.Height + ")";
         }
 
+        public Rectangle CorrectRect { get; set; }
+        public List<Rectangle> ListFeatureRectangle
+        {
+            get
+            {
+                return _listFeatureRectangles;
+            }
+        }
+        public  bool DetectedOK { get; set; }
+
         private System.Drawing.Bitmap _src;
         private List<subject> _listsubjects;
         private List<Rectangle> _listFeatureRectangles;
-
-        public  bool DetectedOK { get; set; }
     }
     public class AutoDetectRectAnge
     {

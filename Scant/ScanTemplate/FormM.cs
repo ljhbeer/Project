@@ -98,7 +98,7 @@ namespace ScanTemplate
                 if (_sc.Templateshow.OK)
                 {
                     this.Hide();
-                    new FormTemplate(_sc.Templateshow.Template).ShowDialog();
+                    new FormTemplate(_sc.Templateshow).ShowDialog();
                     this.Show();
                 }
             }
@@ -238,7 +238,7 @@ namespace ScanTemplate
             {
                 string examname = InputBox.strValue;              
                 string Datafilename = _scan.ScanDataPath + "\\data.txt";
-                string NewTemplatename = _scan.ScanDataPath + "\\template.xml";
+                string NewTemplatename = _scan.ScanDataPath + "\\template.json";
                 string NewImgsPath = _scan.ScanDataPath +"\\img";     
                 if (!Directory.Exists(_scan.ScanDataPath))    //文件是否被使用
                     Directory.CreateDirectory(_scan.ScanDataPath);

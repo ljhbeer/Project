@@ -182,7 +182,7 @@ namespace ScanTemplate
         {
             this._dirname = dirname;
             this._path = path;
-            this._templatename = path + "\\" + dirname + "\\template.xml";
+            this._templatename = path + "\\" + dirname + "\\template.json";
            
             _examname = dirname;
             if (Directory.Exists(Fullpath))
@@ -224,16 +224,21 @@ namespace ScanTemplate
         {
             this._commontemplatespath = commontemplatespath;
             _commonTemplates = new List<TemplateInfo>();
-            foreach (string filename in Tools.FileTools.NameListFromDir(commontemplatespath, ".xml"))
+            foreach (string filename in Tools.FileTools.NameListFromDir(commontemplatespath, ".json"))
             {
                 _commonTemplates.Add(new TemplateInfo(filename,_commontemplatespath));
             }
         }
         public List<TemplateInfo> CommonTemplates { get { return _commonTemplates; } }
 
-        internal static Template GetTemplate(string p)
+        public static Template GetTemplate(string filename)
         {
-            throw new NotImplementedException();
+            TemplateData td = new TemplateData(File.ReadAllText(  filename));
+            if (td.Correctrect.Width > 0)
+            {
+               return new Template(td);
+            }
+            return null;
         }
     }
     public class TemplateInfo
@@ -308,22 +313,22 @@ namespace ScanTemplate
         private bool _forscan;
         public Scan(ScanConfig sc,string templatename, List<string> nameList,string fulldirpath,bool forscan=true)
         {
-            //this._forscan = forscan;
-            //this.DgSaveScanData = null;
-            //this.DgShowScanMsg = null;
-            //_xztpos = -1;
-            //_titlepos = null;
-            //this._sc = sc;
-            //this._templatename = templatename;
-            //this._nameList = nameList;
-            //this._dirname = fulldirpath.Substring(fulldirpath.LastIndexOf("\\")+1);
-            //this._srcpath = fulldirpath;
-            //Template t = new Template(_templatename);
-            //if(forscan)
-            //_dr = new MyDetectFeatureRectAngle((Bitmap)Bitmap.FromFile(t.Filename));
-            //if (!Directory.Exists(CorrectPath))
-            //    Directory.CreateDirectory(CorrectPath);
-            //InitTemplate();
+            this._forscan = forscan;
+            this.DgSaveScanData = null;
+            this.DgShowScanMsg = null;
+            _xztpos = -1;
+            _titlepos = null;
+            this._sc = sc;
+            this._templatename = templatename;
+            this._nameList = nameList;
+            this._dirname = fulldirpath.Substring(fulldirpath.LastIndexOf("\\") + 1);
+            this._srcpath = fulldirpath;
+            Template t = Templates.GetTemplate(templatename);
+            if (forscan)
+                _dr = new MyDetectFeatureRectAngle( t.Manageareas.FeaturePoints.list ,t.CorrectRect);
+            if (!Directory.Exists(CorrectPath))
+                Directory.CreateDirectory(CorrectPath);
+            _template = t;
         }
         public void DoScan()
         {
@@ -334,6 +339,7 @@ namespace ScanTemplate
         {
             Msg = "";
             StringBuilder sb = new StringBuilder();
+            _angle = _template.Angle;
 			foreach (string s in _nameList)
 			{
 				string _runmsg = DetectImg(s);
@@ -489,25 +495,6 @@ namespace ScanTemplate
                 titlepos[Titles[i]] = i;
             }
             return titlepos;
-        }
-        private void InitTemplate()
-        {
-            //Template t = new Template(_templatename);
-            //if (t.Image != null)
-            //{
-            //    _template = t;
-            //    List<Rectangle> listrect = new List<Rectangle>();
-            //    foreach (Area I in t.Dic["特征点"])
-            //    {
-            //        listrect.Add(I.ImgArea);
-            //    }
-            //    if (listrect.Count == 3)
-            //    {
-            //        AutoDetectRectAnge adr = new AutoDetectRectAnge();
-            //        adr.ComputTBO(listrect);
-            //        _angle = new AutoAngle(adr.TBO());
-            //    }
-            //}
         }
         public string Msg { get; set; }
         public Dictionary<string, int> Titlepos { get { return _titlepos; } }

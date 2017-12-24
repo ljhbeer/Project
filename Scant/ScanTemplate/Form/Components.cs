@@ -77,6 +77,7 @@ namespace ARTemplate
          [JsonIgnore]
         public string TypeName { get; set; }
     }
+     [JsonObject(MemberSerialization.OptIn)]
     public class FeaturePoint : Area
     {
         public FeaturePoint(Rectangle r,Point midpoint) // 0,左上  1，右上  2左下 3又下
@@ -108,11 +109,17 @@ namespace ARTemplate
            return  new Rectangle(Rect.X - Rect.Width,
                 Rect.Y - Rect.Height,
                 Rect.Width * 3, Rect.Height * 3);
-        }       
+        }
+        [JsonProperty]
         public int Direction { get; set; }
     }   
+     [JsonObject(MemberSerialization.OptIn)]
     public class KaoHaoChoiceArea : Area
     {
+         public KaoHaoChoiceArea()
+         {
+             list = new List<List<Point>>();
+         }
         public KaoHaoChoiceArea(Rectangle m_Imgselection, string name, string type)
         {
             this.TypeName = "考号";
@@ -175,14 +182,27 @@ namespace ARTemplate
             }
             return str;
         }
+        public override string ToString()
+        {
+            return Name;
+        }
+         [JsonProperty]
         public string Name { get; set; }
+          [JsonProperty]
         public string Type { get; set; }
         // "填涂横向" || Type == "填涂纵向"
+          [JsonProperty]
         public List<List<Point>> list;
+          [JsonProperty]
         public Size Size;
     }
+     [JsonObject(MemberSerialization.OptIn)]
     public class SingleChoiceArea : Area
     {
+         public SingleChoiceArea()
+         {
+             list = new List<List<Point>>();
+         }
         public SingleChoiceArea(Rectangle  rect, string name)
         {
             this.TypeName = "选择题";
@@ -238,10 +258,14 @@ namespace ARTemplate
             }
         }
         public string Name { get { return _name; } }
+          [JsonProperty]
         public List<List<Point>> list;
+          [JsonProperty]
         public Size Size;
+          [JsonProperty]
         private string _name;
     }
+     [JsonObject(MemberSerialization.OptIn)]
     public class UnChoose : Area
     {
         public UnChoose(float score, string name, Rectangle imgrect)
@@ -266,12 +290,14 @@ namespace ARTemplate
             if (name != "")
                 _name = name;
         }
+          [JsonProperty]
         private float score;
+          [JsonProperty]
         private string _name;
     }
+     [JsonObject(MemberSerialization.OptIn)]
     public class NameArea : Area //校对
     {
-        private string _name;
         public NameArea(Rectangle rect,string name)
         {
             this.TypeName = "校对";
@@ -287,9 +313,17 @@ namespace ARTemplate
         {
             return Rect.ToXmlString() + _name.ToXmlString("NAME");
         }
+          [JsonProperty]
+        private string _name;
     }
+     [JsonObject(MemberSerialization.OptIn)]
     public class TempArea : Area
     {
+         public TempArea()
+         {
+             _Name = "";
+             _P = Brushes.Black;
+         }
         public TempArea(Rectangle rect, string name)
         {
             this.Rect = rect;
@@ -307,13 +341,15 @@ namespace ARTemplate
         }
         public override  bool NeedFill() { return true; }
         public override  Brush FillPen() { return _P; }
-        //public override string ToXmlString()
-        //{
-        //    return base.ToXmlString() + _Name.ToXmlString("Name");
-        //}
+        public override string ToString()
+        {
+            return _Name;
+        }
+          [JsonProperty]
         private string _Name;
         private Brush _P;
     }
+     [JsonObject(MemberSerialization.OptIn)]
     public class TzArea : Area
     {
         public TzArea(Rectangle rect, string name)
@@ -327,7 +363,6 @@ namespace ARTemplate
             if(name!="")
             _name = name;
         }
-        private string _name;
         public override string ToXmlString()
         {
             return Rect.ToXmlString() + _name.ToXmlString("NAME") ;
@@ -336,9 +371,16 @@ namespace ARTemplate
         {
             return _name;
         }
+          [JsonProperty]
+        private string _name;
     }
+     [JsonObject(MemberSerialization.OptIn)]
     public class CustomArea : Area
     {
+         public CustomArea()
+         {
+             list = new List<List<Point>>();
+         }
         public CustomArea(Rectangle m_Imgselection, string name, string type, List<List<Point>> list, Size size)
         {
             this.TypeName = "自定义";
@@ -395,10 +437,14 @@ namespace ARTemplate
         {
             return Name;
         }
+          [JsonProperty]
         public string Name { get; set; }
+          [JsonProperty]
         public string Type { get; set; }
         // "填涂横向" || Type == "填涂纵向"
+          [JsonProperty]
         public List<List<Point>> list;
+          [JsonProperty]
         public Size Size;
     }
 
@@ -481,6 +527,7 @@ namespace ARTemplate
         public SingleChoiceAreas()
         {
             _list = null;
+            _singlerectlist = null;
         }
         public SingleChoiceAreas(List<Area> lista)
         {
@@ -514,8 +561,32 @@ namespace ARTemplate
 
         public Rectangle SingleRectangle(int i)
         {
-            throw new NotImplementedException();
+            if (_singlerectlist == null)
+            {
+                List<Rectangle> l = new List<Rectangle>();
+                foreach (SingleChoiceArea sc in _list)
+                {
+                    int subcnt = 0;
+                    foreach (List<Point> lp in sc.list)
+                    {
+                        Rectangle r =sc.ImgArea;
+                        r.Height/= sc.Count;
+        				r.Y += subcnt* r.Height;
+        				subcnt++;
+                        l.Add(r);
+                    }	
+                }
+                if (l.Count > 0)
+                    _singlerectlist = l;
+            }
+            if (_singlerectlist != null)
+            {
+                if (i > 0 && i < _singlerectlist.Count)
+                    return _singlerectlist[i];
+            }
+            return new Rectangle();
         }
+        private List<Rectangle> _singlerectlist;
     }
     public class UnChooseAreas : Areas
     {

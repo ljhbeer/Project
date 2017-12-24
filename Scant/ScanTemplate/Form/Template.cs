@@ -30,6 +30,13 @@ namespace ARTemplate
             _manageareas = null;
             _angle = new AutoAngle( list.Select(r => new Point(r.X - CorrectRect.X,r.Y-CorrectRect.Y)).ToList() ); 
         }
+        public Template(TemplateData td)
+        {
+            CorrectRect = td.Correctrect;
+            _dic = td._dic;
+            _manageareas = null;
+            _angle = new AutoAngle(Manageareas.FeaturePoints.list.Select(r => r.Rect.Location).ToList());
+        }
         private void InitCorrectRect(List<Rectangle> listTBO)
         {
             string Ostr = AutoDetectRectAnge.OtherName(listTBO);
@@ -64,11 +71,13 @@ namespace ARTemplate
         }
         public bool Load(string jsonname)
         {
-            TemplateData td = new TemplateData(jsonname);
+            TemplateData td = new TemplateData(File.ReadAllText(  jsonname));
             if (td.Correctrect.Width > 0)
             {
                 _dic = td._dic;
                 CorrectRect = td.Correctrect;
+                _manageareas = null;
+                return true;
             }
             return false;
         }
@@ -83,6 +92,8 @@ namespace ARTemplate
                 {
                     TreeNode t = new TreeNode();
                     t.Name= t.Text = I.ToString();
+                    if (t.Name == "")
+                        t.Name = t.Text = I.TypeName;
                     t.Tag = I;
                     opt.Nodes.Add(t);
                 }
@@ -185,6 +196,7 @@ namespace ARTemplate
         private Dictionary<string, List<Area>> _dic;
         private ManageAreas _manageareas;
         private AutoAngle _angle;
+        private TemplateData td;
         public string FileName { get; set; }
         //public void SetFeaturePoint(List<Rectangle> list, Rectangle cr)
         //{
@@ -202,6 +214,8 @@ namespace ARTemplate
         //        _dic[key].Add(new FeaturePoint(r, midpoint));
         //    }
         //}
+
+        public AutoAngle Angle { get { return _angle; } }
     }
     public class ConvertTemplateData
     {
@@ -506,7 +520,7 @@ namespace ARTemplate
                 }
             }
             _dic = dic;
-            Correctrect = To.Correctrect;
+            Correctrect = To.CorrectRect;
         }
         public class MyArea<T>
         {
@@ -519,9 +533,9 @@ namespace ARTemplate
         public class TemplateObject
         {
             [JsonProperty]
-            public Rectangle Correctrect { get; set; }
-            [JsonProperty]
             public Dictionary<string, object> _dic;
+            [JsonProperty]
+            public Rectangle CorrectRect { get; set; }
         }
     }
     public class TemplateTools

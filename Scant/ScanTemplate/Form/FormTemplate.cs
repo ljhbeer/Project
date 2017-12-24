@@ -21,11 +21,11 @@ namespace ARTemplate
 
     public partial class FormTemplate : Form
     {
-        public FormTemplate( Template t)
-        {
-            InitializeComponent();
-            Init(t);
-        }
+        //public FormTemplate( Template t)
+        //{
+        //    InitializeComponent();
+        //    Init(t);
+        //}
         public FormTemplate()
         {
             InitializeComponent();
@@ -34,15 +34,16 @@ namespace ARTemplate
 
         public FormTemplate(TemplateShow templateShow)
         {
-            // TODO: Complete member initialization
-            this.templateShow = templateShow;
-
             InitializeComponent();
             Init(templateShow.Template);
+            _src = templateShow.Src;
+            if (_src != null)
+                SetImage(_src);
         }
         private void Init(Template t)
         {
-            template = t;
+            _src = null;
+            _template = t;
             m_tn = new TreeNode();
             m_Imgselection = new Rectangle(0, 0, 0, 0);
             zoombox = new ZoomBox();
@@ -77,8 +78,6 @@ namespace ARTemplate
         }
         private void FormTemplate_Load(object sender, EventArgs e)
         {
-            // SetImage
-            SetImage(templateShow.Src);
         }
         private void SetImage(Bitmap image)
         {
@@ -101,48 +100,42 @@ namespace ARTemplate
 
         private void toolStripButtonSaveTemplate_Click(object sender, EventArgs e)
         {
-            //if (template == null) return;
-            //UpdateTemplate();
+            if (_template == null) return;
+            UpdateTemplate();
 
-            //string path = "";
-            //if(!Directory.Exists(path))
-            //    Directory.CreateDirectory(path);
-            //string dn = fi.Directory.Name;
-            //if(dn.Contains('-'))
-            //    dn = dn.Substring(0,dn.IndexOf('-'));
-            //string filename = path+dn+"_"+template.GetTemplateName()+".xml";
-       
-            //SaveFileDialog saveFileDialog2 = new SaveFileDialog();
-            //saveFileDialog2.FileName = filename;
-            //saveFileDialog2.Filter = "Xml files (*.xml)|*.xml";
-            //saveFileDialog2.Title = "Save xml file";
-            //if (saveFileDialog2.ShowDialog() == DialogResult.OK)
-            //{
-            //    try
-            //    {
-            //        template.Save(saveFileDialog2.FileName);
-            //    }
-            //    catch(Exception ex)
-            //    {
-            //        MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            //    }
-            //}
+            string filename =  _template.GetTemplateName() + ".json";
+            SaveFileDialog saveFileDialog2 = new SaveFileDialog();
+            saveFileDialog2.FileName = filename;
+            saveFileDialog2.Filter = "Json files (*.json)|*.json";
+            saveFileDialog2.Title = "Save json file";
+            if (saveFileDialog2.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    _template.Save(saveFileDialog2.FileName);
+                   
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
         }
         private void toolStripButtonImportTemplate_Click(object sender, EventArgs e)
         {
 
             OpenFileDialog OpenFileDialog2 = new OpenFileDialog();
             OpenFileDialog2.FileName = "OpenFileDialog2";
-            OpenFileDialog2.Filter = "Xml files (*.xml)|*.xml";
-            OpenFileDialog2.Title = "Save xml file";
+            OpenFileDialog2.Filter = "Json files (*.json)|*.json";
+            OpenFileDialog2.Title = "Open Json file";
             if (OpenFileDialog2.ShowDialog() == DialogResult.OK)
             {
                 try
                 {
-                    if (template.Load(OpenFileDialog2.FileName))
+                    if (_template.Load(OpenFileDialog2.FileName))
                     {
+                        Init(_template);
                         RefreshTemplate();
-                        pictureBox1.Invalidate();
                     }
                 }
                 catch
@@ -688,7 +681,7 @@ namespace ARTemplate
             {
                 if (treeView1.SelectedNode.Text == "题组")
                 {
-                    int cnt = template.Manageareas.SinglechoiceAreas.Count+1;
+                    int cnt = _template.Manageareas.SinglechoiceAreas.Count+1;
 
                     for (int i = 0; i < m_tn.Nodes["题组"].Nodes.Count; i++)
                     {
@@ -718,19 +711,15 @@ namespace ARTemplate
         private void RefreshTemplate()
         {
             m_act = Act.None;
-            //MT.ClearEvent();
             m_Imgselection = new Rectangle(0, 0, 0, 0);
-            m_tn.Nodes.Clear();
-            m_tn = template.GetTreeNode();
-            if (pictureBox1.Image == null)
-            {
-                //pictureBox1.Image = template.Image;
-            }         
-            zoombox.UpdateBoxScale(pictureBox1);
+            //m_tn.Nodes.Clear();
+            //m_tn = _template.GetTreeNode();
+            if (pictureBox1.Image != null)
+                zoombox.UpdateBoxScale(pictureBox1);
         }
         private void UpdateTemplate()
         {
-            template.UpdateTreeNodes(m_tn);           
+            _template.UpdateTreeNodes(m_tn);           
         }
         private void ShowMessage(string message)
         {
@@ -743,10 +732,10 @@ namespace ARTemplate
         private Act m_act;
         private Point crop_startpoint;
         private ZoomBox zoombox;
-        private Template template;
         private double _OriginWith;
         private float  _defaultunchoosescore;
-        private TemplateShow templateShow;
+        private Template _template;
+        private Bitmap _src;
 
     }
 }

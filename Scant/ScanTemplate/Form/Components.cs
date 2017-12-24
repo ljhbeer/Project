@@ -68,6 +68,10 @@ namespace ARTemplate
         {
             return Rect.ToXmlString();
         }
+        public override  string ToString()
+        {
+            return TypeName;
+        }
          [JsonProperty]
         public Rectangle Rect;
          [JsonIgnore]

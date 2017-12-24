@@ -287,7 +287,7 @@ namespace ScanTemplate
         public Template Template { get { return _artemplate; } }
         public bool OK { get; set; }
 
-        public Bitmap Src { get { return _src; } }
+        public Bitmap Src { get { return _src.Clone(_artemplate.CorrectRect, _src.PixelFormat) ; } }
     }
     public class Scan
     {

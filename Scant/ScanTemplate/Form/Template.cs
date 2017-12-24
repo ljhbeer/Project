@@ -15,15 +15,20 @@ namespace ARTemplate
     [JsonObject(MemberSerialization.OptIn)]
     public class Template
     {
-        [JsonIgnore]
-        public Rectangle CorrectRect { get; set; }     
         public Template(List<Rectangle> list)
         {
             _dic = new Dictionary<string, List<Area>>();
             List<Rectangle> listTBO = AutoTBO.GetAutoTBORect(list);
-            _dic["特征点"] = FeaturePoints.GetFeaturesfromTBO(listTBO);
             InitCorrectRect(listTBO);
-            _angle = new AutoAngle( list.Select(r => new Point(r.X - Correctrect.X,r.Y-Correctrect.Y)).ToList() ); 
+            foreach (string s in new string[] { "特征点", "考号", "校对", "选择题", "非选择题", "选区变黑", "选区变白", "题组", "自定义" })
+                if (!_dic.ContainsKey(s))
+                    _dic[s] = new List<Area>();
+            List<Rectangle> newlist = new List<Rectangle>();
+            foreach (Rectangle r in listTBO)
+                newlist.Add(new Rectangle(r.X - CorrectRect.X, r.Y - CorrectRect.Y, r.Width, r.Height));              
+            _dic["特征点"].AddRange( FeaturePoints.GetFeaturesfromTBO(newlist) );
+            _manageareas = null;
+            _angle = new AutoAngle( list.Select(r => new Point(r.X - CorrectRect.X,r.Y-CorrectRect.Y)).ToList() ); 
         }
         private void InitCorrectRect(List<Rectangle> listTBO)
         {
@@ -63,7 +68,7 @@ namespace ARTemplate
             if (td.Correctrect.Width > 0)
             {
                 _dic = td._dic;
-                Correctrect = td.Correctrect;
+                CorrectRect = td.Correctrect;
             }
             return false;
         }
@@ -73,7 +78,6 @@ namespace ARTemplate
             foreach (KeyValuePair<string, List<Area>> kv in _dic)
             {
                 TreeNode opt = new TreeNode();
-                root.Nodes.Add(opt);
                 opt.Name = opt.Text = kv.Key;
                 foreach (Area I in kv.Value)
                 {
@@ -82,7 +86,9 @@ namespace ARTemplate
                     t.Tag = I;
                     opt.Nodes.Add(t);
                 }
+                root.Nodes.Add(opt);
             }
+            root.Text = "网上阅卷";
             return root;
         }
         public List<string> GetTitles()
@@ -170,7 +176,7 @@ namespace ARTemplate
             }
         }
         [JsonProperty]
-        public Rectangle Correctrect
+        public Rectangle CorrectRect
         {
             get;
             set;

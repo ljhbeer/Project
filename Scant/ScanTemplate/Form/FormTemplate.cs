@@ -38,7 +38,7 @@ namespace ARTemplate
             this.templateShow = templateShow;
 
             InitializeComponent();
-            Init(null);
+            Init(templateShow.Template);
         }
         private void Init(Template t)
         {
@@ -50,6 +50,8 @@ namespace ARTemplate
             if (t != null)
                 m_tn = t.GetTreeNode();
             InitComboBoxKH(t);
+            treeView1.Nodes.Add(m_tn);
+            treeView1.ExpandAll();
         }
         private void InitComboBoxKH(Template t)
         {
@@ -80,6 +82,7 @@ namespace ARTemplate
         }
         private void SetImage(Bitmap image)
         {
+            //image.Save("F:\\setimage.tif");
             pictureBox1.Image = image;
             ReSetPictureBoxImage();
             MT = new MovetoCTL.MovetoTracker(pictureBox1);
@@ -94,23 +97,6 @@ namespace ARTemplate
             zoombox.Reset();
             m_act = Act.None;
             treeView1.Nodes.Clear();
-
-            m_tn.Text = "网上阅卷";
-            TreeNode[] vt = new TreeNode[9];
-            for (int i = 0; i < vt.Count(); i++)
-                vt[i] = new TreeNode();
-            vt[0].Name = vt[0].Text = "特征点";
-            vt[1].Name = vt[1].Text = "校对";
-            vt[2].Name = vt[2].Text = "考号";
-            vt[3].Name = vt[3].Text = "选择题";
-            vt[4].Name = vt[4].Text = "非选择题";
-            vt[5].Name = vt[5].Text = "选区变白";
-            vt[6].Name = vt[6].Text = "选区变黑";
-            vt[7].Name = vt[7].Text = "题组";
-            vt[8].Name = vt[8].Text = "自定义";
-            m_tn.Nodes.AddRange(vt);
-            treeView1.Nodes.Add(m_tn);
-            treeView1.ExpandAll();
         }       
 
         private void toolStripButtonSaveTemplate_Click(object sender, EventArgs e)

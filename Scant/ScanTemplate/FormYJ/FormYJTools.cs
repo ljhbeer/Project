@@ -50,52 +50,52 @@ namespace ScanTemplate.FormYJ
         private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (listBox1.SelectedIndex == -1) return;
-            //if (_activeitem != null)
-            //{
-            //    CheckDataTable(); // 修改 选择题的答案和分值， 以及非选择题的分值，以及添加考生
-            //    //保存当前数据
-            //    if (_bexamdatamodified)
-            //    {
-            //        //MessageBox.Show("是否保存当前数据");
-            //        String Name = ((ExamInfo)_activeitem).Path + ((ExamInfo)_activeitem).Name;
-            //        Name = Name.Replace(((ExamInfo)_activeitem).Number + "\\", "");
-            //        string str = Tools.JsonFormatTool.ConvertJsonString(Newtonsoft.Json.JsonConvert.SerializeObject(_examdata));
-            //        File.WriteAllText(Name + ".json", str);
-            //        MessageBox.Show("已保存当前数据");
-            //        _bexamdatamodified = false;
-            //    }
-            //}
+            if (_activeitem != null)
+            {
+                CheckDataTable(); // 修改 选择题的答案和分值， 以及非选择题的分值，以及添加考生
+                //保存当前数据
+                if (_bexamdatamodified)
+                {
+                    //MessageBox.Show("是否保存当前数据");
+                    String Name = ((ExamInfo)_activeitem).Path + ((ExamInfo)_activeitem).Name;
+                    Name = Name.Replace(((ExamInfo)_activeitem).Number + "\\", "");
+                    string str = Tools.JsonFormatTool.ConvertJsonString(Newtonsoft.Json.JsonConvert.SerializeObject(_examdata));
+                    File.WriteAllText(Name + ".json", str);
+                    MessageBox.Show("已保存当前数据");
+                    _bexamdatamodified = false;
+                }
+            }
 
-            //ExamInfo ei = (ExamInfo)listBox1.SelectedItem;
-            //if (_activeitem == ei)
-            //    return;
-            //_activeitem = ei;
-            //_bexamdatamodified = false;
-            //string filename = ei.Path.Substring(0, ei.Path.Length - ei.Number.ToString().Length - 1) + ei.Name + ".json";
-            //if(!File.Exists(filename))
-            //    return;
-            //_template = null;
-            //_src = null;
-            //_students = null;
-            //if (File.Exists(ei.TemplateFileName))
-            //{
-            //    _template = new  Template(ei.TemplateFileName);
-            //    _src = _template.Image;
-            //    if(_src!=null)
-            //        InitImage();
-            //}
-            //_examdata = Newtonsoft.Json.JsonConvert.DeserializeObject<Examdata >(File.ReadAllText(filename));
-            //_examdata.SR._Students.InitDeserialize(); //init index and dic
-            //_examdata.SR._Imgsubjects.InitDeserialize(); // dic and bitmapdatalength
-            //_students = _examdata.SR._Students;
-          
-            //_exam = new Exam(_examdata);
+            ExamInfo ei = (ExamInfo)listBox1.SelectedItem;
+            if (_activeitem == ei)
+                return;
+            _activeitem = ei;
+            _bexamdatamodified = false;
+            string filename = ei.Path.Substring(0, ei.Path.Length - ei.Number.ToString().Length - 1) + ei.Name + ".json";
+            if (!File.Exists(filename))
+                return;
+            _template = null;
+            _src = null;
+            _students = null;
+            if (File.Exists(ei.TemplateFileName))
+            {
+                _template = Templates.GetTemplate(ei.TemplateFileName);
 
-            //InitDgvUI();
-            //AddChooseTodtset(ref _dtsetxzt);
-            //AddUnChooseTodtset(ref _dtsetfxzt);
-            //AddStudentsdtset(ref _dtsetstudents);
-            //InitDgvSetUI(true);
+                if (_src != null)
+                    InitImage();
+            }
+            _examdata = Newtonsoft.Json.JsonConvert.DeserializeObject<Examdata>(File.ReadAllText(filename));
+            _examdata.SR._Students.InitDeserialize(); //init index and dic
+            _examdata.SR._Imgsubjects.InitDeserialize(); // dic and bitmapdatalength
+            _students = _examdata.SR._Students;
+
+            _exam = new Exam(_examdata);
+
+            InitDgvUI();
+            AddChooseTodtset(ref _dtsetxzt);
+            AddUnChooseTodtset(ref _dtsetfxzt);
+            AddStudentsdtset(ref _dtsetstudents);
+            InitDgvSetUI(true);
 
         }
         private void dgv_CellContentClick(object sender, DataGridViewCellEventArgs e)
@@ -405,7 +405,8 @@ namespace ScanTemplate.FormYJ
                 dr["最大分值"] = S.Score;
                 _AvgUnImgHeight += S.Height;
                 _AvgUnImgWith += S.Width;
-                dr["图片"] = _src.Clone(S.Rect, _src.PixelFormat);
+                if (_src != null)
+                    dr["图片"] = _src.Clone(S.Rect, _src.PixelFormat);
                 dtset.Rows.Add(dr);
             }
             dtset.AcceptChanges();

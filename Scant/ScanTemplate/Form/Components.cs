@@ -581,7 +581,7 @@ namespace ARTemplate
             }
             if (_singlerectlist != null)
             {
-                if (i > 0 && i < _singlerectlist.Count)
+                if (i >= 0 && i < _singlerectlist.Count)
                     return _singlerectlist[i];
             }
             return new Rectangle();

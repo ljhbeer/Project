@@ -173,7 +173,7 @@ namespace ScanTemplate.FormYJ
             //}
             ExamInfo ei = new ExamInfo();
             ei.Name = _examname;
-            ei.TemplateFileName = _artemplate.FileName;              
+            ei.TemplateFileName = _DataFullPath + "\\template.json";  
             if (g.CheckExamInfoName(ei))
             {
                 AcceptXztDataTableModified();
@@ -528,7 +528,9 @@ namespace ScanTemplate.FormYJ
        
         public Student StudentFromID(int ID)
         {
+            if(_iddic.ContainsKey(ID))
             return _iddic[ID];
+            return new Student();
         }
         public Student StudentFromKh(int KH)
         {

@@ -197,7 +197,7 @@ namespace ARTemplate
         private ManageAreas _manageareas;
         private AutoAngle _angle;
         private TemplateData td;
-        public string FileName { get; set; }
+        public string FileName { get { return ""; } }
         //public void SetFeaturePoint(List<Rectangle> list, Rectangle cr)
         //{
         //    if (Correctrect.ToString() != cr.ToString())

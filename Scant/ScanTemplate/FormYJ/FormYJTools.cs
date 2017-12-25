@@ -78,17 +78,14 @@ namespace ScanTemplate.FormYJ
             _src = null;
             _students = null;
             if (File.Exists(ei.TemplateFileName))
-            {
                 _template = Templates.GetTemplate(ei.TemplateFileName);
-
-                if (_src != null)
-                    InitImage();
-            }
             _examdata = Newtonsoft.Json.JsonConvert.DeserializeObject<Examdata>(File.ReadAllText(filename));
             _examdata.SR._Students.InitDeserialize(); //init index and dic
             _examdata.SR._Imgsubjects.InitDeserialize(); // dic and bitmapdatalength
             _students = _examdata.SR._Students;
-
+            if(_students.students.Count>0){
+                InitSrc(_template, _students.students[0]);
+            }
             _exam = new Exam(_examdata);
 
             InitDgvUI();
@@ -98,12 +95,27 @@ namespace ScanTemplate.FormYJ
             InitDgvSetUI(true);
 
         }
+        private void InitSrc(Template _artemplate,Student S)
+        {
+            this._src = null;
+            if (S !=null)
+            {
+                _artemplate.Angle.SetPaper(S.Angle);               
+                _src = (Bitmap)Bitmap.FromFile(S.ImgFilename);
+                _src = _src.Clone(S.SrcCorrectRect, _src.PixelFormat);
+                pictureBox1.Image = TemplateTools.DrawInfoBmp(_src, _template,_template.Angle);
+            }
+        }
         private void dgv_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
             if (!_bshowstudent) return;
             if (e.ColumnIndex == -1 || e.RowIndex == -1) return;
             Student S =(Student) ((ValueTag)dgv[0, e.RowIndex].Value).Tag;
-            pictureBox1.Image = TemplateTools.DrawInfoBmp(S.Src.Clone( S.SrcCorrectRect,S.Src.PixelFormat) , _template, null);
+
+            AutoAngle Angle = _template.Angle;
+            if (Angle != null && S!=null)
+                Angle.SetPaper(S.Angle);
+            pictureBox1.Image = TemplateTools.DrawInfoBmp(S.Src.Clone( S.SrcCorrectRect,S.Src.PixelFormat) , _template, Angle);
         }
         private void buttonImportImage_Click(object sender, EventArgs e)
         {
@@ -373,10 +385,6 @@ namespace ScanTemplate.FormYJ
                     dc.Width = 20;
                 else
                     dc.Width = 40;
-        }
-        private void InitImage()
-        {            
-            pictureBox1.Image = TemplateTools.DrawInfoBmp(_src, _template, null);
         }
         private void AddChooseTodtset(ref DataTable dtset)
         {

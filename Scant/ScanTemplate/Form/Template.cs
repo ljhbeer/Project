@@ -558,12 +558,22 @@ namespace ARTemplate
                         int cnt = 0;
                         foreach (Area I in _artemplate.Dic[s])
                         {
-                            g.DrawRectangle(pen, I.ImgArea);
+                            Rectangle rr = I.Rect;
+                            Point p = I.Rect.Location;
+                            if (_angle != null)
+                            {
+                                p = _angle.GetCorrectPoint(rr.X, rr.Y);
+                                rr.Location = p;
+                            }
+                            //p = rr.Location;
+                            g.DrawRectangle(pen, I.Rect);
+                            g.DrawRectangle(pen, rr);
+
                             if (I.HasSubArea())
                             {
                                 foreach (Rectangle r in I.ImgSubArea())
                                 {
-                                    r.Offset(I.ImgArea.Location);
+                                    r.Offset(p);
                                     g.DrawRectangle(pen, r);
                                     r.Offset(-1, -1);
                                     g.DrawRectangle(pen, r);
@@ -573,8 +583,8 @@ namespace ARTemplate
                             }
                             if (I.NeedFill())
                             {
-                                g.FillRectangle(I.FillPen(), I.ImgArea);
-                                g.DrawString(cnt.ToString(), font, Red, I.ImgArea.Location);
+                                g.FillRectangle(I.FillPen(),rr);
+                                g.DrawString(cnt.ToString(), font, Red,p);
                             }
                         }
                     }

@@ -18,7 +18,7 @@ namespace ScanTemplate.FormYJ
     {
         public FormYJInit(ExamConfig g, Template _artemplate, DataTable _rundt, string _workpath,string ExamName,string Datafullpath)
         {
-            this._src = null;
+            InitSrc(_artemplate, _rundt);
             this.g = g;
             this._examname = ExamName;
             this._DataFullPath = Datafullpath;
@@ -31,6 +31,20 @@ namespace ScanTemplate.FormYJ
             InitOptionImgSubjects();
             dgv.DataSource = _rundt;
             InitImage();
+        }
+
+        private void InitSrc(Template _artemplate, DataTable _rundt)
+        {
+            this._src = null;
+            if (_rundt.Rows.Count > 0)
+            {
+                string filename = _rundt.Rows[0]["文件名"].ToString();
+                double angle = (double)_rundt.Rows[0]["校验角度"];
+                _artemplate.Angle.SetPaper(angle);
+                Rectangle correctRect = StringTools.StringToRectangle(_rundt.Rows[0]["CorrectRect"].ToString(), '-');
+                _src = (Bitmap)Bitmap.FromFile(filename);
+                _src = _src.Clone(correctRect, _src.PixelFormat);
+            }
         }
         private void InitOptionImgSubjects()
         {
@@ -666,6 +680,8 @@ namespace ScanTemplate.FormYJ
                 return false;
             return _XZT[index] == answer;
         }
+
+        public string ImgFilename { get { return _imgfilename; } }
     }
     public class StudentBases
     {

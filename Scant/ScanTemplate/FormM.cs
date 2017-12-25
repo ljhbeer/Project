@@ -183,10 +183,11 @@ namespace ScanTemplate
             {
                 double angle = (double)(_rundt.Rows[e.RowIndex]["校验角度"]);
                 Bitmap bmp = (Bitmap)Bitmap.FromFile(fn);
-            
-                if (_scan.Angle != null)
-                    _scan.Angle.SetPaper(angle);
-                pictureBox1.Image = ARTemplate.TemplateTools.DrawInfoBmp(bmp, _scan.Template, _scan.Angle);
+
+                AutoAngle Angle = _scan.Template.Angle;
+                if (Angle != null)
+                    Angle.SetPaper(angle);
+                pictureBox1.Image = ARTemplate.TemplateTools.DrawInfoBmp(bmp, _scan.Template, Angle);
             }
 		}
 		private void Zoomrat(double rat, Point e)

@@ -41,6 +41,8 @@ namespace Tools
             if (_T[0].X == 0)
             {
                 double r = Math.Sqrt(x * x + y * y);
+                if (r < 1)
+                    return new Point(x, y);
                 double angle = Math.Asin(x / r);
                 angle -= _Angle1 - _Angle2;
                 return new Point((int)(r * Math.Sin(angle)), (int)(r * Math.Cos(angle)));

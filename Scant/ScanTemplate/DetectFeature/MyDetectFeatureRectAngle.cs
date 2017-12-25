@@ -20,6 +20,15 @@ namespace Tools
             {
                 _listsubjects = AutoDetectRectAnge.GetSubjects(bmp.Size);
                 DetectedOK = Detect3Point();
+                if( (!DetectedOK && global.Debug) || (global.Debug && ( global.tag & 1)>0) )
+                {
+                    //List<int> ll = 
+                    _listsubjects.Select(r =>
+                    {
+                        _src.Clone(r.Rect, _src.PixelFormat).Save("F:\\debug\\"+ r.ToString()+"_"+r.Rect.ToString("-") + ".tif");
+                        return r.Rect.X;
+                    }).ToList();
+                }
             }
         }
         public MyDetectFeatureRectAngle(List<ARTemplate.FeaturePoint> list, Rectangle CorrectRect)

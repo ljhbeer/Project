@@ -17,6 +17,7 @@ using ScanTemplate.FormYJ;
 namespace ScanTemplate
 {
 	public delegate void MyInvoke( );
+    
 	public partial class FormM : Form
 	{
         private ScanConfig _sc;
@@ -38,6 +39,15 @@ namespace ScanTemplate
                 listBoxUnScanDir.Items.AddRange(_sc.Unscans.Unscans.ToArray());
                 comboBoxTemplate.Items.AddRange(_sc.CommonTemplates.CommonTemplates.ToArray());
                 listBoxScantData.Items.AddRange(_sc.Scandatas.Scandatas.ToArray());
+            }
+            if (File.Exists("tagcfg.ini"))
+            {
+                string s = File.ReadAllText("tagcfg.ini");
+                try
+                {
+                    global.tag = Convert.ToInt32(s);
+                }catch{
+                }
             }
 		}
         private void buttonRefresh_Click(object sender, EventArgs e)
@@ -626,6 +636,14 @@ namespace ScanTemplate
                     }
                 }
             }
+        }
+
+        private void checkBoxDebug_CheckedChanged(object sender, EventArgs e)
+        {
+            if(checkBoxDebug.Checked)
+               global.Debug = true;
+            else
+                global.Debug = false;;
         }
 	}	
 }

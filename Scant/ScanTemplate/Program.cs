@@ -18,4 +18,9 @@ namespace ScanTemplate
             Application.Run(new FormChoose());
         }
     }
+    public class global
+    {
+        public static Boolean Debug = false;
+        public static int tag = 0;
+    } 
 }

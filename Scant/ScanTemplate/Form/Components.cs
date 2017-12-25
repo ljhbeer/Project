@@ -6,7 +6,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.Data;
 using Newtonsoft.Json;
-
+using Tools;
 namespace ARTemplate
 {
     public class InputBox
@@ -847,27 +847,5 @@ namespace ARTemplate
     }
     
     //Rectangle Tools
-    public static class extend
-    {
-    	public static string ToString(this Rectangle Rect,string split){
-    		return Rect.X + split + Rect.Y + split + +Rect.Width + split + Rect.Height;
-    	}
-        public static string ToXmlString(this Rectangle Rect)
-        {
-            return "<Rectangle>" + Rect.X + "," + Rect.Y + "," + +Rect.Width + "," + Rect.Height + "</Rectangle>";
-        }
-        public static string ToXmlString(this String str,String tagname)
-        {
-            return ("<[tag]>"+str+"</[tag]>").Replace("[tag]",tagname);
-        }
-        public static string ToXmlString(this Point p)
-        {
-            return "<POINT>" + p.X + "," + p.Y + "</POINT>";
-        }
-        public static string ToXmlString(this Size s)
-        {
-            return "<SIZE>" + s.Width + "," + s.Height + "</SIZE>";
-        }
-
-    }
+    
 }

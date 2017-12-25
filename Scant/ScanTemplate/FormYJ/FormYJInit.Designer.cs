@@ -47,6 +47,7 @@
             this.panel1 = new System.Windows.Forms.Panel();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.buttonShowScore = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.tableLayoutPanel2.SuspendLayout();
             this.panel3.SuspendLayout();
@@ -217,12 +218,14 @@
             this.tableLayoutPanel3.Controls.Add(this.buttonShowXztSet, 0, 0);
             this.tableLayoutPanel3.Controls.Add(this.buttonShowFXztSet, 1, 0);
             this.tableLayoutPanel3.Controls.Add(this.buttonImportOptionAnswerScore, 2, 0);
+            this.tableLayoutPanel3.Controls.Add(this.buttonShowScore, 3, 0);
             this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel3.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel3.Name = "tableLayoutPanel3";
             this.tableLayoutPanel3.RowCount = 2;
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 24F));
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel3.Size = new System.Drawing.Size(234, 354);
             this.tableLayoutPanel3.TabIndex = 0;
             // 
@@ -316,6 +319,16 @@
             this.splitContainer1.SplitterDistance = 37;
             this.splitContainer1.TabIndex = 1;
             // 
+            // buttonShowScore
+            // 
+            this.buttonShowScore.Location = new System.Drawing.Point(177, 3);
+            this.buttonShowScore.Name = "buttonShowScore";
+            this.buttonShowScore.Size = new System.Drawing.Size(52, 18);
+            this.buttonShowScore.TabIndex = 5;
+            this.buttonShowScore.Text = "显示分值";
+            this.buttonShowScore.UseVisualStyleBackColor = true;
+            this.buttonShowScore.Click += new System.EventHandler(this.buttonShowScore_Click);
+            // 
             // FormYJInit
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -367,5 +380,6 @@
         private System.Windows.Forms.Button buttonShowXztSet;
         private System.Windows.Forms.Button buttonShowFXztSet;
         private System.Windows.Forms.Button buttonImportOptionAnswerScore;
+        private System.Windows.Forms.Button buttonShowScore;
     }
 }

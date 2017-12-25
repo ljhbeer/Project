@@ -331,6 +331,15 @@ namespace ScanTemplate.FormYJ
         private ExamConfig g;
         private string _examname;
         private string _DataFullPath;
+
+        private void buttonShowScore_Click(object sender, EventArgs e)
+        {
+            string msg = "共有选择题：" + _Optionsubjects.OptionSubjects.Count + " 题,  非选择题： " + _Imgsubjects.Subjects.Count + " 小题";
+            msg += "\r\n选择题共： " + _Optionsubjects.OptionSubjects.Select(r => r.Score).Sum() + "分";
+            msg += "\r\n 非选择题共： " + _Imgsubjects.Subjects.Select(r => r.Score).Sum() + "分";
+            msg += "\r\n 合计共： " +( _Optionsubjects.OptionSubjects.Select(r => r.Score).Sum() +_Imgsubjects.Subjects.Select(r => r.Score).Sum()) + "分";
+            MessageBox.Show(msg);
+        }
     }    
     public class Optionsubjects
     {

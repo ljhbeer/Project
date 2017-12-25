@@ -286,7 +286,11 @@ namespace ScanTemplate
                     _artemplate = new Template(_dr.ListFeatureRectangle);
                 }
                 else
-                    _artemplate = Templates.GetTemplate(ti.TemplateFileName);
+                {
+                    _artemplate = new Template(_dr.ListFeatureRectangle);
+                    Template t = Templates.GetTemplate(ti.TemplateFileName);
+                    _artemplate.Match(t);
+                }
             }
         }
         public Template Template { get { return _artemplate; } }

@@ -216,6 +216,21 @@ namespace ARTemplate
         //}
 
         public AutoAngle Angle { get { return _angle; } }
+
+        internal void Match(Template t)
+        {
+           //_angle.SetPaper( t._angle.Angle1 );
+           t.Angle.SetPaper(_angle.Angle1);
+           foreach (string s in t.Dic.Keys)
+                if (s != "特征点")
+                {
+                    foreach (Area I in t.Dic[s])
+                    {
+                        I.Rect.Location  =t.Angle.GetCorrectPoint(I.Rect.X,I.Rect.Y);
+                        _dic[s].Add(I);
+                    }
+                }
+        }
     }
     public class ConvertTemplateData
     {

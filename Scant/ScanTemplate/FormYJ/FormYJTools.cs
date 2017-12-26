@@ -221,6 +221,14 @@ namespace ScanTemplate.FormYJ
         private void buttonModifyData_Click(object sender, EventArgs e)
         {//导出成绩
             if(_activeitem == null) return;
+            Optionsubjects _Optionsubjects = _examdata.SR._Optionsubjects;
+            Imgsubjects _Imgsubjects = _examdata.SR._Imgsubjects;
+            string msg = "共有选择题：" + _Optionsubjects.OptionSubjects.Count + " 题,  非选择题： " + _Imgsubjects.Subjects.Count + " 小题";
+            msg += "\r\n选择题共： " + _Optionsubjects.OptionSubjects.Select(r => r.Score).Sum() + "分";
+            msg += "\r\n 非选择题共： " + _Imgsubjects.Subjects.Select(r => r.Score).Sum() + "分";
+            msg += "\r\n 合计共： " + (_Optionsubjects.OptionSubjects.Select(r => r.Score).Sum() + _Imgsubjects.Subjects.Select(r => r.Score).Sum()) + "分";
+            //MessageBox.Show(msg);
+
             List<float > maxscore = new List<float>();
             List<string> optionanswer = new List<string>();
             if (CheckOptionAnswer(maxscore, optionanswer)
@@ -228,7 +236,7 @@ namespace ScanTemplate.FormYJ
             {
                 int Oscore = (int)_exam.OSubjects.Sum(r => r.Score);
                 int Sscore = _exam.Subjects.Sum(r => r.Score);
-                MessageBox.Show("导出成绩 总分 " + (Oscore + Sscore) + " 分， 选择题 " + Oscore + " 分，非选择题 " + Sscore + "分");
+                MessageBox.Show("导出成绩" + msg);
                 SaveFileDialog saveFileDialog2 = new SaveFileDialog();
                 saveFileDialog2.FileName = _examdata.Name;
                 saveFileDialog2.Filter = "txt files (*.txt)|*.txt";
@@ -284,7 +292,7 @@ namespace ScanTemplate.FormYJ
             }
             else
             {
-                MessageBox.Show("还有选择题没有设定答案或者分值  或者 试卷未改完");
+                MessageBox.Show("还有选择题没有设定答案或者分值  或者 试卷未改完 \r\n"+msg);
             }
         }
         private bool CheckResult()

@@ -757,13 +757,18 @@ namespace ScanTemplate.FormYJ
         {
             if (HasStudentBase && _khbasedic.ContainsKey(kh))
                 return _khbasedic[kh].Name;
-            return "";
+            return "-";
         }
 
         public bool HasStudentBase { get; set; }
         private List<StudentBase> _studentbases;
         private Dictionary<int, StudentBase> _khbasedic;
         private Dictionary<int, List<StudentBase>> _classiddic;
+
+        public  bool ContainsKey(int kh)
+        {
+            return _khbasedic.ContainsKey(kh);
+        }
     }
     public class StudentBase
     {

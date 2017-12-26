@@ -506,7 +506,12 @@ namespace ScanTemplate
             }
             foreach (DataRow dr in _rundt.Rows)
             {
-                if (dr["考号"].ToString().Contains("-"))
+                string skh = dr["考号"].ToString();
+                string name = dr["姓名"].ToString();
+                int kh = -1;
+                if (!skh.Contains("-"))
+                    kh = Convert.ToInt32(skh);
+                if ( kh<0 || !_sc.Studentbases.ContainsKey(kh) || name.Contains("-") || name.Trim()==""  )
                 {
                     string fn = dr["文件名"].ToString().Replace("LJH\\", "LJH\\Correct\\").Replace("\\img","");
                     if (File.Exists(fn))
@@ -525,6 +530,15 @@ namespace ScanTemplate
                         ndr["新考号"] = "";
                         ndr["是否修改"] = false;
 
+                        if (kh > 0 && name.Contains("-"))
+                        {
+                            dr["姓名"] = ndr["姓名"] = _sc.Studentbases.GetName(kh);
+                            ndr["新考号"] = skh;
+                            ndr["是否修改"] = true;
+                            //ndr.SetModified();
+                        }
+                            
+
                         if (rxm.Width > 0)
                         {
                             ndr["图片姓名"] = bmp.Clone(rxm, bmp.PixelFormat);
@@ -534,6 +548,11 @@ namespace ScanTemplate
                             ndr["图片考号"] = bmp.Clone(rkh, bmp.PixelFormat);
                         }
                         dt.Rows.Add(ndr);
+
+                        //if (kh > 0 && name.Contains("-"))
+                        //{
+                        //    dt.Rows[dt.Rows.Count - 1].SetModified();
+                        //}
                     }
                 }
             }
@@ -551,12 +570,19 @@ namespace ScanTemplate
                         
                         ScanData sd = (ScanData)listBoxScantData.SelectedItem;
                         string[] ss = File.ReadAllLines(sd.DataFullName);// sd.ImgList.ToArray();
+                        //TODO: 应避免出现空行
                         try
                         {
                             for (int i = 1; i < ss.Length; i++)
                             {
                                 string[] item = ss[i].Split(',');
-                                if (item[3].Contains("-"))
+                                string skh =  item[3];
+                                string name = item[4];
+                                int kh = -1;
+                                if (!skh.Contains("-"))
+                                    kh = Convert.ToInt32(skh);
+
+                                if ( kh<0 || !_sc.Studentbases.ContainsKey(kh) || name.Contains("-") || name.Trim()==""  )
                                 {
                                     DataRow[] drs = _rundt.Select("文件名='" + item[0] + "'");
                                     if (drs.Length == 1)

@@ -619,6 +619,7 @@ namespace ARTemplate
                 Brush Red = Brushes.Red;
                 Font font = new Font(SystemFonts.DefaultFont.SystemFontName, 25, FontStyle.Bold);
                 Font font1 = new Font(SystemFonts.DefaultFont.SystemFontName, 16, FontStyle.Bold);
+                Font font2 = new Font(SystemFonts.DefaultFont.SystemFontName, 20, FontStyle.Bold);
 
 
                 foreach (Optionsubject I in SR._Optionsubjects.OptionSubjects)
@@ -653,8 +654,15 @@ namespace ARTemplate
                     if (SR._Result[I.Index][S.Index] == 0)
                         g.DrawString("×", font, Red, p);
                     else
+                    {
                         g.DrawString("√", font, Red, p);
-
+                        if (SR._Result[I.Index][S.Index] != I.Score)
+                        {
+                            p.X += 20;
+                            p.Y -= 20;
+                            g.DrawString("—", font2, Red, p);
+                        }
+                    }
                 }
                 foreach (TzArea I in ltz)
                 {

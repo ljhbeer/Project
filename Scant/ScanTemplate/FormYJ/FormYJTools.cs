@@ -416,7 +416,10 @@ namespace ScanTemplate.FormYJ
         {
             dtset = Tools.DataTableTools.ConstructDataTable(new string[] { "OID", "题组名称", "最大分值", "图片" });
             _AvgUnImgWith = 0;
-            _AvgUnImgHeight = 0;           
+            _AvgUnImgHeight = 0;
+            Rectangle r = new Rectangle(0, 0, 1, 1);
+            if (_src != null)
+                r.Size = _src.Size;
             foreach (Imgsubject S in _exam.Subjects)
             {
                 DataRow dr = dtset.NewRow();
@@ -425,7 +428,7 @@ namespace ScanTemplate.FormYJ
                 dr["最大分值"] = S.Score;
                 _AvgUnImgHeight += S.Height;
                 _AvgUnImgWith += S.Width;
-                if (_src != null)
+                if (_src != null && r.Contains(S.Rect))
                     dr["图片"] = _src.Clone(S.Rect, _src.PixelFormat);
                 dtset.Rows.Add(dr);
             }

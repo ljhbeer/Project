@@ -78,7 +78,10 @@ namespace ScanTemplate
                 if (_sc.Templateshow.OK)
                 {
                     this.Hide();
-                    new FormTemplate(_sc.Templateshow).ShowDialog();
+                    FormTemplate f = new FormTemplate(_sc.Templateshow);
+                    f.ShowDialog();
+                    f.Clear();
+                    f = null;
                     this.Show();
                 }
             }
@@ -99,7 +102,10 @@ namespace ScanTemplate
                 if (_sc.Templateshow.OK)
                 {
                     this.Hide();
-                    new FormTemplate(_sc.Templateshow).ShowDialog();
+                    FormTemplate f =new FormTemplate(_sc.Templateshow);
+                    f.ShowDialog();
+                    f.Clear();
+                    f = null;
                     this.Show();
                 }
             }

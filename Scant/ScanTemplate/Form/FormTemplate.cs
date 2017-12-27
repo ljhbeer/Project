@@ -31,17 +31,42 @@ namespace ARTemplate
             InitializeComponent();
             Init(null);
         }
-
+        ~FormTemplate()
+        {
+            Clear();
+        }
+        public void Clear()
+        {
+            if (_fs != null)
+            {
+                _fs.Close();
+                _fs = null;
+            }
+        }
         public FormTemplate(TemplateShow templateShow)
         {
             InitializeComponent();
             Init(templateShow.Template);
-            _src = templateShow.Src;
-            if (_src != null)
-                SetImage(_src);
+            InitSrc(templateShow);
+        }
+
+        private void InitSrc(TemplateShow templateShow)
+        {
+            if (templateShow != null && templateShow.Template != null)
+            {
+                if (File.Exists( templateShow.SrcFileName) )
+                {
+                    _fs = new System.IO.FileStream(templateShow.SrcFileName, System.IO.FileMode.Open, System.IO.FileAccess.Read);
+                    Bitmap orgsrc = (Bitmap)System.Drawing.Image.FromStream(_fs);
+                    _src = orgsrc.Clone(_template.CorrectRect, orgsrc.PixelFormat);
+                    if (_src != null)
+                        SetImage(_src);
+                }
+            }
         }
         private void Init(Template t)
         {
+            _fs = null;
             _src = null;
             _template = t;
             m_tn = new TreeNode();
@@ -736,6 +761,6 @@ namespace ARTemplate
         private float  _defaultunchoosescore;
         private Template _template;
         private Bitmap _src;
-
+        private FileStream _fs;
     }
 }

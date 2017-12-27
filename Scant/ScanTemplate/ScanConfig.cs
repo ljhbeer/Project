@@ -274,8 +274,11 @@ namespace ScanTemplate
             this._imgfilename = imgfilename;
             this._dirname = dirname;
             this.ti = ti;
-            this._src = (Bitmap)Bitmap.FromFile(_imgfilename);
-            
+            //this._src = (Bitmap)Bitmap.FromFile(_imgfilename);
+            System.IO.FileStream fs = new System.IO.FileStream(imgfilename, System.IO.FileMode.Open, System.IO.FileAccess.Read);
+            Bitmap _src = (Bitmap)System.Drawing.Image.FromStream(fs);
+
+
             AutoDetectRectAnge.FeatureSetPath = _fullpath;
             this._dr = new MyDetectFeatureRectAngle(_src);
             this.OK = _dr.DetectedOK;
@@ -292,11 +295,13 @@ namespace ScanTemplate
                     _artemplate.Match(t);
                 }
             }
+            fs.Close();
+            fs = null;
         }
-        public Template Template { get { return _artemplate; } }
-        public bool OK { get; set; }
 
-        public Bitmap Src { get { return _src.Clone(_artemplate.CorrectRect, _src.PixelFormat) ; } }
+        public Template Template { get { return _artemplate; } }
+        public string SrcFileName { get { return _imgfilename; } }
+        public bool OK { get; set; }
     }
     public class Scan
     {

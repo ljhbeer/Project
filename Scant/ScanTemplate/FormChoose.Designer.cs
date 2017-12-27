@@ -64,6 +64,7 @@
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "FormChoose";
+            this.Load += new System.EventHandler(this.FormChoose_Load);
             this.ResumeLayout(false);
 
         }

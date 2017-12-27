@@ -613,6 +613,7 @@ namespace ScanTemplate.FormYJ
                 _XZT.Add(dr["x" + i].ToString());
             }
             _src = null;
+            Sort = new StudentSort();
         }
         public Student()
         {
@@ -623,10 +624,32 @@ namespace ScanTemplate.FormYJ
             str = str.Substring(0, str.IndexOf("."));
             _id = Convert.ToInt32(str);
             _id %= 10000;
+            Sort = new StudentSort();
+            Sort.SetValue(Index);
         }
         public string ResultInfo()
         {
             return ID + "," + KH + "," + Name + ",";
+        }
+        public bool CorrectXzt(int index, string answer)
+        {
+            if (index < 0 || index > _XZT.Count)
+                return false;
+            return _XZT[index] == answer;
+        }
+        public string OutXzt(List<string> optionanswer, List<float> maxscore, ref float sum)
+        {
+            int i = 0;
+            List<float> result = _XZT.Select(r =>
+            {
+                float ret = 0;
+                if (r == optionanswer[i])
+                    ret = maxscore[i];
+                i++;
+                return ret;
+            }).ToList();
+            sum = result.Sum();
+            return string.Join(",", result);
         }
         public static string ResultTitle()
         {
@@ -637,21 +660,10 @@ namespace ScanTemplate.FormYJ
         public double Angle { get; set; }
         public int KH { get; set; }
         public string Name { get; set; }
-       
-        public string OutXzt(List<string> optionanswer, List<float> maxscore, ref float sum)
-        {
-            int i =0;
-            List<float> result = _XZT.Select(r =>
-            {
-                float  ret = 0;
-                if (r == optionanswer[i])
-                    ret = maxscore[i];
-                i++;
-                return ret;
-            }).ToList();
-            sum = result.Sum();
-            return  string.Join(",", result);
-        }
+        public string ImgFilename { get { return _imgfilename; } }
+        public int Index { get; set; }
+        [JsonIgnore]
+        public StudentSort Sort { get; set; }
         [JsonIgnore]
         public Bitmap Src
         {
@@ -681,16 +693,6 @@ namespace ScanTemplate.FormYJ
         [JsonProperty]
         private Rectangle _SrcCorrectRect;
         private Bitmap _src;
-        public int Index { get; set; }
-
-        public bool CorrectXzt(int index, string answer)
-        {
-            if (index < 0 || index > _XZT.Count)
-                return false;
-            return _XZT[index] == answer;
-        }
-
-        public string ImgFilename { get { return _imgfilename; } }
     }
     public class StudentBases
     {
@@ -781,6 +783,39 @@ namespace ScanTemplate.FormYJ
         public int Classid { get; set; }
         public string Name { get; set; }
         public int KH { get; set; }
+    }
+    public class StudentSort 
+    {
+        public StudentSort() 
+        {
+            _V = _v1=_v2=_v3=0;
+        }
+        // 用于阅卷时 v2 = -10000 ,可以累加 v3
+        public void SetValue(int v1, int v2 = -1, int v3 = -1) // v1  + v2 * 100 + v3 * 10000 v1 v2 v3 >0
+        {
+            if (v1 >= 0)
+                _v1 = v1;
+            if (v2 >= 0)
+                _v2 = v2;
+            if (v3 >= 0)
+            {
+                _v3 = v3;
+                if (v2 == -10000)
+                    _v2 += v3;
+            }
+            _V = _v1 + _v2 * 100 + _v3 * 10000;
+        }
+       
+        public int SortValue { get { return _V; } }
+        public override string ToString()
+        {
+            return _v3 + "_" + _v2 + "_" + _v1;
+        }
+        private int _v1;
+        private int _v2;
+        private int _v3;
+        private int _V;
+
     }
     public class ImgbinManagesubjects
     {
@@ -1131,6 +1166,21 @@ namespace ScanTemplate.FormYJ
         public void LoadNextStudents()
         {
             Students = _Result[_activesubject.Index].Where(r => r < 0).Select(r => _Students.students[-r - 1]).ToList();
+            if(global.Debug || (global.tag & 2)>0)
+                if( Students.Count>0){
+                    string str = "\r\n\r\nbefore:ID姓名：,"+ string.Join(",", Students.Select(r => r.ID + r.Name)) + "\r\nSortValue"
+                        + string.Join(",", Students.Select(r => r.Sort.SortValue.ToString()));
+                    File.AppendAllText( "F:\\Sortdebug.txt",str );
+                }
+            Students.Sort(delegate(Student S1,Student  S2){
+                return S1.Sort.SortValue - S2.Sort.SortValue;
+            });
+            if(global.Debug || (global.tag & 4)>0)
+                if( Students.Count>0){
+                    string str = "\r\n\r\nsorted:ID姓名：," + string.Join(",", Students.Select(r => r.ID + r.Name)) + "\r\nSortValue"
+                        + string.Join(",", Students.Select(r => r.Sort.SortValue.ToString()));
+                    File.AppendAllText( "F:\\Sortdebug.txt",str );
+                }
         }
         public Imgsubjects GetImgsubjects()
         {

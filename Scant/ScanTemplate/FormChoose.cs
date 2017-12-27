@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using System.IO;
 
 namespace ScanTemplate
 {
@@ -28,6 +29,22 @@ namespace ScanTemplate
             this.Hide();
             new FormYJ.FormYJTools().ShowDialog();
             this.Close();
+        }
+
+        private void FormChoose_Load(object sender, EventArgs e)
+        {
+
+            if (File.Exists("tagcfg.ini"))
+            {
+                string s = File.ReadAllText("tagcfg.ini");
+                try
+                {
+                    global.tag = Convert.ToInt32(s,2);
+                }
+                catch
+                {
+                }
+            }
         }
     }
 

@@ -40,15 +40,6 @@ namespace ScanTemplate
                 comboBoxTemplate.Items.AddRange(_sc.CommonTemplates.CommonTemplates.ToArray());
                 listBoxScantData.Items.AddRange(_sc.Scandatas.Scandatas.ToArray());
             }
-            if (File.Exists("tagcfg.ini"))
-            {
-                string s = File.ReadAllText("tagcfg.ini");
-                try
-                {
-                    global.tag = Convert.ToInt32(s);
-                }catch{
-                }
-            }
 		}
         private void buttonRefresh_Click(object sender, EventArgs e)
         {

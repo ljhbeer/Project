@@ -78,6 +78,7 @@ namespace ScanTemplate.FormYJ
                         int Score = Convert.ToInt32(dgvs.Rows[i].Cells[index].Value.ToString());
                         Student S = (Student)dgvs.Rows[i].Cells[index - 2].Value;
                         _SR.SetScoreByKh(S, Score);
+                        S.Sort.SetValue(-1, -10000, Score);
                         Modified = true;
                     }
                     if (bbreak) break;

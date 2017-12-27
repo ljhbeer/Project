@@ -50,21 +50,6 @@ namespace ScanTemplate.FormYJ
         private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (listBox1.SelectedIndex == -1) return;
-            if (_activeitem != null)
-            {
-                CheckDataTable(); // 修改 选择题的答案和分值， 以及非选择题的分值，以及添加考生
-                //保存当前数据
-                if (_bexamdatamodified)
-                {
-                    //MessageBox.Show("是否保存当前数据");
-                    String Name = ((ExamInfo)_activeitem).Path + ((ExamInfo)_activeitem).Name;
-                    Name = Name.Replace(((ExamInfo)_activeitem).Number + "\\", "");
-                    string str = Tools.JsonFormatTool.ConvertJsonString(Newtonsoft.Json.JsonConvert.SerializeObject(_examdata));
-                    File.WriteAllText(Name + ".json", str);
-                    MessageBox.Show("已保存当前数据");
-                    _bexamdatamodified = false;
-                }
-            }
 
             ExamInfo ei = (ExamInfo)listBox1.SelectedItem;
             if (_activeitem == ei)
@@ -326,6 +311,24 @@ namespace ScanTemplate.FormYJ
             }
             return allhasanswer;
         }
+        private void SaveYjData()
+        {
+            if (_activeitem != null)
+            {
+                CheckDataTable(); // 修改 选择题的答案和分值， 以及非选择题的分值，以及添加考生
+                //保存当前数据
+                if (_bexamdatamodified)
+                {
+                    //MessageBox.Show("是否保存当前数据");
+                    String Name = ((ExamInfo)_activeitem).Path + ((ExamInfo)_activeitem).Name;
+                    Name = Name.Replace(((ExamInfo)_activeitem).Number + "\\", "");
+                    string str = Tools.JsonFormatTool.ConvertJsonString(Newtonsoft.Json.JsonConvert.SerializeObject(_examdata));
+                    File.WriteAllText(Name + ".json", str);
+                    MessageBox.Show("已保存当前数据");
+                    _bexamdatamodified = false;
+                }
+            }
+        }
         private void buttonBeginYJ_Click(object sender, EventArgs e)
         {
             if (_exam == null ) return;             
@@ -334,6 +337,7 @@ namespace ScanTemplate.FormYJ
             this.Hide();
             fs.ShowDialog();
             _bexamdatamodified = fs.Modified;
+            SaveYjData();
             this.Show();
         }
         private void buttonShowXztSet_Click(object sender, EventArgs e)

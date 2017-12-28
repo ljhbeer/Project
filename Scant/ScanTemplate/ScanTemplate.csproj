@@ -56,12 +56,19 @@
     <Compile Include="AutoAngle.cs" />
     <Compile Include="AutoComputeXZT.cs" />
     <Compile Include="DetectFeature\subject.cs" />
+    <Compile Include="FormChooseResult.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormChooseResult.Designer.cs">
+      <DependentUpon>FormChooseResult.cs</DependentUpon>
+    </Compile>
     <Compile Include="FormChoose.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="FormChoose.Designer.cs">
       <DependentUpon>FormChoose.cs</DependentUpon>
     </Compile>
+    <Compile Include="tools\TextBitmapTool.cs" />
     <Compile Include="Form\FormInputComboBox.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -104,7 +111,7 @@
     <Compile Include="FormYJ\FormYJTools.Designer.cs">
       <DependentUpon>FormYJTools.cs</DependentUpon>
     </Compile>
-    <Compile Include="FormYJ\JsonFormatTool.cs" />
+    <Compile Include="tools\JsonFormatTool.cs" />
     <Compile Include="Form\Components.cs" />
     <Compile Include="Form\ConvertFormat.cs" />
     <Compile Include="Form\DetectChoiceArea.cs" />
@@ -128,6 +135,9 @@
     <Compile Include="ScanConfig.cs" />
     <Compile Include="tools\BitmapTools.cs" />
     <Compile Include="tools\DataTableTools.cs" />
+    <EmbeddedResource Include="FormChooseResult.resx">
+      <DependentUpon>FormChooseResult.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FormChoose.resx">
       <DependentUpon>FormChoose.cs</DependentUpon>
     </EmbeddedResource>

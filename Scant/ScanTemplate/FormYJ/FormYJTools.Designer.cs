@@ -35,7 +35,6 @@
             this.buttonBeginYJ = new System.Windows.Forms.Button();
             this.textBoxWorkPath = new System.Windows.Forms.TextBox();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.buttonImportImage = new System.Windows.Forms.Button();
             this.buttonExportResult = new System.Windows.Forms.Button();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
@@ -79,8 +78,8 @@
             // tableLayoutPanel1
             // 
             this.tableLayoutPanel1.ColumnCount = 2;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 55.83756F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 44.16244F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 47.20812F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 52.79188F));
             this.tableLayoutPanel1.Controls.Add(this.buttonRefresh, 1, 0);
             this.tableLayoutPanel1.Controls.Add(this.listBox1, 0, 1);
             this.tableLayoutPanel1.Controls.Add(this.buttonBeginYJ, 1, 2);
@@ -99,9 +98,9 @@
             // buttonRefresh
             // 
             this.buttonRefresh.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.buttonRefresh.Location = new System.Drawing.Point(112, 3);
+            this.buttonRefresh.Location = new System.Drawing.Point(96, 3);
             this.buttonRefresh.Name = "buttonRefresh";
-            this.buttonRefresh.Size = new System.Drawing.Size(82, 24);
+            this.buttonRefresh.Size = new System.Drawing.Size(98, 24);
             this.buttonRefresh.TabIndex = 13;
             this.buttonRefresh.Text = "刷新";
             this.buttonRefresh.UseVisualStyleBackColor = true;
@@ -122,9 +121,9 @@
             // buttonBeginYJ
             // 
             this.buttonBeginYJ.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.buttonBeginYJ.Location = new System.Drawing.Point(112, 367);
+            this.buttonBeginYJ.Location = new System.Drawing.Point(96, 367);
             this.buttonBeginYJ.Name = "buttonBeginYJ";
-            this.buttonBeginYJ.Size = new System.Drawing.Size(82, 36);
+            this.buttonBeginYJ.Size = new System.Drawing.Size(98, 36);
             this.buttonBeginYJ.TabIndex = 7;
             this.buttonBeginYJ.Text = "开始阅卷";
             this.buttonBeginYJ.UseVisualStyleBackColor = true;
@@ -135,37 +134,26 @@
             this.textBoxWorkPath.Location = new System.Drawing.Point(3, 3);
             this.textBoxWorkPath.Name = "textBoxWorkPath";
             this.textBoxWorkPath.ReadOnly = true;
-            this.textBoxWorkPath.Size = new System.Drawing.Size(92, 21);
+            this.textBoxWorkPath.Size = new System.Drawing.Size(87, 21);
             this.textBoxWorkPath.TabIndex = 3;
             this.textBoxWorkPath.Text = "E:\\Scan\\s1025";
             // 
             // panel1
             // 
-            this.panel1.Controls.Add(this.buttonImportImage);
             this.panel1.Controls.Add(this.buttonExportResult);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(3, 367);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(103, 36);
+            this.panel1.Size = new System.Drawing.Size(87, 36);
             this.panel1.TabIndex = 14;
-            // 
-            // buttonImportImage
-            // 
-            this.buttonImportImage.Location = new System.Drawing.Point(60, 3);
-            this.buttonImportImage.Name = "buttonImportImage";
-            this.buttonImportImage.Size = new System.Drawing.Size(43, 29);
-            this.buttonImportImage.TabIndex = 9;
-            this.buttonImportImage.Text = "图片";
-            this.buttonImportImage.UseVisualStyleBackColor = true;
-            this.buttonImportImage.Click += new System.EventHandler(this.buttonImportImage_Click);
             // 
             // buttonExportResult
             // 
             this.buttonExportResult.Location = new System.Drawing.Point(0, 0);
             this.buttonExportResult.Name = "buttonExportResult";
-            this.buttonExportResult.Size = new System.Drawing.Size(62, 33);
+            this.buttonExportResult.Size = new System.Drawing.Size(84, 33);
             this.buttonExportResult.TabIndex = 8;
-            this.buttonExportResult.Text = "导出成绩";
+            this.buttonExportResult.Text = "导出";
             this.buttonExportResult.UseVisualStyleBackColor = true;
             this.buttonExportResult.Click += new System.EventHandler(this.buttonExportResult_Click);
             // 
@@ -330,7 +318,6 @@
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Button buttonShowStudents;
         private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.Button buttonImportImage;
         private System.Windows.Forms.Button buttonExportResult;
     }
 }

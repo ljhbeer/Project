@@ -102,7 +102,23 @@ namespace ScanTemplate.FormYJ
                 Angle.SetPaper(S.Angle);
             pictureBox1.Image = TemplateTools.DrawInfoBmp(S.Src.Clone( S.SrcCorrectRect,S.Src.PixelFormat) , _template, Angle);
         }
-        private void buttonImportImage_Click(object sender, EventArgs e)
+       
+        private void buttonExportResult_Click(object sender, EventArgs e)
+        {
+            if (_activeitem == null) return;
+            FormChooseResult f = new FormChooseResult();
+            f.ShowDialog();
+            if(f.Result!="")
+            switch (f.Result)
+            {
+                case "exresult": ExportResult(); break;
+                case "eximage": ExportImages(); break;
+                case "exxzt": ExportXztFx(); break;
+                case "exfxzt": ExportFxztFx();break;
+            }
+            f = null;
+        }
+        private void ExportImages()
         {
             List<float > maxscore = new List<float>();
             List<string> optionanswer = new List<string>();
@@ -199,13 +215,16 @@ namespace ScanTemplate.FormYJ
             }
             MessageBox.Show("已输出到F:\\Out\\"+_exam.Name);
         }
-        private void buttonExportResult_Click(object sender, EventArgs e)
+        private void ExportFxztFx()
         {
-            buttonModifyData_Click(sender, e);
+            throw new NotImplementedException();
         }
-        private void buttonModifyData_Click(object sender, EventArgs e)
+        private void ExportXztFx()
+        {
+            throw new NotImplementedException();
+        }
+        private void ExportResult()
         {//导出成绩
-            if(_activeitem == null) return;
             Optionsubjects _Optionsubjects = _examdata.SR._Optionsubjects;
             Imgsubjects _Imgsubjects = _examdata.SR._Imgsubjects;
             string msg = "共有选择题：" + _Optionsubjects.OptionSubjects.Count + " 题,  非选择题： " + _Imgsubjects.Subjects.Count + " 小题";
@@ -248,6 +267,9 @@ namespace ScanTemplate.FormYJ
                         string title = Student.ResultTitle() +"选择题,非选择题,总分,"+ string.Join(",", _exam.OSubjects.Select(r => r.Name()))
                          +","  + string.Join(",", _examdata.SR._Imgsubjects.Subjects.Select(r => r.Name)) + ","+Tztitle+"\r\n";
 
+
+                        StringBuilder sblistscore = new StringBuilder("姓名,总分\r\n");
+                        StringBuilder sblisttizu = new StringBuilder("姓名,总分,选择题,"+Tztitle+"\r\n");
                         StringBuilder sb = new StringBuilder(title);
                         foreach (Student r in _students.students)
                         {
@@ -260,14 +282,24 @@ namespace ScanTemplate.FormYJ
                             sb.Append(",");
                             sb.Append(string.Join(",",_examdata.SR._Result.Select(rr => rr[r.Index].ToString()).ToArray()));
                             sb.Append(",");
+                            StringBuilder sbt = new StringBuilder();
                             foreach (List<Imgsubject> L in Tz)
                             {
-                                sb.Append(L.Select(I => _examdata.SR._Result[I.Index][r.Index]).Sum() + ",");
+                                sbt.Append(L.Select(I => _examdata.SR._Result[I.Index][r.Index]).Sum() + ",");
                             }
-
+                            sb.Append(sbt);
                             sb.AppendLine();
+                            sblistscore.AppendLine(r.Name + " " + (sum + fsum));
+                            sblisttizu.AppendLine(r.Name + "," + (sum + fsum)+","+sum + "," + sbt);
                         }
                         File.WriteAllText(saveFileDialog2.FileName, sb.ToString());
+                        Tools.TextBitmapTool tbl = new TextBitmapTool(
+                            new Rectangle(0, 0, 960, 720), new Rectangle(40, 30, 880, 660));
+                        
+                        List<string> list = new List<string>(sblistscore.ToString().Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries));
+                        List<string> list1 = new List<string>(sblisttizu.ToString().Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries));
+                        tbl.DrawListInPaper(list).Save( saveFileDialog2.FileName + ".jpg");
+                        tbl.DrawListInPaper(list1).Save( saveFileDialog2.FileName + "_1.jpg");
                     }
                     catch (Exception ex)
                     {
@@ -428,8 +460,12 @@ namespace ScanTemplate.FormYJ
                 dr["最大分值"] = S.Score;
                 _AvgUnImgHeight += S.Height;
                 _AvgUnImgWith += S.Width;
-                if (_src != null && r.Contains(S.Rect))
-                    dr["图片"] = _src.Clone(S.Rect, _src.PixelFormat);
+                Rectangle sr = S.Rect;
+                if (_src != null && r.IntersectsWith(sr))
+                {
+                    sr.Intersect(r);
+                    dr["图片"] = _src.Clone(sr, _src.PixelFormat);
+                }
                 dtset.Rows.Add(dr);
             }
             dtset.AcceptChanges();

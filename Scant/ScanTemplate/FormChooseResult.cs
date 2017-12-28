@@ -30,12 +30,12 @@ namespace ScanTemplate
         }
         private void button3_Click(object sender, EventArgs e)
         {
-            _result = "exxzt";
+            _result = "exresultfx";
             this.Close();
         }
         private void button4_Click(object sender, EventArgs e)
         {
-            _result = "exfxzt";
+            _result = "exother";
             this.Close();
         }
         public string Result { get { return _result; } }

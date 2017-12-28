@@ -388,6 +388,7 @@ namespace ScanTemplate.FormYJ
         public List<Point> List{ get; set; }
         public Size Size { get; set; }
         public string Name() { return "x" + ID; }
+        public string OutName { get { return "选择题" + ID; } }
         public string Answer { get; set; }
         [JsonProperty]
         private Rectangle _Rect;
@@ -400,6 +401,7 @@ namespace ScanTemplate.FormYJ
         public int Width { get { return Rect.Width; } }
         [JsonIgnore]
         private SingleChoiceArea U;
+
     }
     [JsonObject(MemberSerialization.OptIn)]
     public class Imgsubjects

@@ -113,15 +113,14 @@ namespace ScanTemplate.FormYJ
             {
                 case "exresult": ExportResult(); break;
                 case "eximage": ExportImages(); break;
-                case "exxzt": ExportXztFx(); break;
-                case "exfxzt": ExportFxztFx();break;
+                case "exresultfx": ExportXztFx(); break;
+                case "exother": ExportOther();break;
             }
             f = null;
         }
-
-        private void ExportFxztFx()
+        private void ExportOther()
         {
-            ;
+            throw new NotImplementedException();
         }
         private void ExportImages()
         {
@@ -220,35 +219,6 @@ namespace ScanTemplate.FormYJ
             }
             MessageBox.Show("已输出到F:\\Out\\"+_exam.Name);
         }
-        private void ExportFxztFx(string filename)
-        {
-            Imgsubjects _Imgsubjects = _examdata.SR._Imgsubjects;
-            List<float> maxscore = new List<float>();
-            List<string> optionanswer = new List<string>();
-            if (CheckOptionAnswer(maxscore, optionanswer)
-                && CheckResult())
-            {
-                List<string> ABCD = new List<string>() { "A", "B", "C", "D" };
-                Dictionary<string, int> dic = ABCD.ToDictionary(r => r, r => r[0] - 'A');
-                StringBuilder sb = new StringBuilder();
-                foreach (Imgsubject O in _Imgsubjects.Subjects)
-                { 
-                    int rightcnt = _exam.SR.Result.Where(r => r[O.Index]==O.Score).Count();                 
-                    int count = _students.students.Count;
-                    Double rightrate = rightcnt * 1.0 / count;
-                    sb.AppendLine(O.ID + " 分值：" + O.Score + " 正确率(" + rightcnt + "/" + count + ")：" + rightrate);                    
-                    //错误学生明单
-                    sb.AppendLine("错误学生名单");
-                    //sb.AppendLine(
-                    //    string.Join(",",
-                    //        _exam.SR.Result.Where(r => r[O.Index] == 0).Select(r => _exam.SR.Students[-r - 1].Name)
-                    //    )
-                    //);
-                    sb.AppendLine();
-                }
-                File.WriteAllText(filename, sb.ToString());
-            }
-        }
         private void ExportXztFx()
         {
             MessageBox.Show("导出成绩分析");
@@ -259,10 +229,9 @@ namespace ScanTemplate.FormYJ
             if (saveFileDialog2.ShowDialog() == DialogResult.OK)
             {
                 ExportXztFx(saveFileDialog2.FileName);
-                ExportFxztFx(saveFileDialog2.FileName+"非选择题.txt");
+                ExportFxztFx(saveFileDialog2.FileName);
             }
         }
-
         private void ExportXztFx(string filename)
         {
             Optionsubjects _Optionsubjects = _examdata.SR._Optionsubjects;
@@ -283,10 +252,10 @@ namespace ScanTemplate.FormYJ
                     int rightcnt = Iabcd[okindex];
                     int count = _students.students.Count;
                     Double rightrate = rightcnt * 1.0 / count;
-                    sb.AppendLine(O.ID + " 分值：" + O.Score + " 正确答案：" + optionanswer[O.Index] + " 正确率(" + rightcnt + "/" + count + ")：" + rightrate);
+                    sb.AppendLine(O.OutName + " 分值：" + O.Score + " 正确答案：" + optionanswer[O.Index] + " 正确率(" + rightcnt + "/" + count + ")：" + rightrate.ToString("0.00%"));
                     sb.AppendLine(
                         string.Join("\r\n",
-                        ABCD.Select(r => "  选项：" + r + " (" + Iabcd[dic[r]] + "/" + count + ")[img]")
+                        ABCD.Select(r => "  选项：" + r + " (" + Iabcd[dic[r]].ToString("00") + "/" + count + ")" + ZifuRate(Iabcd[dic[r]]*1.0/count))
                         )
                     );
                     //错误学生明单
@@ -303,6 +272,50 @@ namespace ScanTemplate.FormYJ
                     sb.AppendLine();
                 }
                 File.WriteAllText(filename, sb.ToString());
+            }
+        }
+        private string ZifuRate(double rightrate, int len = 20)
+        {
+            string right = "*******************************************************************";
+            // "■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■";
+            string error = "...................................................................";
+            // "□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□";
+            int r = (int)(len * rightrate + 0.5) % len;
+            int e = len - r;
+            return right.Substring(0, r) + error.Substring(0, e);
+        }
+        private void ExportFxztFx(string filename)
+        {
+            Imgsubjects _Imgsubjects = _examdata.SR._Imgsubjects;
+            List<float> maxscore = new List<float>();
+            List<string> optionanswer = new List<string>();
+            if (CheckOptionAnswer(maxscore, optionanswer)
+                && CheckResult())
+            {
+                List<string> ABCD = new List<string>() { "A", "B", "C", "D" };
+                Dictionary<string, int> dic = ABCD.ToDictionary(r => r, r => r[0] - 'A');
+                StringBuilder sb = new StringBuilder();
+                foreach (Imgsubject O in _Imgsubjects.Subjects)
+                {
+                    List<int> or = _exam.SR.Result[O.Index];
+                    int rightcnt = or.Count(r => r > 0);
+                    int count = or.Count;
+                    double avg = or.Average();
+                    Double rightrate =avg / O.Score;
+                    sb.AppendLine(O.Name + " 分值：" + O.Score + " 正确率(" + rightcnt + "/" + count + ")：" + rightrate.ToString("0.00%"));                    
+                    //错误学生明单
+                    sb.AppendLine("错误学生名单");
+                    int index = 0;
+                    sb.AppendLine(
+                        string.Join(",",
+                            or.Select( r => {index++;
+                                        if(r>0) return -index; return index;
+                                    }).Where( r => r>0 ).Select( r => _students.students[ r-1].Name)
+                                   )
+                        );
+                    sb.AppendLine();
+                }
+                File.AppendAllText(filename, sb.ToString());
             }
         }
         private void ExportResult()

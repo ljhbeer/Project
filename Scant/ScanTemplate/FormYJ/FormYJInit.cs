@@ -693,6 +693,13 @@ namespace ScanTemplate.FormYJ
         [JsonProperty]
         private Rectangle _SrcCorrectRect;
         private Bitmap _src;
+
+        public bool SelectOption(string r, int index)
+        {
+            if (index >= 0 && index < _XZT.Count)
+                return r == _XZT[index];
+            return false;
+        }
     }
     public class StudentBases
     {
@@ -1186,7 +1193,7 @@ namespace ScanTemplate.FormYJ
         {
             return _Imgsubjects;
         }
-
+        public List<List<int>> Result{  get{return _Result;}}
         private ImgbinManagesubjects _Ims;
         private Imgsubject _activesubject;
         [JsonProperty]

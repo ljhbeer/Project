@@ -118,6 +118,11 @@ namespace ScanTemplate.FormYJ
             }
             f = null;
         }
+
+        private void ExportFxztFx()
+        {
+            ;
+        }
         private void ExportImages()
         {
             List<float > maxscore = new List<float>();
@@ -215,13 +220,90 @@ namespace ScanTemplate.FormYJ
             }
             MessageBox.Show("已输出到F:\\Out\\"+_exam.Name);
         }
-        private void ExportFxztFx()
+        private void ExportFxztFx(string filename)
         {
-            throw new NotImplementedException();
+            Imgsubjects _Imgsubjects = _examdata.SR._Imgsubjects;
+            List<float> maxscore = new List<float>();
+            List<string> optionanswer = new List<string>();
+            if (CheckOptionAnswer(maxscore, optionanswer)
+                && CheckResult())
+            {
+                List<string> ABCD = new List<string>() { "A", "B", "C", "D" };
+                Dictionary<string, int> dic = ABCD.ToDictionary(r => r, r => r[0] - 'A');
+                StringBuilder sb = new StringBuilder();
+                foreach (Imgsubject O in _Imgsubjects.Subjects)
+                { 
+                    int rightcnt = _exam.SR.Result.Where(r => r[O.Index]==O.Score).Count();                 
+                    int count = _students.students.Count;
+                    Double rightrate = rightcnt * 1.0 / count;
+                    sb.AppendLine(O.ID + " 分值：" + O.Score + " 正确率(" + rightcnt + "/" + count + ")：" + rightrate);                    
+                    //错误学生明单
+                    sb.AppendLine("错误学生名单");
+                    //sb.AppendLine(
+                    //    string.Join(",",
+                    //        _exam.SR.Result.Where(r => r[O.Index] == 0).Select(r => _exam.SR.Students[-r - 1].Name)
+                    //    )
+                    //);
+                    sb.AppendLine();
+                }
+                File.WriteAllText(filename, sb.ToString());
+            }
         }
         private void ExportXztFx()
         {
-            throw new NotImplementedException();
+            MessageBox.Show("导出成绩分析");
+            SaveFileDialog saveFileDialog2 = new SaveFileDialog();
+            saveFileDialog2.FileName = _examdata.Name + "_成绩分析";
+            saveFileDialog2.Filter = "txt files (*.txt)|*.txt";
+            saveFileDialog2.Title = "导出成绩成绩分析";
+            if (saveFileDialog2.ShowDialog() == DialogResult.OK)
+            {
+                ExportXztFx(saveFileDialog2.FileName);
+                ExportFxztFx(saveFileDialog2.FileName+"非选择题.txt");
+            }
+        }
+
+        private void ExportXztFx(string filename)
+        {
+            Optionsubjects _Optionsubjects = _examdata.SR._Optionsubjects;
+            Imgsubjects _Imgsubjects = _examdata.SR._Imgsubjects;
+            List<float> maxscore = new List<float>();
+            List<string> optionanswer = new List<string>();
+            if (CheckOptionAnswer(maxscore, optionanswer)
+                && CheckResult())
+            {
+                List<string> ABCD = new List<string>() { "A", "B", "C", "D" };
+                Dictionary<string, int> dic = ABCD.ToDictionary(r => r, r => r[0] - 'A');
+                StringBuilder sb = new StringBuilder();
+                foreach (Optionsubject O in _Optionsubjects.OptionSubjects)
+                {
+                    List<int> Iabcd = ABCD.Select(r =>
+                        _students.students.Where(rr => rr.SelectOption(r, O.Index)).Count()).ToList();
+                    int okindex = dic[optionanswer[O.Index]];
+                    int rightcnt = Iabcd[okindex];
+                    int count = _students.students.Count;
+                    Double rightrate = rightcnt * 1.0 / count;
+                    sb.AppendLine(O.ID + " 分值：" + O.Score + " 正确答案：" + optionanswer[O.Index] + " 正确率(" + rightcnt + "/" + count + ")：" + rightrate);
+                    sb.AppendLine(
+                        string.Join("\r\n",
+                        ABCD.Select(r => "  选项：" + r + " (" + Iabcd[dic[r]] + "/" + count + ")[img]")
+                        )
+                    );
+                    //错误学生明单
+                    sb.AppendLine("错误学生名单");
+                    sb.AppendLine(
+                        string.Join("\r\n",
+                            ABCD.Where(r => r != optionanswer[O.Index]).Select(r =>
+                            {
+                                return  "选项"+r+":"+ string.Join(",",
+                                _students.students.Where(rr => rr.SelectOption(r, O.Index)).Select(sr => sr.Name));
+                            })
+                        )
+                    );
+                    sb.AppendLine();
+                }
+                File.WriteAllText(filename, sb.ToString());
+            }
         }
         private void ExportResult()
         {//导出成绩
@@ -263,10 +345,8 @@ namespace ScanTemplate.FormYJ
                             Tztitle += t.ToString()+",";
                         }
 
-
                         string title = Student.ResultTitle() +"选择题,非选择题,总分,"+ string.Join(",", _exam.OSubjects.Select(r => r.Name()))
                          +","  + string.Join(",", _examdata.SR._Imgsubjects.Subjects.Select(r => r.Name)) + ","+Tztitle+"\r\n";
-
 
                         StringBuilder sblistscore = new StringBuilder("姓名,总分\r\n");
                         StringBuilder sblisttizu = new StringBuilder("姓名,总分,选择题,"+Tztitle+"\r\n");

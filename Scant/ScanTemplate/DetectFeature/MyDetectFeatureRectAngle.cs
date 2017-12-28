@@ -18,7 +18,7 @@ namespace Tools
             this._src = bmp;
             if (_src != null)
             {
-                _listsubjects = AutoDetectRectAnge.GetSubjects(bmp.Size);
+                _listsubjects = AutoDetectRectAnge.GetSubjects(bmp.Size,bmp);
                 DetectedOK = Detect3Point();
                 if( (!DetectedOK && global.Debug) || (global.Debug && ( global.tag & 1)>0) )
                 {
@@ -33,10 +33,12 @@ namespace Tools
         }
         public MyDetectFeatureRectAngle(List<ARTemplate.FeaturePoint> list, Rectangle CorrectRect)
         {
-            _listFeatureRectangles = list.Select(r => r.Rect).ToList();
-            if(list.Count>0)
-            _listsubjects = AutoDetectRectAnge.GetSubjects( list[0].Rect.Size );
-            this.CorrectRect = CorrectRect;
+            //TODO: not Implement
+            throw new NotImplementedException();
+            //_listFeatureRectangles = list.Select(r => r.Rect).ToList();
+            //if (list.Count > 0)
+            //    _listsubjects = AutoDetectRectAnge.GetSubjects(list[0].Rect.Size);
+            //this.CorrectRect = CorrectRect;
         }
         public bool Detect3Point()
         {
@@ -413,13 +415,13 @@ namespace Tools
     public class AutoDetectRectAnge
     {
         public static string FeatureSetPath = "";
-        public static List<subject> GetSubjects(Size size)
+        public static List<subject> GetSubjects(Size size, System.Drawing.Bitmap bmp)
         {
-            return GetSubjects(size.Width, size.Height);
+            return GetSubjects(bmp,size.Width, size.Height);
         }
-        public static List<subject> GetSubjects(int sizewidth=30, int sizeheight=30)
+        public static List<subject> GetSubjects(System.Drawing.Bitmap bmp,int sizewidth=30, int sizeheight=30)
         {
-            List<Rectangle> list = AutoGetDetectRectAngel(new Size(sizewidth, sizeheight));
+            List<Rectangle> list = AutoGetDetectRectAngel(new Size(sizewidth, sizeheight),bmp);
             List<Rectangle> TBO = AutoTBO.GetAutoTBORect(list);
             string othername = OtherName(TBO);
             return new List<subject>()
@@ -440,27 +442,109 @@ namespace Tools
                 othername += "T";
             return othername;
         }
-        private static List<Rectangle> AutoGetDetectRectAngel(Size size)
+        private static List<Rectangle> AutoGetDetectRectAngel(Size size,System.Drawing.Bitmap _src)
         {
-            List<Rectangle> listrect = new List<Rectangle>()
-            {
-                new  Rectangle(50, 80, 250, 100),
-                new  Rectangle(size.Width-300, 80, 300, 100),
-                new  Rectangle(50, size.Height-280, 250, 100)
-            };
-            if (FeatureSetPath != "")
-            {
-                string filename = FeatureSetPath + ".detectFeatureSet.json";
-                if (!File.Exists(filename))
-                    filename = FeatureSetPath.Substring(0, FeatureSetPath.LastIndexOf("\\") + 1) + "default.detectFeatureSet.json";
-                if (File.Exists(filename))
-                {
-                    listrect = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Rectangle>>(File.ReadAllText(filename));
-                }
-            }
-            return listrect;
+            Rectangle r =  AutoDetect(_src);
+            Rectangle rect = new Rectangle(new Point(15, 15), new Size(size.Width - 30, size.Height - 30));
+
+            Rectangle r1 = new Rectangle(r.Left - 60, r.Top - 60, 160, 160);
+            Rectangle r2 = new Rectangle(r.Left - 60, r.Bottom - 100, 160, 160);
+            Rectangle r3 = new Rectangle(r.Right - 100, r.Top - 60, 160, 160);
+            r1.Intersect(rect);
+            r2.Intersect(rect);
+            r3.Intersect(rect);
+            
+            return new List<Rectangle>(){r1,r2,r3 };
+            //List<Rectangle> listrect = new List<Rectangle>()
+            //{
+            //    new  Rectangle(50, 80, 250, 100),
+            //    new  Rectangle(size.Width-300, 80, 300, 100),
+            //    new  Rectangle(50, size.Height-280, 250, 100)
+            //};
+            //if (FeatureSetPath != "")
+            //{
+            //    string filename = FeatureSetPath + ".detectFeatureSet.json";
+            //    if (!File.Exists(filename))
+            //        filename = FeatureSetPath.Substring(0, FeatureSetPath.LastIndexOf("\\") + 1) + "default.detectFeatureSet.json";
+            //    if (File.Exists(filename))
+            //    {
+            //        listrect = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Rectangle>>(File.ReadAllText(filename));
+            //    }
+            //}
+            //return listrect;
         }
 
+        public void InitDetectRectangle(Rectangle r, Size size)
+        {
+            Rectangle rect = new Rectangle(new Point(15, 15), new Size(size.Width - 30, size.Height - 30));
+            List<Rectangle> listrect = new List<Rectangle>()
+                {
+                    new  Rectangle(r.Left -60, r.Top -60, 160, 160),
+                    new  Rectangle(r.Left -60, r.Bottom-100, 160, 160),
+                    new  Rectangle(r.Right-100, r.Top -60, 160, 160)
+                };
+            for (int i = 0; i < listrect.Count; i++)
+                listrect[i].Intersect(rect);
+            //Top = listrect[0];
+            //Bottom = listrect[1];
+            //Other = listrect[2];
+            //Top.Intersect(rect);
+            //Bottom.Intersect(rect);
+            //Other.Intersect(rect);
+        }
+        public static Rectangle AutoDetect(Bitmap bmp) // 从30位算起
+        {
+            Rectangle rect = new Rectangle(0, 0, bmp.Width, bmp.Height);
+            int[] xxcnt = BitmapTools.CountXPixsum(bmp, rect);
+            int[] yycnt = BitmapTools.CountYPixsum(bmp, rect);
+            xxcnt = xxcnt.Select(r => yycnt.Length - r).ToArray();
+            yycnt = yycnt.Select(r => xxcnt.Length - r).ToArray();
+            int xxavg = (int)xxcnt.Average() / 3;
+            int yyavg = (int)yycnt.Average() / 3;
+            xxcnt = xxcnt.Select(r => r > xxavg ? 100 : 0).ToArray();
+            yycnt = yycnt.Select(r => r > yyavg ? 100 : 0).ToArray();
+
+            int xpos = xxcnt.Skip(30).ToList().FindIndex(r => r > 0) + 30;
+            int xendpos = xxcnt.Length - xxcnt.Reverse().Skip(30).ToList().FindIndex(r => r > 0) - 30;
+            int ypos = yycnt.Skip(30).ToList().FindIndex(r => r > 0) + 30;
+            int yendpos = yycnt.Length - yycnt.Reverse().Skip(30).ToList().FindIndex(r => r > 0) - 30;
+            //OutPixImage(xxcnt, yycnt);
+            return new Rectangle(xpos, ypos, xendpos - xpos, yendpos - ypos);
+        }
+        private void OutPixImage(int[] xxcnt, int[] yycnt)
+        {
+
+            Bitmap xb = new Bitmap(xxcnt.Count(), 100);
+            Bitmap yb = new Bitmap(100, yycnt.Count());
+            WhiteImage(xb);
+            WhiteImage(yb);
+            using (Graphics g = Graphics.FromImage(xb))
+            {
+                for (int i = 0; i < xxcnt.Count(); i++)
+                {
+                    g.DrawLine(Pens.Black, new Point(i, 0), new Point(i, xxcnt[i]));
+                }
+            }
+            xb.Save("F:\\out\\xb.jpg");
+
+            using (Graphics g = Graphics.FromImage(yb))
+            {
+                for (int i = 0; i < yycnt.Count(); i++)
+                {
+                    g.DrawLine(Pens.Black, new Point(0, i), new Point(yycnt[i], i));
+                }
+            }
+            yb.Save("F:\\out\\yb.jpg");
+        }
+        private void WhiteImage(Bitmap _Src)
+        {
+            if (_Src != null)
+                using (Graphics g = Graphics.FromImage(_Src))
+                {
+                    Rectangle _paper = new Rectangle(new Point(), _Src.Size);
+                    g.FillRectangle(Brushes.White, _paper);
+                }
+        }
     }
     public class AutoTBO  //确保 
     {

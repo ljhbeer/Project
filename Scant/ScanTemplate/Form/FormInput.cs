@@ -17,7 +17,6 @@ namespace ARTemplate
 
         public FormInput(string keyname)
         {
-            // TODO: Complete member initialization
             this.keyname = keyname;
             InitializeComponent();
             label2.Visible = textBox2.Visible = false;

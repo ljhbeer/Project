@@ -129,7 +129,6 @@
     </Compile>
     <Compile Include="Form\MoveDragTracker.cs" />
     <Compile Include="Form\Template.cs" />
-    <Compile Include="DetectFeature\MyDetectFeatureRectAngle.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ScanConfig.cs" />

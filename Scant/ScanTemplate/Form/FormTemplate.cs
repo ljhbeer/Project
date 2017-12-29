@@ -414,7 +414,6 @@ namespace ARTemplate
 
         private void CompleteDeFineId()
         {
-            //TODO: 考号  实现条形码，未实现 填涂
             String keyname = "考号";
             int cnt = m_tn.Nodes[keyname].GetNodeCount(false) ;
             if (!ExistDeFineSelection(keyname))
@@ -457,7 +456,8 @@ namespace ARTemplate
             }
         }
         private void CompleteDeFinePoint()
-        {//TODO: "特征点"
+        {
+            //TODO: add 特征点
             String keyname = "特征点";
             int cnt = m_tn.Nodes[keyname].GetNodeCount(false);
             if (cnt >= 3)
@@ -467,24 +467,25 @@ namespace ARTemplate
             }
             if (!ExistDeFineSelection(keyname) )
             {
-                Rectangle m_Imgselection = zoombox.BoxToImgSelection(MT.Selection);
-                Bitmap bmp = (Bitmap)pictureBox1.Image;
-                m_Imgselection.Intersect( new Rectangle(0,0,bmp.Width,bmp.Height));
-                Image img = bmp.Clone(m_Imgselection, bmp.PixelFormat);
-                //Bitmap img = ConvertFormat.Convert((Bitmap)cropimg, PixelFormat.Format8bppIndexed, true);
-                MyDetectFeatureRectAngle dr = new MyDetectFeatureRectAngle(null);
-                Rectangle r = dr.Detected(new Rectangle(0, 0, img.Width, img.Height), (Bitmap)img);               
-                if (r.Width > 0 )
-                {
-                    TreeNode t = new TreeNode(); 
-                    cnt++ ;
-                    t.Name = t.Text = keyname + cnt;
-                    r.Offset(m_Imgselection.Location);
-                    // FeaturePoint(r, new Point(0, 0));
-                    t.Tag = new FeaturePoint(r, new Point(bmp.Width/2, bmp.Height/2));
-                    //m_Imgselection = tf.ImgSelection();
-                    m_tn.Nodes[keyname].Nodes.Add(t);
-                }
+                //Rectangle m_Imgselection = zoombox.BoxToImgSelection(MT.Selection);
+                //Bitmap bmp = (Bitmap)pictureBox1.Image;
+                //m_Imgselection.Intersect( new Rectangle(0,0,bmp.Width,bmp.Height));
+                //Image img = bmp.Clone(m_Imgselection, bmp.PixelFormat);
+                ////Bitmap img = ConvertFormat.Convert((Bitmap)cropimg, PixelFormat.Format8bppIndexed, true);
+                //MyDetectFeatureRectAngle dr = new MyDetectFeatureRectAngle(null);
+                //Rectangle r = dr.Detected(new Rectangle(0, 0, img.Width, img.Height), (Bitmap)img);   
+                
+                //if (r.Width > 0 )
+                //{
+                //    TreeNode t = new TreeNode(); 
+                //    cnt++ ;
+                //    t.Name = t.Text = keyname + cnt;
+                //    r.Offset(m_Imgselection.Location);
+                //    // FeaturePoint(r, new Point(0, 0));
+                //    t.Tag = new FeaturePoint(r, new Point(bmp.Width/2, bmp.Height/2));
+                //    //m_Imgselection = tf.ImgSelection();
+                //    m_tn.Nodes[keyname].Nodes.Add(t);
+                //}
             }
         }
         private void CompleteDeFineName()
@@ -515,14 +516,13 @@ namespace ARTemplate
                 //t.Name = t.Text = ;
                 string choosename = keyname + cnt;
                 int count = 0;
-                //TODO: inputbox
                 if (InputBox.Input("选择题"))
                     count = InputBox.IntValue;
                 else
                 {
                     return;
                 }
-                {//仅支持 横向
+                {//TODO:仅支持 横向填涂
                     Bitmap bitmap = GetDrawedbyBlackWhiteBitMap();
                     DetectChoiceArea dca = new DetectChoiceArea(bitmap, count);
                     if (dca.Detect())

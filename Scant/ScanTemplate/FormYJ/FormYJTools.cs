@@ -456,8 +456,7 @@ namespace ScanTemplate.FormYJ
         }
         private void buttonBeginYJ_Click(object sender, EventArgs e)
         {
-            if (_exam == null ) return;             
-            //TODO: NextWork  saveResult
+            if (_exam == null ) return;
             FormFullScreenYJ fs = new FormFullScreenYJ(_exam);
             this.Hide();
             fs.ShowDialog();

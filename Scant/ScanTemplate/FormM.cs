@@ -122,7 +122,8 @@ namespace ScanTemplate
             List<string> nameList = dir.ImgList();
             if (nameList.Count > 0)
             {
-                AutoDetectRectAnge.FeatureSetPath = dir.FullPath;
+                //TODO: add Detect
+
                 _scan = new Scan(_sc,ti.TemplateFileName, nameList,dir.FullPath);
                 _rundt = Tools.DataTableTools.ConstructDataTable( _scan.ColNames.ToArray() );
                 dgv.DataSource = _rundt;
@@ -545,7 +546,6 @@ namespace ScanTemplate
                             ndr["图片考号"] = bmp.Clone(rkh, bmp.PixelFormat);
                         }
                         dt.Rows.Add(ndr);
-
                         //if (kh > 0 && name.Contains("-"))
                         //{
                         //    dt.Rows[dt.Rows.Count - 1].SetModified();

@@ -161,7 +161,7 @@ namespace ScanTemplate.FormYJ
                     dr["图片"] = _src.Clone(S.Rect, _src.PixelFormat);
                     dtset.Rows.Add(dr);
                 }
-                catch (Exception ee)
+                catch
                 {
                     ;
                 }
@@ -197,7 +197,7 @@ namespace ScanTemplate.FormYJ
                     Directory.CreateDirectory(ei.Path);
                 ImgbinManagesubjects ims = new ImgbinManagesubjects(_Students, _Imgsubjects);
                 ims.SaveBitmapFixedDataToData(ei.Path);
-                //TODO: 实现 exam.checkindex
+                //UTODO: 实现 exam.checkindex
                 g.AddExamInfo(ei);
                 g.SaveConfig("config.json");
                 string str = Tools.JsonFormatTool.ConvertJsonString(Newtonsoft.Json.JsonConvert.SerializeObject(exam));
@@ -482,7 +482,6 @@ namespace ScanTemplate.FormYJ
         }
         public void InitDeserialize()
         {
-            //TODO: set bitmapdatalength
             int w = Width;
             w = (w / 8) * 8 + (w % 8 > 2 ? 8 : 0);
             int stride = w / 8;
@@ -1141,9 +1140,6 @@ namespace ScanTemplate.FormYJ
             }
             _Ims = new ImgbinManagesubjects(_Students, _Imgsubjects);
             _Ims.InitLoadBindata(_workpath);
-            //TODO : _Students.CheckIndex Error  . 在 Savebitmapdata之后 Check
-            //if (!_Students.CheckIndex())
-            //    MessageBox.Show("index Error");
         }
         public StudentsResult(FormYJ.Students _Students, Imgsubjects _Imgsubjects, Optionsubjects _Optionsubjects, string Path, List<List<int>> result)
         {

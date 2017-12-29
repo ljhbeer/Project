@@ -196,7 +196,7 @@ namespace ARTemplate
         private Dictionary<string, List<Area>> _dic;
         private ManageAreas _manageareas;
         private AutoAngle _angle;
-        private TemplateData td;
+        //private TemplateData td;
         public string FileName { get { return ""; } }
         //public void SetFeaturePoint(List<Rectangle> list, Rectangle cr)
         //{

@@ -260,10 +260,8 @@ namespace ScanTemplate
     public class TemplateShow
     {
         private string _imgfilename;
-        private Bitmap _src;
-        private MyDetectFeatureRectAngle _dr;
+        //private MyDetectFeatureRectAngle _dr;
         private Template _artemplate;
-        private AutoAngle _angle;
         private string _fullpath;
         private string _dirname;
         private TemplateInfo ti;
@@ -274,27 +272,41 @@ namespace ScanTemplate
             this._imgfilename = imgfilename;
             this._dirname = dirname;
             this.ti = ti;
+            this.OK = false;
             //this._src = (Bitmap)Bitmap.FromFile(_imgfilename);
             System.IO.FileStream fs = new System.IO.FileStream(imgfilename, System.IO.FileMode.Open, System.IO.FileAccess.Read);
             Bitmap _src = (Bitmap)System.Drawing.Image.FromStream(fs);
-
-
-            AutoDetectRectAnge.FeatureSetPath = _fullpath;
-            this._dr = new MyDetectFeatureRectAngle(_src);
-            this.OK = _dr.DetectedOK;
-            if (_dr.DetectedOK )
+            DetectData dd = DetectImageTools.DetectImg(_src);
+            if (dd.CorrectRect.Width > 0)
             {
-                if (ti == null)
-                {
-                    _artemplate = new Template(_dr.ListFeatureRectangle);
-                }
-                else
-                {
-                    _artemplate = new Template(_dr.ListFeatureRectangle);
-                    Template t = Templates.GetTemplate(ti.TemplateFileName);
-                    _artemplate.Match(t);
-                }
+                 if (ti == null)
+                 {
+                     _artemplate = new Template(dd.ListDetectArea);
+                 }
+                 else
+                 {
+                     _artemplate = new Template(dd.ListDetectArea);
+                     Template t = Templates.GetTemplate(ti.TemplateFileName);
+                     _artemplate.Match(t);
+                 }
+                 this.OK = true;
             }
+            //TODO: DetectImg
+            //this._dr = new MyDetectFeatureRectAngle(_src);
+            //this.OK = _dr.DetectedOK;
+            //if (_dr.DetectedOK )
+            //{
+            //    if (ti == null)
+            //    {
+            //        _artemplate = new Template(_dr.ListFeatureRectangle);
+            //    }
+            //    else
+            //    {
+            //        _artemplate = new Template(_dr.ListFeatureRectangle);
+            //        Template t = Templates.GetTemplate(ti.TemplateFileName);
+            //        _artemplate.Match(t);
+            //    }
+            //}
             fs.Close();
             fs = null;
         }
@@ -306,7 +318,7 @@ namespace ScanTemplate
     public class Scan
     {
         private ScanConfig _sc;
-        private MyDetectFeatureRectAngle _dr;
+      
         private Template _template;
         private AutoAngle _angle;
         private string _templatename;
@@ -333,11 +345,15 @@ namespace ScanTemplate
             this._dirname = fulldirpath.Substring(fulldirpath.LastIndexOf("\\") + 1);
             this._srcpath = fulldirpath;
             Template t = Templates.GetTemplate(templatename);
-            if (forscan)
-                _dr = new MyDetectFeatureRectAngle( t.Manageareas.FeaturePoints.list ,t.CorrectRect);
+            //if (forscan)
+            //    _dr = new MyDetectFeatureRectAngle( t.Manageareas.FeaturePoints.list ,t.CorrectRect);
             if (!Directory.Exists(CorrectPath))
                 Directory.CreateDirectory(CorrectPath);
             _template = t;
+        }
+        public void Clear()
+        {
+            //TODO: ClearScanData
         }
         public void DoScan()
         {
@@ -367,7 +383,12 @@ namespace ScanTemplate
             System.IO.FileStream fs = new System.IO.FileStream(s,System.IO.FileMode.Open, System.IO.FileAccess.Read);
             Bitmap orgsrc = (Bitmap)System.Drawing.Image.FromStream(fs);
             List<Rectangle> TBO = new List<Rectangle>();
-            Rectangle CorrectRect = _dr.Detected(orgsrc, TBO);
+            //Rectangle CorrectRect = _dr.Detected(orgsrc, TBO);
+            //TODO: set Type = 3
+            int type = 3;
+            DetectData dd = DetectImageTools.DetectImg(orgsrc, this.Template.CorrectRect, type);
+            Rectangle CorrectRect = dd.CorrectRect;
+            TBO = AutoTBO.GetAutoTBORect(dd.ListDetectArea);
             if (CorrectRect.Width > 0 && TBO.Count == 3)
             {
                 if (!SetAngle(orgsrc, TBO,CorrectRect))
@@ -443,23 +464,23 @@ namespace ScanTemplate
         private bool SetAngle(Bitmap orgsrc, List<Rectangle> TBO, Rectangle CorrectRect)
         {
             Rectangle T = TBO[0];
-            Rectangle B = _dr.Detected(TBO[1], orgsrc);
-            Rectangle O = new Rectangle();
-            O = _dr.Detected(TBO[2], orgsrc);
-            if (B.Width == 0)
-            {
-                Rectangle R = TBO[1];
-                R.Inflate(R.Width / 2, R.Height / 5);
-                //bmpB = (Bitmap)bmp.Clone(R, bmp.PixelFormat);
-                B = _dr.Detected(R, orgsrc);
-                if (B.Width == 0)
-                {
-                    return false;
-                    //MessageBox.Show("检测特征点B失败");
-                    //Msg += s + "检测特征点B失败\r\n";
-                    //return "";
-                }
-            }
+            Rectangle B = TBO[1];
+            Rectangle O = TBO[2];
+            //O = _dr.Detected(TBO[2], orgsrc);
+            //if (B.Width == 0)
+            //{
+            //    Rectangle R = TBO[1];
+            //    R.Inflate(R.Width / 2, R.Height / 5);
+            //    //bmpB = (Bitmap)bmp.Clone(R, bmp.PixelFormat);
+            //    B = _dr.Detected(R, orgsrc);
+            //    if (B.Width == 0)
+            //    {
+            //        return false;
+            //        //MessageBox.Show("检测特征点B失败");
+            //        //Msg += s + "检测特征点B失败\r\n";
+            //        //return "";
+            //    }
+            //}
             Point offset = new Point(-CorrectRect.X, -CorrectRect.Y);
             T.Offset(offset);
             B.Offset(offset);
@@ -514,10 +535,6 @@ namespace ScanTemplate
         public string TemplateName { get { return _templatename; } }
         public AutoAngle Angle { get { return _angle; } }
         public Template Template { get { return _template; } }
-        public void Clear()
-        {
-            //TODO: ClearScanData
-        }
     }
     public class ValueTag
     {

@@ -484,16 +484,15 @@ namespace ARTemplate
                 return _list;
             }
         }
-
-        public static List<Area> GetFeaturesfromTBO(List<Rectangle> listTBO)
+        public static List<Area> GetFeaturesfromrects(List<Rectangle> list)
         {
-            List<Area> list = new List<Area>();
-            Point mid = Tools.AutoTBO.GetMidPoint(listTBO);
-            for (int i = 0; i < listTBO.Count; i++)
+            List<Area> lst = new List<Area>();
+            Point mid = Tools.DetectImageTools.GetMidPoint(list);
+            for (int i = 0; i < list.Count; i++)
             {
-                list.Add( new FeaturePoint( listTBO[i], mid));
+                lst.Add( new FeaturePoint( list[i], mid));
             }
-            return list;
+            return lst;
         }
     }
     public class KaoHaoChoiceAreas :Areas

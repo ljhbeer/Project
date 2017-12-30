@@ -33,19 +33,35 @@ namespace ScanTemplate
 
         private void FormChoose_Load(object sender, EventArgs e)
         {
-
-            if (File.Exists("tagcfg.ini"))
+            //SaveGlobal();
+            if (File.Exists("global.json"))
             {
-                string s = File.ReadAllText("tagcfg.ini");
                 try
                 {
-                    global.tag = Convert.ToInt32(s,2);
+                    string _filename = "global.json";
+                     globalsave gs =Newtonsoft.Json.JsonConvert.DeserializeObject<globalsave>(File.ReadAllText(_filename));
+                     global.Debug = gs.Debug;
+                     global.featuretype = gs.featuretype;
+                     global.tag = gs.tag;
+                     global.msg = gs.msg;
                 }
                 catch
                 {
                 }
             }
         }
-    }
+        private void SaveGlobal()
+        {
+            //string str = Tools.JsonFormatTool.ConvertJsonString(Newtonsoft.Json.JsonConvert.SerializeObject(new  global()));
+            //File.WriteAllText("global.json", str);
+            globalsave gs = new globalsave();
+            gs.Debug = global.Debug;
+            gs.featuretype = global.featuretype;
+            gs.tag = global.tag;
+            gs.msg = global.msg;
 
+            string str = Tools.JsonFormatTool.ConvertJsonString(Newtonsoft.Json.JsonConvert.SerializeObject(gs));
+            File.WriteAllText("global.json", str);
+        }        
+    }
 }

@@ -22,5 +22,14 @@ namespace ScanTemplate
     {
         public static Boolean Debug = false;
         public static int tag = 0;
-    } 
+        public static int featuretype = 0;  // 0 左上下  1右上下
+        public static string msg = "说明";
+    }
+    public class globalsave
+    {
+        public  Boolean Debug;
+        public  int tag;
+        public  int featuretype;  // 0 左上下  1右上下
+        public  string msg;
+    }
 }

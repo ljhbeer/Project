@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Drawing;
+using ScanTemplate;
 
 namespace Tools
 {
@@ -14,9 +15,34 @@ namespace Tools
         private double _Angle2;
         public AutoAngle(List<Point> list) // TBO
         {
-            this._T = list;
+            if(list.Count == 4 && global.featuretype ==0)
+               this._T = list;
+            else if (list.Count == 4 && global.featuretype == 1)
+            {
+                _T = new List<Point>() { list[2], list[3], list[0], list[1] };
+            }
+            else if (list.Count == 3)
+            {
+                _T = list;
+            }
+
             _P = null;
             _Angle1 = Arcsin(_T[0], _T[1]);
+        }
+
+        public void SetPaper(List<Rectangle> list)
+        {
+            if ((list.Count == 4|| list.Count == 3) && global.featuretype == 0  )
+               SetPaper(list[0].Location,list[1].Location,list[2].Location);
+            else if (list.Count == 4 && global.featuretype == 1 )
+            {
+                SetPaper(list[2].Location, list[3].Location, list[0].Location);
+            }
+            else if (list.Count == 3 && global.featuretype == 1) //
+            {
+                SetPaper(list[0].Location, list[1].Location, list[2].Location);
+            }
+            
         }
 
         private double  Arcsin(Point P0, Point P1)
@@ -74,5 +100,6 @@ namespace Tools
                 return _Angle2;
             }
         }
+
     }
 }

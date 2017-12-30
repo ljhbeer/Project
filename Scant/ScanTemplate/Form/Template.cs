@@ -15,19 +15,13 @@ namespace ARTemplate
     [JsonObject(MemberSerialization.OptIn)]
     public class Template
     {
-        public Template(List<Rectangle> list)
+        public Template(List<Rectangle> list, Rectangle correctRect)
         {
-            _dic = new Dictionary<string, List<Area>>();
-            List<Rectangle> listTBO = AutoTBO.GetAutoTBORect(list);
-            InitCorrectRect(listTBO);
-            foreach (string s in new string[] { "特征点", "考号", "校对", "选择题", "非选择题", "选区变黑", "选区变白", "题组", "自定义" })
-                if (!_dic.ContainsKey(s))
-                    _dic[s] = new List<Area>();
-            List<Rectangle> newlist = new List<Rectangle>();
-            foreach (Rectangle r in listTBO)
-                newlist.Add(new Rectangle(r.X - CorrectRect.X, r.Y - CorrectRect.Y, r.Width, r.Height));              
-            _dic["特征点"].AddRange( FeaturePoints.GetFeaturesfromTBO(newlist) );
+            InitEmptyDic();
+            this.CorrectRect = correctRect;
+            _dic["特征点"].AddRange( FeaturePoints.GetFeaturesfromrects(list) );
             _manageareas = null;
+            
             _angle = new AutoAngle( list.Select(r => new Point(r.X - CorrectRect.X,r.Y-CorrectRect.Y)).ToList() ); 
         }
         public Template(TemplateData td)
@@ -37,17 +31,12 @@ namespace ARTemplate
             _manageareas = null;
             _angle = new AutoAngle(Manageareas.FeaturePoints.list.Select(r => r.Rect.Location).ToList());
         }
-        private void InitCorrectRect(List<Rectangle> listTBO)
+        private void InitEmptyDic()
         {
-            string Ostr = AutoDetectRectAnge.OtherName(listTBO);
-            if (Ostr.StartsWith("L"))
-            {
-                CorrectRect = new Rectangle(listTBO[2].X, listTBO[0].Y, listTBO[0].Right - listTBO[2].Left, listTBO[1].Bottom - listTBO[0].Top);
-            }
-            else
-            {
-                CorrectRect = new Rectangle(listTBO[0].X, listTBO[0].Y, listTBO[2].Right - listTBO[0].Left, listTBO[1].Bottom - listTBO[0].Top);
-            }
+            _dic = new Dictionary<string, List<Area>>();
+            foreach (string s in new string[] { "特征点", "考号", "校对", "选择题", "非选择题", "选区变黑", "选区变白", "题组", "自定义" })
+                if (!_dic.ContainsKey(s))
+                    _dic[s] = new List<Area>();
         }
        
         public void UpdateTreeNodes(TreeNode m_tn)
@@ -214,10 +203,8 @@ namespace ARTemplate
         //        _dic[key].Add(new FeaturePoint(r, midpoint));
         //    }
         //}
-
         public AutoAngle Angle { get { return _angle; } }
-
-        internal void Match(Template t)
+        public void Match(Template t)
         {
            //_angle.SetPaper( t._angle.Angle1 );
            t.Angle.SetPaper(_angle.Angle1);

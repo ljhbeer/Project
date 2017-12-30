@@ -240,6 +240,15 @@ namespace ScanTemplate
             }
             return null;
         }
+        public static Rectangle GetTemplateCorrect(string filename)
+        {
+            TemplateData td = new TemplateData(File.ReadAllText(filename));
+            if (td.Correctrect.Width > 0)
+            {
+                return td.Correctrect; ;
+            }
+            return new Rectangle();
+        }
     }
     public class TemplateInfo
     {
@@ -276,37 +285,28 @@ namespace ScanTemplate
             //this._src = (Bitmap)Bitmap.FromFile(_imgfilename);
             System.IO.FileStream fs = new System.IO.FileStream(imgfilename, System.IO.FileMode.Open, System.IO.FileAccess.Read);
             Bitmap _src = (Bitmap)System.Drawing.Image.FromStream(fs);
-            DetectData dd = DetectImageTools.DetectImg(_src);
+         
+            Rectangle cr = new Rectangle();
+            if (ti != null)
+            {
+                cr = Templates.GetTemplateCorrect(ti.TemplateFileName);
+            }
+            DetectData dd = DetectImageTools.DetectImg(_src,cr);
             if (dd.CorrectRect.Width > 0)
             {
                  if (ti == null)
                  {
-                     _artemplate = new Template(dd.ListDetectArea);
+                     _artemplate = new Template(dd.ListFeature,dd.CorrectRect);
                  }
                  else
                  {
-                     _artemplate = new Template(dd.ListDetectArea);
+                     _artemplate = new Template(dd.ListFeature,dd.CorrectRect);
                      Template t = Templates.GetTemplate(ti.TemplateFileName);
                      _artemplate.Match(t);
                  }
                  this.OK = true;
             }
-            //TODO: DetectImg
-            //this._dr = new MyDetectFeatureRectAngle(_src);
-            //this.OK = _dr.DetectedOK;
-            //if (_dr.DetectedOK )
-            //{
-            //    if (ti == null)
-            //    {
-            //        _artemplate = new Template(_dr.ListFeatureRectangle);
-            //    }
-            //    else
-            //    {
-            //        _artemplate = new Template(_dr.ListFeatureRectangle);
-            //        Template t = Templates.GetTemplate(ti.TemplateFileName);
-            //        _artemplate.Match(t);
-            //    }
-            //}
+           
             fs.Close();
             fs = null;
         }
@@ -382,24 +382,15 @@ namespace ScanTemplate
             StringBuilder sb = new StringBuilder();
             System.IO.FileStream fs = new System.IO.FileStream(s,System.IO.FileMode.Open, System.IO.FileAccess.Read);
             Bitmap orgsrc = (Bitmap)System.Drawing.Image.FromStream(fs);
-            List<Rectangle> TBO = new List<Rectangle>();
-            //Rectangle CorrectRect = _dr.Detected(orgsrc, TBO);
-            //TODO: set Type = 3
-            int type = 3;
-            DetectData dd = DetectImageTools.DetectImg(orgsrc, this.Template.CorrectRect, type);
-            Rectangle CorrectRect = dd.CorrectRect;
-            TBO = AutoTBO.GetAutoTBORect(dd.ListDetectArea);
-            if (CorrectRect.Width > 0 && TBO.Count == 3)
+            DetectData dd = DetectImageTools.DetectImg(orgsrc, this.Template.CorrectRect );         
+            if (dd.CorrectRect.Width > 0 ) //TODO: 进一步判断
             {
-                if (!SetAngle(orgsrc, TBO,CorrectRect))
-                {
-                    Msg += s + "检测特征点B失败\r\n";
-                    return "";
-                }
-                sb.Append(s + "," + CorrectRect.ToString("-"));// 文件名 , CorrectRect
+                _angle.SetPaper(dd.ListFeature);
+               
+                sb.Append(s + "," + dd.CorrectRect.ToString("-"));// 文件名 , CorrectRect
                 sb.Append("," + _angle.Angle2 ); //校验角度
 
-                Bitmap src = (Bitmap)orgsrc.Clone(CorrectRect, orgsrc.PixelFormat);
+                Bitmap src = (Bitmap)orgsrc.Clone(dd.CorrectRect, orgsrc.PixelFormat);
                 src.Save(CorrectPath + s.Substring(s.LastIndexOf("\\")));
                 AutoComputeXZTKH acx = new AutoComputeXZTKH(_template,src);
                 if (_template.Manageareas.KaohaoChoiceAreas.HasItems())
@@ -460,33 +451,6 @@ namespace ScanTemplate
             sb.AppendLine();
             fs.Close();
             return sb.ToString();
-        }
-        private bool SetAngle(Bitmap orgsrc, List<Rectangle> TBO, Rectangle CorrectRect)
-        {
-            Rectangle T = TBO[0];
-            Rectangle B = TBO[1];
-            Rectangle O = TBO[2];
-            //O = _dr.Detected(TBO[2], orgsrc);
-            //if (B.Width == 0)
-            //{
-            //    Rectangle R = TBO[1];
-            //    R.Inflate(R.Width / 2, R.Height / 5);
-            //    //bmpB = (Bitmap)bmp.Clone(R, bmp.PixelFormat);
-            //    B = _dr.Detected(R, orgsrc);
-            //    if (B.Width == 0)
-            //    {
-            //        return false;
-            //        //MessageBox.Show("检测特征点B失败");
-            //        //Msg += s + "检测特征点B失败\r\n";
-            //        //return "";
-            //    }
-            //}
-            Point offset = new Point(-CorrectRect.X, -CorrectRect.Y);
-            T.Offset(offset);
-            B.Offset(offset);
-            O.Offset(offset);
-            _angle.SetPaper(T.Location, B.Location, O.Location);
-            return true;
         }
         public string CorrectPath { get { return _sc.Baseconfig.CorrectImgPath + "\\" + _dirname; } }
         public List<string> ExportTitles { get { return _template.GetTitles(); } }

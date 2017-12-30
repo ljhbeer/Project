@@ -91,6 +91,7 @@ namespace Tools
                 size.Height *= rat;
             int W = (int)(sizecontent.Width / size.Width);
             int H = (int)(sizecontent.Height / size.Height);
+            W = W > 0 ? W : 1;
             while (W * H < Count)
                 H++;
             return new Size(W, H);

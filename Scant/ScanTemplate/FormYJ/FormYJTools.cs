@@ -140,8 +140,9 @@ namespace ScanTemplate.FormYJ
             //AutoDetectRectAnge adr = new AutoDetectRectAnge();
             //adr.ComputTBO(listrect);
             
-            List<Rectangle> listTBO = AutoTBO.GetAutoTBORect(listrect);
-            AutoAngle angle = new AutoAngle(listTBO.Select(r=>r.Location).ToList());
+            //TODO: listTBO
+            List<Rectangle> listTBO = listrect;// AutoTBO.GetAutoTBORect(listrect);
+            AutoAngle angle = new AutoAngle(listTBO.Select(r => r.Location).ToList());
 
 
             //题组
@@ -230,6 +231,7 @@ namespace ScanTemplate.FormYJ
             {
                 ExportXztFx(saveFileDialog2.FileName);
                 ExportFxztFx(saveFileDialog2.FileName);
+                MessageBox.Show("已导出成绩分析");
             }
         }
         private void ExportXztFx(string filename)
@@ -393,6 +395,7 @@ namespace ScanTemplate.FormYJ
                         List<string> list1 = new List<string>(sblisttizu.ToString().Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries));
                         tbl.DrawListInPaper(list).Save( saveFileDialog2.FileName + ".jpg");
                         tbl.DrawListInPaper(list1).Save( saveFileDialog2.FileName + "_1.jpg");
+                        MessageBox.Show("已输出成绩分析");
                     }
                     catch (Exception ex)
                     {

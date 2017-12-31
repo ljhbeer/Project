@@ -491,6 +491,46 @@ namespace ScanTemplate.FormYJ
         {
            FormYJInit.ImportOptionAnswerScore(_dtsetxzt);
         }
+        private void pictureBox1_MouseEnter(object sender, EventArgs e)
+        {
+            pictureBox1.Focus();
+        }
+        private void pictureBox1_MouseWheel(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            if (pictureBox1.Image == null) return;
+            int numberOfTextLinesToMove = e.Delta * SystemInformation.MouseWheelScrollLines / 120;
+            double f = 0.0;
+            if (numberOfTextLinesToMove > 0)
+            {
+                for (int i = 0; i < numberOfTextLinesToMove; i++)
+                {
+                    f += 0.05;
+                }
+                Zoomrat(f + 1, e.Location);
+            }
+            else if (numberOfTextLinesToMove < 0)
+            {
+                for (int i = 0; i > numberOfTextLinesToMove; i--)
+                {
+                    f -= 0.05;
+                }
+                Zoomrat(f + 1, e.Location);
+            }
+        }
+        private void Zoomrat(double rat, Point e)
+        {
+            Bitmap bitmap_show = (Bitmap)pictureBox1.Image;
+            Point L = pictureBox1.Location;
+            Point S = panel3.AutoScrollPosition;
+            int w = (int)(pictureBox1.Width * rat);
+            int h = w * bitmap_show.Height / bitmap_show.Width;
+            L.Offset((int)(e.X * (rat - 1)), (int)(e.Y * (rat - 1)));
+            pictureBox1.SetBounds(S.X, S.Y, w, h);
+            //zoombox.UpdateBoxScale(pictureBox1);
+            S.Offset((int)(e.X * (1 - rat)), (int)(e.Y * (1 - rat)));
+            panel3.Invalidate();
+            panel3.AutoScrollPosition = new Point(-S.X, -S.Y);
+        }
         private void InitDgvSetUI(bool xzt)
         {
             _bshowstudent = false;
@@ -643,48 +683,6 @@ namespace ScanTemplate.FormYJ
         private object _activeitem;
         private Examdata _examdata;
         private bool _bexamdatamodified;
-
-        private void pictureBox1_MouseEnter(object sender, EventArgs e)
-        {
-            pictureBox1.Focus();
-        }
-        private void pictureBox1_MouseWheel(object sender, System.Windows.Forms.MouseEventArgs e)
-        {
-            if (pictureBox1.Image == null) return;
-            int numberOfTextLinesToMove = e.Delta * SystemInformation.MouseWheelScrollLines / 120;
-            double f = 0.0;
-            if (numberOfTextLinesToMove > 0)
-            {
-                for (int i = 0; i < numberOfTextLinesToMove; i++)
-                {
-                    f += 0.05;
-                }
-                Zoomrat(f + 1, e.Location);
-            }
-            else if (numberOfTextLinesToMove < 0)
-            {
-                for (int i = 0; i > numberOfTextLinesToMove; i--)
-                {
-                    f -= 0.05;
-                }
-                Zoomrat(f + 1, e.Location);
-            }
-        }
-        private void Zoomrat(double rat, Point e)
-        {
-            Bitmap bitmap_show = (Bitmap)pictureBox1.Image;
-            Point L = pictureBox1.Location;
-            Point S = panel3.AutoScrollPosition;
-            int w = (int)(pictureBox1.Width * rat);
-            int h = w * bitmap_show.Height / bitmap_show.Width;
-            L.Offset((int)(e.X * (rat - 1)), (int)(e.Y * (rat - 1)));
-            pictureBox1.SetBounds(S.X, S.Y, w, h);
-            //zoombox.UpdateBoxScale(pictureBox1);
-            S.Offset((int)(e.X * (1 - rat)), (int)(e.Y * (1 - rat)));
-            panel3.Invalidate();
-            panel3.AutoScrollPosition = new Point(-S.X, -S.Y);
-        }
-
     }
     public class Examdata
     {

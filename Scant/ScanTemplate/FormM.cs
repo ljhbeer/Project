@@ -16,8 +16,7 @@ using Tools;
 using ScanTemplate.FormYJ;
 namespace ScanTemplate
 {
-	public delegate void MyInvoke( );
-    
+	public delegate void MyInvoke( );    
 	public partial class FormM : Form
 	{
         private ScanConfig _sc;
@@ -370,6 +369,13 @@ namespace ScanTemplate
             new FormTemplate().ShowDialog();
             this.Show();
         }
+        private void checkBoxDebug_CheckedChanged(object sender, EventArgs e)
+        {
+            if(checkBoxDebug.Checked)
+               global.Debug = true;
+            else
+                global.Debug = false;;
+        }
         private void VerifyName()
         {
             Template _artemplate = _scan.Template;
@@ -659,14 +665,6 @@ namespace ScanTemplate
                     }
                 }
             }
-        }
-
-        private void checkBoxDebug_CheckedChanged(object sender, EventArgs e)
-        {
-            if(checkBoxDebug.Checked)
-               global.Debug = true;
-            else
-                global.Debug = false;;
         }
 	}	
 }

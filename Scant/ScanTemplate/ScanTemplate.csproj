@@ -55,7 +55,6 @@
   <ItemGroup>
     <Compile Include="AutoAngle.cs" />
     <Compile Include="AutoComputeXZT.cs" />
-    <Compile Include="DetectFeature\subject.cs" />
     <Compile Include="FormChooseResult.cs">
       <SubType>Form</SubType>
     </Compile>

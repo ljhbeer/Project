@@ -9,11 +9,7 @@ namespace Tools
 {
      public class AutoAngle
     {
-        private List<Point> _T;
-        private List<Point> _P;
-        private double _Angle1;
-        private double _Angle2;
-        public AutoAngle(List<Point> list) // TBO
+        public AutoAngle(List<Point> list)
         {
             if(list.Count == 4 && global.featuretype ==0)
                this._T = list;
@@ -29,7 +25,6 @@ namespace Tools
             _P = null;
             _Angle1 = Arcsin(_T[0], _T[1]);
         }
-
         public void SetPaper(List<Rectangle> list)
         {
             if ((list.Count == 4|| list.Count == 3) && global.featuretype == 0  )
@@ -43,20 +38,6 @@ namespace Tools
                 SetPaper(list[0].Location, list[1].Location, list[2].Location);
             }
             
-        }
-
-        private double  Arcsin(Point P0, Point P1)
-        {
-            double r = Math.Sqrt((P1.X - P0.X) * (P1.X - P0.X) + (P1.Y - P0.Y) * (P1.Y - P0.Y));
-            return Math.Asin( (P1.X-P0.X)/r );
-        }
-
-        public double SetPaper(Point P0, Point P1, Point P2) // TBO
-        {
-            _P = new List<Point>(){P0,P1,P2};
-            _Angle2 = Arcsin(P0, P1);
-            return _Angle2;
-
         }
         public void SetPaper(double angle)
         {
@@ -85,7 +66,6 @@ namespace Tools
                 return new Point(nx,ny);
             }
         }
-
         public double Angle1
         {
             get
@@ -100,6 +80,20 @@ namespace Tools
                 return _Angle2;
             }
         }
+        private double  Arcsin(Point P0, Point P1)
+        {
+            double r = Math.Sqrt((P1.X - P0.X) * (P1.X - P0.X) + (P1.Y - P0.Y) * (P1.Y - P0.Y));
+            return Math.Asin( (P1.X-P0.X)/r );
+        }
+        private void SetPaper(Point P0, Point P1, Point P2)
+        {
+            _P = new List<Point>(){P0,P1,P2};
+            _Angle2 = Arcsin(P0, P1);
+        }
 
+        private List<Point> _T;
+        private List<Point> _P;
+        private double _Angle1;
+        private double _Angle2;
     }
 }

@@ -51,7 +51,7 @@ namespace ARTemplate
         public static float FloatValue;
 
     }
-     [JsonObject(MemberSerialization.OptIn)]
+    [JsonObject(MemberSerialization.OptIn)]
     public class Area
     {
         public Rectangle ImgArea { get { return Rect; } }
@@ -60,27 +60,27 @@ namespace ARTemplate
             return Rect.IntersectsWith(rect);
         }
 
-        public virtual Rectangle[] ImgSubArea() {  return null;   }
-        public virtual bool HasSubArea() {  return false;  }
+        public virtual Rectangle[] ImgSubArea() { return null; }
+        public virtual bool HasSubArea() { return false; }
         public virtual bool NeedFill() { return false; }
         public virtual Brush FillPen() { return Brushes.Black; }
         public virtual string ToXmlString()
         {
             return Rect.ToXmlString();
         }
-        public override  string ToString()
+        public override string ToString()
         {
             return TypeName;
         }
-         [JsonProperty]
+        [JsonProperty]
         public Rectangle Rect;
-         [JsonIgnore]
+        [JsonIgnore]
         public string TypeName { get; set; }
     }
-     [JsonObject(MemberSerialization.OptIn)]
+    [JsonObject(MemberSerialization.OptIn)]
     public class FeaturePoint : Area
     {
-        public FeaturePoint(Rectangle r,Point midpoint) // 0,左上  1，右上  2左下 3又下
+        public FeaturePoint(Rectangle r, Point midpoint) // 0,左上  1，右上  2左下 3又下
         {
             TypeName = "特征点";
             this.Rect = r;
@@ -99,27 +99,27 @@ namespace ARTemplate
                     Direction = 3;
             }
         }
-        public override bool HasSubArea(){ return true;  }
+        public override bool HasSubArea() { return true; }
         public override Rectangle[] ImgSubArea()
         {
-                return new Rectangle[] { Rect, BigImgSelection() };
+            return new Rectangle[] { Rect, BigImgSelection() };
         }
         private Rectangle BigImgSelection()
         {
-           return  new Rectangle(Rect.X - Rect.Width,
-                Rect.Y - Rect.Height,
-                Rect.Width * 3, Rect.Height * 3);
+            return new Rectangle(Rect.X - Rect.Width,
+                 Rect.Y - Rect.Height,
+                 Rect.Width * 3, Rect.Height * 3);
         }
         [JsonProperty]
         public int Direction { get; set; }
-    }   
-     [JsonObject(MemberSerialization.OptIn)]
+    }
+    [JsonObject(MemberSerialization.OptIn)]
     public class KaoHaoChoiceArea : Area
     {
-         public KaoHaoChoiceArea()
-         {
-             list = new List<List<Point>>();
-         }
+        public KaoHaoChoiceArea()
+        {
+            list = new List<List<Point>>();
+        }
         public KaoHaoChoiceArea(Rectangle m_Imgselection, string name, string type)
         {
             this.TypeName = "考号";
@@ -142,7 +142,8 @@ namespace ARTemplate
                 return false;
             return true;
         }
-        public override Rectangle[] ImgSubArea() {
+        public override Rectangle[] ImgSubArea()
+        {
             if ("1023456789".Contains(Type))                                    //(Type == "填涂横向" || Type == "填涂纵向")
             {
                 int count = 0;
@@ -161,23 +162,23 @@ namespace ARTemplate
                         i++;
                     }
                 }
-                return rv; 
+                return rv;
             }
             return null;
         }
         public override string ToXmlString() //分Type
         {
-            String str =Type.ToXmlString("TYPE") + Rect.ToXmlString() 
+            String str = Type.ToXmlString("TYPE") + Rect.ToXmlString()
                 + Name.ToXmlString("NAME"); //+ "<SIZE>" + size.Width + "," + size.Height + "</SIZE>"
             if (Type == "条形码")
                 str += "";
-            else if("1023456789".Contains(Type)) // (Type == "填涂横向" || Type == "填涂纵向")
-            { 
+            else if ("1023456789".Contains(Type)) // (Type == "填涂横向" || Type == "填涂纵向")
+            {
                 int i = 0;
                 str += Size.ToXmlString();
                 foreach (List<Point> lp in list)
                 {
-                   str += "<SINGLE ID=\"" + i++ + "\">" + string.Join("", lp.Select(r => r.ToXmlString())) + "</SINGLE>";
+                    str += "<SINGLE ID=\"" + i++ + "\">" + string.Join("", lp.Select(r => r.ToXmlString())) + "</SINGLE>";
                 }
             }
             return str;
@@ -186,24 +187,24 @@ namespace ARTemplate
         {
             return Name;
         }
-         [JsonProperty]
+        [JsonProperty]
         public string Name { get; set; }
-          [JsonProperty]
+        [JsonProperty]
         public string Type { get; set; }
         // "填涂横向" || Type == "填涂纵向"
-          [JsonProperty]
+        [JsonProperty]
         public List<List<Point>> list;
-          [JsonProperty]
+        [JsonProperty]
         public Size Size;
     }
-     [JsonObject(MemberSerialization.OptIn)]
+    [JsonObject(MemberSerialization.OptIn)]
     public class SingleChoiceArea : Area
     {
-         public SingleChoiceArea()
-         {
-             list = new List<List<Point>>();
-         }
-        public SingleChoiceArea(Rectangle  rect, string name)
+        public SingleChoiceArea()
+        {
+            list = new List<List<Point>>();
+        }
+        public SingleChoiceArea(Rectangle rect, string name)
         {
             this.TypeName = "选择题";
             this.Rect = rect;
@@ -217,12 +218,13 @@ namespace ARTemplate
             this.list = list;
             this.Size = size;
         }
-        public override  bool HasSubArea() { return true; }
-        public override  Rectangle[] ImgSubArea() { 
+        public override bool HasSubArea() { return true; }
+        public override Rectangle[] ImgSubArea()
+        {
             int count = 0;
-            foreach(List<Point> l in list)
+            foreach (List<Point> l in list)
                 count += l.Count;
-            if(count == 0 ) return null;
+            if (count == 0) return null;
             Rectangle[] rv = new Rectangle[count];
             int i = 0;
             foreach (List<Point> l in list)
@@ -232,8 +234,8 @@ namespace ARTemplate
                     rv[i] = new Rectangle(p, Size);
                     i++;
                 }
-            } 
-            return rv; 
+            }
+            return rv;
         }
         public override string ToString()
         {
@@ -241,16 +243,16 @@ namespace ARTemplate
         }
         public override string ToXmlString()
         {
-            String str = Rect.ToXmlString() + _name.ToXmlString("NAME")+Size.ToXmlString();
+            String str = Rect.ToXmlString() + _name.ToXmlString("NAME") + Size.ToXmlString();
             int i = 0;
             foreach (List<Point> lp in list)
-            { 
-                str +="<SINGLE ID=\"" + i + "\">" + string.Join("", lp.Select(r => r.ToXmlString())) + "</SINGLE>";
+            {
+                str += "<SINGLE ID=\"" + i + "\">" + string.Join("", lp.Select(r => r.ToXmlString())) + "</SINGLE>";
                 i++;
             }
             return str;
         }
-        public int Count 
+        public int Count
         {
             get
             {
@@ -258,14 +260,14 @@ namespace ARTemplate
             }
         }
         public string Name { get { return _name; } }
-          [JsonProperty]
+        [JsonProperty]
         public List<List<Point>> list;
-          [JsonProperty]
+        [JsonProperty]
         public Size Size;
-          [JsonProperty]
+        [JsonProperty]
         private string _name;
     }
-     [JsonObject(MemberSerialization.OptIn)]
+    [JsonObject(MemberSerialization.OptIn)]
     public class UnChoose : Area
     {
         public UnChoose(float score, string name, Rectangle imgrect)
@@ -275,7 +277,7 @@ namespace ARTemplate
             this._name = name;
             this.Rect = imgrect;
         }
-        public int Scores { get { return (int)score; } }       
+        public int Scores { get { return (int)score; } }
         public override string ToXmlString()
         {
             return Rect.ToXmlString() + _name.ToXmlString("NAME") + score.ToString().ToXmlString("SCORE");
@@ -290,15 +292,15 @@ namespace ARTemplate
             if (name != "")
                 _name = name;
         }
-          [JsonProperty]
+        [JsonProperty]
         private float score;
-          [JsonProperty]
+        [JsonProperty]
         private string _name;
     }
-     [JsonObject(MemberSerialization.OptIn)]
+    [JsonObject(MemberSerialization.OptIn)]
     public class NameArea : Area //校对
     {
-        public NameArea(Rectangle rect,string name)
+        public NameArea(Rectangle rect, string name)
         {
             this.TypeName = "校对";
             this.Rect = rect;
@@ -313,17 +315,17 @@ namespace ARTemplate
         {
             return Rect.ToXmlString() + _name.ToXmlString("NAME");
         }
-          [JsonProperty]
+        [JsonProperty]
         private string _name;
     }
-     [JsonObject(MemberSerialization.OptIn)]
+    [JsonObject(MemberSerialization.OptIn)]
     public class TempArea : Area
     {
-         public TempArea()
-         {
-             _Name = "";
-             _P = Brushes.Black;
-         }
+        public TempArea()
+        {
+            _Name = "";
+            _P = Brushes.Black;
+        }
         public TempArea(Rectangle rect, string name)
         {
             this.Rect = rect;
@@ -339,17 +341,17 @@ namespace ARTemplate
                 _P = Brushes.White;
             }
         }
-        public override  bool NeedFill() { return true; }
-        public override  Brush FillPen() { return _P; }
+        public override bool NeedFill() { return true; }
+        public override Brush FillPen() { return _P; }
         public override string ToString()
         {
             return _Name;
         }
-          [JsonProperty]
+        [JsonProperty]
         private string _Name;
         private Brush _P;
     }
-     [JsonObject(MemberSerialization.OptIn)]
+    [JsonObject(MemberSerialization.OptIn)]
     public class TzArea : Area
     {
         public TzArea(Rectangle rect, string name)
@@ -360,27 +362,27 @@ namespace ARTemplate
         }
         public void SetName(string name)
         {
-            if(name!="")
-            _name = name;
+            if (name != "")
+                _name = name;
         }
         public override string ToXmlString()
         {
-            return Rect.ToXmlString() + _name.ToXmlString("NAME") ;
+            return Rect.ToXmlString() + _name.ToXmlString("NAME");
         }
         public override String ToString()
         {
             return _name;
         }
-          [JsonProperty]
+        [JsonProperty]
         private string _name;
     }
-     [JsonObject(MemberSerialization.OptIn)]
+    [JsonObject(MemberSerialization.OptIn)]
     public class CustomArea : Area
     {
-         public CustomArea()
-         {
-             list = new List<List<Point>>();
-         }
+        public CustomArea()
+        {
+            list = new List<List<Point>>();
+        }
         public CustomArea(Rectangle m_Imgselection, string name, string type, List<List<Point>> list, Size size)
         {
             this.TypeName = "自定义";
@@ -437,14 +439,14 @@ namespace ARTemplate
         {
             return Name;
         }
-          [JsonProperty]
+        [JsonProperty]
         public string Name { get; set; }
-          [JsonProperty]
+        [JsonProperty]
         public string Type { get; set; }
         // "填涂横向" || Type == "填涂纵向"
-          [JsonProperty]
+        [JsonProperty]
         public List<List<Point>> list;
-          [JsonProperty]
+        [JsonProperty]
         public Size Size;
     }
 
@@ -468,14 +470,14 @@ namespace ARTemplate
         public FeaturePoints(List<Area> lista)
         {
             _list = null;
-           baselist = lista;
+            baselist = lista;
         }
         private List<FeaturePoint> _list;
         public List<FeaturePoint> list
         {
             get
             {
-                if (_list == null  && baselist != null)
+                if (_list == null && baselist != null)
                 {
                     _list = new List<FeaturePoint>();
                     foreach (Area A in baselist)
@@ -490,12 +492,12 @@ namespace ARTemplate
             Point mid = Tools.DetectImageTools.GetMidPoint(list);
             for (int i = 0; i < list.Count; i++)
             {
-                lst.Add( new FeaturePoint( list[i], mid));
+                lst.Add(new FeaturePoint(list[i], mid));
             }
             return lst;
         }
     }
-    public class KaoHaoChoiceAreas :Areas
+    public class KaoHaoChoiceAreas : Areas
     {
         public KaoHaoChoiceAreas()
         {
@@ -504,7 +506,7 @@ namespace ARTemplate
         public KaoHaoChoiceAreas(List<Area> lista)
         {
             _list = null;
-           baselist = lista;
+            baselist = lista;
         }
         private List<KaoHaoChoiceArea> _list;
         public List<KaoHaoChoiceArea> list
@@ -531,7 +533,7 @@ namespace ARTemplate
         public SingleChoiceAreas(List<Area> lista)
         {
             _list = null;
-           baselist = lista;
+            baselist = lista;
         }
         private List<SingleChoiceArea> _list;
         public List<SingleChoiceArea> list
@@ -552,8 +554,8 @@ namespace ARTemplate
         {
             get
             {
-                if(list==null || list.Count==0)
-                return 0;
+                if (list == null || list.Count == 0)
+                    return 0;
                 return _list.Sum(r => r.Count);
             }
         }
@@ -568,12 +570,12 @@ namespace ARTemplate
                     int subcnt = 0;
                     foreach (List<Point> lp in sc.list)
                     {
-                        Rectangle r =sc.ImgArea;
-                        r.Height/= sc.Count;
-        				r.Y += subcnt* r.Height;
-        				subcnt++;
+                        Rectangle r = sc.ImgArea;
+                        r.Height /= sc.Count;
+                        r.Y += subcnt * r.Height;
+                        subcnt++;
                         l.Add(r);
-                    }	
+                    }
                 }
                 if (l.Count > 0)
                     _singlerectlist = l;
@@ -596,7 +598,7 @@ namespace ARTemplate
         public UnChooseAreas(List<Area> lista)
         {
             _list = null;
-           baselist = lista;
+            baselist = lista;
         }
         private List<UnChoose> _list;
         public List<UnChoose> list
@@ -624,7 +626,7 @@ namespace ARTemplate
         public NameAreas(List<Area> lista)
         {
             _list = null;
-           baselist = lista;
+            baselist = lista;
         }
         private List<NameArea> _list;
         public List<NameArea> list
@@ -650,7 +652,7 @@ namespace ARTemplate
         public TempAreas(List<Area> lista)
         {
             _list = null;
-           baselist = lista;
+            baselist = lista;
         }
         private List<TempArea> _list;
         public List<TempArea> list
@@ -676,7 +678,7 @@ namespace ARTemplate
         public TzAreas(List<Area> lista)
         {
             _list = null;
-           baselist = lista;
+            baselist = lista;
         }
         private List<TzArea> _list;
         public List<TzArea> list
@@ -702,7 +704,7 @@ namespace ARTemplate
         public CustomAreas(List<Area> lista)
         {
             _list = null;
-           baselist = lista;
+            baselist = lista;
         }
         private List<CustomArea> _list;
         public List<CustomArea> list
@@ -807,44 +809,4 @@ namespace ARTemplate
             return GetPictureBoxZoomSize(p_PictureBox).Width * 1.0;
         }
     }
-    public class Paper
-    {
-        public Paper(List<FeaturePoint> list)
-        {
-            if (list.Count != 3)
-                return;
-            cp = list[0].ImgArea.Location;
-            rp = list[1].ImgArea.Location;
-            bp = list[2].ImgArea.Location;
-        }
-        public Paper(List<Point> list)
-        {
-            cp = list[0];
-            rp = list[1];
-            bp = list[2];
-        }
-        public string ToXml()
-        {
-            return PointToXml(cp) + PointToXml(rp) + PointToXml(bp);
-        }
-        public  string PointToXml(Point p)
-        {
-            return "<POINT>" + p.X + "," + p.Y + "</POINT>";
-        }
-        public Point CornerPoint()
-        {
-            return cp;
-        }
-        public Point RightPoint()
-        {
-            return rp;
-        }
-        public String NodeName { get { return "/PAPERS"; } }
-        Point cp;
-        Point rp;
-        Point bp;
-    }
-    
-    //Rectangle Tools
-    
 }

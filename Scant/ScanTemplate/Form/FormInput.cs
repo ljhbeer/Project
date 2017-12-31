@@ -96,12 +96,10 @@ namespace ARTemplate
             this.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.Close();
         }
-
         private void FormInput_Load(object sender, EventArgs e)
         {
             textBox1.Focus();
             //textBox1.SelectAll();
         }
-
     }
 }

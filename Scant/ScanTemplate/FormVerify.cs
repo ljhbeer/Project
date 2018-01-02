@@ -41,6 +41,28 @@ namespace ScanTemplate
 		private void FormVerifyLoad(object sender, EventArgs e)
         {
         	InitDgvUI();
+            InitNameFinds();
+        }
+        private void InitNameFinds()
+        {
+            if (_sc.Studentbases.HasStudentBase)
+            {
+                items = new List<string>();
+                items.AddRange(
+                    _sc.Studentbases.Studentbase.Select(
+                   s => s.Classid+ "-"+s.KH+ "_" + s.Name + "(" + s.PYCode + ")").ToArray());
+
+                string importtext = "600221";
+                if (File.Exists("select.txt"))
+                    importtext = File.ReadAllText("select.txt").Trim();
+                List<string> find = items.FindAll(s => importtext.Contains(s.Substring(2, 6)));  //s.Contains(importtext.ToUpper())
+                if (find.Count > 0)
+                {
+                    listBox1.Items.Clear();
+                    listBox1.Items.AddRange(find.ToArray());
+                    listBox1.Items.Clear();
+                }  
+            }
         }
 		private void InitDgvUI( )
 		{
@@ -98,7 +120,17 @@ namespace ScanTemplate
                 dgv.Columns["新考号"].Width = 40;
                 dgv.Columns["是否修改"].Width = 0;
             }
-		}		
+		}
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+            string importtext = textBox1.Text;
+            List<string> find = items.FindAll(s => s.Contains(importtext.ToUpper()));
+            if (find.Count > 0)
+            {
+                listBox1.Items.Clear();
+                listBox1.Items.AddRange(find.ToArray());
+            }
+        }
 		private void DgvCellClick(object sender, DataGridViewCellEventArgs e)
 		{
 			if ( e.ColumnIndex == -1) return;
@@ -222,5 +254,6 @@ namespace ScanTemplate
             }
         }
         public bool Changed { get; set; }
+        public List<string> items { get; set; }
     }
 }

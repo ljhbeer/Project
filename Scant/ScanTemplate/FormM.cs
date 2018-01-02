@@ -231,6 +231,7 @@ namespace ScanTemplate
                 MsgToDr( ss, ref dr); 
                 _rundt.Rows.Add(dr);
             }
+            _rundt.AcceptChanges();
         }
         public void ShowMsg(string  msg)
         {
@@ -661,6 +662,55 @@ namespace ScanTemplate
                             MessageBox.Show("校验失败");
                         }
                         //修改之后
+                        else
+                        {
+                            if (f.Changed)
+                            {
+
+                                bool bsave = false;
+                                ScanData sd = (ScanData)listBoxScantData.SelectedItem;
+                                string[] ss = File.ReadAllLines(sd.DataFullName);// sd.ImgList.ToArray();
+                                //TODO: 应避免出现空行
+                                try
+                                {
+                                    for (int i = 1; i < ss.Length; i++)
+                                    {
+                                        string[] item = ss[i].Split(',');
+                                        string skh = item[3];
+                                        string name = item[4];
+                                        int kh = -1;
+                                        if (!skh.Contains("-"))
+                                            kh = Convert.ToInt32(skh);
+                                        string xzt = item[5];
+                                        if(xzt.Contains("-|") || xzt.Length != xztcnt*2)
+                                        {
+                                            DataRow[] drs = _rundt.Select("文件名='" + item[0] + "'");
+                                            if (drs.Length == 1 && drs[0].RowState == DataRowState.Modified)
+                                            {
+                                                string strxzt = "";
+                                                for (int k = 0; k < xztcnt; k++)
+                                                {
+                                                    strxzt += drs[0]["x" + (k + 1)]+"|";
+                                                }
+
+                                                if (strxzt != xzt && strxzt.Length >= xztcnt*2)
+                                                {
+                                                    item[5] = strxzt;
+                                                    ss[i] = string.Join(",", item);
+                                                    bsave = true;
+                                                }
+                                            }
+                                        }
+                                    }
+                                    if(bsave)
+                                    File.WriteAllText(sd.DataFullName, string.Join("\r\n", ss));
+                                }
+                                catch (Exception ee)
+                                {
+                                    MessageBox.Show("未保存更改，因为" + ee.Message);
+                                }
+                            }
+                        }
                         dt.Rows.Clear();
                     }
                 }

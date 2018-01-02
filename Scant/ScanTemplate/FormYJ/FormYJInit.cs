@@ -774,6 +774,7 @@ namespace ScanTemplate.FormYJ
         private Dictionary<int, StudentBase> _khbasedic;
         private Dictionary<int, List<StudentBase>> _classiddic;
 
+        public List<StudentBase> Studentbase { get { return _studentbases; } }
         public  bool ContainsKey(int kh)
         {
             return _khbasedic.ContainsKey(kh);
@@ -786,10 +787,12 @@ namespace ScanTemplate.FormYJ
             this.Classid = classid;
             this.Name = name;
             this.KH = kh;
+            this.PYCode = PYTool.GetChineseSpell(name);
         }
         public int Classid { get; set; }
         public string Name { get; set; }
         public int KH { get; set; }
+        public string PYCode { get; set; }
     }
     public class StudentSort 
     {

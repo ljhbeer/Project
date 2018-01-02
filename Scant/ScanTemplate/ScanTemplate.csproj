@@ -68,6 +68,7 @@
       <DependentUpon>FormChoose.cs</DependentUpon>
     </Compile>
     <Compile Include="tools\DetectImgTools.cs" />
+    <Compile Include="tools\PYTool.cs" />
     <Compile Include="tools\TextBitmapTool.cs" />
     <Compile Include="Form\FormInputComboBox.cs">
       <SubType>Form</SubType>

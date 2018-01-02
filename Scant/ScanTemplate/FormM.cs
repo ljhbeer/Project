@@ -716,5 +716,44 @@ namespace ScanTemplate
                 }
             }
         }
+
+        private void buttonUnScanNameList_Click(object sender, EventArgs e)
+        {
+            if (_scan == null || _rundt == null || _rundt.Rows.Count == 0)
+                return;
+            List<Student> students = new List<Student>();
+            List<StudentBase> studentbases = new List<StudentBase>();
+           
+             foreach (DataRow dr in _rundt.Rows)
+            {
+                string skh = dr["考号"].ToString();
+                int kh = -1;
+                if (!skh.Contains("-"))
+                    kh = Convert.ToInt32(skh);
+                if ( kh>=0  )
+                {
+                    studentbases.Add(  _sc.Studentbases.GetStudent(kh));
+                }
+             }
+             List<int> Lclassid =
+             studentbases.Select(r => r.Classid ).Distinct().ToList();
+             Lclassid.Remove(0);
+             if (Lclassid.Count > 1)
+                 return;
+             int cid = Lclassid[0];
+             string str = string.Join("\r\n",
+             _sc.Studentbases.GetClassStudent(cid).Where(r => ! studentbases.Exists(rr => rr.KH == r.KH))
+                 .Select(r1 => r1.Name).ToList());
+
+             MessageBox.Show("导出未交名单");
+             SaveFileDialog saveFileDialog2 = new SaveFileDialog();
+             saveFileDialog2.FileName = "_未交名单";
+             saveFileDialog2.Filter = "txt files (*.txt)|*.txt";
+             saveFileDialog2.Title = "导出未交名单";
+             if (saveFileDialog2.ShowDialog() == DialogResult.OK)
+             {
+                 File.WriteAllText(saveFileDialog2.FileName, str);
+             }
+        }
 	}	
 }

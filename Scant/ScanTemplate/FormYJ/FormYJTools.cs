@@ -118,9 +118,27 @@ namespace ScanTemplate.FormYJ
             }
             f = null;
         }
-        private void ExportOther()
+        private void ExportOther() //未交名单
         {
-            throw new NotImplementedException();
+            List<int> Lclassid =
+            _students.students.Select(r => _sc.Studentbases.GetClass(r)).Distinct().ToList();
+            Lclassid.Remove(0);
+            if (Lclassid.Count > 1)
+                return;
+            int cid = Lclassid[0];
+            string str = string.Join("\r\n",
+            _sc.Studentbases.GetClassStudent(cid).Where(r => !_students.students.Exists(rr => rr.KH == r.KH))
+                .Select(r1 => r1.Name).ToList() );
+
+             MessageBox.Show("导出未交名单");
+            SaveFileDialog saveFileDialog2 = new SaveFileDialog();
+            saveFileDialog2.FileName = _examdata.Name + "_未交名单";
+            saveFileDialog2.Filter = "txt files (*.txt)|*.txt";
+            saveFileDialog2.Title = "导出未交名单";
+            if (saveFileDialog2.ShowDialog() == DialogResult.OK)
+            {
+                File.WriteAllText(saveFileDialog2.FileName, str);
+            }
         }
         private void ExportImages()
         {

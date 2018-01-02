@@ -67,6 +67,18 @@
     <Compile Include="FormChoose.Designer.cs">
       <DependentUpon>FormChoose.cs</DependentUpon>
     </Compile>
+    <Compile Include="FormOutTxtToImg.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormOutTxtToImg.Designer.cs">
+      <DependentUpon>FormOutTxtToImg.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormPreDeal.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormPreDeal.Designer.cs">
+      <DependentUpon>FormPreDeal.cs</DependentUpon>
+    </Compile>
     <Compile Include="tools\DetectImgTools.cs" />
     <Compile Include="tools\PYTool.cs" />
     <Compile Include="tools\TextBitmapTool.cs" />
@@ -140,6 +152,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FormChoose.resx">
       <DependentUpon>FormChoose.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormOutTxtToImg.resx">
+      <DependentUpon>FormOutTxtToImg.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormPreDeal.resx">
+      <DependentUpon>FormPreDeal.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Form\FormInputComboBox.resx">
       <DependentUpon>FormInputComboBox.cs</DependentUpon>

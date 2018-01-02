@@ -59,6 +59,7 @@
             this.buttonRightHide = new System.Windows.Forms.Button();
             this.textBoxMsg = new System.Windows.Forms.TextBox();
             this.checkBoxDebug = new System.Windows.Forms.CheckBox();
+            this.buttonUnScanNameList = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -153,6 +154,7 @@
             this.panel1.Controls.Add(this.label3);
             this.panel1.Controls.Add(this.buttonCreateYJData);
             this.panel1.Controls.Add(this.buttonVerify);
+            this.panel1.Controls.Add(this.buttonUnScanNameList);
             this.panel1.Controls.Add(this.buttonVerifyname);
             this.panel1.Controls.Add(this.label2);
             this.panel1.Controls.Add(this.comboBoxTemplate);
@@ -192,7 +194,7 @@
             // 
             // buttonCreateYJData
             // 
-            this.buttonCreateYJData.Location = new System.Drawing.Point(187, 566);
+            this.buttonCreateYJData.Location = new System.Drawing.Point(184, 569);
             this.buttonCreateYJData.Name = "buttonCreateYJData";
             this.buttonCreateYJData.Size = new System.Drawing.Size(53, 38);
             this.buttonCreateYJData.TabIndex = 9;
@@ -202,7 +204,7 @@
             // 
             // buttonVerify
             // 
-            this.buttonVerify.Location = new System.Drawing.Point(65, 566);
+            this.buttonVerify.Location = new System.Drawing.Point(49, 569);
             this.buttonVerify.Name = "buttonVerify";
             this.buttonVerify.Size = new System.Drawing.Size(43, 38);
             this.buttonVerify.TabIndex = 4;
@@ -212,7 +214,7 @@
             // 
             // buttonVerifyname
             // 
-            this.buttonVerifyname.Location = new System.Drawing.Point(126, 566);
+            this.buttonVerifyname.Location = new System.Drawing.Point(94, 569);
             this.buttonVerifyname.Name = "buttonVerifyname";
             this.buttonVerifyname.Size = new System.Drawing.Size(43, 38);
             this.buttonVerifyname.TabIndex = 10;
@@ -259,7 +261,7 @@
             // 
             // buttonReScan
             // 
-            this.buttonReScan.Location = new System.Drawing.Point(4, 566);
+            this.buttonReScan.Location = new System.Drawing.Point(4, 569);
             this.buttonReScan.Name = "buttonReScan";
             this.buttonReScan.Size = new System.Drawing.Size(43, 38);
             this.buttonReScan.TabIndex = 9;
@@ -435,6 +437,16 @@
             this.checkBoxDebug.UseVisualStyleBackColor = true;
             this.checkBoxDebug.CheckedChanged += new System.EventHandler(this.checkBoxDebug_CheckedChanged);
             // 
+            // buttonUnScanNameList
+            // 
+            this.buttonUnScanNameList.Location = new System.Drawing.Point(139, 569);
+            this.buttonUnScanNameList.Name = "buttonUnScanNameList";
+            this.buttonUnScanNameList.Size = new System.Drawing.Size(43, 38);
+            this.buttonUnScanNameList.TabIndex = 10;
+            this.buttonUnScanNameList.Text = "未交名单";
+            this.buttonUnScanNameList.UseVisualStyleBackColor = true;
+            this.buttonUnScanNameList.Click += new System.EventHandler(this.buttonUnScanNameList_Click);
+            // 
             // FormM
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -493,6 +505,7 @@
         private System.Windows.Forms.Button buttonReScan;
         private System.Windows.Forms.TextBox textBoxMsg;
         private System.Windows.Forms.Button buttonOpenTemplate;
-        private System.Windows.Forms.CheckBox checkBoxDebug;        
+        private System.Windows.Forms.CheckBox checkBoxDebug;
+        private System.Windows.Forms.Button buttonUnScanNameList;        
     }
 }

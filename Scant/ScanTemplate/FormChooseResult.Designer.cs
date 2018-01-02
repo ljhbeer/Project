@@ -46,7 +46,7 @@
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(105, 24);
+            this.button2.Location = new System.Drawing.Point(94, 24);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(72, 69);
             this.button2.TabIndex = 0;
@@ -56,7 +56,7 @@
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(202, 24);
+            this.button3.Location = new System.Drawing.Point(173, 24);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(72, 69);
             this.button3.TabIndex = 0;
@@ -66,20 +66,19 @@
             // 
             // button4
             // 
-            this.button4.Location = new System.Drawing.Point(280, 24);
+            this.button4.Location = new System.Drawing.Point(258, 24);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(72, 69);
             this.button4.TabIndex = 0;
-            this.button4.Text = "导出";
+            this.button4.Text = "导出未交名单";
             this.button4.UseVisualStyleBackColor = true;
-            this.button4.Visible = false;
             this.button4.Click += new System.EventHandler(this.button4_Click);
             // 
             // FormChooseResult
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(297, 116);
+            this.ClientSize = new System.Drawing.Size(349, 120);
             this.Controls.Add(this.button4);
             this.Controls.Add(this.button3);
             this.Controls.Add(this.button2);

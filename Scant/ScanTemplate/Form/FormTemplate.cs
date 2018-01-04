@@ -569,11 +569,14 @@ namespace ARTemplate
                 string unchoosename = "T-" + cnt;
                 if (cnt == 1)
                 {
-                     _defaultunchoosescore = 1;
-                     if (InputBox.Input("非选择题"))
-                         _defaultunchoosescore = InputBox.IntValue;
-                }                
+                    _defaultunchoosescore = 1;
+                    if (InputBox.Input("非选择题"))
+                        _defaultunchoosescore = InputBox.IntValue;
+                }
+                else
                 {
+                    if (_defaultunchoosescore == 0)
+                        _defaultunchoosescore = 2;
                     String name = unchoosename;
                     t.Name = unchoosename;
                     t.Text = unchoosename + "(" + _defaultunchoosescore + "分)";
@@ -707,31 +710,53 @@ namespace ARTemplate
                 if (treeView1.SelectedNode.Text == "题组")
                 {
                     int cnt = _template.Manageareas.SinglechoiceAreas.Count+1;
-
-                    for (int i = 0; i < m_tn.Nodes["题组"].Nodes.Count; i++)
-                    {
-                        TreeNode t = m_tn.Nodes["题组"].Nodes[i];
-                        t.Name = "TZ-" + cnt;
-                        t.Text = t.Name;
-                        TzArea tr = (TzArea)t.Tag;
-                     
-                        int subcnt = 1;
-                        foreach (TreeNode tn in m_tn.Nodes["非选择题"].Nodes)
-                        {
-                            UnChoose uc = (UnChoose)tn.Tag;
-                            if (tr.ImgArea.Contains(uc.ImgArea))
-                            {
-                                tn.Name = tn.Text = cnt + "-" + subcnt;
-                                uc.SetName(tn.Name);
-                                subcnt++;
-                            }
-                        }
-                        cnt ++;
-                    }
+                    ReNameUnChooseByTzArea(cnt);
+                    ReNameAreaByIncreace("选区变黑");
+                    ReNameAreaByIncreace("选区变白");
                     UpdateTemplate();
                 }
                 pictureBox1.Invalidate();
             }
+        }
+        private void ReNameUnChooseByTzArea(int cnt)
+        {
+            for (int i = 0; i < m_tn.Nodes["题组"].Nodes.Count; i++)
+            {
+                TreeNode t = m_tn.Nodes["题组"].Nodes[i];
+                t.Name = "TZ-" + cnt;
+                t.Text = t.Name;
+                TzArea tr = (TzArea)t.Tag;
+
+                int subcnt = 1;
+                foreach (TreeNode tn in m_tn.Nodes["非选择题"].Nodes)
+                {
+                    UnChoose uc = (UnChoose)tn.Tag;
+                    if (tr.ImgArea.Contains(uc.ImgArea))
+                    {
+                        tn.Name = tn.Text = cnt + "-" + subcnt;
+                        uc.SetName(tn.Name);
+                        subcnt++;
+                    }
+                }
+                cnt++;
+            }
+        }
+        private bool ReNameAreaByIncreace(string keyname )
+        {
+            if (!m_tn.Nodes.ContainsKey(keyname))
+                return false;
+            int cnt = 0;
+            for (int i = 0; i < m_tn.Nodes[keyname].Nodes.Count; i++)
+            {
+                TreeNode t = m_tn.Nodes[keyname].Nodes[i];
+                t.Name =   cnt.ToString();
+                t.Text = t.Name;
+                Area I = (Area)t.Tag;
+                //TODO: Area.SetName(name) UnImpl;
+                //I.SetName(t.Name);
+                cnt++;
+            }
+            return true;
         }
         private void RefreshTemplate()
         {

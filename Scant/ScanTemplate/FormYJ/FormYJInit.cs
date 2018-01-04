@@ -791,6 +791,12 @@ namespace ScanTemplate.FormYJ
                 return _khbasedic[kh] ;
             return null;
         }
+        public  int GetClass(int kh)
+        {
+            if (HasStudentBase && _khbasedic.ContainsKey(kh))
+                return _khbasedic[kh].Classid;
+            return 0;
+        }
     }
     public class StudentBase
     {

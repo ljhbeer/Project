@@ -21,7 +21,13 @@ namespace ARTemplate
             this.keyname = keyname;
             foreach(Object O in objectCollection)
                 this.comboBox1.Items.Add(O);
-          
+        }
+        public FormInputComboBox(string keyname, List<object> objectCollection)
+        {
+            InitializeComponent();
+            this.keyname = keyname;
+            foreach (Object O in objectCollection)
+                this.comboBox1.Items.Add(O);
         }
         private void buttonOK_Click(object sender, EventArgs e)
         {
@@ -29,6 +35,10 @@ namespace ARTemplate
             if (keyname == "模板" && comboBox1.SelectedIndex != -1)
             {
                 StrValue = comboBox1.SelectedItem.ToString();
+            }
+            else if (keyname == "选择班级" && comboBox1.SelectedIndex != -1)
+            {
+                StrValue = comboBox1.SelectedItem.ToString();                
             }
             else
             {

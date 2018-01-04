@@ -153,7 +153,7 @@ namespace ScanTemplate.FormYJ
 			{
 				listrect.Add(I.ImgArea );
 			}
-            if (listrect.Count != 3)
+            if (listrect.Count < 3 ) // !=3
                 return;
             //AutoDetectRectAnge adr = new AutoDetectRectAnge();
             //adr.ComputTBO(listrect);

@@ -33,15 +33,17 @@ namespace Tools
             }
             return null;
         }
-        public  Bitmap DrawListInPaper( List<string> list )
+        public  Bitmap DrawListInPaper( List<string> list, bool blackfont = false )
         {
             WhiteImage();
             using (Graphics g = Graphics.FromImage(Src))
             {
                 int fontsize = ComputFontSize(list.Count,list[1], g);
                 Font font = new Font(SystemFonts.DefaultFont.SystemFontName, fontsize, FontStyle.Bold);
-
-                DrawInXY(list, g, font);
+                Brush br = Brushes.Red;
+                if(blackfont) 
+                    br = Brushes.Black;
+                DrawInXY(list, g, font,br);
             }
             return Src;
         }
@@ -57,7 +59,7 @@ namespace Tools
             int fontsize =(int)(25 * rat);
             return fontsize;
         }
-        private void DrawInXY(List<string> list, Graphics g, Font font)
+        private void DrawInXY(List<string> list, Graphics g, Font font,Brush br)
         {
             SizeF sizetxtitem = new SizeF(1, 1);
             Size Scnt = GetCountSize(g, list.Count, list[1],ref sizetxtitem);
@@ -72,7 +74,7 @@ namespace Tools
                     if (stack.Count == 0)
                         break;
                     PointF pos = new PointF(Loc.X + x * Sitem.Width, Loc.Y + y * Sitem.Height);
-                    g.DrawString(stack.Pop(), font, Brushes.Red, pos);
+                    g.DrawString(stack.Pop(), font, br, pos);
                 }
                 if (stack.Count == 0)
                     break;

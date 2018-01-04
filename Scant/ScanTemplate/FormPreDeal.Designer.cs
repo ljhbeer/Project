@@ -31,15 +31,15 @@
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.listBox1 = new System.Windows.Forms.ListBox();
+            this.listBoxUnScanDir = new System.Windows.Forms.ListBox();
             this.listBox2 = new System.Windows.Forms.ListBox();
-            this.textBox1 = new System.Windows.Forms.TextBox();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.button1 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
-            this.button3 = new System.Windows.Forms.Button();
             this.button4 = new System.Windows.Forms.Button();
+            this.button3 = new System.Windows.Forms.Button();
+            this.button2 = new System.Windows.Forms.Button();
+            this.button1 = new System.Windows.Forms.Button();
+            this.listBoxfilename = new System.Windows.Forms.ListBox();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.panel1.SuspendLayout();
@@ -53,11 +53,11 @@
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel1.Controls.Add(this.label1, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.label2, 0, 2);
-            this.tableLayoutPanel1.Controls.Add(this.listBox1, 0, 1);
+            this.tableLayoutPanel1.Controls.Add(this.listBoxUnScanDir, 0, 1);
             this.tableLayoutPanel1.Controls.Add(this.listBox2, 0, 3);
-            this.tableLayoutPanel1.Controls.Add(this.textBox1, 1, 1);
             this.tableLayoutPanel1.Controls.Add(this.pictureBox1, 2, 1);
             this.tableLayoutPanel1.Controls.Add(this.panel1, 2, 3);
+            this.tableLayoutPanel1.Controls.Add(this.listBoxfilename, 1, 1);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -87,16 +87,18 @@
             this.label2.Size = new System.Drawing.Size(29, 12);
             this.label2.TabIndex = 0;
             this.label2.Text = "Exam";
+            this.label2.Visible = false;
             // 
-            // listBox1
+            // listBoxUnScanDir
             // 
-            this.listBox1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listBox1.FormattingEnabled = true;
-            this.listBox1.ItemHeight = 12;
-            this.listBox1.Location = new System.Drawing.Point(3, 23);
-            this.listBox1.Name = "listBox1";
-            this.listBox1.Size = new System.Drawing.Size(94, 162);
-            this.listBox1.TabIndex = 1;
+            this.listBoxUnScanDir.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listBoxUnScanDir.FormattingEnabled = true;
+            this.listBoxUnScanDir.ItemHeight = 12;
+            this.listBoxUnScanDir.Location = new System.Drawing.Point(3, 23);
+            this.listBoxUnScanDir.Name = "listBoxUnScanDir";
+            this.listBoxUnScanDir.Size = new System.Drawing.Size(94, 162);
+            this.listBoxUnScanDir.TabIndex = 1;
+            this.listBoxUnScanDir.SelectedIndexChanged += new System.EventHandler(this.listBoxUnScanDir_SelectedIndexChanged);
             // 
             // listBox2
             // 
@@ -107,16 +109,7 @@
             this.listBox2.Name = "listBox2";
             this.listBox2.Size = new System.Drawing.Size(94, 162);
             this.listBox2.TabIndex = 2;
-            // 
-            // textBox1
-            // 
-            this.textBox1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.textBox1.Location = new System.Drawing.Point(103, 23);
-            this.textBox1.Multiline = true;
-            this.textBox1.Name = "textBox1";
-            this.tableLayoutPanel1.SetRowSpan(this.textBox1, 3);
-            this.textBox1.Size = new System.Drawing.Size(285, 350);
-            this.textBox1.TabIndex = 3;
+            this.listBox2.Visible = false;
             // 
             // pictureBox1
             // 
@@ -140,23 +133,14 @@
             this.panel1.Size = new System.Drawing.Size(285, 162);
             this.panel1.TabIndex = 5;
             // 
-            // button1
+            // button4
             // 
-            this.button1.Location = new System.Drawing.Point(11, 4);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(65, 24);
-            this.button1.TabIndex = 0;
-            this.button1.Text = "button1";
-            this.button1.UseVisualStyleBackColor = true;
-            // 
-            // button2
-            // 
-            this.button2.Location = new System.Drawing.Point(76, 4);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(65, 24);
-            this.button2.TabIndex = 1;
-            this.button2.Text = "button2";
-            this.button2.UseVisualStyleBackColor = true;
+            this.button4.Location = new System.Drawing.Point(206, 4);
+            this.button4.Name = "button4";
+            this.button4.Size = new System.Drawing.Size(65, 24);
+            this.button4.TabIndex = 3;
+            this.button4.Text = "button4";
+            this.button4.UseVisualStyleBackColor = true;
             // 
             // button3
             // 
@@ -167,14 +151,35 @@
             this.button3.Text = "button3";
             this.button3.UseVisualStyleBackColor = true;
             // 
-            // button4
+            // button2
             // 
-            this.button4.Location = new System.Drawing.Point(206, 4);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(65, 24);
-            this.button4.TabIndex = 3;
-            this.button4.Text = "button4";
-            this.button4.UseVisualStyleBackColor = true;
+            this.button2.Location = new System.Drawing.Point(76, 4);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(65, 24);
+            this.button2.TabIndex = 1;
+            this.button2.Text = "button2";
+            this.button2.UseVisualStyleBackColor = true;
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(11, 4);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(65, 24);
+            this.button1.TabIndex = 0;
+            this.button1.Text = "button1";
+            this.button1.UseVisualStyleBackColor = true;
+            // 
+            // listBoxfilename
+            // 
+            this.listBoxfilename.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listBoxfilename.FormattingEnabled = true;
+            this.listBoxfilename.ItemHeight = 12;
+            this.listBoxfilename.Location = new System.Drawing.Point(103, 23);
+            this.listBoxfilename.Name = "listBoxfilename";
+            this.tableLayoutPanel1.SetRowSpan(this.listBoxfilename, 3);
+            this.listBoxfilename.Size = new System.Drawing.Size(285, 350);
+            this.listBoxfilename.TabIndex = 6;
+            this.listBoxfilename.SelectedIndexChanged += new System.EventHandler(this.listBoxfilename_SelectedIndexChanged);
             // 
             // FormPreDeal
             // 
@@ -184,6 +189,7 @@
             this.Controls.Add(this.tableLayoutPanel1);
             this.Name = "FormPreDeal";
             this.Text = "FormPreDeal";
+            this.Load += new System.EventHandler(this.FormPreDeal_Load);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
@@ -197,14 +203,14 @@
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.ListBox listBox1;
+        private System.Windows.Forms.ListBox listBoxUnScanDir;
         private System.Windows.Forms.ListBox listBox2;
-        private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Button button4;
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.ListBox listBoxfilename;
     }
 }

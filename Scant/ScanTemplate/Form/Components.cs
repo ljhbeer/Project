@@ -46,9 +46,24 @@ namespace ARTemplate
             }
             return true;
         }
+
+        public static bool Input(string keyname, List<object> objectCollection)
+        {
+            FormInputComboBox f = new FormInputComboBox(keyname, objectCollection);
+            if (f.ShowDialog() == DialogResult.OK)
+            {
+                strValue = f.StrValue;
+                try
+                {
+                    IntValue = Convert.ToInt32(strValue);
+                }catch{;}
+            }
+            return true;
+        }
         public static string strValue;
         public static int IntValue;
         public static float FloatValue;
+
 
     }
     [JsonObject(MemberSerialization.OptIn)]

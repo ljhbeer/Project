@@ -132,6 +132,23 @@ namespace ScanTemplate
                 _scan.DoScan();
             }
 		}
+        private void buttonOutTextImage_Click(object sender, EventArgs e)
+        {
+            this.Hide();
+            FormOutTxtToImg f = new FormOutTxtToImg( _sc );
+            f.ShowDialog();
+
+            this.Show();
+        }
+        private void buttonPreDealImage_Click(object sender, EventArgs e)
+        {
+            this.Hide();
+            FormPreDeal f = new FormPreDeal(_sc);
+            f.ShowDialog();
+            f.Clear();
+            f = null;
+            this.Show();
+        }
 		private void listBoxData_SelectedIndexChanged(object sender, EventArgs e)
 		{
 			if (listBoxScantData.SelectedIndex == -1) return;

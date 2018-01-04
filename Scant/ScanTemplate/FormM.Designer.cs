@@ -38,6 +38,7 @@
             this.label3 = new System.Windows.Forms.Label();
             this.buttonCreateYJData = new System.Windows.Forms.Button();
             this.buttonVerify = new System.Windows.Forms.Button();
+            this.buttonUnScanNameList = new System.Windows.Forms.Button();
             this.buttonVerifyname = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
             this.comboBoxTemplate = new System.Windows.Forms.ComboBox();
@@ -59,7 +60,8 @@
             this.buttonRightHide = new System.Windows.Forms.Button();
             this.textBoxMsg = new System.Windows.Forms.TextBox();
             this.checkBoxDebug = new System.Windows.Forms.CheckBox();
-            this.buttonUnScanNameList = new System.Windows.Forms.Button();
+            this.buttonOutTextImage = new System.Windows.Forms.Button();
+            this.buttonPreDealImage = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -211,6 +213,16 @@
             this.buttonVerify.Text = "校验";
             this.buttonVerify.UseVisualStyleBackColor = true;
             this.buttonVerify.Click += new System.EventHandler(this.buttonVerify_Click);
+            // 
+            // buttonUnScanNameList
+            // 
+            this.buttonUnScanNameList.Location = new System.Drawing.Point(139, 569);
+            this.buttonUnScanNameList.Name = "buttonUnScanNameList";
+            this.buttonUnScanNameList.Size = new System.Drawing.Size(43, 38);
+            this.buttonUnScanNameList.TabIndex = 10;
+            this.buttonUnScanNameList.Text = "未交名单";
+            this.buttonUnScanNameList.UseVisualStyleBackColor = true;
+            this.buttonUnScanNameList.Click += new System.EventHandler(this.buttonUnScanNameList_Click);
             // 
             // buttonVerifyname
             // 
@@ -364,8 +376,8 @@
             this.tableLayoutPanel2.ColumnCount = 9;
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 50F));
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 50F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 68F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 83F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 51F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 100F));
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 87F));
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
@@ -376,6 +388,8 @@
             this.tableLayoutPanel2.Controls.Add(this.buttonRightHide, 8, 0);
             this.tableLayoutPanel2.Controls.Add(this.textBoxMsg, 4, 0);
             this.tableLayoutPanel2.Controls.Add(this.checkBoxDebug, 7, 0);
+            this.tableLayoutPanel2.Controls.Add(this.buttonOutTextImage, 2, 0);
+            this.tableLayoutPanel2.Controls.Add(this.buttonPreDealImage, 3, 0);
             this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 622);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
@@ -437,15 +451,25 @@
             this.checkBoxDebug.UseVisualStyleBackColor = true;
             this.checkBoxDebug.CheckedChanged += new System.EventHandler(this.checkBoxDebug_CheckedChanged);
             // 
-            // buttonUnScanNameList
+            // buttonOutTextImage
             // 
-            this.buttonUnScanNameList.Location = new System.Drawing.Point(139, 569);
-            this.buttonUnScanNameList.Name = "buttonUnScanNameList";
-            this.buttonUnScanNameList.Size = new System.Drawing.Size(43, 38);
-            this.buttonUnScanNameList.TabIndex = 10;
-            this.buttonUnScanNameList.Text = "未交名单";
-            this.buttonUnScanNameList.UseVisualStyleBackColor = true;
-            this.buttonUnScanNameList.Click += new System.EventHandler(this.buttonUnScanNameList_Click);
+            this.buttonOutTextImage.Location = new System.Drawing.Point(103, 3);
+            this.buttonOutTextImage.Name = "buttonOutTextImage";
+            this.buttonOutTextImage.Size = new System.Drawing.Size(43, 22);
+            this.buttonOutTextImage.TabIndex = 10;
+            this.buttonOutTextImage.Text = "输出IMG";
+            this.buttonOutTextImage.UseVisualStyleBackColor = true;
+            this.buttonOutTextImage.Click += new System.EventHandler(this.buttonOutTextImage_Click);
+            // 
+            // buttonPreDealImage
+            // 
+            this.buttonPreDealImage.Location = new System.Drawing.Point(154, 3);
+            this.buttonPreDealImage.Name = "buttonPreDealImage";
+            this.buttonPreDealImage.Size = new System.Drawing.Size(70, 22);
+            this.buttonPreDealImage.TabIndex = 10;
+            this.buttonPreDealImage.Text = "预处理IMG";
+            this.buttonPreDealImage.UseVisualStyleBackColor = true;
+            this.buttonPreDealImage.Click += new System.EventHandler(this.buttonPreDealImage_Click);
             // 
             // FormM
             // 
@@ -506,6 +530,8 @@
         private System.Windows.Forms.TextBox textBoxMsg;
         private System.Windows.Forms.Button buttonOpenTemplate;
         private System.Windows.Forms.CheckBox checkBoxDebug;
-        private System.Windows.Forms.Button buttonUnScanNameList;        
+        private System.Windows.Forms.Button buttonUnScanNameList;
+        private System.Windows.Forms.Button buttonOutTextImage;
+        private System.Windows.Forms.Button buttonPreDealImage;        
     }
 }

@@ -30,6 +30,10 @@ namespace ARTemplate
         {
             InitializeComponent();
             Init(null);
+            _ActiveEditArea = null;
+            _ActiveEditMode = false;
+            _ControlRects = null;
+            _TestR = new Rectangle();
         }
         ~FormTemplate()
         {
@@ -281,20 +285,49 @@ namespace ARTemplate
             {
                 ShowMessage("Complete: " + m_act);
                 m_Imgselection = zoombox.BoxToImgSelection(MT.Selection);
-                switch (m_act)
+                if (_ActiveEditMode && _ActiveEditArea != null)
                 {
-                    case Act.DefinePoint: CompleteDeFinePoint(); break;
-                    case Act.DefineChoose: CompleteDeFineChoose(); break;
-                    case Act.DefineUnChoose: CompleteDeFineUnChoose(); break;
-                    case Act.DefineId: CompleteDeFineId(); break;
-                    case Act.SeclectionToWhite: CompleteSelectionToWhite(); break;
-                    case Act.SeclectionToDark: CompleteSelectionToDark(); break;
-                    case Act.DefineName: CompleteDeFineName(); break;
-                    case Act.SelectionToGroup: CompleteSelectionGroup(); break;
-                    case Act.DefineCustom: CompleteDefineCustom(); break;
+                    //_TestR = Rectangle.Union(_ActiveEditArea.Rect, m_Imgselection);
+                    _ActiveEditArea.Rect = Rectangle.Union(_ActiveEditArea.Rect, m_Imgselection);
+                }
+                else
+                {
+                    switch (m_act)
+                    {
+                        case Act.DefinePoint: CompleteDeFinePoint(); break;
+                        case Act.DefineChoose: CompleteDeFineChoose(); break;
+                        case Act.DefineUnChoose: CompleteDeFineUnChoose(); break;
+                        case Act.DefineId: CompleteDeFineId(); break;
+                        case Act.SeclectionToWhite: CompleteSelectionToWhite(); break;
+                        case Act.SeclectionToDark: CompleteSelectionToDark(); break;
+                        case Act.DefineName: CompleteDeFineName(); break;
+                        case Act.SelectionToGroup: CompleteSelectionGroup(); break;
+                        case Act.DefineCustom: CompleteDefineCustom(); break;
+                    }
                 }
             }
             pictureBox1.Invalidate();
+        }
+
+        private void pictureBox1_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (_ActiveEditMode && _ActiveEditArea != null)
+            {
+                int index = 0;
+                foreach (Rectangle r in _ControlRects)
+                {
+                    if (r.Contains(e.Location))
+                    {
+                        if(index==1||index==2)
+                        this.Cursor = Cursors.SizeNESW;
+                        else 
+                        this.Cursor = Cursors.SizeNWSE;
+                        return;
+                    }
+                    index++;
+                }
+            }
+            this.Cursor = Cursors.Default;
         }
         private void pictureBox1_MouseUp(object sender, MouseEventArgs e)
         {
@@ -348,6 +381,8 @@ namespace ARTemplate
                         if (t.Tag != null)
                         {
                             Area I = (Area)(t.Tag);
+                            if (I.EditMode )
+                                continue;
                             e.Graphics.DrawRectangle(pen, zoombox.ImgToBoxSelection(I.ImgArea));
                             if (I.HasSubArea())
                             {
@@ -364,7 +399,20 @@ namespace ARTemplate
                             }
                         }
                     }
-                }               
+                }
+                if (_ActiveEditMode && _ActiveEditArea != null)
+                {
+                    Area I = _ActiveEditArea;
+                    Rectangle r = zoombox.ImgToBoxSelection(I.ImgArea);
+                    e.Graphics.DrawRectangle(pen, r);
+                    _ControlRects = DetectImageTools.DetectCorrect.GetLrbRtb(r, 5, 5);
+                    e.Graphics.DrawRectangles(pen, _ControlRects.ToArray());
+                }
+                if (_TestR.Width > 0 && _TestR.Height > 0)
+                {
+                    Rectangle r = zoombox.ImgToBoxSelection(_TestR);
+                    e.Graphics.DrawRectangle(Pens.Yellow, r);
+                }
             }
         }
         private void buttonzoomout_Click(object sender, EventArgs e)
@@ -717,6 +765,26 @@ namespace ARTemplate
                 }
                 pictureBox1.Invalidate();
             }
+            else if (e.KeyCode == Keys.E)
+            {
+                if (treeView1.SelectedNode.Parent.Text == "非选择题")
+                {
+                    Area I = (Area)treeView1.SelectedNode.Tag;
+                    I.EditMode = true;
+                    if (_ActiveEditArea != null)
+                        _ActiveEditArea.EditMode = false;
+                    _ActiveEditArea = I;
+                    _ActiveEditMode = true;
+                }
+                else if(treeView1.SelectedNode.Text == "非选择题") //clear EditMode
+                {
+                    if (_ActiveEditArea != null)
+                        _ActiveEditArea.EditMode = false;
+                    _ActiveEditArea = null;
+                    _ActiveEditMode = false;
+                }
+                pictureBox1.Invalidate();
+            }
         }
         private void ReNameUnChooseByTzArea(int cnt)
         {
@@ -787,5 +855,10 @@ namespace ARTemplate
         private Template _template;
         private Bitmap _src;
         private FileStream _fs;
+        private Area _ActiveEditArea;
+        private bool _ActiveEditMode;
+        private List<Rectangle> _ControlRects;
+        private Rectangle _TestR;
+
     }
 }

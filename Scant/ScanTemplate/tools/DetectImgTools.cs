@@ -150,7 +150,7 @@ namespace  Tools
                 //OutPixImage(xxcnt, yycnt);
                 return new Rectangle(xpos, ypos, xendpos - xpos, yendpos - ypos);
             }
-            private static List<Rectangle> GetLrbRtb(Rectangle r, int width, int height)
+            public static List<Rectangle> GetLrbRtb(Rectangle r, int width, int height)
             {
                 return new List<Rectangle>()
                 {

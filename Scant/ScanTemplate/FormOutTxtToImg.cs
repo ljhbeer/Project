@@ -200,22 +200,24 @@ namespace ScanTemplate
                 }
                 catch { }
             }
-            if (title.Contains("自定义") && !ss[6].Contains("-") && ss[6] != "")
-            {
-                try
+            if (title.Contains("自定义")){
+                if( !ss[6].Contains("-") && ss[6] != "" )
                 {
-                    string[] rc = ss[6].Split(new string[] { "|" }, StringSplitOptions.RemoveEmptyEntries);
-                    if (rc.Length == 2)
+                    try
                     {
-                        this.RowIndex = Convert.ToInt32(rc[0]);
-                        this.ColIndex = Convert.ToInt32(rc[1]);
+                        string[] rc = ss[6].Split(new string[] { "|" }, StringSplitOptions.RemoveEmptyEntries);
+                        if (rc.Length == 2)
+                        {
+                            this.RowIndex = Convert.ToInt32(rc[0]);
+                            this.ColIndex = Convert.ToInt32(rc[1]);
+                        }
                     }
+                    catch { }
                 }
-                catch { }
-            }
-            else
-            {
-                this.SKH = ss[6].Replace("|","");
+                else
+                {
+                    this.SKH = ss[6].Replace("|","");
+                }
             }
         }
         

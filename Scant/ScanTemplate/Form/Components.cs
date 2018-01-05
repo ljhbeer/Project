@@ -69,6 +69,10 @@ namespace ARTemplate
     [JsonObject(MemberSerialization.OptIn)]
     public class Area
     {
+        public Area()
+        {
+            EditMode = false;
+        }
         public Rectangle ImgArea { get { return Rect; } }
         public bool IntersectsWith(Rectangle rect)
         {
@@ -91,6 +95,8 @@ namespace ARTemplate
         public Rectangle Rect;
         [JsonIgnore]
         public string TypeName { get; set; }
+        [JsonIgnore]
+        public Boolean EditMode { get; set; }
     }
     [JsonObject(MemberSerialization.OptIn)]
     public class FeaturePoint : Area

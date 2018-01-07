@@ -72,6 +72,7 @@ namespace ARTemplate
         public Area()
         {
             EditMode = false;
+            ShowTitle = false;
         }
         public Rectangle ImgArea { get { return Rect; } }
         public bool IntersectsWith(Rectangle rect)
@@ -83,9 +84,9 @@ namespace ARTemplate
         public virtual bool HasSubArea() { return false; }
         public virtual bool NeedFill() { return false; }
         public virtual Brush FillPen() { return Brushes.Black; }
-        public virtual string ToXmlString()
+        public virtual string Title
         {
-            return Rect.ToXmlString();
+            get { return ToString(); }
         }
         public override string ToString()
         {
@@ -97,6 +98,9 @@ namespace ARTemplate
         public string TypeName { get; set; }
         [JsonIgnore]
         public Boolean EditMode { get; set; }
+        [JsonIgnore]
+        public Boolean ShowTitle { get; set; }
+        
     }
     [JsonObject(MemberSerialization.OptIn)]
     public class FeaturePoint : Area
@@ -140,6 +144,7 @@ namespace ARTemplate
         public KaoHaoChoiceArea()
         {
             list = new List<List<Point>>();
+            ShowTitle = true;
         }
         public KaoHaoChoiceArea(Rectangle m_Imgselection, string name, string type)
         {
@@ -187,22 +192,12 @@ namespace ARTemplate
             }
             return null;
         }
-        public override string ToXmlString() //分Type
+        public override string Title
         {
-            String str = Type.ToXmlString("TYPE") + Rect.ToXmlString()
-                + Name.ToXmlString("NAME"); //+ "<SIZE>" + size.Width + "," + size.Height + "</SIZE>"
-            if (Type == "条形码")
-                str += "";
-            else if ("1023456789".Contains(Type)) // (Type == "填涂横向" || Type == "填涂纵向")
+            get
             {
-                int i = 0;
-                str += Size.ToXmlString();
-                foreach (List<Point> lp in list)
-                {
-                    str += "<SINGLE ID=\"" + i++ + "\">" + string.Join("", lp.Select(r => r.ToXmlString())) + "</SINGLE>";
-                }
+                return Name;
             }
-            return str;
         }
         public override string ToString()
         {
@@ -230,6 +225,7 @@ namespace ARTemplate
             this.TypeName = "选择题";
             this.Rect = rect;
             this._name = name;
+            ShowTitle = true;
         }
         public SingleChoiceArea(Rectangle rect, string name, List<List<Point>> list, Size size)
         {
@@ -262,16 +258,12 @@ namespace ARTemplate
         {
             return _name;
         }
-        public override string ToXmlString()
+        public override string Title
         {
-            String str = Rect.ToXmlString() + _name.ToXmlString("NAME") + Size.ToXmlString();
-            int i = 0;
-            foreach (List<Point> lp in list)
+            get
             {
-                str += "<SINGLE ID=\"" + i + "\">" + string.Join("", lp.Select(r => r.ToXmlString())) + "</SINGLE>";
-                i++;
+                return _name;
             }
-            return str;
         }
         public int Count
         {
@@ -297,11 +289,15 @@ namespace ARTemplate
             this.score = score;
             this._name = name;
             this.Rect = imgrect;
+            ShowTitle = true;
         }
         public int Scores { get { return (int)score; } }
-        public override string ToXmlString()
+        public override string Title
         {
-            return Rect.ToXmlString() + _name.ToXmlString("NAME") + score.ToString().ToXmlString("SCORE");
+            get
+            {
+                return _name;
+            }
         }
         public override String ToString()
         {
@@ -332,9 +328,12 @@ namespace ARTemplate
         {
             return _name;
         }
-        public override string ToXmlString()
+        public override string Title
         {
-            return Rect.ToXmlString() + _name.ToXmlString("NAME");
+            get
+            {
+                return _name;
+            }
         }
         [JsonProperty]
         private string _name;
@@ -346,6 +345,7 @@ namespace ARTemplate
         {
             _Name = "";
             _P = Brushes.Black;
+            ShowTitle = true;
         }
         public TempArea(Rectangle rect, string name)
         {
@@ -364,6 +364,13 @@ namespace ARTemplate
         }
         public override bool NeedFill() { return true; }
         public override Brush FillPen() { return _P; }
+        public override string Title
+        {
+            get
+            {
+                return _Name;
+            }
+        }
         public override string ToString()
         {
             return _Name;
@@ -380,15 +387,19 @@ namespace ARTemplate
             this.TypeName = "题组";
             this.Rect = rect;
             this._name = name;
+            ShowTitle = true;
         }
         public void SetName(string name)
         {
             if (name != "")
                 _name = name;
         }
-        public override string ToXmlString()
+        public override string Title
         {
-            return Rect.ToXmlString() + _name.ToXmlString("NAME");
+            get
+            {
+                return _name;
+            }
         }
         public override String ToString()
         {
@@ -441,20 +452,12 @@ namespace ARTemplate
             }
             return null;
         }
-        public override string ToXmlString() //分Type
+        public override string Title
         {
-            String str = Type.ToXmlString("TYPE") + Rect.ToXmlString()
-                + Name.ToXmlString("NAME"); //+ "<SIZE>" + size.Width + "," + size.Height + "</SIZE>"
-            if ("1023456789".Contains(Type)) // (Type == "填涂横向" || Type == "填涂纵向")
+            get
             {
-                int i = 0;
-                str += Size.ToXmlString();
-                foreach (List<Point> lp in list)
-                {
-                    str += "<SINGLE ID=\"" + i++ + "\">" + string.Join("", lp.Select(r => r.ToXmlString())) + "</SINGLE>";
-                }
+                return Name;
             }
-            return str;
         }
         public override String ToString()
         {

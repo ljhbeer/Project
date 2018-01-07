@@ -288,7 +288,10 @@ namespace ARTemplate
                 if (_ActiveEditMode && _ActiveEditArea != null)
                 {
                     //_TestR = Rectangle.Union(_ActiveEditArea.Rect, m_Imgselection);
-                    _ActiveEditArea.Rect = Rectangle.Union(_ActiveEditArea.Rect, m_Imgselection);
+                    _ActiveEditArea.Rect = m_Imgselection;// Rectangle.Union(_ActiveEditArea.Rect, m_Imgselection);
+                    _ActiveEditArea.EditMode = false;
+                    _ActiveEditMode = false;
+                    _ActiveEditArea = null;
                 }
                 else
                 {
@@ -395,6 +398,10 @@ namespace ARTemplate
                             if (I.NeedFill())
                             {
                                 e.Graphics.FillRectangle(I.FillPen(), zoombox.ImgToBoxSelection(I.ImgArea));
+                                //e.Graphics.DrawString(t.Name, font, Red, zoombox.ImgToBoxSelection(I.ImgArea).Location);
+                            }
+                            if (I.ShowTitle)
+                            {
                                 e.Graphics.DrawString(t.Name, font, Red, zoombox.ImgToBoxSelection(I.ImgArea).Location);
                             }
                         }
@@ -402,11 +409,12 @@ namespace ARTemplate
                 }
                 if (_ActiveEditMode && _ActiveEditArea != null)
                 {
+                    Pen pen1 = Pens.DarkBlue;
                     Area I = _ActiveEditArea;
                     Rectangle r = zoombox.ImgToBoxSelection(I.ImgArea);
-                    e.Graphics.DrawRectangle(pen, r);
+                    e.Graphics.DrawRectangle(pen1, r);
                     _ControlRects = DetectImageTools.DetectCorrect.GetLrbRtb(r, 5, 5);
-                    e.Graphics.DrawRectangles(pen, _ControlRects.ToArray());
+                    e.Graphics.DrawRectangles(pen1, _ControlRects.ToArray());
                 }
                 if (_TestR.Width > 0 && _TestR.Height > 0)
                 {

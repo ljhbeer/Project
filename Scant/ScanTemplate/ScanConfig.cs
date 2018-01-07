@@ -275,7 +275,7 @@ namespace ScanTemplate
         private string _dirname;
         private TemplateInfo ti;
     
-        public TemplateShow(string fullpath,string dirname, string imgfilename, TemplateInfo ti=null)
+        public TemplateShow(string fullpath,string dirname, string imgfilename, TemplateInfo ti=null,bool savefilename=false)
         {
             this._fullpath = fullpath;
             this._imgfilename = imgfilename;
@@ -303,6 +303,8 @@ namespace ScanTemplate
                      _artemplate = new Template(dd.ListFeature,dd.CorrectRect);
                      Template t = Templates.GetTemplate(ti.TemplateFileName);
                      _artemplate.Match(t);
+                     if (savefilename)
+                         _artemplate.FileName = ti.TemplateFileName;
                  }
                  this.OK = true;
             }

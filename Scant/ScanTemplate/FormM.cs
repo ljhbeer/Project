@@ -772,5 +772,34 @@ namespace ScanTemplate
                  File.WriteAllText(saveFileDialog2.FileName, str);
              }
         }
+
+        private void listBoxScantData_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.M)
+            {
+                if (listBoxScantData.SelectedIndex == -1) return;
+                ScanData sd = (ScanData)listBoxScantData.SelectedItem;
+                if (File.Exists(sd.DataFullName))
+                {
+                    string[] ls = File.ReadAllLines(sd.DataFullName);
+                    List<string> titles = ls[0].Split(',').ToList();
+
+                    Scan  _scan = new Scan(_sc, sd.TemplateFileName, sd.ImgList, sd.Fullpath, false);
+                    FileInfo fi = new FileInfo(sd.TemplateFileName);
+                    string path= fi.FullName.Substring(0, fi.FullName.Length - fi.Name.Length-1);
+                    TemplateInfo ti = new TemplateInfo(fi.FullName ,path);
+                    _sc.Templateshow = new TemplateShow("", "", sd.ImgList[0], ti,true);
+                    if (_sc.Templateshow.OK)
+                    {
+                        this.Hide();
+                        FormTemplate f = new FormTemplate(_sc.Templateshow);
+                        f.ShowDialog();
+                        f.Clear();
+                        f = null;
+                        this.Show();
+                    }
+                }
+            }
+        }
 	}	
 }

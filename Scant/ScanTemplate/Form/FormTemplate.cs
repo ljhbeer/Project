@@ -133,6 +133,8 @@ namespace ARTemplate
             UpdateTemplate();
 
             string filename =  _template.GetTemplateName() + ".json";
+            if (_template.FileName!="" && File.Exists(_template.FileName))
+                filename = _template.FileName;
             SaveFileDialog saveFileDialog2 = new SaveFileDialog();
             saveFileDialog2.FileName = filename;
             saveFileDialog2.Filter = "Json files (*.json)|*.json";

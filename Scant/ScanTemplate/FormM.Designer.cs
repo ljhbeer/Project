@@ -270,6 +270,7 @@
             this.listBoxScantData.Size = new System.Drawing.Size(239, 292);
             this.listBoxScantData.TabIndex = 10;
             this.listBoxScantData.SelectedIndexChanged += new System.EventHandler(this.listBoxData_SelectedIndexChanged);
+            this.listBoxScantData.KeyUp += new System.Windows.Forms.KeyEventHandler(this.listBoxScantData_KeyUp);
             // 
             // buttonReScan
             // 

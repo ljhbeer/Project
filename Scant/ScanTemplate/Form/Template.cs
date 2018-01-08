@@ -131,6 +131,8 @@ namespace ARTemplate
                 if (zw > 0)
                     str += "_ZW" + zw;
             }
+            if (str == "")
+                str = "Empty";
             return str;
         }
 

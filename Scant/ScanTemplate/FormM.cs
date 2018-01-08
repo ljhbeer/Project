@@ -74,6 +74,7 @@ namespace ScanTemplate
             if (nameList.Count > 0)
             {
                 _sc.Templateshow = new TemplateShow(dir.FullPath, dir.DirName, nameList[0]);
+                _sc.Templateshow.Template.FileName = _sc.Baseconfig.TemplatePath ;
                 if (_sc.Templateshow.OK)
                 {
                     this.Hide();
@@ -97,7 +98,7 @@ namespace ScanTemplate
             List<string> nameList = dir.ImgList();
             if (nameList.Count > 0)
             {
-                _sc.Templateshow = new TemplateShow(dir.FullPath, dir.DirName, nameList[0], ti);
+                _sc.Templateshow = new TemplateShow(dir.FullPath, dir.DirName, nameList[0], ti,true);
                 if (_sc.Templateshow.OK)
                 {
                     this.Hide();

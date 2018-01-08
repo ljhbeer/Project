@@ -304,7 +304,7 @@ namespace ScanTemplate
                      Template t = Templates.GetTemplate(ti.TemplateFileName);
                      _artemplate.Match(t);
                      if (savefilename)
-                         _artemplate.FileName = ti.TemplateFileName;
+                         _artemplate.FileName = ti.TemplateFileName;                    
                  }
                  this.OK = true;
             }

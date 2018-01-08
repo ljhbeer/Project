@@ -61,6 +61,10 @@ namespace ScanTemplate
         public string ExamPath { get { return _workpath.Replace("\\s1025","\\LJH\\Exam"); } }
         public string CorrectImgPath { get { return _workpath.Replace("\\s1025","\\LJH\\Correct\\s1025"); } }
         public string StudentList { get { return _workpath.Replace("\\s1025", "\\LJH"); } }
+
+        public string ExportResultFxPath { get { return "F:\\out\\FX"; } }
+        public string ExportResultPath { get { return "F:\\out\\FX"; } }
+        public string ExportImageRootPath { get { return "F:\\out"; } }
     }
     public class ExamConfig
     {

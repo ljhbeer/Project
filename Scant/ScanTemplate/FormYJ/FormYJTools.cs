@@ -132,7 +132,7 @@ namespace ScanTemplate.FormYJ
 
              MessageBox.Show("导出未交名单");
             SaveFileDialog saveFileDialog2 = new SaveFileDialog();
-            saveFileDialog2.FileName = _examdata.Name + "_未交名单";
+            saveFileDialog2.FileName =_sc.Baseconfig.ExportResultFxPath+"\\"+ _examdata.Name + "_未交名单";
             saveFileDialog2.Filter = "txt files (*.txt)|*.txt";
             saveFileDialog2.Title = "导出未交名单";
             if (saveFileDialog2.ShowDialog() == DialogResult.OK)
@@ -196,13 +196,13 @@ namespace ScanTemplate.FormYJ
                 //Tztitle += t.ToString() + ",";
             }
 
-            if (!Directory.Exists("F:\\Out\\" + _exam.Name))
+            if (!Directory.Exists(_sc.Baseconfig.ExportImageRootPath+"\\" + _exam.Name))
             {
-                Directory.CreateDirectory("F:\\Out\\" + _exam.Name);
+                Directory.CreateDirectory(_sc.Baseconfig.ExportImageRootPath + "\\" + _exam.Name);
             }
             else
             {
-                MessageBox.Show("已存在文件夹"+ _exam.Name + "! 继续将覆盖该文件夹内的文件！！ 请确认！！ ");
+                MessageBox.Show("已存在文件夹"+_sc.Baseconfig.ExportImageRootPath+"\\" + _exam.Name + "! 继续将覆盖该文件夹内的文件！！ 请确认！！ ");
             }
            
             foreach (Student S in _students.students)
@@ -225,24 +225,24 @@ namespace ScanTemplate.FormYJ
 
                 Bitmap bmp = TemplateTools.DrawInfoBmp(S,_examdata.SR,angle,optionanswer, ltz );
 
-                string filename = "F:\\Out\\" + _exam.Name + "\\" + S.ID + ".jpg";
+                string filename = _sc.Baseconfig.ExportImageRootPath + "\\" + _exam.Name + "\\" + S.ID + ".jpg";
                 if (_sc.Studentbases.HasStudentBase)
                 {
                     if (S.KH > 1)
                     {
                         string name = _sc.Studentbases.GetName(S.KH);
-                        filename = "F:\\Out\\" + _exam.Name + "\\" + S.ID + "_" + name + ".jpg";
+                        filename = _sc.Baseconfig.ExportImageRootPath + "\\" + _exam.Name + "\\" + S.ID + "_" + name + ".jpg";
                     }
                 }
                 bmp.Save(filename);
             }
-            MessageBox.Show("已输出到F:\\Out\\"+_exam.Name);
+            MessageBox.Show("已输出到" + _sc.Baseconfig.ExportImageRootPath + "\\" + _exam.Name);
         }
         private void ExportXztFx()
         {
             MessageBox.Show("导出成绩分析");
             SaveFileDialog saveFileDialog2 = new SaveFileDialog();
-            saveFileDialog2.FileName = _examdata.Name + "_成绩分析";
+            saveFileDialog2.FileName =_sc.Baseconfig.ExportResultFxPath+"\\"+_examdata.Name + "_成绩分析";
             saveFileDialog2.Filter = "txt files (*.txt)|*.txt";
             saveFileDialog2.Title = "导出成绩成绩分析";
             if (saveFileDialog2.ShowDialog() == DialogResult.OK)
@@ -357,7 +357,7 @@ namespace ScanTemplate.FormYJ
                 int Sscore = _exam.Subjects.Sum(r => r.Score);
                 MessageBox.Show("导出成绩" + msg);
                 SaveFileDialog saveFileDialog2 = new SaveFileDialog();
-                saveFileDialog2.FileName = _examdata.Name;
+                saveFileDialog2.FileName = _sc.Baseconfig.ExportResultPath+"\\" +  _examdata.Name;
                 saveFileDialog2.Filter = "txt files (*.txt)|*.txt";
                 saveFileDialog2.Title = "导出成绩";
                 if (saveFileDialog2.ShowDialog() == DialogResult.OK)

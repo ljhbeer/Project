@@ -325,23 +325,22 @@ namespace ARTemplate
 
         private void pictureBox1_MouseMove(object sender, MouseEventArgs e)
         {
-            if (_ActiveEditMode && _ActiveEditArea != null)
-            {
-                int index = 0;
-                foreach (Rectangle r in _ControlRects)
-                {
-                    if (r.Contains(e.Location))
-                    {
-                        if(index==1||index==2)
-                        this.Cursor = Cursors.SizeNESW;
-                        else 
-                        this.Cursor = Cursors.SizeNWSE;
-                        return;
-                    }
-                    index++;
-                }
-            }
-            this.Cursor = Cursors.Default;
+            //if (_ActiveEditMode && _ActiveEditArea != null)
+            //{
+            //    int index = 0;
+            //    foreach (Rectangle r in _ControlRects)
+            //    {
+            //        if (r.Contains(e.Location))
+            //        {
+            //            if(index==1||index==2)
+            //            this.Cursor = Cursors.SizeNESW;
+            //            else 
+            //            this.Cursor = Cursors.SizeNWSE;
+            //            return;
+            //        }
+            //        index++;
+            //    }
+            //}
         }
         private void pictureBox1_MouseUp(object sender, MouseEventArgs e)
         {
@@ -644,12 +643,12 @@ namespace ARTemplate
                 {
                     if (_defaultunchoosescore == 0)
                         _defaultunchoosescore = 2;
+                }
                     String name = unchoosename;
                     t.Name = unchoosename;
                     t.Text = unchoosename + "(" + _defaultunchoosescore + "分)";
                     t.Tag = new UnChoose(_defaultunchoosescore, name, m_Imgselection);
                     m_tn.Nodes[keyname].Nodes.Add(t);
-                }
             }
         }
         private void CompleteSelectionToDark()

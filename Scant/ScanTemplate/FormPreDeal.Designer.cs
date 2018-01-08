@@ -38,34 +38,45 @@
             this.button4 = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
+            this.buttonModifyNewFilename = new System.Windows.Forms.Button();
             this.listBoxfilename = new System.Windows.Forms.ListBox();
+            this.listBoxNewfilename = new System.Windows.Forms.ListBox();
+            this.panel2 = new System.Windows.Forms.Panel();
+            this.textBoxfilenamereplacesrc = new System.Windows.Forms.TextBox();
+            this.ll = new System.Windows.Forms.Label();
+            this.buttonReName = new System.Windows.Forms.Button();
+            this.textBoxfilenamereplacedst = new System.Windows.Forms.TextBox();
+            this.label3 = new System.Windows.Forms.Label();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.panel1.SuspendLayout();
+            this.panel2.SuspendLayout();
             this.SuspendLayout();
             // 
             // tableLayoutPanel1
             // 
-            this.tableLayoutPanel1.ColumnCount = 3;
+            this.tableLayoutPanel1.ColumnCount = 4;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 100F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 150F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 150F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel1.Controls.Add(this.label1, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.label2, 0, 2);
             this.tableLayoutPanel1.Controls.Add(this.listBoxUnScanDir, 0, 1);
             this.tableLayoutPanel1.Controls.Add(this.listBox2, 0, 3);
-            this.tableLayoutPanel1.Controls.Add(this.pictureBox1, 2, 1);
-            this.tableLayoutPanel1.Controls.Add(this.panel1, 2, 3);
+            this.tableLayoutPanel1.Controls.Add(this.pictureBox1, 3, 1);
+            this.tableLayoutPanel1.Controls.Add(this.panel1, 3, 3);
             this.tableLayoutPanel1.Controls.Add(this.listBoxfilename, 1, 1);
+            this.tableLayoutPanel1.Controls.Add(this.listBoxNewfilename, 2, 1);
+            this.tableLayoutPanel1.Controls.Add(this.panel2, 3, 2);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 5;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 80F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 67F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.Size = new System.Drawing.Size(682, 397);
             this.tableLayoutPanel1.TabIndex = 0;
@@ -82,7 +93,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(3, 188);
+            this.label2.Location = new System.Drawing.Point(3, 252);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(29, 12);
             this.label2.TabIndex = 0;
@@ -96,7 +107,7 @@
             this.listBoxUnScanDir.ItemHeight = 12;
             this.listBoxUnScanDir.Location = new System.Drawing.Point(3, 23);
             this.listBoxUnScanDir.Name = "listBoxUnScanDir";
-            this.listBoxUnScanDir.Size = new System.Drawing.Size(94, 162);
+            this.listBoxUnScanDir.Size = new System.Drawing.Size(94, 226);
             this.listBoxUnScanDir.TabIndex = 1;
             this.listBoxUnScanDir.SelectedIndexChanged += new System.EventHandler(this.listBoxUnScanDir_SelectedIndexChanged);
             // 
@@ -105,18 +116,18 @@
             this.listBox2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.listBox2.FormattingEnabled = true;
             this.listBox2.ItemHeight = 12;
-            this.listBox2.Location = new System.Drawing.Point(3, 211);
+            this.listBox2.Location = new System.Drawing.Point(3, 322);
             this.listBox2.Name = "listBox2";
-            this.listBox2.Size = new System.Drawing.Size(94, 162);
+            this.listBox2.Size = new System.Drawing.Size(94, 52);
             this.listBox2.TabIndex = 2;
             this.listBox2.Visible = false;
             // 
             // pictureBox1
             // 
             this.pictureBox1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pictureBox1.Location = new System.Drawing.Point(394, 23);
+            this.pictureBox1.Location = new System.Drawing.Point(403, 23);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(285, 162);
+            this.pictureBox1.Size = new System.Drawing.Size(276, 226);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox1.TabIndex = 4;
             this.pictureBox1.TabStop = false;
@@ -126,11 +137,10 @@
             this.panel1.Controls.Add(this.button4);
             this.panel1.Controls.Add(this.button3);
             this.panel1.Controls.Add(this.button2);
-            this.panel1.Controls.Add(this.button1);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel1.Location = new System.Drawing.Point(394, 211);
+            this.panel1.Location = new System.Drawing.Point(403, 322);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(285, 162);
+            this.panel1.Size = new System.Drawing.Size(276, 52);
             this.panel1.TabIndex = 5;
             // 
             // button4
@@ -160,14 +170,15 @@
             this.button2.Text = "button2";
             this.button2.UseVisualStyleBackColor = true;
             // 
-            // button1
+            // buttonModifyNewFilename
             // 
-            this.button1.Location = new System.Drawing.Point(11, 4);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(65, 24);
-            this.button1.TabIndex = 0;
-            this.button1.Text = "button1";
-            this.button1.UseVisualStyleBackColor = true;
+            this.buttonModifyNewFilename.Location = new System.Drawing.Point(3, 21);
+            this.buttonModifyNewFilename.Name = "buttonModifyNewFilename";
+            this.buttonModifyNewFilename.Size = new System.Drawing.Size(85, 26);
+            this.buttonModifyNewFilename.TabIndex = 0;
+            this.buttonModifyNewFilename.Text = "更新文件名";
+            this.buttonModifyNewFilename.UseVisualStyleBackColor = true;
+            this.buttonModifyNewFilename.Click += new System.EventHandler(this.buttonModifyNewFilename_Click);
             // 
             // listBoxfilename
             // 
@@ -177,9 +188,76 @@
             this.listBoxfilename.Location = new System.Drawing.Point(103, 23);
             this.listBoxfilename.Name = "listBoxfilename";
             this.tableLayoutPanel1.SetRowSpan(this.listBoxfilename, 3);
-            this.listBoxfilename.Size = new System.Drawing.Size(285, 350);
+            this.listBoxfilename.Size = new System.Drawing.Size(144, 351);
             this.listBoxfilename.TabIndex = 6;
             this.listBoxfilename.SelectedIndexChanged += new System.EventHandler(this.listBoxfilename_SelectedIndexChanged);
+            // 
+            // listBoxNewfilename
+            // 
+            this.listBoxNewfilename.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listBoxNewfilename.FormattingEnabled = true;
+            this.listBoxNewfilename.ItemHeight = 12;
+            this.listBoxNewfilename.Location = new System.Drawing.Point(253, 23);
+            this.listBoxNewfilename.Name = "listBoxNewfilename";
+            this.tableLayoutPanel1.SetRowSpan(this.listBoxNewfilename, 3);
+            this.listBoxNewfilename.Size = new System.Drawing.Size(144, 351);
+            this.listBoxNewfilename.TabIndex = 7;
+            // 
+            // panel2
+            // 
+            this.panel2.Controls.Add(this.label3);
+            this.panel2.Controls.Add(this.ll);
+            this.panel2.Controls.Add(this.textBoxfilenamereplacedst);
+            this.panel2.Controls.Add(this.textBoxfilenamereplacesrc);
+            this.panel2.Controls.Add(this.buttonReName);
+            this.panel2.Controls.Add(this.buttonModifyNewFilename);
+            this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel2.Location = new System.Drawing.Point(403, 255);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(276, 61);
+            this.panel2.TabIndex = 8;
+            // 
+            // textBoxfilenamereplacesrc
+            // 
+            this.textBoxfilenamereplacesrc.Location = new System.Drawing.Point(56, 3);
+            this.textBoxfilenamereplacesrc.Name = "textBoxfilenamereplacesrc";
+            this.textBoxfilenamereplacesrc.Size = new System.Drawing.Size(100, 21);
+            this.textBoxfilenamereplacesrc.TabIndex = 0;
+            // 
+            // ll
+            // 
+            this.ll.AutoSize = true;
+            this.ll.Location = new System.Drawing.Point(7, 6);
+            this.ll.Name = "ll";
+            this.ll.Size = new System.Drawing.Size(47, 12);
+            this.ll.TabIndex = 1;
+            this.ll.Text = "Replace";
+            // 
+            // buttonReName
+            // 
+            this.buttonReName.Location = new System.Drawing.Point(94, 21);
+            this.buttonReName.Name = "buttonReName";
+            this.buttonReName.Size = new System.Drawing.Size(85, 26);
+            this.buttonReName.TabIndex = 0;
+            this.buttonReName.Text = "重命名文件名";
+            this.buttonReName.UseVisualStyleBackColor = true;
+            this.buttonReName.Click += new System.EventHandler(this.buttonReName_Click);
+            // 
+            // textBoxfilenamereplacedst
+            // 
+            this.textBoxfilenamereplacedst.Location = new System.Drawing.Point(175, 3);
+            this.textBoxfilenamereplacedst.Name = "textBoxfilenamereplacedst";
+            this.textBoxfilenamereplacedst.Size = new System.Drawing.Size(100, 21);
+            this.textBoxfilenamereplacedst.TabIndex = 0;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(145, 6);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(17, 12);
+            this.label3.TabIndex = 1;
+            this.label3.Text = "->";
             // 
             // FormPreDeal
             // 
@@ -194,6 +272,8 @@
             this.tableLayoutPanel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.panel1.ResumeLayout(false);
+            this.panel2.ResumeLayout(false);
+            this.panel2.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -210,7 +290,14 @@
         private System.Windows.Forms.Button button4;
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button buttonModifyNewFilename;
         private System.Windows.Forms.ListBox listBoxfilename;
+        private System.Windows.Forms.ListBox listBoxNewfilename;
+        private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.Label ll;
+        private System.Windows.Forms.TextBox textBoxfilenamereplacesrc;
+        private System.Windows.Forms.Button buttonReName;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.TextBox textBoxfilenamereplacedst;
     }
 }

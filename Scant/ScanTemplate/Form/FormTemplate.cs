@@ -50,6 +50,8 @@ namespace ARTemplate
         public FormTemplate(TemplateShow templateShow)
         {
             InitializeComponent();
+            _fs = null;
+            _src = null;
             Init(templateShow.Template);
             InitSrc(templateShow);
         }
@@ -70,8 +72,11 @@ namespace ARTemplate
         }
         private void Init(Template t)
         {
-            _fs = null;
-            _src = null;
+            if (t == null)
+            {
+                _fs = null;
+                _src = null;
+            }
             _template = t;
             m_tn = new TreeNode();
             m_Imgselection = new Rectangle(0, 0, 0, 0);
@@ -176,6 +181,8 @@ namespace ARTemplate
                     {
                         Init(_template);
                         RefreshTemplate();
+                        //pictureBox1.Image.Save("F:\\b.tif");
+                        pictureBox1.Invalidate();
                     }
                 }
                 catch
@@ -389,6 +396,7 @@ namespace ARTemplate
                 Font font = DefaultFont;
                 foreach (string s in new string[] { "特征点", "考号","校对", "选择题", "非选择题", "选区变黑", "选区变白","题组","自定义" })
                 {
+                    if( m_tn.Nodes.ContainsKey(s))
                     foreach (TreeNode t in m_tn.Nodes[s].Nodes)
                     {
                         if (t.Tag != null)
@@ -417,6 +425,8 @@ namespace ARTemplate
                         }
                     }
                 }
+
+                return;
                 if (_ActiveEditMode && _ActiveEditArea != null)
                 {
                     Pen pen1 = Pens.DarkBlue;

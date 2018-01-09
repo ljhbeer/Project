@@ -48,7 +48,9 @@ namespace ARTemplate
                 {
                     if (n.Tag != null)
                     {
-                        AddArea((Area)n.Tag, t.Name);
+                        Area I = (Area)n.Tag;
+                        I.SetName(n.Name);
+                        AddArea(I, t.Name);
                     }
                 }
             }
@@ -73,20 +75,35 @@ namespace ARTemplate
         public TreeNode GetTreeNode()
         {
             TreeNode root = new TreeNode();
-            foreach (KeyValuePair<string, List<Area>> kv in _dic)
+            foreach (string s in new string[] { "特征点", "考号", "校对", "选择题", "非选择题", "选区变黑", "选区变白", "题组", "自定义" })
             {
                 TreeNode opt = new TreeNode();
-                opt.Name = opt.Text = kv.Key;
+                opt.Name = opt.Text =s;
+                root.Nodes.Add(opt);
+            }
+            foreach (KeyValuePair<string, List<Area>> kv in _dic)
+            {
+                TreeNode opt;
+                if(root.Nodes.ContainsKey(kv.Key))
+                    opt = root.Nodes[kv.Key];
+                else{
+                    opt = new TreeNode();
+                    opt.Name = opt.Text = kv.Key;
+                    root.Nodes.Add(opt);
+                }
                 foreach (Area I in kv.Value)
                 {
                     TreeNode t = new TreeNode();
-                    t.Name= t.Text = I.ToString();
+                    string txt = I.ToString();
+                    if (I.ShowTitle)
+                        txt = I.Title;
+                    t.Name= t.Text =txt;
                     if (t.Name == "")
                         t.Name = t.Text = I.TypeName;
                     t.Tag = I;
                     opt.Nodes.Add(t);
                 }
-                root.Nodes.Add(opt);
+                //root.Nodes.Add(opt);
             }
             root.Text = "网上阅卷";
             return root;
@@ -507,11 +524,17 @@ namespace ARTemplate
                         break;
                     case "选区变黑": dic[item.Key] = new List<Area>();
                         foreach (TempArea A in MyArea<TempArea>.ConvertTo(item.Value))
+                        {
+                            A.SetBrush(Brushes.Black);
                             dic[item.Key].Add(A);
+                        }
                         break;
                     case "选区变白": dic[item.Key] = new List<Area>();
                         foreach (TempArea A in MyArea<TempArea>.ConvertTo(item.Value))
+                        {
+                            A.SetBrush(Brushes.White);
                             dic[item.Key].Add(A);
+                        }
                         break;
                     case "题组": dic[item.Key] = new List<Area>();
                         foreach (TzArea A in MyArea<TzArea>.ConvertTo(item.Value))

@@ -88,6 +88,10 @@ namespace ARTemplate
         {
             get { return ToString(); }
         }
+        public virtual void SetName(string name)
+        {
+            ;
+        }
         public override string ToString()
         {
             return TypeName;
@@ -150,14 +154,14 @@ namespace ARTemplate
         {
             this.TypeName = "考号";
             this.Rect = m_Imgselection;
-            this.Name = name;
+            this._name = name;
             this.Type = type; // 条形码  ，  填涂横向， 填涂纵向
         }
         public KaoHaoChoiceArea(Rectangle m_Imgselection, string name, string type, List<List<Point>> list, Size size)
         {
             this.TypeName = "考号";
             this.Rect = m_Imgselection;
-            this.Name = name;
+            this._name = name;
             this.Type = type;
             this.list = list;
             this.Size = size;
@@ -196,15 +200,19 @@ namespace ARTemplate
         {
             get
             {
-                return Name;
+                return _name;
             }
         }
         public override string ToString()
         {
-            return Name;
+            return _name;
+        }
+        public override void SetName(string name)
+        {
+            _name = name;
         }
         [JsonProperty]
-        public string Name { get; set; }
+        public string _name { get; set; }
         [JsonProperty]
         public string Type { get; set; }
         // "填涂横向" || Type == "填涂纵向"
@@ -272,6 +280,10 @@ namespace ARTemplate
                 return list.Count;
             }
         }
+        public override void SetName(string name)
+        {
+            _name = name;
+        }
         public string Name { get { return _name; } }
         [JsonProperty]
         public List<List<Point>> list;
@@ -303,11 +315,10 @@ namespace ARTemplate
         {
             return _name;
         }
-        public string Name { get { return _name; } }
-        public void SetName(string name)
+        public string Name { get { return _name; } }       
+        public override void SetName(string name)
         {
-            if (name != "")
-                _name = name;
+            _name = name;
         }
         [JsonProperty]
         private float score;
@@ -335,6 +346,10 @@ namespace ARTemplate
                 return _name;
             }
         }
+        public override void SetName(string name)
+        {
+            _name = name;
+        }
         [JsonProperty]
         private string _name;
     }
@@ -343,15 +358,15 @@ namespace ARTemplate
     {
         public TempArea()
         {
-            _Name = "";
+            _name = "";
             _P = Brushes.Black;
             ShowTitle = true;
         }
         public TempArea(Rectangle rect, string name)
         {
             this.Rect = rect;
-            this._Name = name;
-            if (_Name.Contains("黑"))
+            this._name = name;
+            if (_name.Contains("黑"))
             {
                 this.TypeName = "选区变黑";
                 _P = Brushes.Black;
@@ -362,21 +377,29 @@ namespace ARTemplate
                 _P = Brushes.White;
             }
         }
+        public void SetBrush(Brush brush)
+        {
+            _P = brush;
+        }
         public override bool NeedFill() { return true; }
         public override Brush FillPen() { return _P; }
         public override string Title
         {
             get
             {
-                return _Name;
+                return _name;
             }
         }
         public override string ToString()
         {
-            return _Name;
+            return _name;
+        }
+        public override void SetName(string name)
+        {
+            _name = name;
         }
         [JsonProperty]
-        private string _Name;
+        private string _name;
         private Brush _P;
     }
     [JsonObject(MemberSerialization.OptIn)]
@@ -389,11 +412,6 @@ namespace ARTemplate
             this._name = name;
             ShowTitle = true;
         }
-        public void SetName(string name)
-        {
-            if (name != "")
-                _name = name;
-        }
         public override string Title
         {
             get
@@ -404,6 +422,10 @@ namespace ARTemplate
         public override String ToString()
         {
             return _name;
+        }
+        public override void SetName(string name)
+        {
+            _name = name;
         }
         [JsonProperty]
         private string _name;
@@ -462,6 +484,11 @@ namespace ARTemplate
         public override String ToString()
         {
             return Name;
+        }
+
+        public override void SetName(string name)
+        {
+            Name = name;
         }
         [JsonProperty]
         public string Name { get; set; }

@@ -289,23 +289,32 @@ namespace ScanTemplate
             List<Rectangle> yuji = GetYuji(new Rectangle(0, 0, src.Width, src.Height), m_Imgselection);
             fs1.Close();
 
+            string msg = "";
             if (yuji.Count > 0)
             foreach( string s in srclst)
             {
-                string ss = _activedir.FullPath + s;
-                System.IO.FileStream fs = new System.IO.FileStream(ss, System.IO.FileMode.Open, System.IO.FileAccess.Read);
-                Bitmap orgsrc = (Bitmap)System.Drawing.Image.FromStream(fs);
-                
-                Bitmap rgb = ConvertFormat.ConvertToRGB(orgsrc);
-                using (Graphics g = Graphics.FromImage(rgb))
-                {
-                    g.FillRectangles(Brushes.White, yuji.ToArray());
-                }
-                rgb = ConvertFormat.Convert(rgb, src.PixelFormat, true);
-                fs.Close();
-                rgb.Save(ss);
-            }
+                    string ss = _activedir.FullPath + s;
+                    try
+                    {
+                        System.IO.FileStream fs = new System.IO.FileStream(ss, System.IO.FileMode.Open, System.IO.FileAccess.Read);
+                        Bitmap orgsrc = (Bitmap)System.Drawing.Image.FromStream(fs);
 
+                        Bitmap rgb = ConvertFormat.ConvertToRGB(orgsrc);
+                        using (Graphics g = Graphics.FromImage(rgb))
+                        {
+                            g.FillRectangles(Brushes.White, yuji.ToArray());
+                        }
+                        rgb = ConvertFormat.Convert(rgb, src.PixelFormat, true);
+                        fs.Close();
+                        rgb.Save(ss);
+                    }
+                    catch
+                    {
+                        msg += s + "\r\n";
+                    }
+            }
+            if (msg != "")
+                MessageBox.Show(msg);
         }
         private void buttonApplyCutToAllImage_Click(object sender, EventArgs e)
         {

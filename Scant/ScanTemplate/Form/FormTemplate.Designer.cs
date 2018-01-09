@@ -101,9 +101,9 @@
             this.toolStripButtonToDark,
             this.toolStripButtonSetGroup,
             this.toolStripButtonCustomDefine});
-            this.toolStrip1.Location = new System.Drawing.Point(3, 0);
+            this.toolStrip1.Location = new System.Drawing.Point(3, 25);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(728, 25);
+            this.toolStrip1.Size = new System.Drawing.Size(697, 25);
             this.toolStrip1.TabIndex = 1;
             // 
             // toolStripButtonSaveTemplate
@@ -246,7 +246,7 @@
             // toolStripContainer1.ContentPanel
             // 
             this.toolStripContainer1.ContentPanel.Controls.Add(this.tableLayoutPanel1);
-            this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(952, 657);
+            this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(952, 636);
             this.toolStripContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.toolStripContainer1.Location = new System.Drawing.Point(0, 0);
             this.toolStripContainer1.Name = "toolStripContainer1";
@@ -256,8 +256,8 @@
             // 
             // toolStripContainer1.TopToolStripPanel
             // 
-            this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.toolStrip2);
             this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.toolStrip1);
+            this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.toolStrip2);
             // 
             // tableLayoutPanel1
             // 
@@ -273,7 +273,7 @@
             this.tableLayoutPanel1.RowCount = 2;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 27F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 92.46468F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(952, 657);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(952, 636);
             this.tableLayoutPanel1.TabIndex = 1;
             // 
             // treeView1
@@ -281,7 +281,7 @@
             this.treeView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.treeView1.Location = new System.Drawing.Point(3, 30);
             this.treeView1.Name = "treeView1";
-            this.treeView1.Size = new System.Drawing.Size(151, 624);
+            this.treeView1.Size = new System.Drawing.Size(151, 603);
             this.treeView1.TabIndex = 1;
             this.treeView1.KeyUp += new System.Windows.Forms.KeyEventHandler(this.treeView1_KeyUp);
             // 
@@ -293,7 +293,7 @@
             this.panel1.Location = new System.Drawing.Point(160, 3);
             this.panel1.Name = "panel1";
             this.tableLayoutPanel1.SetRowSpan(this.panel1, 2);
-            this.panel1.Size = new System.Drawing.Size(789, 651);
+            this.panel1.Size = new System.Drawing.Size(789, 630);
             this.panel1.TabIndex = 0;
             // 
             // pictureBox1
@@ -325,9 +325,9 @@
             this.toolStripButtonCloseAndOutImages,
             this.toolStripButtonZoomNone,
             this.toolStripComboBoxKHFormat});
-            this.toolStrip2.Location = new System.Drawing.Point(731, 0);
+            this.toolStrip2.Location = new System.Drawing.Point(3, 0);
             this.toolStrip2.Name = "toolStrip2";
-            this.toolStrip2.Size = new System.Drawing.Size(221, 29);
+            this.toolStrip2.Size = new System.Drawing.Size(231, 25);
             this.toolStrip2.TabIndex = 2;
             // 
             // toolStripButtonCloseAndOutImages
@@ -336,7 +336,7 @@
             this.toolStripButtonCloseAndOutImages.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonCloseAndOutImages.Image")));
             this.toolStripButtonCloseAndOutImages.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButtonCloseAndOutImages.Name = "toolStripButtonCloseAndOutImages";
-            this.toolStripButtonCloseAndOutImages.Size = new System.Drawing.Size(60, 26);
+            this.toolStripButtonCloseAndOutImages.Size = new System.Drawing.Size(60, 22);
             this.toolStripButtonCloseAndOutImages.Text = "保存退出";
             this.toolStripButtonCloseAndOutImages.Click += new System.EventHandler(this.toolStripButtonCloseAndOutImages_Click);
             // 
@@ -346,7 +346,7 @@
             this.toolStripButtonZoomNone.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonZoomNone.Image")));
             this.toolStripButtonZoomNone.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButtonZoomNone.Name = "toolStripButtonZoomNone";
-            this.toolStripButtonZoomNone.Size = new System.Drawing.Size(36, 26);
+            this.toolStripButtonZoomNone.Size = new System.Drawing.Size(36, 22);
             this.toolStripButtonZoomNone.Text = "还原";
             this.toolStripButtonZoomNone.Click += new System.EventHandler(this.toolStripButtonZoomNone_Click);
             // 

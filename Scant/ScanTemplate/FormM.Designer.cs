@@ -62,6 +62,7 @@
             this.checkBoxDebug = new System.Windows.Forms.CheckBox();
             this.buttonOutTextImage = new System.Windows.Forms.Button();
             this.buttonPreDealImage = new System.Windows.Forms.Button();
+            this.checkBoxShowUnScanNamelist = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -320,6 +321,7 @@
             this.listBoxUnScanDir.Name = "listBoxUnScanDir";
             this.listBoxUnScanDir.Size = new System.Drawing.Size(224, 112);
             this.listBoxUnScanDir.TabIndex = 5;
+            this.listBoxUnScanDir.SelectedIndexChanged += new System.EventHandler(this.listBoxUnScanDir_SelectedIndexChanged);
             // 
             // label1
             // 
@@ -391,6 +393,7 @@
             this.tableLayoutPanel2.Controls.Add(this.checkBoxDebug, 7, 0);
             this.tableLayoutPanel2.Controls.Add(this.buttonOutTextImage, 2, 0);
             this.tableLayoutPanel2.Controls.Add(this.buttonPreDealImage, 3, 0);
+            this.tableLayoutPanel2.Controls.Add(this.checkBoxShowUnScanNamelist, 6, 0);
             this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 622);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
@@ -472,6 +475,19 @@
             this.buttonPreDealImage.UseVisualStyleBackColor = true;
             this.buttonPreDealImage.Click += new System.EventHandler(this.buttonPreDealImage_Click);
             // 
+            // checkBoxShowUnScanNamelist
+            // 
+            this.checkBoxShowUnScanNamelist.AutoSize = true;
+            this.checkBoxShowUnScanNamelist.Dock = System.Windows.Forms.DockStyle.Right;
+            this.checkBoxShowUnScanNamelist.ForeColor = System.Drawing.Color.Red;
+            this.checkBoxShowUnScanNamelist.Location = new System.Drawing.Point(1017, 3);
+            this.checkBoxShowUnScanNamelist.Name = "checkBoxShowUnScanNamelist";
+            this.checkBoxShowUnScanNamelist.Size = new System.Drawing.Size(108, 22);
+            this.checkBoxShowUnScanNamelist.TabIndex = 11;
+            this.checkBoxShowUnScanNamelist.Text = "显示文件名列表";
+            this.checkBoxShowUnScanNamelist.UseVisualStyleBackColor = true;
+            this.checkBoxShowUnScanNamelist.CheckedChanged += new System.EventHandler(this.checkBoxDebug_CheckedChanged);
+            // 
             // FormM
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -533,6 +549,7 @@
         private System.Windows.Forms.CheckBox checkBoxDebug;
         private System.Windows.Forms.Button buttonUnScanNameList;
         private System.Windows.Forms.Button buttonOutTextImage;
-        private System.Windows.Forms.Button buttonPreDealImage;        
+        private System.Windows.Forms.Button buttonPreDealImage;
+        private System.Windows.Forms.CheckBox checkBoxShowUnScanNamelist;        
     }
 }

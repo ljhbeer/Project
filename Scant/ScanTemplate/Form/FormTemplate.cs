@@ -628,7 +628,7 @@ namespace ARTemplate
                             if (r.Width > 0)
                             {
                                 r.Offset(-m_Imgselection.X, -m_Imgselection.Y);
-                                g.FillRectangle(Brushes.Black, r);
+                                g.FillRectangle(I.FillPen(), r);
                             }
                         }
             }

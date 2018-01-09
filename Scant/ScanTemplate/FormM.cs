@@ -22,9 +22,11 @@ namespace ScanTemplate
         private ScanConfig _sc;
         private DataTable _rundt;
         private Scan _scan;
+        private bool _bReScan;
 		public FormM()
 		{
 			InitializeComponent();
+            _bReScan = false;
             _rundt = null;
 		}
 		private void FormM_Load(object sender, EventArgs e)
@@ -117,22 +119,31 @@ namespace ScanTemplate
 				MessageBox.Show("未选择目录或者模板");
                 return;
             }
+            InitDoScan();
+		}
+
+        private void InitDoScan(string filename = "")
+        {
             TemplateInfo ti = (TemplateInfo)comboBoxTemplate.SelectedItem;
             UnScan dir = (UnScan)listBoxUnScanDir.SelectedItem;
             List<string> nameList = dir.ImgList();
             if (nameList.Count > 0)
             {
                 //TODO: add Detect
-
-                _scan = new Scan(_sc,ti.TemplateFileName, nameList,dir.FullPath);
-                _rundt = Tools.DataTableTools.ConstructDataTable( _scan.ColNames.ToArray() );
+                if(filename!="" && File.Exists(filename)){
+                    nameList.Clear();
+                    nameList.Add(filename);
+                }
+                _bReScan = false;
+                _scan = new Scan(_sc, ti.TemplateFileName, nameList, dir.FullPath);
+                _rundt = Tools.DataTableTools.ConstructDataTable(_scan.ColNames.ToArray());
                 dgv.DataSource = _rundt;
                 InitDgvUI();
-                _scan.DgSaveScanData = new DelegateSaveScanData( ExportData );
-                _scan.DgShowScanMsg = new DelegateShowScanMsg( ShowMsg);
+                _scan.DgSaveScanData = new DelegateSaveScanData(ExportData);
+                _scan.DgShowScanMsg = new DelegateShowScanMsg(ShowMsg);
                 _scan.DoScan();
             }
-		}
+        }
         private void buttonOutTextImage_Click(object sender, EventArgs e)
         {
             this.Hide();
@@ -201,6 +212,20 @@ namespace ScanTemplate
 		}
 		private void dgv_CellContentClick(object sender, DataGridViewCellEventArgs e)
 		{
+            if (e.RowIndex == -1  || e.ColumnIndex == -1 )
+                return;
+            if (checkBoxShowUnScanNamelist.Checked)
+            {
+                if (dgv.Columns.Contains("FileName"))
+                {
+                    string filename = dgv.Rows[e.RowIndex].Cells["FileName"].Value.ToString();
+                    if (listBoxUnScanDir.SelectedIndex == -1 || comboBoxTemplate.SelectedIndex == -1)
+                        return;
+                    InitDoScan(filename);
+                    return;
+                }
+            }
+
             if (e.RowIndex == -1 || _rundt == null || e.ColumnIndex == -1 || _scan == null)
                 return;
             string fn = _rundt.Rows[e.RowIndex]["文件名"].ToString().Replace("LJH\\", "LJH\\Correct\\").Replace("\\img","");
@@ -261,21 +286,30 @@ namespace ScanTemplate
         }
         private void ExportData(string exportdata)
         {
-            if (InputBox.Input("考试名称"))
+            if (_bReScan)
             {
-                string examname = InputBox.strValue;              
+                _bReScan = false;
                 string Datafilename = _scan.ScanDataPath + "\\data.txt";
-                string NewTemplatename = _scan.ScanDataPath + "\\template.json";
-                string NewImgsPath = _scan.ScanDataPath +"\\img";     
-                if (!Directory.Exists(_scan.ScanDataPath))    //文件是否被使用
-                    Directory.CreateDirectory(_scan.ScanDataPath);
-                Directory.Move(_scan.SourcePath, NewImgsPath);     
-                File.Copy(_scan.TemplateName,NewTemplatename,true);
-                File.WriteAllText(_scan.ScanDataPath + "\\"+examname+".exam", examname);
-               
-                exportdata = exportdata.Replace(_scan.SourcePath, _scan.ScanDataPath + "\\img");
                 File.WriteAllText(Datafilename, string.Join(",", _scan.ExportTitles) + "\r\n" + exportdata);
                 this.Invoke(new MyInvoke(MyRefresh));
+            }
+            else
+            {
+                if (InputBox.Input("考试名称"))
+                {
+                    string examname = InputBox.strValue;
+                    string Datafilename = _scan.ScanDataPath + "\\data.txt";
+                    string NewTemplatename = _scan.ScanDataPath + "\\template.json";
+                    string NewImgsPath = _scan.ScanDataPath + "\\img";
+                    if (!Directory.Exists(_scan.ScanDataPath))    //文件是否被使用
+                        Directory.CreateDirectory(_scan.ScanDataPath);
+                    Directory.Move(_scan.SourcePath, NewImgsPath);
+                    File.Copy(_scan.TemplateName, NewTemplatename, true);
+                    File.WriteAllText(_scan.ScanDataPath + "\\" + examname + ".exam", examname);
+                    exportdata = exportdata.Replace(_scan.SourcePath, _scan.ScanDataPath + "\\img");
+                    File.WriteAllText(Datafilename, string.Join(",", _scan.ExportTitles) + "\r\n" + exportdata);
+                    this.Invoke(new MyInvoke(MyRefresh));
+                }
             }
         }
         private void MsgToDr(string[] ss, ref DataRow dr)
@@ -351,7 +385,27 @@ namespace ScanTemplate
         }
         private void buttonReScan_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("未实现");
+            /////// ReScan
+            if (_scan == null || _rundt == null || _rundt.Rows.Count == 0 || listBoxScantData.SelectedIndex == -1)
+                return;
+            ScanData sd = (ScanData)listBoxScantData.SelectedItem;
+            TemplateInfo ti = new TemplateInfo(sd.TemplateFileName,sd.Fullpath);
+            List<string> nameList = sd.ImgList;
+            if (nameList.Count > 0)
+            {
+                //TODO: add Detect
+                _bReScan = true;
+                _scan = new Scan(_sc, ti.TemplateFileName, nameList,sd.Fullpath);
+                _rundt = Tools.DataTableTools.ConstructDataTable(_scan.ColNames.ToArray());
+                dgv.DataSource = _rundt;
+                InitDgvUI();
+                _scan.DgSaveScanData = new DelegateSaveScanData(ExportData);
+                _scan.DgShowScanMsg = new DelegateShowScanMsg(ShowMsg);
+                _scan.DoScan();
+            }
+
+          
+         
         }
         private void buttonVerify_Click(object sender, EventArgs e)
         {
@@ -773,7 +827,6 @@ namespace ScanTemplate
                  File.WriteAllText(saveFileDialog2.FileName, str);
              }
         }
-
         private void listBoxScantData_KeyUp(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.M)
@@ -801,6 +854,38 @@ namespace ScanTemplate
                     }
                 }
             }
+        }
+        private void listBoxUnScanDir_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (checkBoxShowUnScanNamelist.Checked)
+            {
+                if (listBoxUnScanDir.SelectedIndex == -1 || comboBoxTemplate.SelectedIndex == -1)
+                {
+                    MessageBox.Show("未选择目录或者模板");
+                    return;
+                }
+                TemplateInfo ti = (TemplateInfo)comboBoxTemplate.SelectedItem;
+                UnScan dir = (UnScan)listBoxUnScanDir.SelectedItem;
+                List<string> nameList = dir.ImgList();
+              
+                if (nameList.Count > 0)
+                {
+                    List<nameobj> ls = nameList.Select(r => new nameobj(r)).ToList();
+                    dgv.DataSource = ls;
+                }
+            }
+        }
+
+
+        private class nameobj
+        {
+            public nameobj(string s)
+            {
+                this.FileName = s;
+                this.Length = s.Length;
+            }
+            public string FileName { get; set; }
+            public int Length { get; set; }
         }
 	}	
 }

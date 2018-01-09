@@ -21,6 +21,8 @@ namespace ScanTemplate
             this._sc = _sc;
             _activedir = null;
             _fs = null;
+            _ActivePath = "";
+            _ScanDataMode = false;
             m_Imgselection = new Rectangle(0, 0, 0, 0);
             zoombox = new ZoomBox();
         }
@@ -47,18 +49,40 @@ namespace ScanTemplate
             {
                 listBoxUnScanDir.Items.Clear();
                 listBoxUnScanDir.Items.AddRange(_sc.Unscans.Unscans.ToArray());
+                listBoxScantData.Items.Clear();
+                listBoxScantData.Items.AddRange(_sc.Scandatas.Scandatas.ToArray());
+            }
+        }
+
+        private void listBoxScantData_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (listBoxScantData.SelectedIndex == -1) return;
+            _activescandata = (ScanData)listBoxScantData.SelectedItem;
+            _ScanDataMode = true;
+            _ActivePath = _activescandata.Imgpath;
+            //List<string> nameList = _activedir.ImgList();
+            List<string> nameList = _activescandata.ImgList;
+            if (nameList.Count > 0)
+            {
+                //string str = string.Join("\r\n", nameList);
+                nameList = nameList.Select(r => r.Substring(_activescandata.Imgpath.Length)).ToList();
+                listBoxfilename.Items.Clear();
+                listBoxfilename.Items.AddRange(nameList.ToArray());
+                listBoxNewfilename.Items.Clear();
             }
         }
         private void listBoxUnScanDir_SelectedIndexChanged(object sender, EventArgs e)
         {
              if (listBoxUnScanDir.SelectedIndex == -1) return;
             _activedir = (UnScan)listBoxUnScanDir.SelectedItem;
+            _ActivePath = _activedir.FullPath;
+            _ScanDataMode = false;
 
             List<string> nameList = _activedir.ImgList();
             if (nameList.Count > 0)
             {
                 //string str = string.Join("\r\n", nameList);
-                nameList = nameList.Select(r => r.Substring(_activedir.FullPath.Length)).ToList();
+                nameList = nameList.Select(r => r.Substring(  _ActivePath.Length)).ToList();
                 listBoxfilename.Items.Clear();
                 listBoxfilename.Items.AddRange(nameList.ToArray());
                 listBoxNewfilename.Items.Clear();
@@ -66,9 +90,9 @@ namespace ScanTemplate
         }
         private void listBoxfilename_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (listBoxfilename.SelectedIndex == -1 || _activedir==null) return;
-            string filename =_activedir.FullPath+ listBoxfilename.SelectedItem.ToString();
-            //pictureBox1.Image =
+            if (listBoxfilename.SelectedIndex == -1) return;
+            if (_ActivePath == "" || !Directory.Exists(_ActivePath)) return;             
+            string filename = _ActivePath + listBoxfilename.SelectedItem.ToString();
             if (_fs != null)
             {
                 _fs.Close();
@@ -99,10 +123,13 @@ namespace ScanTemplate
             }
             for (int i = 0; i < srclst.Count; i++)
             {
-                File.Move(_activedir.FullPath   + srclst[i], _activedir.FullPath   + dstlst[i]);
+                File.Move(_ActivePath   + srclst[i],_ActivePath   + dstlst[i]);
             }
             // Refresh
-            listBoxUnScanDir.SelectedItem = _activedir;
+            if (_ScanDataMode)
+                listBoxScantData.SelectedItem = _activescandata;
+            else
+                listBoxUnScanDir.SelectedItem = _activedir;
         }
         private List<string> GetListBoxNameList(ListBox listBox)
         {
@@ -129,9 +156,9 @@ namespace ScanTemplate
         {
             if (pictureBox1.Image != null)
             {
-                Pen pen = Pens.Red;
                 if (m_Imgselection.Width > 0 && m_Imgselection.Height > 0)
                 {
+                    Pen pen = Pens.Red;
                     Rectangle r = zoombox.ImgToBoxSelection(m_Imgselection);
                     e.Graphics.DrawRectangle(pen, r);
                 }
@@ -167,7 +194,7 @@ namespace ScanTemplate
                 m_Imgselection = zoombox.BoxToImgSelection(MT.Selection);
                 //switch (m_act) { }
             }
-            pictureBox1.Invalidate();
+            //pictureBox1.Invalidate();
         }
         private void Zoomrat(double rat, Point e)
         {
@@ -208,6 +235,21 @@ namespace ScanTemplate
             MT.MouseUp += new MouseEventHandler(pictureBox1_MouseUp);
             MT.StartDraw(true);
         }
+
+        private void buttonSelectionBlack_Click(object sender, EventArgs e)
+        {
+            Bitmap src = (Bitmap)pictureBox1.Image;
+            if (src != null && m_Imgselection.Width > 0 && m_Imgselection.Height > 0)
+            {
+                Bitmap rgb = ConvertFormat.ConvertToRGB(src);
+              
+                using (Graphics g = Graphics.FromImage(rgb))
+                {
+                    g.FillRectangle(Brushes.Black,m_Imgselection);
+                }
+                pictureBox1.Image = rgb;
+            }
+        }
         private void buttonOutRectWhite_Click(object sender, EventArgs e)
         {
             Bitmap src =(Bitmap) pictureBox1.Image;
@@ -240,7 +282,7 @@ namespace ScanTemplate
                     lst.Add( new Rectangle( A.X,Bi.Bottom,A.Width, A.Bottom-Bi.Bottom));
                 //L
                 if(Bi.X> A.X)
-                    lst.Add( new Rectangle( A.X,Bi.Top,Bi.X - A.X,Bi.Height));
+                    lst.Add( new Rectangle( A.X,Bi.Top,Bi.X - A.X+1,Bi.Height));
                 //R
                 if(A.Right > Bi.Right)
                     lst.Add( new Rectangle( B.Right,B.Top, A.Right-Bi.Right, Bi.Height));
@@ -260,10 +302,9 @@ namespace ScanTemplate
 
         private void buttonSaveActiveImage_Click(object sender, EventArgs e)
         {
-            if (listBoxfilename.SelectedIndex == -1 || _activedir == null
-               || m_Imgselection.Width == 0 || m_Imgselection.Height == 0) return;
-            if (listBoxfilename.SelectedIndex == -1 || _activedir == null) return;
-            string filename = _activedir.FullPath + listBoxfilename.SelectedItem.ToString();
+            if (  m_Imgselection.Width == 0 || m_Imgselection.Height == 0) return;
+            if (listBoxfilename.SelectedIndex == -1  || _ActivePath=="" ||!Directory.Exists(_ActivePath)) return;
+            string filename =_ActivePath + listBoxfilename.SelectedItem.ToString();
 
             Bitmap rgb = (Bitmap)pictureBox1.Image;
             rgb = ConvertFormat.Convert(rgb, PixelFormat.Format1bppIndexed, true);
@@ -279,12 +320,12 @@ namespace ScanTemplate
         }
         private void buttonApplyAll_Click(object sender, EventArgs e)
         {
-            if (listBoxfilename.SelectedIndex == -1 || _activedir == null
+            if (listBoxfilename.SelectedIndex == -1 || _ActivePath == "" || !Directory.Exists(_ActivePath)
                 || m_Imgselection.Width==0 || m_Imgselection.Height==0 ) return;
        
             List<string> srclst = GetListBoxNameList(listBoxfilename);
             
-            System.IO.FileStream fs1 = new System.IO.FileStream(_activedir.FullPath+srclst[0], System.IO.FileMode.Open, System.IO.FileAccess.Read);
+            System.IO.FileStream fs1 = new System.IO.FileStream(_ActivePath+srclst[0], System.IO.FileMode.Open, System.IO.FileAccess.Read);
             Bitmap  src = (Bitmap)System.Drawing.Image.FromStream(fs1);
             List<Rectangle> yuji = GetYuji(new Rectangle(0, 0, src.Width, src.Height), m_Imgselection);
             fs1.Close();
@@ -293,12 +334,12 @@ namespace ScanTemplate
             if (yuji.Count > 0)
             foreach( string s in srclst)
             {
-                    string ss = _activedir.FullPath + s;
+                    string ss =_ActivePath + s;
                     try
                     {
                         System.IO.FileStream fs = new System.IO.FileStream(ss, System.IO.FileMode.Open, System.IO.FileAccess.Read);
                         Bitmap orgsrc = (Bitmap)System.Drawing.Image.FromStream(fs);
-
+                        yuji = GetYuji(new Rectangle(0, 0,orgsrc.Width, orgsrc.Height), m_Imgselection);
                         Bitmap rgb = ConvertFormat.ConvertToRGB(orgsrc);
                         using (Graphics g = Graphics.FromImage(rgb))
                         {
@@ -318,12 +359,12 @@ namespace ScanTemplate
         }
         private void buttonApplyCutToAllImage_Click(object sender, EventArgs e)
         {
-            if (listBoxfilename.SelectedIndex == -1 || _activedir == null
+            if (listBoxfilename.SelectedIndex == -1 || _activedir == null || _ActivePath == "" || !Directory.Exists(_ActivePath)
                 || m_Imgselection.Width == 0 || m_Imgselection.Height == 0) return;
 
             List<string> srclst = GetListBoxNameList(listBoxfilename);
 
-            System.IO.FileStream fs1 = new System.IO.FileStream(_activedir.FullPath + srclst[0], System.IO.FileMode.Open, System.IO.FileAccess.Read);
+            System.IO.FileStream fs1 = new System.IO.FileStream(_ActivePath + srclst[0], System.IO.FileMode.Open, System.IO.FileAccess.Read);
             Bitmap src = (Bitmap)System.Drawing.Image.FromStream(fs1);
             List<Rectangle> yuji = GetYuji(new Rectangle(0, 0, src.Width, src.Height), m_Imgselection);
             fs1.Close();
@@ -331,16 +372,18 @@ namespace ScanTemplate
             if (yuji.Count > 0)
                 foreach (string s in srclst)
                 {
-                    string ss = _activedir.FullPath + s;
+                    string ss =_ActivePath + s;
                     System.IO.FileStream fs = new System.IO.FileStream(ss, System.IO.FileMode.Open, System.IO.FileAccess.Read);
                     Bitmap orgsrc = (Bitmap)System.Drawing.Image.FromStream(fs);
 
                     Bitmap rgb = orgsrc.Clone(m_Imgselection, orgsrc.PixelFormat);
-                    ss = _activedir.FullPath+"\\img" + s;
+                    ss =_ActivePath+"\\img" + s;
                     rgb.Save(ss);
                     fs.Close();
                 }
         }
+
+
         private Rectangle m_Imgselection;
         private MovetoTracker MT;
         private Act m_act;
@@ -348,10 +391,13 @@ namespace ScanTemplate
         private ZoomBox zoombox;
         private double _OriginWith;
         private ScanConfig _sc;
-        private UnScan _activedir;
         private FileStream _fs;
 
+        private UnScan _activedir;
 
+        private ScanData _activescandata;
+        private bool  _ScanDataMode;
+        private string _ActivePath;
 
     }
 }

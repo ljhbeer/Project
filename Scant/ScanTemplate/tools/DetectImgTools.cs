@@ -14,8 +14,10 @@ namespace  Tools
             if(templateCorrectRect.Width==0)
                 return DetectCorrect.DetectCorrectImg(src);
             Point p = DetectLT(src);
+            if (p.X < 0 || p.Y < 0)
+                return new DetectData(new Rectangle(),null);
             Rectangle correctrect = templateCorrectRect;
-            correctrect.Location = p;
+            correctrect.Location = p;            
             return DetectCorrect.DetectCorrectImg(src,correctrect);
         }
         public static Point GetMidPoint(List<Rectangle> listrect)
@@ -29,6 +31,8 @@ namespace  Tools
             Rectangle r = new Rectangle(new Point(), new Size(src.Width / 3, src.Height / 3));
             Bitmap _src = (Bitmap)src.Clone(r, src.PixelFormat);
             Rectangle cr = DetectCorrect.DetectCorrectFromImg(_src);
+            if (cr.Width == 0 || cr.Height == 0)
+                return new Point(-1, -1);
             return cr.Location;
         }
         public class DetectCorrect
@@ -41,18 +45,22 @@ namespace  Tools
                 Rectangle area = new Rectangle(0, 0, src.Width, src.Height);
                 List<Rectangle> FourLtbRtbRect = GetLrbRtb(_CorrectRect, 40, 40);
                 List<Rectangle> list = new List<Rectangle>();
-                
                 int   cnt = 0;
                 foreach (Rectangle r in FourLtbRtbRect)
                 {
                     r.Inflate(r.Size);
                     r.Intersect(area);
                     Bitmap src1 = src.Clone(r, src.PixelFormat);
-                    Rectangle nr = DetectFeatureFromImg(src1);
 
+                    Rectangle nr = DetectFeatureFromImg(src1);
                     if (global.Debug && (global.tag & 8) > 0)
                     {
                         src1.Save("F:\\out\\" + cnt + ".tif");
+                        if (nr.Width == 0 || nr.Height == 0)
+                        {
+                            nr.Width = r.Width / 3;
+                            nr.Height = r.Height / 3;
+                        }
                         src1.Clone(nr, src1.PixelFormat).Save("F:\\out\\N_" + cnt + ".tif");
                         cnt++;
                     }
@@ -70,7 +78,7 @@ namespace  Tools
             }
             public static Rectangle DetectCorrectFromImg(Bitmap src)
             {
-                return DetectCorrectFromImg(src, new Rectangle(30, 30, 30, 30));
+                return DetectCorrectFromImg(src, new Rectangle(30, 30, 30, 30),true,10);
             }
             private static Rectangle DetectCorrectFromImg(Bitmap src,Rectangle margin) // 从30位算起
             {
@@ -91,7 +99,7 @@ namespace  Tools
                 //OutPixImage(xxcnt, yycnt);
                 return new Rectangle(xpos, ypos, xendpos - xpos, yendpos - ypos);
             }
-            private static Rectangle DetectCorrectFromImg(Bitmap src, Rectangle margin,bool continnuity ) // 从30位算起
+            private static Rectangle DetectCorrectFromImg(Bitmap src, Rectangle margin,bool continnuity,int continuelength = -1 ) // 从30位算起
             {
                 Rectangle rect = new Rectangle(0, 0, src.Width, src.Height);
                 int[] xxcnt = BitmapTools.CountXPixsum(src, rect);
@@ -109,31 +117,38 @@ namespace  Tools
                 yycnt = yycnt.Select(r => r > yyavg ? 100 : 0).ToArray();
 
                 //完全同上
-
+                //debugout
+                //OutPixImage(xxcnt, yycnt);
                 int xpos = xxcnt.Skip(margin.Left).ToList().FindIndex(r => r > 0) + margin.Left;
                 int xendpos = xxcnt.Skip(xpos).ToList().FindIndex(r => r == 0) + xpos;
                 if (continnuity)
                 {
-                    while (xendpos - xpos < src.Width / 8)
+                    if (continuelength == -1 || continuelength < 1)
+                        continuelength = src.Width / 8;
+                    while (xendpos - xpos < continuelength )
                     {
                         xpos = xxcnt.Skip(xendpos).ToList().FindIndex(r => r > 0);
                         if (xpos == -1)
                             break;
                         xpos += xendpos;
                         xendpos = xxcnt.Skip(xpos).ToList().FindIndex(r => r == 0);
+                        // 修改逻辑错误
                         if (xendpos == -1)
-                            break;
-                        xendpos += xpos;
+                            xendpos = xxcnt.Length-1; 
+                        else
+                            xendpos += xpos;
                     }
                     if (xpos == -1 || xendpos == -1)
-                        return new Rectangle(1, 1, 1, 1);
+                        return new Rectangle(1, 1, 0, 0);
                 }
                     //xxcnt.Length - xxcnt.Reverse().Skip(margin.Right).ToList().FindIndex(r => r > 0) - margin.Right;
                 int ypos = yycnt.Skip(margin.Top).ToList().FindIndex(r => r > 0) + margin.Top;
                 int yendpos = yycnt.Skip(ypos).ToList().FindIndex(r => r == 0)+ypos; 
                 if (continnuity)
                 {
-                    while (yendpos - ypos < src.Width / 8)
+                    if (continuelength == -1 || continuelength < 1)
+                        continuelength = src.Width / 8;
+                    while (yendpos - ypos <continuelength)
                     {
                         ypos = yycnt.Skip(yendpos).ToList().FindIndex(r => r > 0);
                         if (ypos == -1)
@@ -141,13 +156,14 @@ namespace  Tools
                         ypos += yendpos;
                         yendpos = yycnt.Skip(ypos).ToList().FindIndex(r => r == 0);
                         if (yendpos == -1)
-                            break;
-                        yendpos += ypos;
+                            yendpos = yycnt.Length - 1;
+                        else
+                            yendpos += ypos;
                     }
                     if (ypos == -1 || yendpos == -1)
-                        return new Rectangle(1, 1, 1, 1);
+                        return new Rectangle(1, 1, 0, 0);
                 }
-                //OutPixImage(xxcnt, yycnt);
+            
                 return new Rectangle(xpos, ypos, xendpos - xpos, yendpos - ypos);
             }
             public static List<Rectangle> GetLrbRtb(Rectangle r, int width, int height)
@@ -160,7 +176,7 @@ namespace  Tools
                     new Rectangle(r.Right-width,r.Bottom-height,width,height),
                 };
             }
-            private void OutPixImage(int[] xxcnt, int[] yycnt)
+            private static void OutPixImage(int[] xxcnt, int[] yycnt)
             {
                 Bitmap xb = new Bitmap(xxcnt.Count(), 100);
                 Bitmap yb = new Bitmap(100, yycnt.Count());
@@ -184,7 +200,7 @@ namespace  Tools
                 }
                 yb.Save("F:\\out\\yb.jpg");
             }
-            private void WhiteImage(Bitmap _Src)
+            private static void WhiteImage(Bitmap _Src)
             {
                 if (_Src != null)
                     using (Graphics g = Graphics.FromImage(_Src))

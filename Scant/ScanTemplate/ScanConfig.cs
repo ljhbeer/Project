@@ -369,21 +369,23 @@ namespace ScanTemplate
         public void RunScan()
         {
             Msg = "";
+            StringBuilder msg = new StringBuilder();
             StringBuilder sb = new StringBuilder();
             _angle = _template.Angle;
 			foreach (string s in _nameList)
 			{
-				string _runmsg = DetectImg(s);
+				string _runmsg = DetectImg(s,ref msg);
 				sb.Append(_runmsg);
                 if(DgShowScanMsg!=null)
                 DgShowScanMsg(_runmsg);//this.Invoke(new MyInvoke(ShowMsg));
 				Thread.Sleep(10);
 			}
 			_exportdata = sb.ToString();
+            Msg = msg.ToString();
             if (DgSaveScanData != null)//this.Invoke(new MyInvoke(ExportData));
                 DgSaveScanData(_exportdata);
         }
-        private string DetectImg(string s)
+        private string DetectImg(string s,ref StringBuilder  msg)
         {
             StringBuilder sb = new StringBuilder();
             System.IO.FileStream fs = new System.IO.FileStream(s,System.IO.FileMode.Open, System.IO.FileAccess.Read);
@@ -452,6 +454,7 @@ namespace ScanTemplate
             }
             else
             {
+                msg.AppendLine(s);   
                 //检测失败
             }
             sb.AppendLine();

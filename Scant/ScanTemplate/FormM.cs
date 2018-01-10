@@ -23,6 +23,7 @@ namespace ScanTemplate
         private DataTable _rundt;
         private Scan _scan;
         private bool _bReScan;
+        private bool _bSingleTestScan;
 		public FormM()
 		{
 			InitializeComponent();
@@ -121,7 +122,6 @@ namespace ScanTemplate
             }
             InitDoScan();
 		}
-
         private void InitDoScan(string filename = "")
         {
             TemplateInfo ti = (TemplateInfo)comboBoxTemplate.SelectedItem;
@@ -130,12 +130,46 @@ namespace ScanTemplate
             if (nameList.Count > 0)
             {
                 //TODO: add Detect
+                _bReScan = false;
+                _bSingleTestScan = false;
                 if(filename!="" && File.Exists(filename)){
                     nameList.Clear();
                     nameList.Add(filename);
+                    _bSingleTestScan = true;
                 }
-                _bReScan = false;
                 _scan = new Scan(_sc, ti.TemplateFileName, nameList, dir.FullPath);
+                _rundt = Tools.DataTableTools.ConstructDataTable(_scan.ColNames.ToArray());
+                dgv.DataSource = _rundt;
+                InitDgvUI();
+                _scan.DgSaveScanData = new DelegateSaveScanData(ExportData);
+                _scan.DgShowScanMsg = new DelegateShowScanMsg(ShowMsg);
+                _scan.DoScan();
+            }
+        }
+        private void buttonReScan_Click(object sender, EventArgs e)
+        {
+            /////// ReScan
+            if (_scan == null || _rundt == null || _rundt.Rows.Count == 0 || listBoxScantData.SelectedIndex == -1)
+                return;
+            InitReDoScan();
+        }
+        private void InitReDoScan(string filename = "")
+        {
+            ScanData sd = (ScanData)listBoxScantData.SelectedItem;
+            TemplateInfo ti = new TemplateInfo(sd.TemplateFileName, sd.Fullpath);
+            List<string> nameList = sd.ImgList;
+            if (nameList.Count > 0)
+            {//TODO: add Detect
+                _bReScan =true;
+                _bSingleTestScan = false;
+                if (filename != "" && File.Exists(filename))
+                {
+                    nameList.Clear();
+                    nameList.Add(filename);
+                    _bSingleTestScan = true;
+                }
+
+                _scan = new Scan(_sc, ti.TemplateFileName, nameList, sd.Fullpath);
                 _rundt = Tools.DataTableTools.ConstructDataTable(_scan.ColNames.ToArray());
                 dgv.DataSource = _rundt;
                 InitDgvUI();
@@ -228,6 +262,12 @@ namespace ScanTemplate
 
             if (e.RowIndex == -1 || _rundt == null || e.ColumnIndex == -1 || _scan == null)
                 return;
+            if (dgv.Columns.Contains("文件名") && dgv.Columns[e.ColumnIndex].Name == "文件名" && checkBoxReSingleScan.Checked)
+            {
+                string filename = dgv.Rows[e.RowIndex].Cells["文件名"].Value.ToString();
+                InitReDoScan(filename);
+                return;
+            }
             string fn = _rundt.Rows[e.RowIndex]["文件名"].ToString().Replace("LJH\\", "LJH\\Correct\\").Replace("\\img","");
             if (File.Exists(fn))
             {
@@ -286,7 +326,18 @@ namespace ScanTemplate
         }
         private void ExportData(string exportdata)
         {
-            if (_bReScan)
+            if (_bSingleTestScan)
+            {
+                if (_bReScan)
+                {
+                    _bReScan = false;
+                }
+              //
+                {
+                    _bSingleTestScan = false;
+                    this.Invoke(new MyInvoke(MyRefreshDgvAll));
+                }
+            }else if (_bReScan)
             {
                 _bReScan = false;
                 string Datafilename = _scan.ScanDataPath + "\\data.txt";
@@ -310,6 +361,10 @@ namespace ScanTemplate
                     File.WriteAllText(Datafilename, string.Join(",", _scan.ExportTitles) + "\r\n" + exportdata);
                     this.Invoke(new MyInvoke(MyRefresh));
                 }
+            }
+            if (_scan != null && _scan.Msg != "")
+            {
+                MessageBox.Show("未扫描名单\r\n" + _scan.Msg);
             }
         }
         private void MsgToDr(string[] ss, ref DataRow dr)
@@ -375,6 +430,10 @@ namespace ScanTemplate
         {
             buttonRefresh.PerformClick();
         }
+        public void MyRefreshDgvAll()
+        {
+            dgv.Invalidate();
+        }
         public void MyRefreshDgv()
         {
             //cnt = dgv.RowCount;
@@ -382,30 +441,6 @@ namespace ScanTemplate
             dgv.InvalidateRow(cnt - 1);
             //dgv.FirstDisplayedScrollingRowIndex = cnt - 1;
             textBoxMsg.Text = "扫描第" + cnt + "号， 考号：" + _rundt.Rows[cnt - 1]["考号"] + " 姓名：" + _rundt.Rows[cnt - 1]["姓名"];
-        }
-        private void buttonReScan_Click(object sender, EventArgs e)
-        {
-            /////// ReScan
-            if (_scan == null || _rundt == null || _rundt.Rows.Count == 0 || listBoxScantData.SelectedIndex == -1)
-                return;
-            ScanData sd = (ScanData)listBoxScantData.SelectedItem;
-            TemplateInfo ti = new TemplateInfo(sd.TemplateFileName,sd.Fullpath);
-            List<string> nameList = sd.ImgList;
-            if (nameList.Count > 0)
-            {
-                //TODO: add Detect
-                _bReScan = true;
-                _scan = new Scan(_sc, ti.TemplateFileName, nameList,sd.Fullpath);
-                _rundt = Tools.DataTableTools.ConstructDataTable(_scan.ColNames.ToArray());
-                dgv.DataSource = _rundt;
-                InitDgvUI();
-                _scan.DgSaveScanData = new DelegateSaveScanData(ExportData);
-                _scan.DgShowScanMsg = new DelegateShowScanMsg(ShowMsg);
-                _scan.DoScan();
-            }
-
-          
-         
         }
         private void buttonVerify_Click(object sender, EventArgs e)
         {

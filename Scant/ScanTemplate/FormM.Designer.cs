@@ -63,6 +63,7 @@
             this.buttonOutTextImage = new System.Windows.Forms.Button();
             this.buttonPreDealImage = new System.Windows.Forms.Button();
             this.checkBoxShowUnScanNamelist = new System.Windows.Forms.CheckBox();
+            this.checkBoxReSingleScan = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -376,30 +377,31 @@
             // 
             // tableLayoutPanel2
             // 
-            this.tableLayoutPanel2.ColumnCount = 9;
+            this.tableLayoutPanel2.ColumnCount = 10;
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 50F));
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 50F));
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 51F));
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 100F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 87F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 70F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 105F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 118F));
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 79F));
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 51F));
             this.tableLayoutPanel2.Controls.Add(this.buttonOpenTemplate, 0, 0);
             this.tableLayoutPanel2.Controls.Add(this.buttonLeftHide, 0, 0);
-            this.tableLayoutPanel2.Controls.Add(this.buttonRightHide, 8, 0);
+            this.tableLayoutPanel2.Controls.Add(this.buttonRightHide, 9, 0);
             this.tableLayoutPanel2.Controls.Add(this.textBoxMsg, 4, 0);
-            this.tableLayoutPanel2.Controls.Add(this.checkBoxDebug, 7, 0);
+            this.tableLayoutPanel2.Controls.Add(this.checkBoxDebug, 8, 0);
             this.tableLayoutPanel2.Controls.Add(this.buttonOutTextImage, 2, 0);
             this.tableLayoutPanel2.Controls.Add(this.buttonPreDealImage, 3, 0);
-            this.tableLayoutPanel2.Controls.Add(this.checkBoxShowUnScanNamelist, 6, 0);
+            this.tableLayoutPanel2.Controls.Add(this.checkBoxShowUnScanNamelist, 7, 0);
+            this.tableLayoutPanel2.Controls.Add(this.checkBoxReSingleScan, 6, 0);
             this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 622);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.RowCount = 1;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 28F));
             this.tableLayoutPanel2.Size = new System.Drawing.Size(1258, 28);
             this.tableLayoutPanel2.TabIndex = 1;
             // 
@@ -488,6 +490,17 @@
             this.checkBoxShowUnScanNamelist.UseVisualStyleBackColor = true;
             this.checkBoxShowUnScanNamelist.CheckedChanged += new System.EventHandler(this.checkBoxDebug_CheckedChanged);
             // 
+            // checkBoxReSingleScan
+            // 
+            this.checkBoxReSingleScan.AutoSize = true;
+            this.checkBoxReSingleScan.ForeColor = System.Drawing.Color.Red;
+            this.checkBoxReSingleScan.Location = new System.Drawing.Point(908, 3);
+            this.checkBoxReSingleScan.Name = "checkBoxReSingleScan";
+            this.checkBoxReSingleScan.Size = new System.Drawing.Size(96, 16);
+            this.checkBoxReSingleScan.TabIndex = 12;
+            this.checkBoxReSingleScan.Text = "ReSingleScan";
+            this.checkBoxReSingleScan.UseVisualStyleBackColor = true;
+            // 
             // FormM
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -550,6 +563,7 @@
         private System.Windows.Forms.Button buttonUnScanNameList;
         private System.Windows.Forms.Button buttonOutTextImage;
         private System.Windows.Forms.Button buttonPreDealImage;
-        private System.Windows.Forms.CheckBox checkBoxShowUnScanNamelist;        
+        private System.Windows.Forms.CheckBox checkBoxShowUnScanNamelist;
+        private System.Windows.Forms.CheckBox checkBoxReSingleScan;        
     }
 }

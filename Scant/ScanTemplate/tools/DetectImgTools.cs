@@ -37,13 +37,86 @@ namespace  Tools
         }
         public class DetectCorrect
         {
+            public static DetectData ReDetectCorrectImg(Bitmap src, DetectData dd)
+            {
+                Rectangle area = new Rectangle(0, 0, src.Width, src.Height);
+                List<Rectangle> FourLtbRtbRect = dd.ListFeature;
+
+                List<Rectangle> list = new List<Rectangle>();
+                int cnt = 0;
+                foreach (Rectangle r in FourLtbRtbRect)
+                {
+                    r.Offset(dd.CorrectRect.Location);
+                    r.Inflate(r.Size);
+                    r.Intersect(area);
+                    Bitmap src1 = src.Clone(r, src.PixelFormat);
+
+                    Rectangle nr = DetectFeatureFromImg(src1);
+                    if (global.Debug && (global.tag & 8) > 0)
+                    {
+                        src1.Save("F:\\out\\" + cnt + ".tif");
+                        if (nr.Width == 0 || nr.Height == 0)
+                        {
+                            nr.Width = r.Width / 3;
+                            nr.Height = r.Height / 3;
+                        }
+                        src1.Clone(nr, src1.PixelFormat).Save("F:\\out\\N_" + cnt + ".tif");
+                        cnt++;
+                    }
+                    nr.Offset(r.Location);
+                    list.Add(nr);
+                }
+
+                if (global.Debug && (global.tag & 8) > 0 && list.Count>2)
+                {
+                    Rectangle correctrect = Rectangle.Union(list[0], list[1]);
+                    for(int i = 2; i<list.Count; i++)
+                        correctrect = Rectangle.Union(correctrect, list[i]);
+                    Bitmap rgb = ARTemplate.ConvertFormat.ConvertToRGB(src);
+                    using (Graphics g = Graphics.FromImage(rgb))
+                    {
+                        g.DrawRectangle(Pens.Green, correctrect);
+                        g.DrawRectangles(Pens.Red, list.ToArray());
+                    }
+                    rgb.Save("F:\\Drawall.jpeg");
+                }
+
+                if (list.Count > 0)
+                { // 待修改
+                    dd.CorrectRect = new Rectangle(  list[0].Location,dd.CorrectRect.Size);
+                }
+                if (list.Count > 2)
+                {
+                    Rectangle correctrect = Rectangle.Union(list[0], list[1]);
+                    for (int i = 2; i < list.Count; i++)
+                        correctrect = Rectangle.Union(correctrect, list[i]);
+                    correctrect.Location = list[0].Location;
+                    dd.CorrectRect = correctrect;
+                }
+                Rectangle _CorrectRect = dd.CorrectRect;
+                list = list.Select(r => new Rectangle(r.X - _CorrectRect.X, r.Y - _CorrectRect.Y, r.Width, r.Height)).ToList();
+                return new DetectData(_CorrectRect, list);
+
+            }
             public  static DetectData DetectCorrectImg(Bitmap src, Rectangle correctrect = new Rectangle())           
             {
                 Rectangle _CorrectRect = correctrect;
                 if(correctrect.Width ==0)
-                    _CorrectRect = DetectCorrectFromImg(src);
+                    _CorrectRect = DetectCorrectFromImg(src,false);
                 Rectangle area = new Rectangle(0, 0, src.Width, src.Height);
                 List<Rectangle> FourLtbRtbRect = GetLrbRtb(_CorrectRect, 40, 40);
+
+                //if (global.Debug && (global.tag & 8) > 0)
+                //{
+                //    Bitmap rgb = ARTemplate.ConvertFormat.ConvertToRGB(src);
+                //    using (Graphics g = Graphics.FromImage(rgb))
+                //    {
+                //        g.DrawRectangle(Pens.Green, _CorrectRect);
+                //        g.DrawRectangles(Pens.Red, FourLtbRtbRect.ToArray());
+                //    }
+                //    rgb.Save("F:\\Drawall.jpeg");
+                //}
+
                 List<Rectangle> list = new List<Rectangle>();
                 int   cnt = 0;
                 foreach (Rectangle r in FourLtbRtbRect)
@@ -76,9 +149,11 @@ namespace  Tools
             {
                 return DetectCorrectFromImg(src, new Rectangle(1, 1, 1, 1),true);
             }
-            public static Rectangle DetectCorrectFromImg(Bitmap src)
+            public static Rectangle DetectCorrectFromImg(Bitmap src,Boolean continnuity = true)
             {
-                return DetectCorrectFromImg(src, new Rectangle(30, 30, 30, 30),true,10);
+                if(continnuity)
+                    return DetectCorrectFromImg(src, new Rectangle(15, 15, 15, 15),true,10);
+                return DetectCorrectFromImg(src, new Rectangle(30, 30, 30, 30));
             }
             private static Rectangle DetectCorrectFromImg(Bitmap src,Rectangle margin) // 从30位算起
             {

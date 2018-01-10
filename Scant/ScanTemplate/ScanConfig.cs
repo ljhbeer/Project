@@ -296,6 +296,9 @@ namespace ScanTemplate
                 cr = Templates.GetTemplateCorrect(ti.TemplateFileName);
             }
             DetectData dd = DetectImageTools.DetectImg(_src,cr);
+            //dd = DetectImageTools.DetectImg(_src, dd.CorrectRect);
+            if(ti==null)
+            dd = DetectImageTools.DetectCorrect.ReDetectCorrectImg(_src, dd);
             if (dd.CorrectRect.Width > 0)
             {
                  if (ti == null)

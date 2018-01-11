@@ -90,6 +90,8 @@ namespace ScanTemplate
                 //暂不采用该方法
                 Rectangle rp = new Rectangle(0, 0, sca.Size.Width, sca.Size.Height);
                 int validblackcnt = rp.Width * rp.Height * 8 / 20;
+                if(sca.Size.Height<25)
+                    validblackcnt = rp.Width * rp.Height * 12 / 20;
                 foreach (List<Point> lp in sca.list)
                 {
                     List<int> blackpixs = new List<int>();

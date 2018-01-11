@@ -593,19 +593,24 @@ namespace ARTemplate
                                 rr.Location = p;
                             }
                             //p = rr.Location;
-                            g.DrawRectangle(pen, I.Rect);
+                            g.DrawRectangle(Pens.Green, I.Rect);
                             g.DrawRectangle(pen, rr);
 
                             if (I.HasSubArea())
                             {
                                 foreach (Rectangle r in I.ImgSubArea())
                                 {
-                                    r.Offset(p);
-                                    g.DrawRectangle(pen, r);
-                                    r.Offset(-1, -1);
-                                    g.DrawRectangle(pen, r);
-                                    r.Offset(2, 2);
-                                    g.DrawRectangle(pen, r);
+                                    Rectangle or = r;
+                                    or.Offset(I.Rect.Location);
+                                    g.DrawRectangle(Pens.Green, or);
+                                    or.Inflate(1, 1);
+                                    g.DrawRectangle(Pens.Green, or);
+
+                                    Rectangle nr = r;
+                                    nr.Offset(p);
+                                    g.DrawRectangle(pen, nr);
+                                    nr.Inflate(1, 1);
+                                    g.DrawRectangle(pen, nr);
                                 }
                             }
                             if (I.NeedFill())

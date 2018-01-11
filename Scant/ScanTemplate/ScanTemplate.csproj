@@ -79,6 +79,7 @@
     <Compile Include="FormPreDeal.Designer.cs">
       <DependentUpon>FormPreDeal.cs</DependentUpon>
     </Compile>
+    <Compile Include="FormYJ\ExportClassResult.cs" />
     <Compile Include="tools\DetectImgTools.cs" />
     <Compile Include="tools\PYTool.cs" />
     <Compile Include="tools\TextBitmapTool.cs" />

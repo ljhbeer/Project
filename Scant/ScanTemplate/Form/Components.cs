@@ -429,6 +429,9 @@ namespace ARTemplate
         }
         [JsonProperty]
         private string _name;
+
+        //TODO: set
+        public List<ScanTemplate.FormYJ.Imgsubject> Imgsubjects { get; set; }
     }
     [JsonObject(MemberSerialization.OptIn)]
     public class CustomArea : Area

@@ -16,17 +16,18 @@ namespace ScanTemplate.FormYJ
         public ExportClassResult(ScanConfig _sc, Examdata _examdata, Template _template)
         {
             this._sc = _sc;
-            this._examdata = _examdata;
+            //this._examdata = _examdata;
             this._template = _template;
-            //
             _exam = new Exam(_examdata);
-            this._students = _examdata.SR._Students;
 
-            //////
+            this._students = _examdata.SR._Students;
             this._SR = _examdata.SR;
+            this._Optionsubjects = _examdata.SR._Optionsubjects;
+            this._Imgsubjects = _examdata.SR._Imgsubjects;
+
+            this._TzAreas = _template.Manageareas.Tzareas;
+
             Init();
-            Optionsubjects _Optionsubjects = _examdata.SR._Optionsubjects;
-            Imgsubjects _Imgsubjects = _examdata.SR._Imgsubjects;
             _Msg = "共有选择题：" + _Optionsubjects.OptionSubjects.Count + " 题,  非选择题： " + _Imgsubjects.Subjects.Count + " 小题";
             _Msg += "\r\n选择题共： " + _Optionsubjects.OptionSubjects.Select(r => r.Score).Sum() + "分";
             _Msg += "\r\n 非选择题共： " + _Imgsubjects.Subjects.Select(r => r.Score).Sum() + "分";
@@ -66,9 +67,13 @@ namespace ScanTemplate.FormYJ
             if (resultAction != "")
                 switch (resultAction)
                 {
-                    case "exother": ExportAll(); break;
+                    case "exother":
+                        Export("exresult");
+                        Export("eximage");
+                        Export("exresultfx");
+                        break;
                     case "exresult":
-                        FileName = _sc.Baseconfig.ExportResultPath + "\\" + _examdata.Name;
+                        FileName = _sc.Baseconfig.ExportResultPath + "\\" + _exam.Name;
                         ExportResult(FileName);
                         MessageBox.Show("已输出成绩");
                         break;
@@ -78,7 +83,7 @@ namespace ScanTemplate.FormYJ
                         MessageBox.Show("已输出到"+ImagePath ); 
                         break;
                     case "exresultfx": 
-                        FileName = _sc.Baseconfig.ExportResultFxPath + "\\" + _examdata.Name + "_成绩分析";
+                        FileName = _sc.Baseconfig.ExportResultFxPath + "\\" + _exam.Name + "_成绩分析";
                         StringBuilder sb = new StringBuilder();
                         sb.Append( ExportXztFx() );
                         sb.Append( ExportFxztFx() );
@@ -86,31 +91,36 @@ namespace ScanTemplate.FormYJ
                         MessageBox.Show("已输出成绩分析");
                         break;
                 }
-        }
-        private void ExportAll()
-        {
-            ExportImages();
-            //ExportResult();
-            //ExportXztFx();
-            MessageBox.Show("已全部导出");
-        }
+        }       
         private void ExportImages()
         {
-            
             AutoAngle angle = _template.Angle;
             List<TzArea> ltz = GetDrawTzlist();
             List<List<Imgsubject>> Tz = GetDrawTzlist1();
             CheckFold(_exam.Name);
             foreach (Student S in _students.students)
             {
-                float sum = 0;
-                S.OutXzt(_Optionanswer, _OptionMaxscore, ref sum);
-                float fsum = _examdata.SR._Result.Sum(rr => rr[S.Index]);
-                int zfsum = (int)(sum + fsum);
+                PaperResult pr = new PaperResult();
+                foreach (Optionsubject O in _Optionsubjects.OptionSubjects)
+                    pr.AddOption(new ResultObj(O.Rect, S.CorrectXzt(O.Index,_Optionanswer[O.Index]) ? _OptionMaxscore[O.Index] : 0));
+                
+                //foreach(TzArea T in 
+
+                foreach(TzArea T in _TzAreas.list)
+                {
+                    foreach(Imgsubject I in T.Imgsubjects)
+                    pr.AddOption
+                }
+
+                //float sum = 0;
+                //S.OutXzt(_Optionanswer, _OptionMaxscore, ref sum);
+                //float fsum = _SR._Result.Sum(rr => rr[S.Index]);
+                //int zfsum = (int)(sum + fsum);
                 int tzindex = 0;
+                
                 foreach (List<Imgsubject> L in Tz)
                 {
-                    string name = L.Select(I => _examdata.SR._Result[I.Index][S.Index]).Sum() + "分";
+                    string name = L.Select(I => _SR._Result[I.Index][S.Index]).Sum() + "分";
                     ltz[tzindex].SetName(name);
                     tzindex++;
                 }
@@ -118,7 +128,7 @@ namespace ScanTemplate.FormYJ
                 tzindex++;
                 ltz[tzindex].SetName(sum.ToString());
 
-                Bitmap bmp = TemplateTools.DrawInfoBmp(S, _examdata.SR, angle, _Optionanswer, ltz);
+                Bitmap bmp = TemplateTools.DrawInfoBmp(S, _SR, angle, _Optionanswer, ltz);
                 string filename = _sc.Baseconfig.ExportImageRootPath + "\\" + _exam.Name + "\\" + S.ID + ".jpg";
                 if (_sc.Studentbases.HasStudentBase)
                 {
@@ -240,8 +250,6 @@ namespace ScanTemplate.FormYJ
         }
         private void ExportResult(string FileName)
         {//导出成绩
-            Optionsubjects _Optionsubjects = _examdata.SR._Optionsubjects;
-            Imgsubjects _Imgsubjects = _examdata.SR._Imgsubjects;
             int Oscore = (int)_exam.OSubjects.Sum(r => r.Score);
             int Sscore = _exam.Subjects.Sum(r => r.Score);
             try
@@ -251,7 +259,7 @@ namespace ScanTemplate.FormYJ
                 foreach (TzArea t in _template.Dic["题组"])
                 {
                     List<Imgsubject> L = new List<Imgsubject>();
-                    foreach (Imgsubject i in _examdata.SR._Imgsubjects.Subjects)
+                    foreach (Imgsubject i in _Imgsubjects.Subjects)
                     {
                         if (t.ImgArea.Contains(i.Rect))
                             L.Add(i);
@@ -261,7 +269,7 @@ namespace ScanTemplate.FormYJ
                 }
 
                 string title = Student.ResultTitle() + "选择题,非选择题,总分," + string.Join(",", _exam.OSubjects.Select(r => r.Name()))
-                 + "," + string.Join(",", _examdata.SR._Imgsubjects.Subjects.Select(r => r.Name)) + "," + Tztitle + "\r\n";
+                 + "," + string.Join(",", _Imgsubjects.Subjects.Select(r => r.Name)) + "," + Tztitle + "\r\n";
 
                 StringBuilder sblistscore = new StringBuilder("姓名,总分\r\n");
                 StringBuilder sblisttizu = new StringBuilder("姓名,总分,选择题," + Tztitle + "\r\n");
@@ -271,16 +279,16 @@ namespace ScanTemplate.FormYJ
                     sb.Append(r.ResultInfo());
                     float sum = 0;
                     string xzt = r.OutXzt(_Optionanswer, _OptionMaxscore, ref sum);
-                    float fsum = _examdata.SR._Result.Sum(rr => rr[r.Index]);
+                    float fsum =_SR._Result.Sum(rr => rr[r.Index]);
                     sb.Append(sum + "," + fsum + "," + (sum + fsum) + ",");
                     sb.Append(xzt);
                     sb.Append(",");
-                    sb.Append(string.Join(",", _examdata.SR._Result.Select(rr => rr[r.Index].ToString()).ToArray()));
+                    sb.Append(string.Join(",", _SR._Result.Select(rr => rr[r.Index].ToString()).ToArray()));
                     sb.Append(",");
                     StringBuilder sbt = new StringBuilder();
                     foreach (List<Imgsubject> L in Tz)
                     {
-                        sbt.Append(L.Select(I => _examdata.SR._Result[I.Index][r.Index]).Sum() + ",");
+                        sbt.Append(L.Select(I => _SR._Result[I.Index][r.Index]).Sum() + ",");
                     }
                     sb.Append(sbt);
                     sb.AppendLine();
@@ -323,7 +331,9 @@ namespace ScanTemplate.FormYJ
 
         private Template _template;
         private Students _students;
-        private Examdata _examdata;
         private Exam _exam;
+        private Imgsubjects _Imgsubjects;
+        private Optionsubjects _Optionsubjects;
+        private TzAreas _TzAreas;
     }
 }

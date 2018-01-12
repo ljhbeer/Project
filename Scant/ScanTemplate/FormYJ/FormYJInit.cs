@@ -637,6 +637,12 @@ namespace ScanTemplate.FormYJ
                 return false;
             return _XZT[index] == answer;
         }
+        public string OptionAnswer(int optionindex)
+        {
+            if (_XZT != null && optionindex >= 0 && optionindex < _XZT.Count)
+                return _XZT[optionindex];
+            return "";
+        }
         public string OutXzt(List<string> optionanswer, List<float> maxscore, ref float sum)
         {
             int i = 0;

@@ -52,7 +52,7 @@ namespace ScanTemplate
                 int clsid = ARTemplate.InputBox.IntValue;
                 List<FormYJ.StudentBase> lst = _sc.Studentbases.GetClassStudent(clsid);
                 lst.Sort((r1, r2) => r1.KH - r2.KH);
-                List<string> list = lst.Select(r => r.Name + " " + r.KH).ToList();
+                List<string> list = lst.Select(r => r.Name + " " + r.KH.ToString("000")).ToList();
                 pictureBox1.Image = _tbl.DrawListInPaper(list, checkBoxBlackFont.Checked);
             }
         }

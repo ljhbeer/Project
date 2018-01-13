@@ -81,7 +81,9 @@ namespace ARTemplate
         }
 
         public virtual Rectangle[] ImgSubArea() { return null; }
-        public virtual bool HasSubArea() { return false; }
+        public virtual bool HasImgSubArea() { return false; }
+        public virtual bool HasSubAreas() { return false; }
+        public virtual List<Area> SubAreas { get { return null; } }
         public virtual bool NeedFill() { return false; }
         public virtual Brush FillPen() { return Brushes.Black; }
         public virtual string Title
@@ -128,7 +130,7 @@ namespace ARTemplate
                     Direction = 3;
             }
         }
-        public override bool HasSubArea() { return true; }
+        public override bool HasImgSubArea() { return true; }
         public override Rectangle[] ImgSubArea()
         {
             return new Rectangle[] { Rect, BigImgSelection() };
@@ -166,7 +168,7 @@ namespace ARTemplate
             this.list = list;
             this.Size = size;
         }
-        public override bool HasSubArea()
+        public override bool HasImgSubArea()
         {
             if (Type == "条形码")
                 return false;
@@ -243,7 +245,7 @@ namespace ARTemplate
             this.list = list;
             this.Size = size;
         }
-        public override bool HasSubArea() { return true; }
+        public override bool HasImgSubArea() { return true; }
         public override Rectangle[] ImgSubArea()
         {
             int count = 0;
@@ -411,6 +413,7 @@ namespace ARTemplate
             this.Rect = rect;
             this._name = name;
             ShowTitle = true;
+            _subareas = new List<Area>();
         }
         public override string Title
         {
@@ -427,11 +430,26 @@ namespace ARTemplate
         {
             _name = name;
         }
+        public void AddSubArea(Area I)
+        {
+            _subareas.Add(I);
+        }
+        public override bool HasSubAreas()
+        {
+            return true;
+        }
+        [JsonIgnore]
+        public override List<Area> SubAreas
+        {
+            get
+            {
+                return _subareas;
+            }
+        }
         [JsonProperty]
         private string _name;
-
-        //TODO: set
-        public List<ScanTemplate.FormYJ.Imgsubject> Imgsubjects { get; set; }
+        [JsonProperty]
+        private List<Area> _subareas;       
     }
     [JsonObject(MemberSerialization.OptIn)]
     public class CustomArea : Area
@@ -449,7 +467,7 @@ namespace ARTemplate
             this.list = list;
             this.Size = size;
         }
-        public override bool HasSubArea()
+        public override bool HasImgSubArea()
         {
             return true;
         }

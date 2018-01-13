@@ -27,7 +27,9 @@ namespace ARTemplate
         public Template(TemplateData td)
         {
             CorrectRect = td.Correctrect;
-            _dic = td._dic;
+            InitEmptyDic();
+            foreach(KeyValuePair<string, List<Area>> kv in td._dic)
+                _dic[kv.Key] = kv.Value; 
             _manageareas = null;
             _angle = new AutoAngle(Manageareas.FeaturePoints.list.Select(r => r.Rect.Location).ToList());
         }
@@ -102,6 +104,22 @@ namespace ARTemplate
                         t.Name = t.Text = I.TypeName;
                     t.Tag = I;
                     opt.Nodes.Add(t);
+
+                    if (I.HasSubAreas())
+                    {
+                        foreach (Area sI in I.SubAreas)
+                        {
+                            TreeNode st = new TreeNode();
+                            string stxt = sI.ToString();
+                            if (sI.ShowTitle)
+                                stxt = sI.Title;
+                            st.Name = st.Text = stxt;
+                            if (st.Name == "")
+                                st.Name = st.Text = sI.TypeName;
+                            st.Tag = sI;
+                            t.Nodes.Add(st);
+                        }
+                    }
                 }
                 //root.Nodes.Add(opt);
             }
@@ -157,7 +175,8 @@ namespace ARTemplate
         {
             foreach (KeyValuePair<string, List<Area>> kv in _dic)
                 kv.Value.Clear();
-            _dic.Clear();
+            //_dic.Clear();
+            //InitEmptyDic();
         }
         private void AddArea(Area area, string typename)
         {
@@ -537,7 +556,7 @@ namespace ARTemplate
                         }
                         break;
                     case "题组": dic[item.Key] = new List<Area>();
-                        foreach (TzArea A in MyArea<TzArea>.ConvertTo(item.Value))
+                        foreach (TzArea A in MyArea<TzArea>.ConvertToTz(item.Value))
                             dic[item.Key].Add(A);
                         break;
                     case "自定义": dic[item.Key] = new List<Area>();
@@ -556,6 +575,25 @@ namespace ARTemplate
                 string str = o.ToString();
                 return Newtonsoft.Json.JsonConvert.DeserializeObject<List<T>>(str);
             }
+            public static List<TzArea> ConvertToTz(object o)
+            {
+                string str = o.ToString();
+                List<TzAreaObject> tzo = Newtonsoft.Json.JsonConvert.DeserializeObject<List<TzAreaObject>>(str);
+                List<TzArea> list = new List<TzArea>();
+                foreach (TzAreaObject to in tzo)
+                {
+                    if (to._subareas == null) continue;
+                    TzArea tz = new TzArea(to.Rect, to._name);
+                    list.Add(tz);
+                    List<UnChoose> uclist = MyArea<UnChoose>.ConvertTo(to._subareas.ToString());
+                    foreach (UnChoose u in uclist)
+                    {
+                        tz.SubAreas.Add(u);
+                    }
+
+                }
+                return list;
+            }
         }
         public class TemplateObject
         {
@@ -563,6 +601,15 @@ namespace ARTemplate
             public Dictionary<string, object> _dic;
             [JsonProperty]
             public Rectangle CorrectRect { get; set; }
+        }
+        public class TzAreaObject
+        {
+            [JsonProperty]
+            public string _name;
+            [JsonProperty]
+            public Object _subareas;
+            [JsonProperty]
+            public Rectangle  Rect { get; set; }
         }
     }
     public class TemplateTools
@@ -596,7 +643,7 @@ namespace ARTemplate
                             g.DrawRectangle(Pens.Green, I.Rect);
                             g.DrawRectangle(pen, rr);
 
-                            if (I.HasSubArea())
+                            if (I.HasImgSubArea())
                             {
                                 foreach (Rectangle r in I.ImgSubArea())
                                 {

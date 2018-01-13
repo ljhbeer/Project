@@ -108,14 +108,15 @@ namespace ScanTemplate.FormYJ
 
                 foreach(TzArea T in _TzAreas.list)
                 {
-                    foreach(Imgsubject I in T.Imgsubjects)
-                    pr.AddOption
+                    foreach (Area I in T.SubAreas)
+                        ;
+                    //pr.AddOption
                 }
 
-                //float sum = 0;
-                //S.OutXzt(_Optionanswer, _OptionMaxscore, ref sum);
-                //float fsum = _SR._Result.Sum(rr => rr[S.Index]);
-                //int zfsum = (int)(sum + fsum);
+                float sum = 0;
+                S.OutXzt(_Optionanswer, _OptionMaxscore, ref sum);
+                float fsum = _SR._Result.Sum(rr => rr[S.Index]);
+                int zfsum = (int)(sum + fsum);
                 int tzindex = 0;
                 
                 foreach (List<Imgsubject> L in Tz)

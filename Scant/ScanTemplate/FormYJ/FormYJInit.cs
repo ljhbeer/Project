@@ -49,6 +49,7 @@ namespace ScanTemplate.FormYJ
         private void InitOptionImgSubjects()
         {
             _Imgsubjects = new Imgsubjects();
+            _TzImgsubjects = new TzImgsubjects();
             int index = 0;
             foreach (Area I in _artemplate.Dic["非选择题"])
             {
@@ -57,13 +58,27 @@ namespace ScanTemplate.FormYJ
                 if( _Imgsubjects.Add(S) )
                 index++;
             }
-
+            foreach (Area I in _artemplate.Manageareas.Tzareas.list)
+            {
+                Imgsubjects iss = new Imgsubjects();
+                _TzImgsubjects.Add(iss);
+                if(I.HasSubAreas())
+                foreach (Area sI in I.SubAreas)
+                {
+                    Imgsubject S = new Imgsubject((UnChoose)sI, index);
+                    if (_Imgsubjects.Add(S))
+                    {
+                        iss.Add(S);
+                        index++;
+                    }
+                }
+            }
             _Optionsubjects = new Optionsubjects();
             index = 0;
             foreach (Area I in _artemplate.Dic["选择题"])
             {
                 SingleChoiceArea U = (SingleChoiceArea)I;
-                if (I.HasSubArea())
+                if (I.HasImgSubArea())
                 {
                     int pos = 0;
                     foreach (List<Point> lp in ((SingleChoiceArea)I).list)
@@ -339,6 +354,7 @@ namespace ScanTemplate.FormYJ
         private ExamConfig g;
         private string _examname;
         private string _DataFullPath;
+        private TzImgsubjects _TzImgsubjects;
     }    
     public class Optionsubjects
     {
@@ -403,6 +419,21 @@ namespace ScanTemplate.FormYJ
 
     }
     [JsonObject(MemberSerialization.OptIn)]
+    public class TzImgsubjects
+    {
+        public TzImgsubjects()
+        {
+            Tz = new List<Imgsubjects>();
+        }
+        public List<Imgsubjects> Tz;
+        public Rectangle Rect;
+        public string Name;
+
+        internal void Add(Imgsubjects iss)
+        {
+            Tz.Add(iss);
+        }
+    }
     public class Imgsubjects
     {
         public Imgsubjects()

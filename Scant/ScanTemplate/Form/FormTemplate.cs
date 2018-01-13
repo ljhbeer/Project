@@ -404,29 +404,19 @@ namespace ARTemplate
                             Area I = (Area)(t.Tag);
                             if (I.EditMode )
                                 continue;
-                            e.Graphics.DrawRectangle(pen, zoombox.ImgToBoxSelection(I.ImgArea));
-                            if (I.HasSubArea())
-                            {
-                                foreach (Rectangle r in I.ImgSubArea())
+                            DrawArea(e, font, I);
+                            if(I.HasSubAreas())
+                                foreach (Area sI in I.SubAreas)
                                 {
-                                    r.Offset(I.ImgArea.Location);
-                                    e.Graphics.DrawRectangle(pen, zoombox.ImgToBoxSelection(r));
+                                    if (sI.EditMode)
+                                        continue;
+                                    DrawArea(e, font, sI);
                                 }
-                            }
-                            if (I.NeedFill())
-                            {
-                                e.Graphics.FillRectangle(I.FillPen(), zoombox.ImgToBoxSelection(I.ImgArea));
-                                //e.Graphics.DrawString(t.Name, font, Red, zoombox.ImgToBoxSelection(I.ImgArea).Location);
-                            }
-                            if (I.ShowTitle)
-                            {
-                                e.Graphics.DrawString(t.Name, font, Red, zoombox.ImgToBoxSelection(I.ImgArea).Location);
-                            }
                         }
                     }
                 }
 
-                return;
+                //return;
                 if (_ActiveEditMode && _ActiveEditArea != null)
                 {
                     Pen pen1 = Pens.DarkBlue;
@@ -441,6 +431,28 @@ namespace ARTemplate
                     Rectangle r = zoombox.ImgToBoxSelection(_TestR);
                     e.Graphics.DrawRectangle(Pens.Yellow, r);
                 }
+            }
+        }
+
+        private void DrawArea(PaintEventArgs e,  Font font,  Area I)
+        {
+            e.Graphics.DrawRectangle(Pens.Red, zoombox.ImgToBoxSelection(I.ImgArea));
+            if (I.HasImgSubArea())
+            {
+                foreach (Rectangle r in I.ImgSubArea())
+                {
+                    r.Offset(I.ImgArea.Location);
+                    e.Graphics.DrawRectangle(Pens.Red, zoombox.ImgToBoxSelection(r));
+                }
+            }
+            if (I.NeedFill())
+            {
+                e.Graphics.FillRectangle(I.FillPen(), zoombox.ImgToBoxSelection(I.ImgArea));
+                //e.Graphics.DrawString(t.Name, font, Red, zoombox.ImgToBoxSelection(I.ImgArea).Location);
+            }
+            if (I.ShowTitle)
+            {
+                e.Graphics.DrawString(I.Title, font, Brushes.Red, zoombox.ImgToBoxSelection(I.ImgArea).Location);
             }
         }
         private void buttonzoomout_Click(object sender, EventArgs e)
@@ -769,11 +781,21 @@ namespace ARTemplate
         }
         private void treeView1_KeyUp(object sender, KeyEventArgs e)
         {
-            if (treeView1.SelectedNode == null) return;
+            if (treeView1.SelectedNode == null || treeView1.SelectedNode.Parent == null) return;
             if (e.KeyCode == Keys.Delete)
             {
                 if (treeView1.SelectedNode.Parent.Text != "网上阅卷")
                 {
+                    if (treeView1.SelectedNode.Parent != null)
+                    {
+                        Area I = (Area)treeView1.SelectedNode.Parent.Tag;
+                        Area sI = (Area)treeView1.SelectedNode.Tag;
+                        if (I != null && I.HasSubAreas() && sI!=null)
+                        {
+                            if (I.SubAreas.Contains(sI))
+                                I.SubAreas.Remove(sI);
+                        }
+                    }
                     TreeNode t = treeView1.SelectedNode.NextNode;
                     if (t == null)
                         t = treeView1.SelectedNode.PrevNode;
@@ -786,7 +808,8 @@ namespace ARTemplate
                 if (treeView1.SelectedNode.Text == "题组")
                 {
                     int cnt = _template.Manageareas.SinglechoiceAreas.Count+1;
-                    ReNameUnChooseByTzArea(cnt);
+                    AddUnChooseToTzArea();
+                    ReNameUnChooseByTzArea1(cnt);
                     ReNameAreaByIncreace("选区变黑");
                     ReNameAreaByIncreace("选区变白");
                     UpdateTemplate();
@@ -795,7 +818,8 @@ namespace ARTemplate
             }
             else if (e.KeyCode == Keys.E)
             {
-                if (treeView1.SelectedNode.Parent.Text == "非选择题")
+                 if (treeView1.SelectedNode.Parent.Text == "非选择题" ||
+                        (treeView1.SelectedNode.Parent.Parent != null && treeView1.SelectedNode.Parent.Parent.Text == "题组"))
                 {
                     Area I = (Area)treeView1.SelectedNode.Tag;
                     I.EditMode = true;
@@ -804,7 +828,7 @@ namespace ARTemplate
                     _ActiveEditArea = I;
                     _ActiveEditMode = true;
                 }
-                else if(treeView1.SelectedNode.Text == "非选择题") //clear EditMode
+                else if(treeView1.SelectedNode.Text == "非选择题" || treeView1.SelectedNode.Text == "题组" ) //clear EditMode
                 {
                     if (_ActiveEditArea != null)
                         _ActiveEditArea.EditMode = false;
@@ -812,6 +836,54 @@ namespace ARTemplate
                     _ActiveEditMode = false;
                 }
                 pictureBox1.Invalidate();
+            }
+        }
+        private void AddUnChooseToTzArea()
+        {
+            for (int i = 0; i < m_tn.Nodes["题组"].Nodes.Count; i++)
+            {
+                TreeNode Tntz = m_tn.Nodes["题组"].Nodes[i];
+                TzArea Itz = (TzArea)Tntz.Tag;
+                List<TreeNode> removenodes = new List<TreeNode>();
+                foreach (TreeNode tnuc in m_tn.Nodes["非选择题"].Nodes)
+                {
+                    UnChoose uc = (UnChoose)tnuc.Tag;
+                    if (Itz.ImgArea.Contains(uc.ImgArea))
+                    {
+                        Itz.SubAreas.Add(uc);
+                        removenodes.Add(tnuc);
+                        //TODO: ReName UnChoose
+                    }
+                }
+                foreach (TreeNode tn in removenodes)
+                {
+                    m_tn.Nodes.Remove(tn);
+                    Tntz.Nodes.Add(tn);
+                }
+            }
+        }
+        private bool CheckUnChooseNotInTzarea()
+        {
+            return m_tn.Nodes["非选择题"].Nodes.Count > 0;
+        }
+        private void ReNameUnChooseByTzArea1(int cnt)
+        {
+            for (int i = 0; i < m_tn.Nodes["题组"].Nodes.Count; i++)
+            {
+                TreeNode t = m_tn.Nodes["题组"].Nodes[i];
+                t.Name = "TZ-" + cnt;
+                t.Text = t.Name;
+                TzArea tr = (TzArea)t.Tag;
+
+                int subcnt = 1;
+                foreach (TreeNode tn in t.Nodes)
+                {
+                    UnChoose uc = (UnChoose)tn.Tag;
+                    tn.Name = tn.Text = cnt + "-" + subcnt;
+                    uc.SetName(tn.Name);
+                    subcnt++;
+                }
+                cnt++;
             }
         }
         private void ReNameUnChooseByTzArea(int cnt)

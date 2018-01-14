@@ -15,25 +15,25 @@ namespace ScanTemplate.FormYJ
     {
         public ExportClassResult(ScanConfig _sc, Examdata _examdata, Template _template)
         {
+            this._angle = _template.Angle;
             this._sc = _sc;
-            //this._examdata = _examdata;
-            this._template = _template;
             _exam = new Exam(_examdata);
-
             this._students = _examdata.SR._Students;
             this._SR = _examdata.SR;
             this._Optionsubjects = _examdata.SR._Optionsubjects;
             this._Imgsubjects = _examdata.SR._Imgsubjects;
-
-            this._TzAreas = _template.Manageareas.Tzareas;
-
-            Init();
+            this._Tzsubjects = _examdata.SR._Tzsubjects;
+            InitAnswer();
+            InitMsg();        
+        }
+        private void InitMsg()
+        {
             _Msg = "共有选择题：" + _Optionsubjects.OptionSubjects.Count + " 题,  非选择题： " + _Imgsubjects.Subjects.Count + " 小题";
             _Msg += "\r\n选择题共： " + _Optionsubjects.OptionSubjects.Select(r => r.Score).Sum() + "分";
             _Msg += "\r\n 非选择题共： " + _Imgsubjects.Subjects.Select(r => r.Score).Sum() + "分";
             _Msg += "\r\n 合计共： " + (_Optionsubjects.OptionSubjects.Select(r => r.Score).Sum() + _Imgsubjects.Subjects.Select(r => r.Score).Sum()) + "分";
         }
-        private void Init()
+        private void InitAnswer()
         {
             bReady = false;
             if (CheckResult())
@@ -78,8 +78,8 @@ namespace ScanTemplate.FormYJ
                         MessageBox.Show("已输出成绩");
                         break;
                     case "eximage": 
-                        ExportImages();
                         string ImagePath = _sc.Baseconfig.ExportImageRootPath + "\\" + _exam.Name;
+                        ExportImages(ImagePath);
                         MessageBox.Show("已输出到"+ImagePath ); 
                         break;
                     case "exresultfx": 
@@ -87,106 +87,76 @@ namespace ScanTemplate.FormYJ
                         StringBuilder sb = new StringBuilder();
                         sb.Append( ExportXztFx() );
                         sb.Append( ExportFxztFx() );
-                        File.WriteAllText(FileName, sb.ToString());
+                        File.WriteAllText(FileName+".txt", sb.ToString());
                         MessageBox.Show("已输出成绩分析");
                         break;
                 }
         }       
-        private void ExportImages()
+        private void ExportImages(string ImgPath)
         {
-            AutoAngle angle = _template.Angle;
-            List<TzArea> ltz = GetDrawTzlist();
-            List<List<Imgsubject>> Tz = GetDrawTzlist1();
-            CheckFold(_exam.Name);
+            CheckFold(ImgPath);
             foreach (Student S in _students.students)
             {
-                PaperResult pr = new PaperResult();
-                foreach (Optionsubject O in _Optionsubjects.OptionSubjects)
-                    pr.AddOption(new ResultObj(O.Rect, S.CorrectXzt(O.Index,_Optionanswer[O.Index]) ? _OptionMaxscore[O.Index] : 0));
-                
-                //foreach(TzArea T in 
-
-                foreach(TzArea T in _TzAreas.list)
-                {
-                    foreach (Area I in T.SubAreas)
-                        ;
-                    //pr.AddOption
-                }
-
-                float sum = 0;
-                S.OutXzt(_Optionanswer, _OptionMaxscore, ref sum);
-                float fsum = _SR._Result.Sum(rr => rr[S.Index]);
-                int zfsum = (int)(sum + fsum);
-                int tzindex = 0;
-                
-                foreach (List<Imgsubject> L in Tz)
-                {
-                    string name = L.Select(I => _SR._Result[I.Index][S.Index]).Sum() + "分";
-                    ltz[tzindex].SetName(name);
-                    tzindex++;
-                }
-                ltz[tzindex].SetName(zfsum.ToString());
-                tzindex++;
-                ltz[tzindex].SetName(sum.ToString());
-
-                Bitmap bmp = TemplateTools.DrawInfoBmp(S, _SR, angle, _Optionanswer, ltz);
-                string filename = _sc.Baseconfig.ExportImageRootPath + "\\" + _exam.Name + "\\" + S.ID + ".jpg";
+                PaperResult pr = ConstructPaperResult(S);
+                Bitmap bmp = TemplateTools.DrawInfoBmp(S, _angle, pr);
+                //Bitmap bmp = TemplateTools.DrawInfoBmp(S, _SR, _angle, _Optionanswer, ltz);
+                string filename =ImgPath + "\\" + S.ID + ".jpg";
                 if (_sc.Studentbases.HasStudentBase)
                 {
                     if (S.KH > 1)
                     {
                         string name = _sc.Studentbases.GetName(S.KH);
-                        filename = _sc.Baseconfig.ExportImageRootPath + "\\" + _exam.Name + "\\" + S.ID + "_" + name + ".jpg";
+                        filename = ImgPath + "\\" + S.ID + "_" + name + ".jpg";
                     }
                 }
                 bmp.Save(filename);
             }
         }
-        private void CheckFold(string examName)
+        private PaperResult ConstructPaperResult(Student S)
         {
-            string path = _sc.Baseconfig.ExportImageRootPath + "\\" + _exam.Name;
-            if (!Directory.Exists(path))
-                Directory.CreateDirectory(path);
-            else
-                MessageBox.Show("已存在文件夹" + path + "! 继续将覆盖该文件夹内的文件！！ 请确认！！ ");
-        }
-        private List<List<Imgsubject>> GetDrawTzlist1()
-        {
-            List<List<Imgsubject>> Tz = new List<List<Imgsubject>>();
-            foreach (TzArea t in _template.Manageareas.Tzareas.list)
+            PaperResult pr = new PaperResult();
+            float fsum = 0;
+            Rectangle r = new Rectangle();
+            if (_Optionsubjects.OptionSubjects.Count > 0)
+                r = _Optionsubjects.OptionSubjects[0].Rect;
+            foreach (Optionsubject O in _Optionsubjects.OptionSubjects)
             {
-                List<Imgsubject> L = new List<Imgsubject>();
-                foreach (Imgsubject i in _SR._Imgsubjects.Subjects)
-                {
-                    if (t.ImgArea.Contains(i.Rect))
-                        L.Add(i);
-                }
-                Tz.Add(L);
+                r = Rectangle.Union(r, O.Rect);
+                float score = S.CorrectXzt(O.Index, _Optionanswer[O.Index]) ? _OptionMaxscore[O.Index] : 0;
+                int listindex = _dicABCDToOption[_Optionanswer[O.Index]];
+                Rectangle RO = O.Rect;
+                if (O.List.Count > listindex)
+                    RO.Offset(O.List[listindex]);
+                pr.AddOption(new ResultObj(RO, score));
+                fsum += score;
             }
-            return Tz;
-        }
-        private List<TzArea> GetDrawTzlist()
-        {
-            List<TzArea> ltz = _template.Manageareas.Tzareas.list;
-            //题组
-            List<TzArea> ltz1 = new List<TzArea>();
-            foreach (Area I in _template.Dic["题组"])
-            {
-                ltz.Add((TzArea)I);
-            }
+            if (r.Y > 30)
+                r.Y -= 30;
+            pr.Xzt = new ResultObj(r, fsum,true);
 
-            Rectangle zfrect = _template.Dic["校对"][0].Rect;
-            zfrect.Offset(zfrect.Width, 0);
-            zfrect.Width = 0;
-            zfrect.Height = 0;
-            Rectangle xztrect = _template.Dic["选择题"][0].Rect;
-            xztrect.Offset(-30, -50);
-            xztrect.Width = 1;
-            xztrect.Height = 1;
-            ltz.Add(new TzArea(zfrect, ""));
-            ltz.Add(new TzArea(xztrect, ""));
-            return ltz;
+            foreach (Tzsubject T in _Tzsubjects.Tzs)
+            {
+                int subsum = 0;
+                foreach (Imgsubject I in T.Subjects)
+                {
+                    int score = _SR._Result[I.Index][S.Index];
+                    pr.AddOption(new ResultObj(I.Rect, score));
+                    subsum += score;
+                }
+                fsum += subsum;
+                pr.Tz.Add(new ResultObj(T.Rect, subsum,true));
+            }
+            pr.ZF = new ResultObj(new Rectangle(r.Width / 3, 30, 30, 30), fsum , true);
+            return pr;
         }
+        private void CheckFold(string ImgPath)
+        {
+            if (!Directory.Exists(ImgPath))
+                Directory.CreateDirectory(ImgPath);
+            else
+                MessageBox.Show("已存在文件夹" + ImgPath + "! 继续将覆盖该文件夹内的文件！！ 请确认！！ ");
+        }
+       
         private StringBuilder ExportXztFx()
         {
             Optionsubjects _Optionsubjects = _SR._Optionsubjects;
@@ -251,64 +221,29 @@ namespace ScanTemplate.FormYJ
         }
         private void ExportResult(string FileName)
         {//导出成绩
-            int Oscore = (int)_exam.OSubjects.Sum(r => r.Score);
-            int Sscore = _exam.Subjects.Sum(r => r.Score);
-            try
+            string Tztitle = "";
+            foreach(Tzsubject T in _Tzsubjects.Tzs)
             {
-                List<List<Imgsubject>> Tz = new List<List<Imgsubject>>();
-                string Tztitle = "";
-                foreach (TzArea t in _template.Dic["题组"])
-                {
-                    List<Imgsubject> L = new List<Imgsubject>();
-                    foreach (Imgsubject i in _Imgsubjects.Subjects)
-                    {
-                        if (t.ImgArea.Contains(i.Rect))
-                            L.Add(i);
-                    }
-                    Tz.Add(L);
-                    Tztitle += t.ToString() + ",";
-                }
-
-                string title = Student.ResultTitle() + "选择题,非选择题,总分," + string.Join(",", _exam.OSubjects.Select(r => r.Name()))
-                 + "," + string.Join(",", _Imgsubjects.Subjects.Select(r => r.Name)) + "," + Tztitle + "\r\n";
-
-                StringBuilder sblistscore = new StringBuilder("姓名,总分\r\n");
-                StringBuilder sblisttizu = new StringBuilder("姓名,总分,选择题," + Tztitle + "\r\n");
-                StringBuilder sb = new StringBuilder(title);
-                foreach (Student r in _students.students)
-                {
-                    sb.Append(r.ResultInfo());
-                    float sum = 0;
-                    string xzt = r.OutXzt(_Optionanswer, _OptionMaxscore, ref sum);
-                    float fsum =_SR._Result.Sum(rr => rr[r.Index]);
-                    sb.Append(sum + "," + fsum + "," + (sum + fsum) + ",");
-                    sb.Append(xzt);
-                    sb.Append(",");
-                    sb.Append(string.Join(",", _SR._Result.Select(rr => rr[r.Index].ToString()).ToArray()));
-                    sb.Append(",");
-                    StringBuilder sbt = new StringBuilder();
-                    foreach (List<Imgsubject> L in Tz)
-                    {
-                        sbt.Append(L.Select(I => _SR._Result[I.Index][r.Index]).Sum() + ",");
-                    }
-                    sb.Append(sbt);
-                    sb.AppendLine();
-                    sblistscore.AppendLine(r.Name + " " + (sum + fsum));
-                    sblisttizu.AppendLine(r.Name + "," + (sum + fsum) + "," + sum + "," + sbt);
-                }
-                File.WriteAllText( FileName, sb.ToString());
-                Tools.TextBitmapTool tbl = new TextBitmapTool(
-                    new Rectangle(0, 0, 960, 720), new Rectangle(40, 30, 880, 660));
-
-                List<string> list = new List<string>(sblistscore.ToString().Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries));
-                List<string> list1 = new List<string>(sblisttizu.ToString().Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries));
-                tbl.DrawListInPaper(list).Save(FileName + ".jpg");
-                tbl.DrawListInPaper(list1).Save(FileName + "_1.jpg");
+                Tztitle += "," + T.Name;
             }
-            catch (Exception ex)
+            StringBuilder sblistscore = new StringBuilder("姓名,总分\r\n");
+            StringBuilder sblisttizu = new StringBuilder("姓名,总分,选择题,"+Tztitle + "\r\n");
+            StringBuilder sbdetail = new StringBuilder();
+            foreach (Student S in _students.students)
             {
-                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                PaperResult pr = ConstructPaperResult(S);
+                sblistscore.AppendLine(S.Name + "," + pr.TotalScore());
+                sblisttizu.AppendLine(S.Name + "," + pr.TotalTz());
+                sbdetail .AppendLine(S.Name + "," + pr.Detail());
             }
+            File.WriteAllText(FileName+".txt", sbdetail.ToString());
+            Tools.TextBitmapTool tbl = new TextBitmapTool(
+                new Rectangle(0, 0, 960, 720), new Rectangle(40, 30, 880, 660));
+
+            List<string> list = new List<string>(sblistscore.ToString().Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries));
+            List<string> list1 = new List<string>(sblisttizu.ToString().Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries));
+            tbl.DrawListInPaper(list).Save(FileName + ".jpg");
+            tbl.DrawListInPaper(list1).Save(FileName + "_1.jpg");
         }
         private string ZifuRate(double rightrate, int len = 20)
         {
@@ -329,12 +264,13 @@ namespace ScanTemplate.FormYJ
         private Dictionary<string, int> _dicABCDToOption;
         private List<string> _ABCD;
         private string _Msg;
-
-        private Template _template;
+        
         private Students _students;
         private Exam _exam;
         private Imgsubjects _Imgsubjects;
         private Optionsubjects _Optionsubjects;
         private TzAreas _TzAreas;
+        private Tzsubjects _Tzsubjects;
+        private AutoAngle _angle;
     }
 }

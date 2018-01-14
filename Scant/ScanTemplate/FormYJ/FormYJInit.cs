@@ -49,7 +49,7 @@ namespace ScanTemplate.FormYJ
         private void InitOptionImgSubjects()
         {
             _Imgsubjects = new Imgsubjects();
-            _TzImgsubjects = new TzImgsubjects();
+            _Tzsubjects = new Tzsubjects();
             int index = 0;
             foreach (Area I in _artemplate.Dic["非选择题"])
             {
@@ -60,15 +60,17 @@ namespace ScanTemplate.FormYJ
             }
             foreach (Area I in _artemplate.Manageareas.Tzareas.list)
             {
-                Imgsubjects iss = new Imgsubjects();
-                _TzImgsubjects.Add(iss);
+                Tzsubject tzs = new Tzsubject();
+                tzs.Name = I.Title;
+                tzs.Rect = I.Rect;
+                _Tzsubjects.Add(tzs);
                 if(I.HasSubAreas())
                 foreach (Area sI in I.SubAreas)
                 {
                     Imgsubject S = new Imgsubject((UnChoose)sI, index);
                     if (_Imgsubjects.Add(S))
                     {
-                        iss.Add(S);
+                        tzs.Add(S);
                         index++;
                     }
                 }
@@ -206,7 +208,7 @@ namespace ScanTemplate.FormYJ
             if (g.CheckExamInfoName(ei))
             {
                 AcceptXztDataTableModified();
-                Exam exam = new Exam(_Students, _Imgsubjects,_Optionsubjects, ei.Path);
+                Exam exam = new Exam(_Students, _Imgsubjects,_Optionsubjects,_Tzsubjects, ei.Path);
                 exam.Name = _examname;
                 if (!Directory.Exists(ei.Path))
                     Directory.CreateDirectory(ei.Path);
@@ -215,6 +217,8 @@ namespace ScanTemplate.FormYJ
                 //UTODO: 实现 exam.checkindex
                 g.AddExamInfo(ei);
                 g.SaveConfig("config.json");
+
+                exam.TzSubjects.InitIds();
                 string str = Tools.JsonFormatTool.ConvertJsonString(Newtonsoft.Json.JsonConvert.SerializeObject(exam));
                 File.WriteAllText(g.ExamPath + "\\"+ei.Name+".json", str);
                 File.WriteAllText(_DataFullPath + "\\已生成阅卷数据.txt", "");
@@ -255,7 +259,7 @@ namespace ScanTemplate.FormYJ
             string path = _workpath.Replace("\\LJH", "\\LJH\\bindata") + "\\";
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
-            Exam exam = new Exam(_Students, _Imgsubjects, _Optionsubjects ,path);
+            Exam exam = new Exam(_Students, _Imgsubjects, _Optionsubjects, _Tzsubjects, path);
             FormFullScreenYJ fs = new FormFullScreenYJ(exam);
             this.Hide();
             fs.ShowDialog();
@@ -354,7 +358,7 @@ namespace ScanTemplate.FormYJ
         private ExamConfig g;
         private string _examname;
         private string _DataFullPath;
-        private TzImgsubjects _TzImgsubjects;
+        private Tzsubjects _Tzsubjects;
     }    
     public class Optionsubjects
     {
@@ -419,21 +423,64 @@ namespace ScanTemplate.FormYJ
 
     }
     [JsonObject(MemberSerialization.OptIn)]
-    public class TzImgsubjects
+    public class Tzsubjects
     {
-        public TzImgsubjects()
+        public Tzsubjects()
         {
-            Tz = new List<Imgsubjects>();
+            Tzs = new List<Tzsubject>();
         }
-        public List<Imgsubjects> Tz;
-        public Rectangle Rect;
-        public string Name;
-
-        internal void Add(Imgsubjects iss)
+        [JsonProperty]
+        public List<Tzsubject> Tzs;
+        public void Add(Tzsubject tz)
         {
-            Tz.Add(iss);
+            Tzs.Add(tz);
+        }
+        public void InitIds()
+        {
+            foreach (Tzsubject tz in Tzs)
+                tz.InitIds();
+        }
+        public void Deserialize(Imgsubjects imgsubjects)
+        {
+            foreach (Tzsubject r in Tzs)
+                r.InitDeserialize(imgsubjects);
         }
     }
+
+    [JsonObject(MemberSerialization.OptOut)]
+    public class Tzsubject
+    {        
+        public Tzsubject()
+        {
+            Subjects = new List<Imgsubject>();
+            Subjectids = new List<int>();
+        }
+        public void Add(Imgsubject tz)
+        {
+            Subjects.Add(tz);
+        }
+        public void InitIds()
+        {
+            Subjectids.Clear();
+            if(Subjects.Count>0)
+            Subjectids.AddRange(
+                Subjects.Select(r => r.ID).ToArray());     
+        }
+        public void InitDeserialize(Imgsubjects ibs)
+        {
+            Subjects.Clear();
+            if(Subjectids.Count>0)
+            Subjects = Subjectids.Select(r => ibs.ImgSubjectByID(r)).ToList();
+        }
+        [JsonIgnore]
+        public List<Imgsubject> Subjects;
+        [JsonProperty]
+        private List<int> Subjectids;
+        public Rectangle Rect;
+        public string Name;
+    }
+
+    [JsonObject(MemberSerialization.OptOut)]
     public class Imgsubjects
     {
         public Imgsubjects()
@@ -476,6 +523,7 @@ namespace ScanTemplate.FormYJ
             else
                 _activeid = -1;
         }
+        [JsonIgnore]
         public List<Imgsubject> Subjects
         {
             get
@@ -1178,13 +1226,13 @@ namespace ScanTemplate.FormYJ
     {
         public Imgsubject ActiveSubject { get { return _activesubject; } }
         public List<Student> Students { get; set; }        
-        public StudentsResult(FormYJ.Students _Students, FormYJ.Imgsubjects _Imgsubjects, Optionsubjects _Optionsubjects, string _workpath)
+        public StudentsResult(FormYJ.Students _Students, FormYJ.Imgsubjects _Imgsubjects, Optionsubjects _Optionsubjects,Tzsubjects _Tzsubjects, string _workpath)
         {
             this._Students = _Students;
             this._Imgsubjects = _Imgsubjects;
             this._workpath = _workpath;
             this._Optionsubjects = _Optionsubjects;
-
+            this._Tzsubjects = _Tzsubjects;
             _Result = new List<List<int>>();
             for (int i = 0; i < _Imgsubjects.Subjects.Count; i++)
             {
@@ -1198,11 +1246,12 @@ namespace ScanTemplate.FormYJ
             _Ims = new ImgbinManagesubjects(_Students, _Imgsubjects);
             _Ims.InitLoadBindata(_workpath);
         }
-        public StudentsResult(FormYJ.Students _Students, Imgsubjects _Imgsubjects, Optionsubjects _Optionsubjects, string Path, List<List<int>> result)
+        public StudentsResult(FormYJ.Students _Students, Imgsubjects _Imgsubjects, Optionsubjects _Optionsubjects,Tzsubjects _Tzsubjects, string Path, List<List<int>> result)
         {
             this._Students = _Students;
             this._Imgsubjects = _Imgsubjects;
             this._Optionsubjects = _Optionsubjects;
+            this._Tzsubjects = _Tzsubjects;
             this._workpath = Path;
             this._Result = result;
             _Ims = new ImgbinManagesubjects(_Students, _Imgsubjects);
@@ -1260,6 +1309,8 @@ namespace ScanTemplate.FormYJ
         [JsonProperty]
         private Optionsubjects _Optionsubjects;
         [JsonProperty]
+        private Tzsubjects _Tzsubjects;
+        [JsonProperty]
         private List<List<int>> _Result;
     }
     public class Exam
@@ -1268,13 +1319,15 @@ namespace ScanTemplate.FormYJ
         private Imgsubjects _Imgsubjects;
         private StudentsResult _SR;
         private Optionsubjects _Optionsubjects;
-        public Exam(Students _Students, Imgsubjects _Imgsubjects, Optionsubjects _Optionsubjects, string path )
+        private Tzsubjects _Tzsubjects;
+        public Exam(Students _Students, Imgsubjects _Imgsubjects, Optionsubjects _Optionsubjects,Tzsubjects _Tzsubjects,  string path )
         {
             this._Students = _Students;
             this._Imgsubjects = _Imgsubjects;
             this._Optionsubjects = _Optionsubjects;
+            this._Tzsubjects = _Tzsubjects;
             this.Path = path;
-            _SR = new StudentsResult(_Students, _Imgsubjects,_Optionsubjects, path);
+            _SR = new StudentsResult(_Students, _Imgsubjects,_Optionsubjects,_Tzsubjects, path);
         }
         public Exam(Examdata ed)
         {
@@ -1283,7 +1336,8 @@ namespace ScanTemplate.FormYJ
             _Imgsubjects = ed.SR._Imgsubjects;
             _Students = ed.SR._Students;
             _Optionsubjects = ed.SR._Optionsubjects;
-            this._SR = new StudentsResult(_Students, _Imgsubjects, _Optionsubjects, Path,ed.SR._Result);
+            _Tzsubjects = ed.SR._Tzsubjects;
+            this._SR = new StudentsResult(_Students, _Imgsubjects, _Optionsubjects,_Tzsubjects, Path,ed.SR._Result);
         }
 
         public string Name { get; set; }
@@ -1293,5 +1347,7 @@ namespace ScanTemplate.FormYJ
         public List<Imgsubject> Subjects { get { return _Imgsubjects.Subjects; } }        
         [JsonIgnore]
         public List<Optionsubject> OSubjects { get { return _Optionsubjects.OptionSubjects; } }
+        [JsonIgnore]
+        public  Tzsubjects TzSubjects { get { return _Tzsubjects; } }
     }
 }

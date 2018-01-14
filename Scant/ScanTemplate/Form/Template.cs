@@ -736,5 +736,32 @@ namespace ARTemplate
             }
             return bmp;
         }
+        public static Bitmap DrawInfoBmp(Student S, AutoAngle angle, PaperResult pr)
+        {
+            Bitmap src = S.Src.Clone(S.SrcCorrectRect, S.Src.PixelFormat); //bmp = src.Clone(new Rectangle(0, 0, src.Width, src.Height), System.Drawing.Imaging.PixelFormat.Format24bppRgb);
+            Bitmap bmp = ConvertFormat.ConvertToRGB(src);
+            angle.SetPaper(S.Angle);
+            using (Graphics g = Graphics.FromImage(bmp))
+            {
+                Pen pen = Pens.Red;
+                Brush dark = Brushes.Black;
+                Brush white = Brushes.White;
+                Brush Red = Brushes.Red;
+                Font font = new Font(SystemFonts.DefaultFont.SystemFontName, 25, FontStyle.Bold);
+                Font font1 = new Font(SystemFonts.DefaultFont.SystemFontName, 16, FontStyle.Bold);
+                Font font2 = new Font(SystemFonts.DefaultFont.SystemFontName, 20, FontStyle.Bold);
+
+                foreach (ResultObj I in pr.TotalObjs())
+                {
+                    Rectangle r = I.Rect;
+                    Point p = angle.GetCorrectPoint(r.X, r.Y);
+                    r.Location = p;
+                    //g.DrawRectangle(pen, I.Rect);
+                    //g.DrawRectangle(pen, r);
+                    g.DrawString(I.Txt, font1, Red, p);
+                }
+            }
+            return bmp;
+        }
     }
 }

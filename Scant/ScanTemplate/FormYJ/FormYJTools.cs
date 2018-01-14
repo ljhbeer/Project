@@ -67,6 +67,7 @@ namespace ScanTemplate.FormYJ
             _examdata = Newtonsoft.Json.JsonConvert.DeserializeObject<Examdata>(File.ReadAllText(filename));
             _examdata.SR._Students.InitDeserialize(); //init index and dic
             _examdata.SR._Imgsubjects.InitDeserialize(); // dic and bitmapdatalength
+            _examdata.SR._Tzsubjects.Deserialize(_examdata.SR._Imgsubjects );
             _students = _examdata.SR._Students;
             if(_students.students.Count>0){
                 InitSrc(_template, _students.students[0]);
@@ -369,6 +370,7 @@ namespace ScanTemplate.FormYJ
         public Students _Students;
         public Imgsubjects _Imgsubjects;
         public Optionsubjects _Optionsubjects;
+        public Tzsubjects _Tzsubjects;
         public List<List<int>> _Result;
     }
 }

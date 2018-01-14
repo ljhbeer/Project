@@ -11,6 +11,7 @@ namespace ScanTemplate.FormYJ
         public PaperResult()
         {
             Options = new List<ResultObj>();
+            Tz = new List<ResultObj>();            
         }
         
         public void Compute()
@@ -23,25 +24,62 @@ namespace ScanTemplate.FormYJ
             Options.Add(resultObj);
         }
         public List<ResultObj> Options;
-    }
+        public List<ResultObj> Tz;
+        public ResultObj Xzt;
+        public ResultObj ZF;
+        public IEnumerable<ResultObj> TotalObjs()
+        {
+            List<ResultObj> r = new List<ResultObj>();
+            r.AddRange(Options);
+            r.AddRange(Tz);
+            r.Add(Xzt);
+            r.Add(ZF);
+            return r;
+        }
+        public float TotalScore()
+        {
+            return ZF.Score;
+        }
+        public string TotalTz()//姓名,总分,选择题,"+Tztitle
+        {
+            return TotalScore() + "," + Xzt.Score+","
+                + string.Join("," , Tz.Select(r => r.Score).ToList());
+        }
+        public string Detail()
+        {
+            return TotalScore() + "," + Xzt.Score + ","+ Tz.Select(r => r.Score).Sum()+","
+                 + string.Join(",", Options.Select( r => r.Score).ToList());
+        }
+        public string DetailTitle()
+        {
+            return "总分,选择题,非选择题,"+ string.Join(",", Options.Select( r => r.Txt).ToList());
+        }
 
+    }
     public class ResultObj
     {
         public ResultObj()
         {
         }
-        public ResultObj(Rectangle rect, float score)
+        public ResultObj(Rectangle rect, float score,bool showscore = false)
         {
             this.Rect = rect;
             this.Floatscore = score;
             this.Score = (int)score;
-            if (Score == 0)
+            if (showscore)
             {
-                Txt = "√";
+                Txt = score.ToString();
             }
             else
             {
-                Txt = "×";
+                if (Score == 0)
+                {
+                    Txt = "×";
+                }
+                else
+                {
+                    Txt = "√";
+                }
             }
         }
         public float Floatscore;

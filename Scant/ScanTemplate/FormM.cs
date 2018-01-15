@@ -41,6 +41,12 @@ namespace ScanTemplate
                 listBoxUnScanDir.Items.AddRange(_sc.Unscans.Unscans.ToArray());
                 comboBoxTemplate.Items.AddRange(_sc.CommonTemplates.CommonTemplates.ToArray());
                 listBoxScantData.Items.AddRange(_sc.Scandatas.Scandatas.ToArray());
+                //foreach (ScanData sd in _sc.Scandatas.Scandatas)
+                //{
+                //    string path = sd.Fullpath;
+                //    if (!File.Exists(path + "\\desktop.ini"))
+                //        global.SaveDirectoryMemo(path,  sd.ExamName);
+                //}
             }
 		}
         private void buttonRefresh_Click(object sender, EventArgs e)
@@ -360,6 +366,7 @@ namespace ScanTemplate
                     exportdata = exportdata.Replace(_scan.SourcePath, _scan.ScanDataPath + "\\img");
                     File.WriteAllText(Datafilename, string.Join(",", _scan.ExportTitles) + "\r\n" + exportdata);
                     this.Invoke(new MyInvoke(MyRefresh));
+                    global.SaveDirectoryMemo(_scan.ScanDataPath,examname);
                 }
             }
             if (_scan != null && _scan.Msg != "")

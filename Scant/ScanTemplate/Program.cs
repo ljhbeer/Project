@@ -24,6 +24,14 @@ namespace ScanTemplate
         public static int tag = 0;
         public static int featuretype = 0;  // 0 左上下  1右上下
         public static string msg = "说明";
+
+        public static void SaveDirectoryMemo(string path,string infotip)
+        {
+            string filename = path + "\\desktop.ini";
+            string txt = "[.ShellClassInfo]\r\nInfoTip=[infotip]\r\n";
+            txt = txt.Replace("[infotip]", infotip);
+            System.IO.File.WriteAllText(filename, txt);
+        }
     }
     public class globalsave
     {

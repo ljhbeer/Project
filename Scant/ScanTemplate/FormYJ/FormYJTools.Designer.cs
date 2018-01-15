@@ -98,9 +98,9 @@
             // buttonRefresh
             // 
             this.buttonRefresh.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.buttonRefresh.Location = new System.Drawing.Point(96, 3);
+            this.buttonRefresh.Location = new System.Drawing.Point(95, 3);
             this.buttonRefresh.Name = "buttonRefresh";
-            this.buttonRefresh.Size = new System.Drawing.Size(98, 24);
+            this.buttonRefresh.Size = new System.Drawing.Size(99, 24);
             this.buttonRefresh.TabIndex = 13;
             this.buttonRefresh.Text = "刷新";
             this.buttonRefresh.UseVisualStyleBackColor = true;
@@ -117,13 +117,14 @@
             this.listBox1.Size = new System.Drawing.Size(191, 328);
             this.listBox1.TabIndex = 6;
             this.listBox1.SelectedIndexChanged += new System.EventHandler(this.listBox1_SelectedIndexChanged);
+            this.listBox1.KeyUp += new System.Windows.Forms.KeyEventHandler(this.listBox1_KeyUp);
             // 
             // buttonBeginYJ
             // 
             this.buttonBeginYJ.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.buttonBeginYJ.Location = new System.Drawing.Point(96, 367);
+            this.buttonBeginYJ.Location = new System.Drawing.Point(95, 367);
             this.buttonBeginYJ.Name = "buttonBeginYJ";
-            this.buttonBeginYJ.Size = new System.Drawing.Size(98, 36);
+            this.buttonBeginYJ.Size = new System.Drawing.Size(99, 36);
             this.buttonBeginYJ.TabIndex = 7;
             this.buttonBeginYJ.Text = "开始阅卷";
             this.buttonBeginYJ.UseVisualStyleBackColor = true;
@@ -134,7 +135,7 @@
             this.textBoxWorkPath.Location = new System.Drawing.Point(3, 3);
             this.textBoxWorkPath.Name = "textBoxWorkPath";
             this.textBoxWorkPath.ReadOnly = true;
-            this.textBoxWorkPath.Size = new System.Drawing.Size(87, 21);
+            this.textBoxWorkPath.Size = new System.Drawing.Size(86, 21);
             this.textBoxWorkPath.TabIndex = 3;
             this.textBoxWorkPath.Text = "E:\\Scan\\s1025";
             // 
@@ -144,7 +145,7 @@
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(3, 367);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(87, 36);
+            this.panel1.Size = new System.Drawing.Size(86, 36);
             this.panel1.TabIndex = 14;
             // 
             // buttonExportResult

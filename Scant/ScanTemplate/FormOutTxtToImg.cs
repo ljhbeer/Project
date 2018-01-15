@@ -96,8 +96,14 @@ namespace ScanTemplate
                     }
                 }
                 list.Add("未交学生名单");
-                foreach (string s in UnScanNameList(kh))
-                    list.Add(s + " 未交");
+                List<int> Lclassid = kh.Select(r => _sc.Studentbases.GetClass(r)).Distinct().ToList();
+                Lclassid.Remove(0);
+                if (Lclassid.Count > 1)
+                {
+                    int cid = Lclassid[0];
+                    foreach (string s in FormYJ.ExportClassResult.UnScanNameList(cid, kh, _sc))
+                        list.Add(s + " 未交");
+                }
                 textBox1.Text = string.Join("\r\n", list);
                 pictureBox1.Image = _tbl.DrawListInPaper(list, checkBoxBlackFont.Checked);
             }
@@ -107,18 +113,7 @@ namespace ScanTemplate
             }
         }
 
-        private List<string> UnScanNameList(List<int> kh)
-        {
-            List<int> Lclassid = kh.Select(r => _sc.Studentbases.GetClass(r)).Distinct().ToList();
-            Lclassid.Remove(0);
-            if (Lclassid.Count > 1)
-                return new List<string>();
-            int cid = Lclassid[0];
-            List<string> namelist =
-             _sc.Studentbases.GetClassStudent(cid).Where(r => !kh.Exists(rr => rr == r.KH))
-                 .Select(r1 => r1.Name).ToList();
-            return namelist;
-        }
+        
 
         private void buttonOutSit_Click(object sender, EventArgs e)
         {

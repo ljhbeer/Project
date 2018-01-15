@@ -47,6 +47,39 @@ namespace ScanTemplate.FormYJ
             ExamConfig g = Newtonsoft.Json.JsonConvert.DeserializeObject<ExamConfig>(File.ReadAllText(idindexpath));
             listBox1.Items.AddRange(g._examinfo.ToArray());
         }
+        private void listBox1_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.C)
+            {
+                if (listBox1.SelectedIndex == -1) return;
+                if (_examdata.SR._Tzsubjects.Tzs.Count > 0)
+                    return;
+                ExamInfo ei = (ExamInfo)listBox1.SelectedItem;
+                //////////////////////////////////////
+                Tzsubjects _Tzsubjects = new Tzsubjects();
+                foreach (Area I in _template.Manageareas.Tzareas.list)
+                {
+                    Tzsubject tzs = new Tzsubject();
+                    tzs.Name = I.Title;
+                    tzs.Rect = I.Rect;
+                    _Tzsubjects.Add(tzs);
+                    if (I.HasSubAreas())
+                        foreach ( Imgsubject S in _examdata.SR._Imgsubjects.Subjects)
+                        { 
+                            if ( tzs.Rect.Contains( S.Rect) )
+                            {
+                                tzs.Add(S);
+                            }
+                        }
+                }
+                _examdata.SR._Tzsubjects = _Tzsubjects;
+                _Tzsubjects.InitIds();
+
+                string str = Tools.JsonFormatTool.ConvertJsonString(Newtonsoft.Json.JsonConvert.SerializeObject(_examdata));
+                File.WriteAllText(g.ExamPath + "\\" + ei.Name + ".json", str);
+                MessageBox.Show("已更新Exam文件");
+            }
+        }
         private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (listBox1.SelectedIndex == -1) return;
@@ -64,10 +97,9 @@ namespace ScanTemplate.FormYJ
             _students = null;
             if (File.Exists(ei.TemplateFileName))
                 _template = Templates.GetTemplate(ei.TemplateFileName);
-            _examdata = Newtonsoft.Json.JsonConvert.DeserializeObject<Examdata>(File.ReadAllText(filename));
-            _examdata.SR._Students.InitDeserialize(); //init index and dic
-            _examdata.SR._Imgsubjects.InitDeserialize(); // dic and bitmapdatalength
-            _examdata.SR._Tzsubjects.Deserialize(_examdata.SR._Imgsubjects );
+            _examdata = Newtonsoft.Json.JsonConvert.DeserializeObject<Examdata>(File.ReadAllText(filename));           
+            _examdata.InitDeserialize();
+           
             _students = _examdata.SR._Students;
             if(_students.students.Count>0){
                 InitSrc(_template, _students.students[0]);
@@ -362,7 +394,20 @@ namespace ScanTemplate.FormYJ
     {
         public string Name { get; set; }
         public string Path { get; set; }
-        public StudentsResultData SR { get; set;}       
+        public StudentsResultData SR { get; set;}
+        public void InitDeserialize()
+        {
+            if (SR != null)
+            {
+                if (SR._Tzsubjects == null)
+                {
+                    SR._Tzsubjects = new Tzsubjects();
+                }
+            }
+            SR._Students.InitDeserialize(); //init index and dic
+            SR._Imgsubjects.InitDeserialize(); // dic and bitmapdatalength
+            SR._Tzsubjects.Deserialize(SR._Imgsubjects);
+        }
     }
     public class StudentsResultData
     {

@@ -582,13 +582,19 @@ namespace ARTemplate
                 List<TzArea> list = new List<TzArea>();
                 foreach (TzAreaObject to in tzo)
                 {
-                    if (to._subareas == null) continue;
                     TzArea tz = new TzArea(to.Rect, to._name);
                     list.Add(tz);
-                    List<UnChoose> uclist = MyArea<UnChoose>.ConvertTo(to._subareas.ToString());
-                    foreach (UnChoose u in uclist)
+                    if (to._subareas == null)
                     {
-                        tz.SubAreas.Add(u);
+
+                    }
+                    else
+                    {
+                        List<UnChoose> uclist = MyArea<UnChoose>.ConvertTo(to._subareas.ToString());
+                        foreach (UnChoose u in uclist)
+                        {
+                            tz.SubAreas.Add(u);
+                        }
                     }
 
                 }

@@ -531,6 +531,7 @@ namespace ScanTemplate.FormYJ
                 return _subjects;
             }
         }
+        [JsonIgnore]
         public Imgsubject ActiveSubject
         {
             get
@@ -645,6 +646,12 @@ namespace ScanTemplate.FormYJ
             {
                 return _students;
             }
+        }
+        public List<int> StudentsClassid(ScanConfig _sc)
+        {
+            List<int> Lclassid = _students.Select( r => _sc.Studentbases.GetClass(r.KH) ).Distinct().ToList();
+            Lclassid.Remove(0);
+            return Lclassid;
         }
         public bool CheckIndex()
         {

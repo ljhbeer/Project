@@ -157,7 +157,7 @@ namespace ScanTemplate.FormYJ
                 MessageBox.Show("已存在文件夹" + ImgPath + "! 继续将覆盖该文件夹内的文件！！ 请确认！！ ");
         }
        
-        private StringBuilder ExportXztFx()
+        private StringBuilder ExportXztFx(bool bouterrornamelist = false)
         {
             Optionsubjects _Optionsubjects = _SR._Optionsubjects;
             Imgsubjects _Imgsubjects = _SR._Imgsubjects;
@@ -170,28 +170,36 @@ namespace ScanTemplate.FormYJ
                 int rightcnt = Iabcd[okindex];
                 int count = _students.students.Count;
                 Double rightrate = rightcnt * 1.0 / count;
-                sb.AppendLine(O.OutName + " 分值：" + O.Score + " 正确答案：" + _Optionanswer[O.Index] + " 正确率(" + rightcnt + "/" + count + ")：" + rightrate.ToString("0.00%"));
+                sb.Append(O.OutName + " 分值：" + O.Score + " 正确答案：" + _Optionanswer[O.Index] + " 正确率(" + rightcnt + "/" + count + ")：" + rightrate.ToString("0.00%")+" ");
+                //sb.AppendLine(
+                //    string.Join("\r\n",
+                //    _ABCD.Select(r => "  选项：" + r + " (" + Iabcd[_dicABCDToOption[r]].ToString("00") + "/" + count + ")" + ZifuRate(Iabcd[_dicABCDToOption[r]] * 1.0 / count))
+                //    )
+                //);
                 sb.AppendLine(
-                    string.Join("\r\n",
-                    _ABCD.Select(r => "  选项：" + r + " (" + Iabcd[_dicABCDToOption[r]].ToString("00") + "/" + count + ")" + ZifuRate(Iabcd[_dicABCDToOption[r]] * 1.0 / count))
-                    )
-                );
+                   string.Join("\t",
+                   _ABCD.Select(r => r + "(" + Iabcd[_dicABCDToOption[r]].ToString("00") + "/" + count + ")")
+                   )
+               );
                 //错误学生明单
-                sb.AppendLine("错误学生名单");
-                sb.AppendLine(
-                    string.Join("\r\n",
-                        _ABCD.Where(r => r != _Optionanswer[O.Index]).Select(r =>
-                        {
-                            return "选项" + r + ":" + string.Join(",",
-                            _students.students.Where(rr => rr.SelectOption(r, O.Index)).Select(sr => sr.Name));
-                        })
-                    )
-                );
-                sb.AppendLine();
+                if (bouterrornamelist)
+                {
+                    sb.AppendLine("错误学生名单");
+                    sb.AppendLine(
+                        string.Join("\r\n",
+                            _ABCD.Where(r => r != _Optionanswer[O.Index]).Select(r =>
+                            {
+                                return "选项" + r + ":" + string.Join(",",
+                                _students.students.Where(rr => rr.SelectOption(r, O.Index)).Select(sr => sr.Name));
+                            })
+                        )
+                    );
+                    sb.AppendLine();
+                }
             }
             return sb;
         }
-        private StringBuilder ExportFxztFx()
+        private StringBuilder ExportFxztFx(bool bouterrornamelist = false)
         {
             Imgsubjects _Imgsubjects = _SR._Imgsubjects;
             StringBuilder sb = new StringBuilder();
@@ -204,18 +212,21 @@ namespace ScanTemplate.FormYJ
                 Double rightrate = avg / O.Score;
                 sb.AppendLine(O.Name + " 分值：" + O.Score + " 正确率(" + rightcnt + "/" + count + ")：" + rightrate.ToString("0.00%"));
                 //错误学生明单
-                sb.AppendLine("错误学生名单");
-                int index = 0;
-                sb.AppendLine(
-                    string.Join(",",
-                        or.Select(r =>
-                        {
-                            index++;
-                            if (r > 0) return -index; return index;
-                        }).Where(r => r > 0).Select(r => _students.students[r - 1].Name)
-                               )
-                    );
-                sb.AppendLine();
+                if (bouterrornamelist)
+                {
+                    sb.AppendLine("错误学生名单");
+                    int index = 0;
+                    sb.AppendLine(
+                        string.Join(",",
+                            or.Select(r =>
+                            {
+                                index++;
+                                if (r > 0) return -index; return index;
+                            }).Where(r => r > 0).Select(r => _students.students[r - 1].Name)
+                                   )
+                        );
+                    sb.AppendLine();
+                }
             }
             return sb;
         }
@@ -242,8 +253,21 @@ namespace ScanTemplate.FormYJ
 
             List<string> list = new List<string>(sblistscore.ToString().Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries));
             List<string> list1 = new List<string>(sblisttizu.ToString().Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries));
+            List<int> cids = _students.StudentsClassid(_sc);
+            if (cids.Count == 1)
+            {
+                List<int> kh = _students.students.Select(r => r.KH).ToList();
+                list.AddRange(
+                    UnScanNameList(cids[0],kh,_sc).Select( r => r+",未交").ToList()
+                    );
+            }else
+            {
+                MessageBox.Show("存在多个班级");
+            }
             tbl.DrawListInPaper(list).Save(FileName + ".jpg");
             tbl.DrawListInPaper(list1).Save(FileName + "_1.jpg");
+            File.WriteAllText(FileName + "_总分.大题分.txt",
+                string.Join("\r\n", list) +"\r\n\r\n"+ string.Join("\r\n", list1));
         }
         private string ZifuRate(double rightrate, int len = 20)
         {
@@ -254,6 +278,14 @@ namespace ScanTemplate.FormYJ
             int r = (int)(len * rightrate + 0.5) % len;
             int e = len - r;
             return right.Substring(0, r) + error.Substring(0, e);
+        }
+
+        public static List<string> UnScanNameList(int classid,List<int> kh, ScanConfig _sc)
+        {           
+            List<string> namelist =
+             _sc.Studentbases.GetClassStudent(classid).Where(r => !kh.Exists(rr => rr == r.KH))
+                 .Select(r1 => r1.Name).ToList();
+            return namelist;
         }
 
         private ScanConfig _sc;

@@ -203,13 +203,16 @@ namespace  Tools
                     while (xendpos - xpos < continuelength )
                     {
                         xpos = xxcnt.Skip(xendpos).ToList().FindIndex(r => r > 0);
-                        if (xpos == -1)
+                        if (xpos == -1 || xendpos == -1)
                             break;
                         xpos += xendpos;
                         xendpos = xxcnt.Skip(xpos).ToList().FindIndex(r => r == 0);
                         // 修改逻辑错误
                         if (xendpos == -1)
-                            xendpos = xxcnt.Length-1; 
+                        {
+                            xendpos = xxcnt.Length - 1;
+                            break;
+                        }
                         else
                             xendpos += xpos;
                     }
@@ -226,12 +229,15 @@ namespace  Tools
                     while (yendpos - ypos <continuelength)
                     {
                         ypos = yycnt.Skip(yendpos).ToList().FindIndex(r => r > 0);
-                        if (ypos == -1)
+                        if (ypos == -1 || yendpos == -1)
                             break;
                         ypos += yendpos;
                         yendpos = yycnt.Skip(ypos).ToList().FindIndex(r => r == 0);
                         if (yendpos == -1)
+                        {
                             yendpos = yycnt.Length - 1;
+                            break;
+                        }
                         else
                             yendpos += ypos;
                     }

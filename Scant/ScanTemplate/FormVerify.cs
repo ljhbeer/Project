@@ -33,7 +33,7 @@ namespace ScanTemplate
             }
             else if (type == "核对姓名")
             {
-                _ColState = new List<int>() { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+                _ColState = new List<int>() { 0, 0, 0, 20, 0, 0, 0, 0, 0, 0, 0 };
             }
 			InitializeComponent();
 			dgv.DataSource = dt;
@@ -204,7 +204,7 @@ namespace ScanTemplate
                     }
                 }
             }
-            else if (_type == "考号")
+            else if (_type == "考号" || _type == "核对姓名")
             {
                 foreach (DataRow dr in _dt.Rows)
                 {
@@ -223,7 +223,7 @@ namespace ScanTemplate
         {
             try
             {
-                if (_type == "考号")
+                if (_type == "考号" || _type == "核对姓名")
                 {
                     int kh = Convert.ToInt32(dgv[e.ColumnIndex, e.RowIndex].Value);
                     DataRow dr = ((DataTable)dgv.DataSource).Rows[e.RowIndex];
@@ -248,7 +248,7 @@ namespace ScanTemplate
         }
         private void dgv_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e)
         {
-            if(! (_type == "考号" && _ColState[e.ColumnIndex] > 10))
+            if(! ((_type == "考号"|| _type=="核对姓名") && _ColState[e.ColumnIndex] > 10))
             {
                 e.Cancel = true;
             }

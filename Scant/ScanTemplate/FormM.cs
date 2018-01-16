@@ -44,8 +44,14 @@ namespace ScanTemplate
                 //foreach (ScanData sd in _sc.Scandatas.Scandatas)
                 //{
                 //    string path = sd.Fullpath;
-                //    if (!File.Exists(path + "\\desktop.ini"))
-                //        global.SaveDirectoryMemo(path,  sd.ExamName);
+                //    try
+                //    {
+                //        global.SaveDirectoryMemo(path, sd.ExamName);
+                //    }
+                //    catch (Exception ee)
+                //    {
+                //        MessageBox.Show(ee.Message + " "+sd.Fullpath+" " + sd.ExamName);
+                //    }
                 //}
             }
 		}
@@ -82,7 +88,14 @@ namespace ScanTemplate
             List<string> nameList = dir.ImgList();
             if (nameList.Count > 0)
             {
-                _sc.Templateshow = new TemplateShow(dir.FullPath, dir.DirName, nameList[0]);
+                try
+                {
+                    _sc.Templateshow = new TemplateShow(dir.FullPath, dir.DirName, nameList[0]);
+                }catch
+                {
+                    MessageBox.Show("特征点检测失败，请预处理！");
+                    return;
+                }
                 _sc.Templateshow.Template.FileName = _sc.Baseconfig.TemplatePath ;
                 if (_sc.Templateshow.OK)
                 {
@@ -558,25 +571,33 @@ namespace ScanTemplate
                 {
                     if (f.Changed)
                     {
-                        string filename = ((ValueTag)listBoxScantData.SelectedItem).Tag.ToString();
-                        string[] ss = File.ReadAllLines(filename);
+                        ScanData sd = (ScanData)listBoxScantData.SelectedItem;
+                        string[] ss = File.ReadAllLines(sd.DataFullName);
+                        Dictionary<string, int> _ssindex = new Dictionary<string, int>();
+                        for (int i = 1; i < ss.Length; i++)
+                        {
+                            string[] item = ss[i].Split(',');
+                            _ssindex[item[0]] = i;
+                        }
+
                         try
                         {
-                            for (int i = 1; i < ss.Length; i++)
+                            foreach(DataRow dr in _rundt.Rows)
                             {
-                                string[] item = ss[i].Split(',');
-                                if (item[3].Contains("-"))
+                                if(dr.RowState == DataRowState.Modified)
                                 {
-                                    DataRow[] drs = _rundt.Select("文件名='" + item[0] + "'");
-                                    if (drs.Length == 1)
+                                    string filename = dr["文件名"].ToString();
+                                    if (_ssindex.ContainsKey(filename))
                                     {
-                                        item[3] = drs[0]["考号"].ToString();
-                                        item[4] = drs[0]["姓名"].ToString();
-                                        ss[i] = string.Join(",", item);
+                                        int index = _ssindex[filename];
+                                        string[] item = ss[index].Split(',');
+                                        item[3] = dr["考号"].ToString();
+                                        item[4] = dr["姓名"].ToString();
+                                        ss[index] = string.Join(",", item);
                                     }
                                 }
                             }
-                            //File.WriteAllText(filename + "_1", string.Join("\r\n", ss));
+                            File.WriteAllText(sd.DataFullName, string.Join("\r\n", ss));
                         }
                         catch (Exception ee)
                         {

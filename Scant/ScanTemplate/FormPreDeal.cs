@@ -399,5 +399,16 @@ namespace ScanTemplate
         private bool  _ScanDataMode;
         private string _ActivePath;
 
+        private void buttonAngle_Click(object sender, EventArgs e)
+        {
+            float angle = 0;
+            try
+            {
+                angle = (float)Convert.ToDouble(textBoxAngle.Text);
+                pictureBox1.Image = Tools.BitmapRotateTools.KiRotate((Bitmap)pictureBox1.Image, angle, Color.White);
+            }
+            catch (Exception ee) { MessageBox.Show(ee.Message); }
+        }
+
     }
 }

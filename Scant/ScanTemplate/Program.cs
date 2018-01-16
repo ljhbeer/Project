@@ -28,10 +28,28 @@ namespace ScanTemplate
         public static void SaveDirectoryMemo(string path,string infotip)
         {
             string filename = path + "\\desktop.ini";
-            string txt = "[.ShellClassInfo]\r\nInfoTip=[infotip]\r\n";
+
+            string txt = "[.ShellClassInfo]\r\r\nInfoTip=[infotip]\r\r\n";
+            infotip = infotip.Replace(" ", "");
             txt = txt.Replace("[infotip]", infotip);
-            System.IO.File.WriteAllText(filename, txt);
+            if (System.IO.File.Exists(filename)){
+                System.IO.FileInfo fi = new System.IO.FileInfo(filename);
+                fi.Attributes &= ~System.IO.FileAttributes.System;
+                fi.Attributes &= ~System.IO.FileAttributes.Hidden;
+
+                //System.IO.File.Delete(filename);
+            }
+                System.IO.File.WriteAllText(filename, txt,System.Text.Encoding.Default);
+                AddAttributes(path,filename);
         }
+        private static void AddAttributes(string path, string filename)
+        {
+            System.IO.DirectoryInfo d = new System.IO.DirectoryInfo(path);
+            d.Attributes |= System.IO.FileAttributes.System ;
+            System.IO.FileInfo fi = new System.IO.FileInfo(filename);
+            fi.Attributes = System.IO.FileAttributes.System | System.IO.FileAttributes.Hidden | fi.Attributes;
+        }
+         
     }
     public class globalsave
     {

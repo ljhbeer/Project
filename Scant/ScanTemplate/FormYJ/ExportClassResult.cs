@@ -264,10 +264,10 @@ namespace ScanTemplate.FormYJ
             {
                 MessageBox.Show("存在多个班级");
             }
-            tbl.DrawListInPaper(list).Save(FileName + ".jpg");
-            tbl.DrawListInPaper(list1).Save(FileName + "_1.jpg");
             File.WriteAllText(FileName + "_总分.大题分.txt",
                 string.Join("\r\n", list) +"\r\n\r\n"+ string.Join("\r\n", list1));
+            tbl.DrawListInPaper(list).Save(FileName + ".jpg");
+            tbl.DrawListInPaper(list1).Save(FileName + "_1.jpg");
         }
         private string ZifuRate(double rightrate, int len = 20)
         {

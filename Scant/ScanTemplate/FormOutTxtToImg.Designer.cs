@@ -31,11 +31,6 @@
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.label1 = new System.Windows.Forms.Label();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.button5 = new System.Windows.Forms.Button();
-            this.button4 = new System.Windows.Forms.Button();
-            this.buttonOutSit = new System.Windows.Forms.Button();
-            this.buttonOutNameList = new System.Windows.Forms.Button();
-            this.buttonTxtToImg = new System.Windows.Forms.Button();
             this.listBox2 = new System.Windows.Forms.ListBox();
             this.label2 = new System.Windows.Forms.Label();
             this.panel2 = new System.Windows.Forms.Panel();
@@ -45,6 +40,13 @@
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.checkBoxBlackFont = new System.Windows.Forms.CheckBox();
             this.flowLayoutPanel2 = new System.Windows.Forms.FlowLayoutPanel();
+            this.buttonTxtToImg = new System.Windows.Forms.Button();
+            this.buttonOutNameList = new System.Windows.Forms.Button();
+            this.buttonOutSit = new System.Windows.Forms.Button();
+            this.button4 = new System.Windows.Forms.Button();
+            this.button5 = new System.Windows.Forms.Button();
+            this.buttonTxtToImgWithTitle = new System.Windows.Forms.Button();
+            this.textBoxListTitle = new System.Windows.Forms.TextBox();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.panel2.SuspendLayout();
@@ -57,7 +59,7 @@
             this.tableLayoutPanel1.ColumnCount = 4;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 100F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 100F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 100F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 120F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel1.Controls.Add(this.label1, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.pictureBox1, 3, 1);
@@ -68,6 +70,7 @@
             this.tableLayoutPanel1.Controls.Add(this.textBox1, 2, 1);
             this.tableLayoutPanel1.Controls.Add(this.flowLayoutPanel1, 3, 0);
             this.tableLayoutPanel1.Controls.Add(this.flowLayoutPanel2, 3, 2);
+            this.tableLayoutPanel1.Controls.Add(this.textBoxListTitle, 0, 2);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -75,7 +78,7 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 26F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 94.66019F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 47F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(682, 493);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(780, 506);
             this.tableLayoutPanel1.TabIndex = 1;
             // 
             // label1
@@ -90,61 +93,12 @@
             // pictureBox1
             // 
             this.pictureBox1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pictureBox1.Location = new System.Drawing.Point(303, 29);
+            this.pictureBox1.Location = new System.Drawing.Point(323, 29);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(376, 414);
+            this.pictureBox1.Size = new System.Drawing.Size(454, 427);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox1.TabIndex = 4;
             this.pictureBox1.TabStop = false;
-            // 
-            // button5
-            // 
-            this.button5.Location = new System.Drawing.Point(217, 3);
-            this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(38, 38);
-            this.button5.TabIndex = 4;
-            this.button5.Text = "保存图片";
-            this.button5.UseVisualStyleBackColor = true;
-            this.button5.Click += new System.EventHandler(this.button5_Click);
-            // 
-            // button4
-            // 
-            this.button4.Location = new System.Drawing.Point(173, 3);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(38, 38);
-            this.button4.TabIndex = 3;
-            this.button4.Text = "button4";
-            this.button4.UseVisualStyleBackColor = true;
-            // 
-            // buttonOutSit
-            // 
-            this.buttonOutSit.Location = new System.Drawing.Point(123, 3);
-            this.buttonOutSit.Name = "buttonOutSit";
-            this.buttonOutSit.Size = new System.Drawing.Size(44, 38);
-            this.buttonOutSit.TabIndex = 2;
-            this.buttonOutSit.Text = "输出座次";
-            this.buttonOutSit.UseVisualStyleBackColor = true;
-            this.buttonOutSit.Click += new System.EventHandler(this.buttonOutSit_Click);
-            // 
-            // buttonOutNameList
-            // 
-            this.buttonOutNameList.Location = new System.Drawing.Point(73, 3);
-            this.buttonOutNameList.Name = "buttonOutNameList";
-            this.buttonOutNameList.Size = new System.Drawing.Size(44, 38);
-            this.buttonOutNameList.TabIndex = 1;
-            this.buttonOutNameList.Text = "输出名单";
-            this.buttonOutNameList.UseVisualStyleBackColor = true;
-            this.buttonOutNameList.Click += new System.EventHandler(this.buttonOutNameList_Click);
-            // 
-            // buttonTxtToImg
-            // 
-            this.buttonTxtToImg.Location = new System.Drawing.Point(3, 3);
-            this.buttonTxtToImg.Name = "buttonTxtToImg";
-            this.buttonTxtToImg.Size = new System.Drawing.Size(64, 38);
-            this.buttonTxtToImg.TabIndex = 0;
-            this.buttonTxtToImg.Text = "输出列表到图片";
-            this.buttonTxtToImg.UseVisualStyleBackColor = true;
-            this.buttonTxtToImg.Click += new System.EventHandler(this.buttonTxtToImg_Click);
             // 
             // listBox2
             // 
@@ -153,7 +107,7 @@
             this.listBox2.ItemHeight = 12;
             this.listBox2.Location = new System.Drawing.Point(103, 29);
             this.listBox2.Name = "listBox2";
-            this.listBox2.Size = new System.Drawing.Size(94, 414);
+            this.listBox2.Size = new System.Drawing.Size(94, 427);
             this.listBox2.TabIndex = 2;
             // 
             // label2
@@ -171,7 +125,7 @@
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel2.Location = new System.Drawing.Point(3, 29);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(94, 414);
+            this.panel2.Size = new System.Drawing.Size(94, 427);
             this.panel2.TabIndex = 6;
             // 
             // listBoxScantData
@@ -199,16 +153,16 @@
             this.textBox1.Location = new System.Drawing.Point(203, 29);
             this.textBox1.Multiline = true;
             this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(94, 414);
+            this.textBox1.Size = new System.Drawing.Size(114, 427);
             this.textBox1.TabIndex = 7;
             // 
             // flowLayoutPanel1
             // 
             this.flowLayoutPanel1.Controls.Add(this.checkBoxBlackFont);
             this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.flowLayoutPanel1.Location = new System.Drawing.Point(303, 3);
+            this.flowLayoutPanel1.Location = new System.Drawing.Point(323, 3);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(376, 20);
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(454, 20);
             this.flowLayoutPanel1.TabIndex = 8;
             // 
             // checkBoxBlackFont
@@ -228,17 +182,87 @@
             this.flowLayoutPanel2.Controls.Add(this.buttonOutSit);
             this.flowLayoutPanel2.Controls.Add(this.button4);
             this.flowLayoutPanel2.Controls.Add(this.button5);
+            this.flowLayoutPanel2.Controls.Add(this.buttonTxtToImgWithTitle);
             this.flowLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.flowLayoutPanel2.Location = new System.Drawing.Point(303, 449);
+            this.flowLayoutPanel2.Location = new System.Drawing.Point(323, 462);
             this.flowLayoutPanel2.Name = "flowLayoutPanel2";
-            this.flowLayoutPanel2.Size = new System.Drawing.Size(376, 41);
+            this.flowLayoutPanel2.Size = new System.Drawing.Size(454, 41);
             this.flowLayoutPanel2.TabIndex = 9;
+            // 
+            // buttonTxtToImg
+            // 
+            this.buttonTxtToImg.Location = new System.Drawing.Point(3, 3);
+            this.buttonTxtToImg.Name = "buttonTxtToImg";
+            this.buttonTxtToImg.Size = new System.Drawing.Size(64, 38);
+            this.buttonTxtToImg.TabIndex = 0;
+            this.buttonTxtToImg.Text = "输出列表到图片";
+            this.buttonTxtToImg.UseVisualStyleBackColor = true;
+            this.buttonTxtToImg.Click += new System.EventHandler(this.buttonTxtToImg_Click);
+            // 
+            // buttonOutNameList
+            // 
+            this.buttonOutNameList.Location = new System.Drawing.Point(73, 3);
+            this.buttonOutNameList.Name = "buttonOutNameList";
+            this.buttonOutNameList.Size = new System.Drawing.Size(44, 38);
+            this.buttonOutNameList.TabIndex = 1;
+            this.buttonOutNameList.Text = "输出名单";
+            this.buttonOutNameList.UseVisualStyleBackColor = true;
+            this.buttonOutNameList.Click += new System.EventHandler(this.buttonOutNameList_Click);
+            // 
+            // buttonOutSit
+            // 
+            this.buttonOutSit.Location = new System.Drawing.Point(123, 3);
+            this.buttonOutSit.Name = "buttonOutSit";
+            this.buttonOutSit.Size = new System.Drawing.Size(44, 38);
+            this.buttonOutSit.TabIndex = 2;
+            this.buttonOutSit.Text = "输出座次";
+            this.buttonOutSit.UseVisualStyleBackColor = true;
+            this.buttonOutSit.Click += new System.EventHandler(this.buttonOutSit_Click);
+            // 
+            // button4
+            // 
+            this.button4.Location = new System.Drawing.Point(173, 3);
+            this.button4.Name = "button4";
+            this.button4.Size = new System.Drawing.Size(38, 38);
+            this.button4.TabIndex = 3;
+            this.button4.Text = "button4";
+            this.button4.UseVisualStyleBackColor = true;
+            // 
+            // button5
+            // 
+            this.button5.Location = new System.Drawing.Point(217, 3);
+            this.button5.Name = "button5";
+            this.button5.Size = new System.Drawing.Size(38, 38);
+            this.button5.TabIndex = 4;
+            this.button5.Text = "保存图片";
+            this.button5.UseVisualStyleBackColor = true;
+            this.button5.Click += new System.EventHandler(this.button5_Click);
+            // 
+            // buttonTxtToImgWithTitle
+            // 
+            this.buttonTxtToImgWithTitle.Location = new System.Drawing.Point(261, 3);
+            this.buttonTxtToImgWithTitle.Name = "buttonTxtToImgWithTitle";
+            this.buttonTxtToImgWithTitle.Size = new System.Drawing.Size(89, 38);
+            this.buttonTxtToImgWithTitle.TabIndex = 5;
+            this.buttonTxtToImgWithTitle.Text = "输出带标题的列表到图片";
+            this.buttonTxtToImgWithTitle.UseVisualStyleBackColor = true;
+            this.buttonTxtToImgWithTitle.Click += new System.EventHandler(this.buttonTxtToImgWithTitle_Click);
+            // 
+            // textBoxListTitle
+            // 
+            this.tableLayoutPanel1.SetColumnSpan(this.textBoxListTitle, 3);
+            this.textBoxListTitle.Location = new System.Drawing.Point(3, 462);
+            this.textBoxListTitle.Multiline = true;
+            this.textBoxListTitle.Name = "textBoxListTitle";
+            this.textBoxListTitle.Size = new System.Drawing.Size(314, 41);
+            this.textBoxListTitle.TabIndex = 10;
+            this.textBoxListTitle.Text = "输入列表标题";
             // 
             // FormOutTxtToImg
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(682, 493);
+            this.ClientSize = new System.Drawing.Size(780, 506);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Name = "FormOutTxtToImg";
             this.Text = "FormOutTxtToImg";
@@ -273,5 +297,7 @@
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
         private System.Windows.Forms.CheckBox checkBoxBlackFont;
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel2;
+        private System.Windows.Forms.Button buttonTxtToImgWithTitle;
+        private System.Windows.Forms.TextBox textBoxListTitle;
     }
 }

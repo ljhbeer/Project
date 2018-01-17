@@ -47,6 +47,43 @@ namespace Tools
             }
             return Src;
         }
+        public Bitmap DrawListInPaper(string title, List<string> list, bool blackfont= false)
+        {
+            StringFormat sf = new StringFormat();
+            sf.Alignment = StringAlignment.Center; //居中
+            //格式.Alignment = StringAlignment.Far; //右对齐
+            //string 文本 = "";
+            //Rectangle 矩形 = new Rectangle(0, 0, 200, 200);
+            //Font 字体 = new Font("宋体", 10.5F);
+            //Brush 画笔 = Brushes.Blue;
+            //画家.DrawString(文本, 字体, 画笔, 矩形, 格式);
+            _contentTitle = _content;
+            _contentTitle.Height = 40;
+            _content.Y += 40;
+            Bitmap Src = DrawListInPaper(list, blackfont);
+            using (Graphics g = Graphics.FromImage(Src))
+            {
+                int fontsize = ComputFontSize(title, _contentTitle, g);
+                Font font = new Font(SystemFonts.DefaultFont.SystemFontName, fontsize, FontStyle.Bold);
+                Brush br = Brushes.Red;
+                if (blackfont)
+                    br = Brushes.Black;
+                g.DrawString(title, font, br,_contentTitle,sf );
+            }
+            _content.Y -= 40;
+            return Src;
+        }
+
+        private int ComputFontSize(string title, Rectangle _contentTitle, Graphics g)
+        {
+            Font font1 = new Font(SystemFonts.DefaultFont.SystemFontName, 25, FontStyle.Bold);
+            SizeF sizetxtitem = g.MeasureString(title, font1);
+            SizeF Sitem = new SizeF(_contentTitle.Size);
+            double rat = Sitem.Width / sizetxtitem.Width < Sitem.Height / sizetxtitem.Height ? Sitem.Width / sizetxtitem.Width : Sitem.Height / sizetxtitem.Height;
+
+            int fontsize = (int)(25 * rat);
+            return fontsize;
+        }
 
         private int ComputFontSize(int Count,string itemtxt, Graphics g)
         {
@@ -96,6 +133,11 @@ namespace Tools
             W = W > 0 ? W : 1;
             while (W * H < Count)
                 H++;
+            if (W - 1 > 0 && (W - 1) * H > Count)
+                W -= 1;
+            while (W * H > Count)
+                H--;
+            H += 1;
             return new Size(W, H);
         }
         private SizeF GetItemSize(Size sizepaper, Size sizecount)
@@ -121,9 +163,12 @@ namespace Tools
             }
             return list;
         }
+        
         private Bitmap _Src;
         private Rectangle _content;
         private Rectangle _paper;
         private bool _ok;
+        private Rectangle _contentTitle;
+
     }
 }

@@ -42,7 +42,19 @@ namespace ScanTemplate
             List<string> list = textBox1.Text.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries).ToList();
             pictureBox1.Image = _tbl.DrawListInPaper(list, checkBoxBlackFont.Checked);
         }
-
+        private void buttonTxtToImgWithTitle_Click(object sender, EventArgs e)
+        {
+            List<string> list = textBox1.Text.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries).ToList();
+            string title = textBoxListTitle.Text;
+            if (title != "")
+            {
+                pictureBox1.Image = _tbl.DrawListInPaper(title,list, checkBoxBlackFont.Checked);                
+            }
+            else
+            {
+                MessageBox.Show("标题为空");
+            }
+        }
         private void buttonOutNameList_Click(object sender, EventArgs e)
         {
             List<int> cls = _sc.Studentbases.Studentbase.Select(r => r.Classid).Distinct().ToList();
@@ -56,7 +68,6 @@ namespace ScanTemplate
                 pictureBox1.Image = _tbl.DrawListInPaper(list, checkBoxBlackFont.Checked);
             }
         }
-
         private void FormOutTxtToImg_Load(object sender, EventArgs e)
         {
             if (_sc != null)
@@ -111,10 +122,7 @@ namespace ScanTemplate
             {
                 MessageBox.Show("没有发现扫描数据");
             }
-        }
-
-        
-
+        }        
         private void buttonOutSit_Click(object sender, EventArgs e)
         {
             if (listBoxScantData.SelectedIndex == -1) return;
@@ -155,9 +163,9 @@ namespace ScanTemplate
                 if (s.RowIndex >= 0 && s.ColIndex >= 0 && s.RowIndex < RowMax && s.ColIndex < ColMax)
                 {
                     if( ll[s.ColIndex][s.RowIndex] == "")
-                        ll[s.ColIndex][s.RowIndex] = s.Name;
+                        ll[s.ColIndex][s.RowIndex] = s.Name+s.ColIndex+s.RowIndex;
                     else
-                        ll[s.ColIndex][s.RowIndex] += s.Name;
+                        ll[s.ColIndex][s.RowIndex] += s.Name+s.ColIndex+s.RowIndex;
                 }
                 else
                 {
@@ -166,9 +174,7 @@ namespace ScanTemplate
             }
             return ll;
         }
-
         public List<ScanDataStudent> Students { get; set; }
-
         public List<string> ErrSeat { get; set; }
     }
     public class ScanDataStudent

@@ -35,17 +35,8 @@
             this.panel1 = new System.Windows.Forms.Panel();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.buttonPredealImage = new System.Windows.Forms.Button();
             this.label3 = new System.Windows.Forms.Label();
-            this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
-            this.buttonApplyCutToAllImage = new System.Windows.Forms.Button();
-            this.buttonApplyAll = new System.Windows.Forms.Button();
-            this.buttonSaveActiveImage = new System.Windows.Forms.Button();
-            this.buttonOutRectWhite = new System.Windows.Forms.Button();
-            this.buttonCutbySelection = new System.Windows.Forms.Button();
-            this.buttonSelectionBlack = new System.Windows.Forms.Button();
-            this.textBoxAngle = new System.Windows.Forms.TextBox();
-            this.buttonAngle = new System.Windows.Forms.Button();
-            this.buttonTo2bpp = new System.Windows.Forms.Button();
             this.ll = new System.Windows.Forms.Label();
             this.textBoxfilenamereplacedst = new System.Windows.Forms.TextBox();
             this.textBoxfilenamereplacesrc = new System.Windows.Forms.TextBox();
@@ -55,17 +46,11 @@
             this.listBoxUnScanDir = new System.Windows.Forms.ListBox();
             this.label2 = new System.Windows.Forms.Label();
             this.listBoxScantData = new System.Windows.Forms.ListBox();
-            this.buttonSetSeletion = new System.Windows.Forms.Button();
-            this.textBoxOut = new System.Windows.Forms.TextBox();
-            this.flowLayoutPanel3 = new System.Windows.Forms.FlowLayoutPanel();
-            this.button1 = new System.Windows.Forms.Button();
             this.tableLayoutPanel1.SuspendLayout();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.panel2.SuspendLayout();
-            this.flowLayoutPanel1.SuspendLayout();
             this.flowLayoutPanel2.SuspendLayout();
-            this.flowLayoutPanel3.SuspendLayout();
             this.SuspendLayout();
             // 
             // tableLayoutPanel1
@@ -82,13 +67,11 @@
             this.tableLayoutPanel1.Controls.Add(this.panel1, 3, 1);
             this.tableLayoutPanel1.Controls.Add(this.panel2, 4, 1);
             this.tableLayoutPanel1.Controls.Add(this.flowLayoutPanel2, 0, 1);
-            this.tableLayoutPanel1.Controls.Add(this.textBoxOut, 1, 0);
-            this.tableLayoutPanel1.Controls.Add(this.flowLayoutPanel3, 3, 0);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 2;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 43F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 16F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 80F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.Size = new System.Drawing.Size(834, 433);
@@ -108,9 +91,9 @@
             this.listBoxfilename.Dock = System.Windows.Forms.DockStyle.Fill;
             this.listBoxfilename.FormattingEnabled = true;
             this.listBoxfilename.ItemHeight = 12;
-            this.listBoxfilename.Location = new System.Drawing.Point(103, 46);
+            this.listBoxfilename.Location = new System.Drawing.Point(103, 19);
             this.listBoxfilename.Name = "listBoxfilename";
-            this.listBoxfilename.Size = new System.Drawing.Size(144, 384);
+            this.listBoxfilename.Size = new System.Drawing.Size(144, 411);
             this.listBoxfilename.TabIndex = 6;
             this.listBoxfilename.SelectedIndexChanged += new System.EventHandler(this.listBoxfilename_SelectedIndexChanged);
             // 
@@ -119,9 +102,9 @@
             this.listBoxNewfilename.Dock = System.Windows.Forms.DockStyle.Fill;
             this.listBoxNewfilename.FormattingEnabled = true;
             this.listBoxNewfilename.ItemHeight = 12;
-            this.listBoxNewfilename.Location = new System.Drawing.Point(253, 46);
+            this.listBoxNewfilename.Location = new System.Drawing.Point(253, 19);
             this.listBoxNewfilename.Name = "listBoxNewfilename";
-            this.listBoxNewfilename.Size = new System.Drawing.Size(144, 384);
+            this.listBoxNewfilename.Size = new System.Drawing.Size(144, 411);
             this.listBoxNewfilename.TabIndex = 7;
             // 
             // panel1
@@ -129,9 +112,9 @@
             this.panel1.AutoScroll = true;
             this.panel1.Controls.Add(this.pictureBox1);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel1.Location = new System.Drawing.Point(403, 46);
+            this.panel1.Location = new System.Drawing.Point(403, 19);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(330, 384);
+            this.panel1.Size = new System.Drawing.Size(330, 411);
             this.panel1.TabIndex = 9;
             // 
             // pictureBox1
@@ -139,29 +122,36 @@
             this.pictureBox1.AccessibleRole = System.Windows.Forms.AccessibleRole.ScrollBar;
             this.pictureBox1.Location = new System.Drawing.Point(0, 6);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(310, 381);
+            this.pictureBox1.Size = new System.Drawing.Size(310, 395);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox1.TabIndex = 4;
             this.pictureBox1.TabStop = false;
-            this.pictureBox1.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBox1_Paint);
             this.pictureBox1.MouseEnter += new System.EventHandler(this.pictureBox1_MouseEnter);
-            this.pictureBox1.MouseUp += new System.Windows.Forms.MouseEventHandler(this.pictureBox1_MouseUp);
             this.pictureBox1.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.pictureBox1_MouseWheel);
             // 
             // panel2
             // 
+            this.panel2.Controls.Add(this.buttonPredealImage);
             this.panel2.Controls.Add(this.label3);
-            this.panel2.Controls.Add(this.flowLayoutPanel1);
             this.panel2.Controls.Add(this.ll);
             this.panel2.Controls.Add(this.textBoxfilenamereplacedst);
             this.panel2.Controls.Add(this.textBoxfilenamereplacesrc);
             this.panel2.Controls.Add(this.buttonReName);
             this.panel2.Controls.Add(this.buttonModifyNewFilename);
-            this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel2.Location = new System.Drawing.Point(739, 46);
+            this.panel2.Location = new System.Drawing.Point(739, 19);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(92, 384);
+            this.panel2.Size = new System.Drawing.Size(92, 411);
             this.panel2.TabIndex = 8;
+            // 
+            // buttonPredealImage
+            // 
+            this.buttonPredealImage.Location = new System.Drawing.Point(0, 130);
+            this.buttonPredealImage.Name = "buttonPredealImage";
+            this.buttonPredealImage.Size = new System.Drawing.Size(85, 26);
+            this.buttonPredealImage.TabIndex = 2;
+            this.buttonPredealImage.Text = "处理图片";
+            this.buttonPredealImage.UseVisualStyleBackColor = true;
+            this.buttonPredealImage.Click += new System.EventHandler(this.buttonPredealImage_Click);
             // 
             // label3
             // 
@@ -171,110 +161,6 @@
             this.label3.Size = new System.Drawing.Size(17, 12);
             this.label3.TabIndex = 1;
             this.label3.Text = "->";
-            // 
-            // flowLayoutPanel1
-            // 
-            this.flowLayoutPanel1.Controls.Add(this.buttonApplyCutToAllImage);
-            this.flowLayoutPanel1.Controls.Add(this.buttonApplyAll);
-            this.flowLayoutPanel1.Controls.Add(this.buttonSaveActiveImage);
-            this.flowLayoutPanel1.Controls.Add(this.buttonOutRectWhite);
-            this.flowLayoutPanel1.Controls.Add(this.buttonCutbySelection);
-            this.flowLayoutPanel1.Controls.Add(this.buttonSelectionBlack);
-            this.flowLayoutPanel1.Controls.Add(this.textBoxAngle);
-            this.flowLayoutPanel1.Controls.Add(this.buttonAngle);
-            this.flowLayoutPanel1.Controls.Add(this.buttonTo2bpp);
-            this.flowLayoutPanel1.Location = new System.Drawing.Point(3, 130);
-            this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(89, 260);
-            this.flowLayoutPanel1.TabIndex = 10;
-            // 
-            // buttonApplyCutToAllImage
-            // 
-            this.buttonApplyCutToAllImage.Location = new System.Drawing.Point(3, 3);
-            this.buttonApplyCutToAllImage.Name = "buttonApplyCutToAllImage";
-            this.buttonApplyCutToAllImage.Size = new System.Drawing.Size(92, 27);
-            this.buttonApplyCutToAllImage.TabIndex = 4;
-            this.buttonApplyCutToAllImage.Text = "应用剪切到所有图片";
-            this.buttonApplyCutToAllImage.UseVisualStyleBackColor = true;
-            this.buttonApplyCutToAllImage.Click += new System.EventHandler(this.buttonApplyCutToAllImage_Click);
-            // 
-            // buttonApplyAll
-            // 
-            this.buttonApplyAll.Location = new System.Drawing.Point(3, 36);
-            this.buttonApplyAll.Name = "buttonApplyAll";
-            this.buttonApplyAll.Size = new System.Drawing.Size(89, 23);
-            this.buttonApplyAll.TabIndex = 2;
-            this.buttonApplyAll.Text = "应用白色到所有图片";
-            this.buttonApplyAll.UseVisualStyleBackColor = true;
-            this.buttonApplyAll.Click += new System.EventHandler(this.buttonApplyAll_Click);
-            // 
-            // buttonSaveActiveImage
-            // 
-            this.buttonSaveActiveImage.Location = new System.Drawing.Point(3, 65);
-            this.buttonSaveActiveImage.Name = "buttonSaveActiveImage";
-            this.buttonSaveActiveImage.Size = new System.Drawing.Size(89, 21);
-            this.buttonSaveActiveImage.TabIndex = 2;
-            this.buttonSaveActiveImage.Text = "保存当前图片";
-            this.buttonSaveActiveImage.UseVisualStyleBackColor = true;
-            this.buttonSaveActiveImage.Click += new System.EventHandler(this.buttonSaveActiveImage_Click);
-            // 
-            // buttonOutRectWhite
-            // 
-            this.buttonOutRectWhite.Location = new System.Drawing.Point(3, 92);
-            this.buttonOutRectWhite.Name = "buttonOutRectWhite";
-            this.buttonOutRectWhite.Size = new System.Drawing.Size(89, 21);
-            this.buttonOutRectWhite.TabIndex = 1;
-            this.buttonOutRectWhite.Text = "选区外侧白色";
-            this.buttonOutRectWhite.UseVisualStyleBackColor = true;
-            this.buttonOutRectWhite.Click += new System.EventHandler(this.buttonOutRectWhite_Click);
-            // 
-            // buttonCutbySelection
-            // 
-            this.buttonCutbySelection.Location = new System.Drawing.Point(3, 119);
-            this.buttonCutbySelection.Name = "buttonCutbySelection";
-            this.buttonCutbySelection.Size = new System.Drawing.Size(89, 21);
-            this.buttonCutbySelection.TabIndex = 3;
-            this.buttonCutbySelection.Text = "剪切选区";
-            this.buttonCutbySelection.UseVisualStyleBackColor = true;
-            this.buttonCutbySelection.Click += new System.EventHandler(this.buttonCutbySelection_Click);
-            // 
-            // buttonSelectionBlack
-            // 
-            this.buttonSelectionBlack.Location = new System.Drawing.Point(3, 146);
-            this.buttonSelectionBlack.Name = "buttonSelectionBlack";
-            this.buttonSelectionBlack.Size = new System.Drawing.Size(89, 21);
-            this.buttonSelectionBlack.TabIndex = 1;
-            this.buttonSelectionBlack.Text = "选区黑色";
-            this.buttonSelectionBlack.UseVisualStyleBackColor = true;
-            this.buttonSelectionBlack.Click += new System.EventHandler(this.buttonSelectionBlack_Click);
-            // 
-            // textBoxAngle
-            // 
-            this.textBoxAngle.Location = new System.Drawing.Point(3, 173);
-            this.textBoxAngle.Name = "textBoxAngle";
-            this.textBoxAngle.Size = new System.Drawing.Size(86, 21);
-            this.textBoxAngle.TabIndex = 6;
-            this.textBoxAngle.Text = "0";
-            // 
-            // buttonAngle
-            // 
-            this.buttonAngle.Location = new System.Drawing.Point(3, 200);
-            this.buttonAngle.Name = "buttonAngle";
-            this.buttonAngle.Size = new System.Drawing.Size(89, 21);
-            this.buttonAngle.TabIndex = 5;
-            this.buttonAngle.Text = "旋转";
-            this.buttonAngle.UseVisualStyleBackColor = true;
-            this.buttonAngle.Click += new System.EventHandler(this.buttonAngle_Click);
-            // 
-            // buttonTo2bpp
-            // 
-            this.buttonTo2bpp.Location = new System.Drawing.Point(3, 227);
-            this.buttonTo2bpp.Name = "buttonTo2bpp";
-            this.buttonTo2bpp.Size = new System.Drawing.Size(89, 21);
-            this.buttonTo2bpp.TabIndex = 5;
-            this.buttonTo2bpp.Text = "二值化";
-            this.buttonTo2bpp.UseVisualStyleBackColor = true;
-            this.buttonTo2bpp.Click += new System.EventHandler(this.buttonTo2bpp_Click);
             // 
             // ll
             // 
@@ -325,9 +211,9 @@
             this.flowLayoutPanel2.Controls.Add(this.label2);
             this.flowLayoutPanel2.Controls.Add(this.listBoxScantData);
             this.flowLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.flowLayoutPanel2.Location = new System.Drawing.Point(3, 46);
+            this.flowLayoutPanel2.Location = new System.Drawing.Point(3, 19);
             this.flowLayoutPanel2.Name = "flowLayoutPanel2";
-            this.flowLayoutPanel2.Size = new System.Drawing.Size(94, 384);
+            this.flowLayoutPanel2.Size = new System.Drawing.Size(94, 411);
             this.flowLayoutPanel2.TabIndex = 11;
             // 
             // listBoxUnScanDir
@@ -356,48 +242,9 @@
             this.listBoxScantData.ItemHeight = 12;
             this.listBoxScantData.Location = new System.Drawing.Point(3, 181);
             this.listBoxScantData.Name = "listBoxScantData";
-            this.listBoxScantData.Size = new System.Drawing.Size(91, 184);
+            this.listBoxScantData.Size = new System.Drawing.Size(91, 220);
             this.listBoxScantData.TabIndex = 2;
             this.listBoxScantData.SelectedIndexChanged += new System.EventHandler(this.listBoxScantData_SelectedIndexChanged);
-            // 
-            // buttonSetSeletion
-            // 
-            this.buttonSetSeletion.Location = new System.Drawing.Point(3, 3);
-            this.buttonSetSeletion.Name = "buttonSetSeletion";
-            this.buttonSetSeletion.Size = new System.Drawing.Size(43, 34);
-            this.buttonSetSeletion.TabIndex = 12;
-            this.buttonSetSeletion.Text = "设定选区";
-            this.buttonSetSeletion.UseVisualStyleBackColor = true;
-            this.buttonSetSeletion.Click += new System.EventHandler(this.buttonSetSeletion_Click);
-            // 
-            // textBoxOut
-            // 
-            this.tableLayoutPanel1.SetColumnSpan(this.textBoxOut, 2);
-            this.textBoxOut.Location = new System.Drawing.Point(103, 3);
-            this.textBoxOut.Multiline = true;
-            this.textBoxOut.Name = "textBoxOut";
-            this.textBoxOut.Size = new System.Drawing.Size(294, 37);
-            this.textBoxOut.TabIndex = 13;
-            // 
-            // flowLayoutPanel3
-            // 
-            this.flowLayoutPanel3.Controls.Add(this.buttonSetSeletion);
-            this.flowLayoutPanel3.Controls.Add(this.button1);
-            this.flowLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.flowLayoutPanel3.Location = new System.Drawing.Point(403, 3);
-            this.flowLayoutPanel3.Name = "flowLayoutPanel3";
-            this.flowLayoutPanel3.Size = new System.Drawing.Size(330, 37);
-            this.flowLayoutPanel3.TabIndex = 14;
-            // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(52, 3);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(43, 34);
-            this.button1.TabIndex = 13;
-            this.button1.Text = "自动检测";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // FormPreDeal
             // 
@@ -414,11 +261,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.panel2.ResumeLayout(false);
             this.panel2.PerformLayout();
-            this.flowLayoutPanel1.ResumeLayout(false);
-            this.flowLayoutPanel1.PerformLayout();
             this.flowLayoutPanel2.ResumeLayout(false);
             this.flowLayoutPanel2.PerformLayout();
-            this.flowLayoutPanel3.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -430,9 +274,6 @@
         private System.Windows.Forms.ListBox listBoxUnScanDir;
         private System.Windows.Forms.ListBox listBoxScantData;
         private System.Windows.Forms.PictureBox pictureBox1;
-        private System.Windows.Forms.Button buttonCutbySelection;
-        private System.Windows.Forms.Button buttonApplyAll;
-        private System.Windows.Forms.Button buttonOutRectWhite;
         private System.Windows.Forms.Button buttonModifyNewFilename;
         private System.Windows.Forms.ListBox listBoxfilename;
         private System.Windows.Forms.ListBox listBoxNewfilename;
@@ -443,17 +284,7 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TextBox textBoxfilenamereplacedst;
         private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.Button buttonSaveActiveImage;
-        private System.Windows.Forms.Button buttonApplyCutToAllImage;
-        private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel2;
-        private System.Windows.Forms.Button buttonSelectionBlack;
-        private System.Windows.Forms.TextBox textBoxAngle;
-        private System.Windows.Forms.Button buttonAngle;
-        private System.Windows.Forms.Button buttonTo2bpp;
-        private System.Windows.Forms.Button buttonSetSeletion;
-        private System.Windows.Forms.TextBox textBoxOut;
-        private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel3;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button buttonPredealImage;
     }
 }

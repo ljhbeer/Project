@@ -43,6 +43,9 @@
             this.buttonOutRectWhite = new System.Windows.Forms.Button();
             this.buttonCutbySelection = new System.Windows.Forms.Button();
             this.buttonSelectionBlack = new System.Windows.Forms.Button();
+            this.textBoxAngle = new System.Windows.Forms.TextBox();
+            this.buttonAngle = new System.Windows.Forms.Button();
+            this.buttonTo2bpp = new System.Windows.Forms.Button();
             this.ll = new System.Windows.Forms.Label();
             this.textBoxfilenamereplacedst = new System.Windows.Forms.TextBox();
             this.textBoxfilenamereplacesrc = new System.Windows.Forms.TextBox();
@@ -52,14 +55,17 @@
             this.listBoxUnScanDir = new System.Windows.Forms.ListBox();
             this.label2 = new System.Windows.Forms.Label();
             this.listBoxScantData = new System.Windows.Forms.ListBox();
-            this.buttonAngle = new System.Windows.Forms.Button();
-            this.textBoxAngle = new System.Windows.Forms.TextBox();
+            this.buttonSetSeletion = new System.Windows.Forms.Button();
+            this.textBoxOut = new System.Windows.Forms.TextBox();
+            this.flowLayoutPanel3 = new System.Windows.Forms.FlowLayoutPanel();
+            this.button1 = new System.Windows.Forms.Button();
             this.tableLayoutPanel1.SuspendLayout();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.panel2.SuspendLayout();
             this.flowLayoutPanel1.SuspendLayout();
             this.flowLayoutPanel2.SuspendLayout();
+            this.flowLayoutPanel3.SuspendLayout();
             this.SuspendLayout();
             // 
             // tableLayoutPanel1
@@ -76,14 +82,16 @@
             this.tableLayoutPanel1.Controls.Add(this.panel1, 3, 1);
             this.tableLayoutPanel1.Controls.Add(this.panel2, 4, 1);
             this.tableLayoutPanel1.Controls.Add(this.flowLayoutPanel2, 0, 1);
+            this.tableLayoutPanel1.Controls.Add(this.textBoxOut, 1, 0);
+            this.tableLayoutPanel1.Controls.Add(this.flowLayoutPanel3, 3, 0);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 2;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 43F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 80F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(813, 413);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(834, 433);
             this.tableLayoutPanel1.TabIndex = 0;
             // 
             // label1
@@ -100,9 +108,9 @@
             this.listBoxfilename.Dock = System.Windows.Forms.DockStyle.Fill;
             this.listBoxfilename.FormattingEnabled = true;
             this.listBoxfilename.ItemHeight = 12;
-            this.listBoxfilename.Location = new System.Drawing.Point(103, 23);
+            this.listBoxfilename.Location = new System.Drawing.Point(103, 46);
             this.listBoxfilename.Name = "listBoxfilename";
-            this.listBoxfilename.Size = new System.Drawing.Size(144, 387);
+            this.listBoxfilename.Size = new System.Drawing.Size(144, 384);
             this.listBoxfilename.TabIndex = 6;
             this.listBoxfilename.SelectedIndexChanged += new System.EventHandler(this.listBoxfilename_SelectedIndexChanged);
             // 
@@ -111,9 +119,9 @@
             this.listBoxNewfilename.Dock = System.Windows.Forms.DockStyle.Fill;
             this.listBoxNewfilename.FormattingEnabled = true;
             this.listBoxNewfilename.ItemHeight = 12;
-            this.listBoxNewfilename.Location = new System.Drawing.Point(253, 23);
+            this.listBoxNewfilename.Location = new System.Drawing.Point(253, 46);
             this.listBoxNewfilename.Name = "listBoxNewfilename";
-            this.listBoxNewfilename.Size = new System.Drawing.Size(144, 387);
+            this.listBoxNewfilename.Size = new System.Drawing.Size(144, 384);
             this.listBoxNewfilename.TabIndex = 7;
             // 
             // panel1
@@ -121,9 +129,9 @@
             this.panel1.AutoScroll = true;
             this.panel1.Controls.Add(this.pictureBox1);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel1.Location = new System.Drawing.Point(403, 23);
+            this.panel1.Location = new System.Drawing.Point(403, 46);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(309, 387);
+            this.panel1.Size = new System.Drawing.Size(330, 384);
             this.panel1.TabIndex = 9;
             // 
             // pictureBox1
@@ -131,7 +139,7 @@
             this.pictureBox1.AccessibleRole = System.Windows.Forms.AccessibleRole.ScrollBar;
             this.pictureBox1.Location = new System.Drawing.Point(0, 6);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(303, 384);
+            this.pictureBox1.Size = new System.Drawing.Size(310, 381);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox1.TabIndex = 4;
             this.pictureBox1.TabStop = false;
@@ -150,9 +158,9 @@
             this.panel2.Controls.Add(this.buttonReName);
             this.panel2.Controls.Add(this.buttonModifyNewFilename);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel2.Location = new System.Drawing.Point(718, 23);
+            this.panel2.Location = new System.Drawing.Point(739, 46);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(92, 387);
+            this.panel2.Size = new System.Drawing.Size(92, 384);
             this.panel2.TabIndex = 8;
             // 
             // label3
@@ -174,6 +182,7 @@
             this.flowLayoutPanel1.Controls.Add(this.buttonSelectionBlack);
             this.flowLayoutPanel1.Controls.Add(this.textBoxAngle);
             this.flowLayoutPanel1.Controls.Add(this.buttonAngle);
+            this.flowLayoutPanel1.Controls.Add(this.buttonTo2bpp);
             this.flowLayoutPanel1.Location = new System.Drawing.Point(3, 130);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
             this.flowLayoutPanel1.Size = new System.Drawing.Size(89, 260);
@@ -239,6 +248,34 @@
             this.buttonSelectionBlack.UseVisualStyleBackColor = true;
             this.buttonSelectionBlack.Click += new System.EventHandler(this.buttonSelectionBlack_Click);
             // 
+            // textBoxAngle
+            // 
+            this.textBoxAngle.Location = new System.Drawing.Point(3, 173);
+            this.textBoxAngle.Name = "textBoxAngle";
+            this.textBoxAngle.Size = new System.Drawing.Size(86, 21);
+            this.textBoxAngle.TabIndex = 6;
+            this.textBoxAngle.Text = "0";
+            // 
+            // buttonAngle
+            // 
+            this.buttonAngle.Location = new System.Drawing.Point(3, 200);
+            this.buttonAngle.Name = "buttonAngle";
+            this.buttonAngle.Size = new System.Drawing.Size(89, 21);
+            this.buttonAngle.TabIndex = 5;
+            this.buttonAngle.Text = "旋转";
+            this.buttonAngle.UseVisualStyleBackColor = true;
+            this.buttonAngle.Click += new System.EventHandler(this.buttonAngle_Click);
+            // 
+            // buttonTo2bpp
+            // 
+            this.buttonTo2bpp.Location = new System.Drawing.Point(3, 227);
+            this.buttonTo2bpp.Name = "buttonTo2bpp";
+            this.buttonTo2bpp.Size = new System.Drawing.Size(89, 21);
+            this.buttonTo2bpp.TabIndex = 5;
+            this.buttonTo2bpp.Text = "二值化";
+            this.buttonTo2bpp.UseVisualStyleBackColor = true;
+            this.buttonTo2bpp.Click += new System.EventHandler(this.buttonTo2bpp_Click);
+            // 
             // ll
             // 
             this.ll.AutoSize = true;
@@ -288,9 +325,9 @@
             this.flowLayoutPanel2.Controls.Add(this.label2);
             this.flowLayoutPanel2.Controls.Add(this.listBoxScantData);
             this.flowLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.flowLayoutPanel2.Location = new System.Drawing.Point(3, 23);
+            this.flowLayoutPanel2.Location = new System.Drawing.Point(3, 46);
             this.flowLayoutPanel2.Name = "flowLayoutPanel2";
-            this.flowLayoutPanel2.Size = new System.Drawing.Size(94, 387);
+            this.flowLayoutPanel2.Size = new System.Drawing.Size(94, 384);
             this.flowLayoutPanel2.TabIndex = 11;
             // 
             // listBoxUnScanDir
@@ -323,29 +360,50 @@
             this.listBoxScantData.TabIndex = 2;
             this.listBoxScantData.SelectedIndexChanged += new System.EventHandler(this.listBoxScantData_SelectedIndexChanged);
             // 
-            // buttonAngle
+            // buttonSetSeletion
             // 
-            this.buttonAngle.Location = new System.Drawing.Point(3, 200);
-            this.buttonAngle.Name = "buttonAngle";
-            this.buttonAngle.Size = new System.Drawing.Size(89, 21);
-            this.buttonAngle.TabIndex = 5;
-            this.buttonAngle.Text = "旋转";
-            this.buttonAngle.UseVisualStyleBackColor = true;
-            this.buttonAngle.Click += new System.EventHandler(this.buttonAngle_Click);
+            this.buttonSetSeletion.Location = new System.Drawing.Point(3, 3);
+            this.buttonSetSeletion.Name = "buttonSetSeletion";
+            this.buttonSetSeletion.Size = new System.Drawing.Size(43, 34);
+            this.buttonSetSeletion.TabIndex = 12;
+            this.buttonSetSeletion.Text = "设定选区";
+            this.buttonSetSeletion.UseVisualStyleBackColor = true;
+            this.buttonSetSeletion.Click += new System.EventHandler(this.buttonSetSeletion_Click);
             // 
-            // textBoxAngle
+            // textBoxOut
             // 
-            this.textBoxAngle.Location = new System.Drawing.Point(3, 173);
-            this.textBoxAngle.Name = "textBoxAngle";
-            this.textBoxAngle.Size = new System.Drawing.Size(86, 21);
-            this.textBoxAngle.TabIndex = 6;
-            this.textBoxAngle.Text = "0";
+            this.tableLayoutPanel1.SetColumnSpan(this.textBoxOut, 2);
+            this.textBoxOut.Location = new System.Drawing.Point(103, 3);
+            this.textBoxOut.Multiline = true;
+            this.textBoxOut.Name = "textBoxOut";
+            this.textBoxOut.Size = new System.Drawing.Size(294, 37);
+            this.textBoxOut.TabIndex = 13;
+            // 
+            // flowLayoutPanel3
+            // 
+            this.flowLayoutPanel3.Controls.Add(this.buttonSetSeletion);
+            this.flowLayoutPanel3.Controls.Add(this.button1);
+            this.flowLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.flowLayoutPanel3.Location = new System.Drawing.Point(403, 3);
+            this.flowLayoutPanel3.Name = "flowLayoutPanel3";
+            this.flowLayoutPanel3.Size = new System.Drawing.Size(330, 37);
+            this.flowLayoutPanel3.TabIndex = 14;
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(52, 3);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(43, 34);
+            this.button1.TabIndex = 13;
+            this.button1.Text = "自动检测";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // FormPreDeal
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(813, 413);
+            this.ClientSize = new System.Drawing.Size(834, 433);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Name = "FormPreDeal";
             this.Text = "FormPreDeal";
@@ -360,6 +418,7 @@
             this.flowLayoutPanel1.PerformLayout();
             this.flowLayoutPanel2.ResumeLayout(false);
             this.flowLayoutPanel2.PerformLayout();
+            this.flowLayoutPanel3.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -391,5 +450,10 @@
         private System.Windows.Forms.Button buttonSelectionBlack;
         private System.Windows.Forms.TextBox textBoxAngle;
         private System.Windows.Forms.Button buttonAngle;
+        private System.Windows.Forms.Button buttonTo2bpp;
+        private System.Windows.Forms.Button buttonSetSeletion;
+        private System.Windows.Forms.TextBox textBoxOut;
+        private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel3;
+        private System.Windows.Forms.Button button1;
     }
 }

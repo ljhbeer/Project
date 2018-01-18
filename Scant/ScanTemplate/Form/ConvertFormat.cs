@@ -12,7 +12,7 @@ using System.Runtime.InteropServices;
 
 namespace ARTemplate
 {
-    class ConvertFormat
+    public class ConvertFormat
     { 
        ///    
        /// 转换图片为彩色转换索引色成可以绘制的图形   
@@ -33,7 +33,7 @@ namespace ARTemplate
        /// 格式 之支持 Format4bppIndexed  Format1bppIndexed Format8bppIndexed   
        /// 原始图形   
        /// 图形   
-       public static Bitmap Convert(Bitmap p_SourceImage, PixelFormat p_PixelFormat, bool p_Dithering)   
+       public static Bitmap Convert(Bitmap p_SourceImage, PixelFormat p_PixelFormat, bool p_Dithering)   //backgroud.white
        {   
            int _Width = p_SourceImage.Width;   
            int _Height = p_SourceImage.Height;   
@@ -61,17 +61,19 @@ namespace ARTemplate
                    _Palette = SetColorPalette.CreatePalette(p_SourceImage, 256, 8);   
                    _NewBitmap.Palette = _Palette;   
                    break;   
-           }   
-  
+           }
+
            //重新获取一个原始图形 色彩设置为24色 R G B   
-           Bitmap _Source = new Bitmap(_Width, _Height, PixelFormat.Format24bppRgb);   
+           //Bitmap _Source = new Bitmap(_Width, _Height, PixelFormat.Format24bppRgb);
+           //重新获取一个原始图形 色彩设置为24色 R G B   
+           Bitmap _Source = new Bitmap(_Width, _Height, PixelFormat.Format32bppRgb);
            Graphics _Graphics = Graphics.FromImage(_Source);   
            _Graphics.DrawImage(p_SourceImage, 0, 0, _Width, _Height);   
            _Graphics.Dispose();   
   
   
            //获取两个图形的数据   
-           BitmapData _SourceData = _Source.LockBits(new Rectangle(0, 0, _Width, _Height), ImageLockMode.ReadWrite, PixelFormat.Format24bppRgb);   
+           BitmapData _SourceData = _Source.LockBits(new Rectangle(0, 0, _Width, _Height), ImageLockMode.ReadWrite, PixelFormat.Format32bppRgb);   
            BitmapData _NewData = _NewBitmap.LockBits(new Rectangle(0, 0, _Width, _Height), ImageLockMode.WriteOnly, _SetPixFormat);   
   
            //复制出图形数据的   
@@ -95,8 +97,9 @@ namespace ARTemplate
                {   
                    #region 获取色彩索引   
                    //获取原始图形色彩   
-                    _SetColor = Color.FromArgb(0, _SourceByte[_SourceIndex + 2], _SourceByte[_SourceIndex + 1], _SourceByte[_SourceIndex]);   
-                    _SourceIndex += 3;   
+                   _SetColor = Color.FromArgb(_SourceByte[_SourceIndex + 3], _SourceByte[_SourceIndex + 2], _SourceByte[_SourceIndex + 1], _SourceByte[_SourceIndex]);
+                   //_SourceIndex += 3;   
+                   _SourceIndex += 4;   
    
                     byte _TableIndex = 0;   
                     if (!(_ColorTable.TryGetValue(_SetColor.ToArgb(), out _TableIndex)))   
@@ -203,7 +206,11 @@ namespace ARTemplate
         private static int ConvertTobppFindNearestColor(Color p_SetColor, Color[] p_PaletteEntries)   
         {   
             int _MinDistanceSquared = 195076; // 255 * 255 + 255 * 255 + 255 * 255 + 1    
-            int _BestIndex = 0;   
+            int _BestIndex = 0;
+            if ( p_SetColor.A == 0)
+            {
+                return p_PaletteEntries.Length - 1;
+            }
    
             for (int i = 0; i < p_PaletteEntries.Length; i++)   
             {   
@@ -427,4 +434,4 @@ namespace ARTemplate
    
          
     }   
-}   
+}

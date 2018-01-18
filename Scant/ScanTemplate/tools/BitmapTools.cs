@@ -628,11 +628,11 @@ namespace Tools
         /// <param name="b">位图流</param>
         /// <param name="angle">旋转角度[0,360](前台给的)</param>
         /// <returns></returns>
-        public static Bitmap Rotate(Bitmap b, int angle)
+        public static Bitmap Rotate(Bitmap b, float angle)
         {
             angle = angle % 360;
             //弧度转换
-            double radian = angle * Math.PI / 180.0;
+            double radian = angle *Math.PI / 180.0;
             double cos = Math.Cos(radian);
             double sin = Math.Sin(radian);
             //原图的宽和高
@@ -640,6 +640,15 @@ namespace Tools
             int h = b.Height;
             int W = (int)(Math.Max(Math.Abs(w * cos - h * sin), Math.Abs(w * cos + h * sin)));
             int H = (int)(Math.Max(Math.Abs(w * sin - h * cos), Math.Abs(w * sin + h * cos)));
+           
+            //GraphicsPath path = new GraphicsPath();
+            //path.AddRectangle(new RectangleF(0f, 0f, w, h));
+
+            //Matrix mtrx = new Matrix();
+            //mtrx.Rotate(angle);
+            //RectangleF rct = path.GetBounds(mtrx);
+            //int W1 =(int) rct.Width;
+            //int H1 =(int) rct.Height;
             //目标位图
             Bitmap dsImage = new Bitmap(W, H);
             System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(dsImage);
@@ -669,7 +678,7 @@ namespace Tools
             Bitmap returnBitmap = new Bitmap(b.Width, b.Height);
             //make a graphics object from the empty bitmap
             Graphics g = Graphics.FromImage(returnBitmap);
-            g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
+            g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
             //move rotation point to center of image
             g.TranslateTransform((float)b.Width / 2, (float)b.Height / 2);
             //rotate
@@ -764,10 +773,11 @@ namespace Tools
 
             GraphicsPath path = new GraphicsPath();
             path.AddRectangle(new RectangleF(0f, 0f, w, h));
+
             Matrix mtrx = new Matrix();
             mtrx.Rotate(angle);
             RectangleF rct = path.GetBounds(mtrx);
-
+           
             Bitmap dst = new Bitmap((int)rct.Width, (int)rct.Height, pf);
             g = Graphics.FromImage(dst);
             g.Clear(bkColor);

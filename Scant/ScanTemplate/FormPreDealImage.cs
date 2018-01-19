@@ -12,6 +12,7 @@ using System.IO;
 using Tools;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
+using System.Threading;
 
 namespace ScanTemplate
 {
@@ -60,11 +61,26 @@ namespace ScanTemplate
                 MessageBox.Show("检测失败" + ee.Message);
             }
         }
-
+        public void ThreadShowMsg(string msg)
+        {
+            Msg = msg;
+            this.Invoke(new MyInvoke(ShowMsg));
+        }
+        public void ShowMsg()
+        {
+            textBoxOut.Text = Msg;
+            if (Msg.StartsWith("End"))
+                MessageBox.Show(Msg);
+        }
         private void buttonAutoRorate_Click(object sender, EventArgs e)
         {
-            AutoRorate ar = new AutoRorate(m_Imgselection, list, _ActivePath);
-            ar.RunRorate();
+            _autororate = new AutoRorate(m_Imgselection, list, _ActivePath);
+
+            _autororate.DgShowMsg = new DelegateShowScanMsg(ThreadShowMsg);
+            //_autororate.RunRorate();
+            _autororate.DoScan();
+            _bScan = false;
+           
         }
         private void buttonApplyAll_Click(object sender, EventArgs e)
         {
@@ -379,6 +395,9 @@ namespace ScanTemplate
         private FileStream _fs;
         private AutoAngle _angle;
         private List<Rectangle> _ListFeature;
+        private bool _bScan;
+        private AutoRorate _autororate;
+        private string Msg;
     }
     public class AutoRorate
     {
@@ -413,9 +432,12 @@ namespace ScanTemplate
                 _fs.Close();
                 _fs = null;
             }
+            int index = 0;
             if(Correct.Width>0)
             foreach (string s in list)
             {
+                if (DgShowMsg != null)
+                    DgShowMsg("正在处理第"+index+"个：" + s);
                 FileStream _fs = new FileStream(_ActivePath + s, FileMode.Open, FileAccess.Read);
                 Bitmap src = (Bitmap)System.Drawing.Image.FromStream(_fs);
                 src = src.Clone(m_Imgselection, src.PixelFormat);
@@ -425,8 +447,10 @@ namespace ScanTemplate
                 _fs.Close();
                 if (src != null)
                     src.Save(_ActivePath + "\\img" + s);
+                index++;
             }
-            MessageBox.Show("已处理完");
+            if (DgShowMsg != null)
+                DgShowMsg("End 已经全部处理完，共处理" + index + "个");
         }
         private Bitmap ImageWithUnLock(string s) //unuse
         {
@@ -488,5 +512,11 @@ namespace ScanTemplate
             List<Point> list = dd.ListFeature.Select(r => r.Location).ToList();
             return list;
         }
+        public void DoScan()
+        {
+            Thread thread = new Thread(new ThreadStart(RunRorate));
+            thread.Start();
+        }
+        public DelegateShowScanMsg DgShowMsg { get; set; }
     }
 }

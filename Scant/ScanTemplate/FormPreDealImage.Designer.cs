@@ -152,7 +152,7 @@
             // 
             this.buttonAutoRorate.Location = new System.Drawing.Point(101, 3);
             this.buttonAutoRorate.Name = "buttonAutoRorate";
-            this.buttonAutoRorate.Size = new System.Drawing.Size(43, 34);
+            this.buttonAutoRorate.Size = new System.Drawing.Size(73, 34);
             this.buttonAutoRorate.TabIndex = 14;
             this.buttonAutoRorate.Text = "自动检测并修正";
             this.buttonAutoRorate.UseVisualStyleBackColor = true;

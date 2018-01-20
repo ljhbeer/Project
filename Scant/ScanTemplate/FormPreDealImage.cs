@@ -74,10 +74,24 @@ namespace ScanTemplate
         }
         private void buttonAutoRorate_Click(object sender, EventArgs e)
         {
-            _autororate = new AutoRorate(m_Imgselection, list, _ActivePath);
+            if (list.Count == 0) return;
+           
+            Bitmap _src =(Bitmap)pictureBox1.Image;
+            _src = _src.Clone(m_Imgselection,_src.PixelFormat);
+            DetectData dd;
+            try
+            {
+                dd = DetectImageTools.DetectImg(_src);
+                dd = DetectImageTools.DetectCorrect.ReDetectCorrectImg(_src, dd);
+            }
+            catch
+            {
+                return;
+            }
+            if (dd.CorrectRect.Width == 0) return;
 
+            _autororate = new AutoRorate(dd.CorrectRect, list, _ActivePath);
             _autororate.DgShowMsg = new DelegateShowScanMsg(ThreadShowMsg);
-            //_autororate.RunRorate();
             _autororate.DoScan();
             _bScan = false;
            
@@ -401,83 +415,77 @@ namespace ScanTemplate
     }
     public class AutoRorate
     {
-        private Rectangle m_Imgselection;
+        private Rectangle CorrectRect;
         private List<string> list;
         private string _ActivePath;
 
-        public AutoRorate(Rectangle m_Imgselection, List<string> list, string _ActivePath)
+        public AutoRorate(Rectangle correctRect, List<string> list, string _ActivePath)
         {
-            this.m_Imgselection = m_Imgselection;
+            this.CorrectRect = correctRect;
             this.list = list;
             this._ActivePath = _ActivePath;
         }
         public void RunRorate()
         {
-            Rectangle Correct = new Rectangle();
-            if (list.Count > 0)
-            {
-                FileStream _fs = new FileStream(_ActivePath + list[0], FileMode.Open, FileAccess.Read);
-                Bitmap _src = (Bitmap)System.Drawing.Image.FromStream(_fs);
-                _src = _src.Clone(m_Imgselection, _src.PixelFormat);
-                try
-                {
-                    DetectData dd = DetectImageTools.DetectImg(_src);
-                    dd = DetectImageTools.DetectCorrect.ReDetectCorrectImg(_src, dd);
-                    Correct = dd.CorrectRect;
-                }
-                catch
-                {
-                    Correct.Width = 0;
-                }
-                _fs.Close();
-                _fs = null;
-            }
             int index = 0;
-            if(Correct.Width>0)
+            StringBuilder sb = new StringBuilder();
             foreach (string s in list)
             {
                 if (DgShowMsg != null)
                     DgShowMsg("正在处理第"+index+"个：" + s);
                 FileStream _fs = new FileStream(_ActivePath + s, FileMode.Open, FileAccess.Read);
-                Bitmap src = (Bitmap)System.Drawing.Image.FromStream(_fs);
-                src = src.Clone(m_Imgselection, src.PixelFormat);
-                //src = Clone(src);
-                src.Save("F:\\a.tif");
-                src =  RorateImg(src,Correct);
+                Bitmap src = (Bitmap)System.Drawing.Image.FromStream(_fs);           
+                src =  RorateImg(src,CorrectRect,index);
                 _fs.Close();
                 if (src != null)
                     src.Save(_ActivePath + "\\img" + s);
+                else
+                    sb.AppendLine(index.ToString());
                 index++;
             }
             if (DgShowMsg != null)
-                DgShowMsg("End 已经全部处理完，共处理" + index + "个");
+                DgShowMsg("End 已经全部处理完，共处理" + index + "个"+sb.ToString());
         }
         private Bitmap ImageWithUnLock(string s) //unuse
         {
             FileStream _fs = new FileStream(_ActivePath + s, FileMode.Open, FileAccess.Read);
             Bitmap src = (Bitmap)System.Drawing.Image.FromStream(_fs);
-            src = src.Clone(m_Imgselection,src.PixelFormat);
+            src = src.Clone(CorrectRect,src.PixelFormat);
             src = Clone(src);
             _fs.Close();
             return src;
         }
-        private Bitmap RorateImg(  Bitmap _src,Rectangle correct)
+        private Bitmap RorateImg(  Bitmap _src,Rectangle correct,int index)
         {
             try
             {
                 DetectData dd = DetectImageTools.DetectImg(_src,correct);
-                //dd = DetectImageTools.DetectCorrect.ReDetectCorrectImg(_src, dd);
                 if (dd.CorrectRect.Width > 0)
                 {
                     List<Point> list = ListFeatureToPoints(dd);
-                    AutoAngle  _angle = new AutoAngle(list);                   
+                    AutoAngle  _angle = new AutoAngle(list);
                     double angle = -_angle.Angle1 * 180 / Math.PI;
                     //Rorate
                     _src = Tools.BitmapRotateTools.Rotate(_src,(float) angle);
-                    //
-                   _src= ConvertFormat.Convert(_src, PixelFormat.Format1bppIndexed, false);
+                    _src = ConvertFormat.Convert(_src, PixelFormat.Format1bppIndexed, false);
+                    Rectangle cr = dd.CorrectRect;
+                    cr.Inflate(40, 40);
+                    cr.Intersect(new Rectangle(0, 0, _src.Width, _src.Height));
+                    _src = _src.Clone(cr, _src.PixelFormat);
+                    //_src.Save("F:\\debug\\" + index + ".tif");
+                    cr.Location = new Point(20, 20);
+                    dd = DetectImageTools.DetectImg(_src, dd.CorrectRect);
+                    if (dd.CorrectRect.Width > 0)
+                    {
+                        //Rectangle 
+                        cr = dd.CorrectRect;
+                        cr.Inflate(35, 35);
+                        cr.Intersect(new Rectangle(0, 0, _src.Width, _src.Height));
+                        _src = _src.Clone(cr, _src.PixelFormat);
+                        _src = ConvertFormat.Convert(_src, PixelFormat.Format1bppIndexed, false);
+                        return _src;
+                    }
                     //save
-                   return _src;
                 }
             }
             catch (Exception ee)

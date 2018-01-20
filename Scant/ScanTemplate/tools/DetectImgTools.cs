@@ -33,6 +33,7 @@ namespace  Tools
             Rectangle cr = DetectCorrect.DetectCorrectFromImg(_src);
             if (cr.Width == 0 || cr.Height == 0)
                 return new Point(-1, -1);
+            _src.Clone(cr, _src.PixelFormat).Save("F:\\debug\\LT.tif");
             return cr.Location;
         }
         public class DetectCorrect
@@ -78,7 +79,7 @@ namespace  Tools
                         g.DrawRectangle(Pens.Green, correctrect);
                         g.DrawRectangles(Pens.Red, list.ToArray());
                     }
-                    rgb.Save("F:\\Drawall.jpeg");
+                    rgb.Save("F:\\debug\\Drawall.jpeg");
                 }
 
                 if (list.Count > 0)
@@ -128,7 +129,7 @@ namespace  Tools
                     Rectangle nr = DetectFeatureFromImg(src1);
                     if (global.Debug && (global.tag & 8) > 0)
                     {
-                        src1.Save("F:\\out\\" + cnt + ".tif");
+                        src1.Save("F:\\debug\\" + cnt + ".tif");
                         if (nr.Width == 0 || nr.Height == 0)
                         {
                             nr.Width = r.Width / 3;

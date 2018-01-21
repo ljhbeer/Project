@@ -38,10 +38,10 @@ namespace ScanTemplate
         {
             if (pictureBox1.Image == null || MT == null || m_Imgselection.Width == 0 || m_Imgselection.Height == 0) return;
             Bitmap _src = (Bitmap)pictureBox1.Image;
-            _src = _src.Clone(m_Imgselection, _src.PixelFormat);
+            //_src = _src.Clone(m_Imgselection, _src.PixelFormat);
             try
             {
-                DetectData dd = DetectImageTools.DetectImg(_src);
+                DetectData dd = DetectImageTools.DetectImg(_src,m_Imgselection);
                 dd = DetectImageTools.DetectCorrect.ReDetectCorrectImg(_src, dd);
 
                 if (dd.CorrectRect.Width > 0)
@@ -75,13 +75,12 @@ namespace ScanTemplate
         private void buttonAutoRorate_Click(object sender, EventArgs e)
         {
             if (list.Count == 0) return;
-           
             Bitmap _src =(Bitmap)pictureBox1.Image;
-            _src = _src.Clone(m_Imgselection,_src.PixelFormat);
+            //_src = _src.Clone(m_Imgselection,_src.PixelFormat);
             DetectData dd;
             try
             {
-                dd = DetectImageTools.DetectImg(_src);
+                dd = DetectImageTools.DetectImg(_src,m_Imgselection);
                 dd = DetectImageTools.DetectCorrect.ReDetectCorrectImg(_src, dd);
             }
             catch
@@ -350,10 +349,8 @@ namespace ScanTemplate
         }
         private void InitListFeature(DetectData dd)
         {
-            _ListFeature = dd.ListFeature.Select(r => { r.Offset(dd.CorrectRect.Location); r.Offset(m_Imgselection.Location); return r; }).ToList();
-            Rectangle rr = dd.CorrectRect;
-            rr.Offset(m_Imgselection.Location);
-            _ListFeature.Add(rr);
+            _ListFeature = dd.ListFeature.Select(r => { r.Offset(dd.CorrectRect.Location);  return r; }).ToList();           
+            _ListFeature.Add(dd.CorrectRect);
         }
         private List<Point> ListFeatureToPoints(DetectData dd)
         {
@@ -457,7 +454,7 @@ namespace ScanTemplate
             _fs.Close();
             return src;
         }
-        private Bitmap RorateImg_bake(Bitmap _src, Rectangle correct, int index)
+        private Bitmap RorateImg_bake(Bitmap _src, Rectangle correct, int index)//unuse
         {
             try
             {
@@ -496,38 +493,22 @@ namespace ScanTemplate
             }
             return null;
         }
-        private Bitmap RorateImg1(Bitmap _src, Rectangle correct, int index)
+        private Bitmap RorateImg1(Bitmap _src, Rectangle correct, int index)//one use
         {
             try
             {
-                DetectData dd = DetectImageTools.DetectImg(_src, correct);
+                
+                DetectData dd = DetectImageTools.DetectImg(_src,new Rectangle(30,30,_src.Width-30,_src.Height-30), correct);
+                //DetectData dd = DetectImageTools.DetectImg(_src, correct);
                 if (dd.CorrectRect.Width > 0)
                 {
-                    List<Point> list = ListFeatureToPoints(dd);
-                    AutoAngle _angle = new AutoAngle(list);
-                    double angle = -_angle.Angle1 * 180 / Math.PI;
-                    //Rorate
-                    _src = Tools.BitmapRotateTools.Rotate(_src, (float)angle);
-                    _src = ConvertFormat.Convert(_src, PixelFormat.Format1bppIndexed, false);
-                    
-                    Rectangle cr = dd.CorrectRect;
-                    cr.Inflate(40, 40);
+                    Rectangle 
+                    cr = dd.CorrectRect;
+                    cr.Inflate(35, 35);
                     cr.Intersect(new Rectangle(0, 0, _src.Width, _src.Height));
                     _src = _src.Clone(cr, _src.PixelFormat);
-                    //_src.Save("F:\\debug\\" + index + ".tif");
-                    cr.Location = new Point(20, 20);
-                    dd = DetectImageTools.DetectImg(_src, dd.CorrectRect);
-                    if (dd.CorrectRect.Width > 0)
-                    {
-                        //Rectangle 
-                        cr = dd.CorrectRect;
-                        cr.Inflate(35, 35);
-                        cr.Intersect(new Rectangle(0, 0, _src.Width, _src.Height));
-                        _src = _src.Clone(cr, _src.PixelFormat);
-                        _src = ConvertFormat.Convert(_src, PixelFormat.Format1bppIndexed, false);
-                        return _src;
-                    }
-                    //save
+                    //_src = ConvertFormat.Convert(_src, PixelFormat.Format1bppIndexed, false);
+                    return _src;
                 }
             }
             catch (Exception ee)

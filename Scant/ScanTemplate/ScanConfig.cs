@@ -289,13 +289,18 @@ namespace ScanTemplate
             //this._src = (Bitmap)Bitmap.FromFile(_imgfilename);
             System.IO.FileStream fs = new System.IO.FileStream(imgfilename, System.IO.FileMode.Open, System.IO.FileAccess.Read);
             Bitmap _src = (Bitmap)System.Drawing.Image.FromStream(fs);
-         
+
+            Rectangle area = new Rectangle(10, 10, _src.Width-10, _src.Height-10);
             Rectangle cr = new Rectangle();
             if (ti != null)
             {
                 cr = Templates.GetTemplateCorrect(ti.TemplateFileName);
             }
-            DetectData dd = DetectImageTools.DetectImg(_src,cr);
+            else
+            {
+                area.Inflate(-20, -20);
+            }
+            DetectData dd = DetectImageTools.DetectImg(_src,area,cr);
             //dd = DetectImageTools.DetectImg(_src, dd.CorrectRect);
             if(ti==null)
             dd = DetectImageTools.DetectCorrect.ReDetectCorrectImg(_src, dd);
@@ -393,7 +398,8 @@ namespace ScanTemplate
             StringBuilder sb = new StringBuilder();
             System.IO.FileStream fs = new System.IO.FileStream(s,System.IO.FileMode.Open, System.IO.FileAccess.Read);
             Bitmap orgsrc = (Bitmap)System.Drawing.Image.FromStream(fs);
-            DetectData dd = DetectImageTools.DetectImg(orgsrc, this.Template.CorrectRect );         
+            Rectangle area =new  Rectangle(20, 20, orgsrc.Width-25, orgsrc.Height-25);
+            DetectData dd = DetectImageTools.DetectImg(orgsrc,area, this.Template.CorrectRect );         
             if (dd.CorrectRect.Width > 0 ) //TODO: 进一步判断
             {
                 _angle.SetPaper(dd.ListFeature);

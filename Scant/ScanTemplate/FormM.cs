@@ -91,9 +91,9 @@ namespace ScanTemplate
                 try
                 {
                     _sc.Templateshow = new TemplateShow(dir.FullPath, dir.DirName, nameList[0]);
-                }catch
+                }catch(Exception ee)
                 {
-                    MessageBox.Show("特征点检测失败，请预处理！");
+                    MessageBox.Show("特征点检测失败，请预处理！"+ee.Message);
                     return;
                 }
                 _sc.Templateshow.Template.FileName = _sc.Baseconfig.TemplatePath ;

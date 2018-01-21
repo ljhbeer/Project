@@ -434,11 +434,13 @@ namespace ScanTemplate
                 if (DgShowMsg != null)
                     DgShowMsg("正在处理第"+index+"个：" + s);
                 FileStream _fs = new FileStream(_ActivePath + s, FileMode.Open, FileAccess.Read);
-                Bitmap src = (Bitmap)System.Drawing.Image.FromStream(_fs);           
-                src =  RorateImg(src,CorrectRect,index);
+                Bitmap src = (Bitmap)System.Drawing.Image.FromStream(_fs);
+                src =  RorateImg1(src,CorrectRect,index);
                 _fs.Close();
                 if (src != null)
+                {
                     src.Save(_ActivePath + "\\img" + s);
+                }
                 else
                     sb.AppendLine(index.ToString());
                 index++;
@@ -455,19 +457,59 @@ namespace ScanTemplate
             _fs.Close();
             return src;
         }
-        private Bitmap RorateImg(  Bitmap _src,Rectangle correct,int index)
+        private Bitmap RorateImg_bake(Bitmap _src, Rectangle correct, int index)
         {
             try
             {
-                DetectData dd = DetectImageTools.DetectImg(_src,correct);
+                DetectData dd = DetectImageTools.DetectImg(_src, correct);
                 if (dd.CorrectRect.Width > 0)
                 {
                     List<Point> list = ListFeatureToPoints(dd);
-                    AutoAngle  _angle = new AutoAngle(list);
+                    AutoAngle _angle = new AutoAngle(list);
                     double angle = -_angle.Angle1 * 180 / Math.PI;
                     //Rorate
-                    _src = Tools.BitmapRotateTools.Rotate(_src,(float) angle);
+                    _src = Tools.BitmapRotateTools.Rotate(_src, (float)angle);
                     _src = ConvertFormat.Convert(_src, PixelFormat.Format1bppIndexed, false);
+                    Rectangle cr = dd.CorrectRect;
+                    cr.Inflate(40, 40);
+                    cr.Intersect(new Rectangle(0, 0, _src.Width, _src.Height));
+                    _src = _src.Clone(cr, _src.PixelFormat);
+                    //_src.Save("F:\\debug\\" + index + ".tif");
+                    cr.Location = new Point(20, 20);
+                    dd = DetectImageTools.DetectImg(_src, dd.CorrectRect);
+                    if (dd.CorrectRect.Width > 0)
+                    {
+                        //Rectangle 
+                        cr = dd.CorrectRect;
+                        cr.Inflate(35, 35);
+                        cr.Intersect(new Rectangle(0, 0, _src.Width, _src.Height));
+                        _src = _src.Clone(cr, _src.PixelFormat);
+                        _src = ConvertFormat.Convert(_src, PixelFormat.Format1bppIndexed, false);
+                        return _src;
+                    }
+                    //save
+                }
+            }
+            catch (Exception ee)
+            {
+                MessageBox.Show("检测失败" + ee.Message);
+            }
+            return null;
+        }
+        private Bitmap RorateImg1(Bitmap _src, Rectangle correct, int index)
+        {
+            try
+            {
+                DetectData dd = DetectImageTools.DetectImg(_src, correct);
+                if (dd.CorrectRect.Width > 0)
+                {
+                    List<Point> list = ListFeatureToPoints(dd);
+                    AutoAngle _angle = new AutoAngle(list);
+                    double angle = -_angle.Angle1 * 180 / Math.PI;
+                    //Rorate
+                    _src = Tools.BitmapRotateTools.Rotate(_src, (float)angle);
+                    _src = ConvertFormat.Convert(_src, PixelFormat.Format1bppIndexed, false);
+                    
                     Rectangle cr = dd.CorrectRect;
                     cr.Inflate(40, 40);
                     cr.Intersect(new Rectangle(0, 0, _src.Width, _src.Height));

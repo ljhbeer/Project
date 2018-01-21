@@ -31,6 +31,16 @@ namespace  Tools
             Rectangle r = new Rectangle(new Point(), new Size(src.Width / 3, src.Height / 3));
             Bitmap _src = (Bitmap)src.Clone(r, src.PixelFormat);
             Rectangle cr = DetectCorrect.DetectCorrectFromImg(_src);
+
+            //r.Inflate(-30, -30);
+            ////TODO: DetectLT .Error
+            //Rectangle cr2 = DetectCorrect.DetectCorrectFromImg(src,r);
+            //if (cr2 != cr)
+            //{
+            //    //src1.Clone(nr, src1.PixelFormat).Save("F:\\debug\\nr.tif");
+            //    //src.Clone(nr2, src.PixelFormat).Save("F:\\debug\\nr2.tif");
+            //    System.Windows.Forms.MessageBox.Show("r1 " + cr.ToString("-") + " r2" + cr2.ToString("-"));
+            //}
             if (cr.Width == 0 || cr.Height == 0)
                 return new Point(-1, -1);
             _src.Clone(cr, _src.PixelFormat).Save("F:\\debug\\LT.tif");
@@ -52,7 +62,8 @@ namespace  Tools
                     r.Intersect(area);
                     Bitmap src1 = src.Clone(r, src.PixelFormat);
 
-                    Rectangle nr = DetectFeatureFromImg(src1);
+                    Rectangle nr = DetectCorrectFromImg(src1, true, true);
+
                     if (global.Debug && (global.tag & 8) > 0)
                     {
                         src1.Save("F:\\out\\" + cnt + ".tif");
@@ -65,6 +76,14 @@ namespace  Tools
                         cnt++;
                     }
                     nr.Offset(r.Location);
+
+                    Rectangle nr2 = DetectCorrectFromImg(src, r, true, r.Width / 6);
+                    if (nr2 != nr)
+                    {
+                        src1.Clone(nr, src1.PixelFormat).Save("F:\\debug\\nr.tif");
+                        src.Clone(nr2, src.PixelFormat).Save("F:\\debug\\nr2.tif");
+                        System.Windows.Forms.MessageBox.Show("r1 " + nr.ToString("-") + " r2" + nr2.ToString("-"));
+                    }
                     list.Add(nr);
                 }
 
@@ -99,68 +118,89 @@ namespace  Tools
                 return new DetectData(_CorrectRect, list);
 
             }
-            public  static DetectData DetectCorrectImg(Bitmap src, Rectangle correctrect = new Rectangle())           
+            public static DetectData DetectCorrectImg(Bitmap src, Rectangle correctrect = new Rectangle()) //
             {
                 Rectangle _CorrectRect = correctrect;
-                if(correctrect.Width ==0)
-                    _CorrectRect = DetectCorrectFromImg(src,false);
+                if (correctrect.Width == 0)
+                {
+                    _CorrectRect = DetectCorrectFromImg(src, false);
+
+                    Rectangle r = new Rectangle(30, 30, src.Width - 60, src.Height - 30);
+                    Rectangle r2 = DetectCorrectFromImg(src,r, false);
+
+
+                }
                 Rectangle area = new Rectangle(0, 0, src.Width, src.Height);
                 List<Rectangle> FourLtbRtbRect = GetLrbRtb(_CorrectRect, 40, 40);
 
-                //if (global.Debug && (global.tag & 8) > 0)
-                //{
-                //    Bitmap rgb = ARTemplate.ConvertFormat.ConvertToRGB(src);
-                //    using (Graphics g = Graphics.FromImage(rgb))
-                //    {
-                //        g.DrawRectangle(Pens.Green, _CorrectRect);
-                //        g.DrawRectangles(Pens.Red, FourLtbRtbRect.ToArray());
-                //    }
-                //    rgb.Save("F:\\Drawall.jpeg");
-                //}
-
                 List<Rectangle> list = new List<Rectangle>();
-                int   cnt = 0;
+                //int   cnt = 0;
                 foreach (Rectangle r in FourLtbRtbRect)
                 {
                     r.Inflate(r.Size);
                     r.Intersect(area);
-                    Bitmap src1 = src.Clone(r, src.PixelFormat);
-
-                    Rectangle nr = DetectFeatureFromImg(src1);
-                    if (global.Debug && (global.tag & 8) > 0)
-                    {
-                        src1.Save("F:\\debug\\" + cnt + ".tif");
-                        if (nr.Width == 0 || nr.Height == 0)
-                        {
-                            nr.Width = r.Width / 3;
-                            nr.Height = r.Height / 3;
-                        }
-                        src1.Clone(nr, src1.PixelFormat).Save("F:\\out\\N_" + cnt + ".tif");
-                        cnt++;
-                    }
-                    nr.Offset(r.Location);
-                    list.Add(nr);
+                    Rectangle nr2 = DetectCorrectFromImg(src, r, true, r.Width / 6);                    
+                    list.Add(nr2);
                 }
                 if(list.Count>0)
                 _CorrectRect.Location = list[0].Location;
                 list = list.Select(r => new Rectangle(r.X - _CorrectRect.X, r.Y - _CorrectRect.Y,r.Width,r.Height)).ToList();
                 return new DetectData(_CorrectRect, list);
             }
-            public static Rectangle DetectFeatureFromImg(Bitmap src)
+            public static Rectangle DetectCorrectFromImg(Bitmap src, Boolean continnuity = true, bool bFeature = false)
             {
-                return DetectCorrectFromImg(src, new Rectangle(1, 1, 1, 1),true);
+                Rectangle r;
+                if (continnuity)
+                {
+                    if (bFeature)
+                        r = DetectCorrectFromImg2(src, new Rectangle(1, 1, 1, 1), true);
+                    else
+                        r = DetectCorrectFromImg2(src, new Rectangle(15, 15, 15, 15), true, 10);
+                }
+                else
+                {
+                    r = DetectCorrectFromImg2(src, new Rectangle(30, 30, 30, 30));
+                }
+                return r;
             }
-            public static Rectangle DetectCorrectFromImg(Bitmap src,Boolean continnuity = true)
+
+            public static Rectangle DetectCorrectFromImg(Bitmap src, Rectangle area, Boolean continnuity = true, int continuelength = -1)
             {
-                if(continnuity)
-                    return DetectCorrectFromImg(src, new Rectangle(15, 15, 15, 15),true,10);
-                return DetectCorrectFromImg(src, new Rectangle(30, 30, 30, 30));
+                Rectangle rect;
+                if (continnuity)
+                {
+                    rect = DetectCorrectFromImgArea(src, area,continnuity,continuelength);
+                }
+                else
+                {
+                    rect = DetectCorrectFromImgArea(src, area);
+                }
+                rect.Offset(area.Location);
+                return rect;
             }
-            private static Rectangle DetectCorrectFromImg(Bitmap src,Rectangle margin) // 从30位算起
+
+            private static Rectangle DetectCorrectFromImg2(Bitmap src, Rectangle margin)
+            { // 从30位算起
+                Rectangle r = new Rectangle(0,0,src.Width,src.Height);
+                Rectangle area = new Rectangle(margin.X, margin.Y, src.Width - margin.X - margin.Width, src.Height - margin.Y - margin.Height);
+                Rectangle rect = DetectCorrectFromImgArea(src, area);
+                rect.Offset(margin.Location);
+                return rect;
+            }
+            private static Rectangle DetectCorrectFromImg2(Bitmap src, Rectangle margin, bool continnuity, int continuelength = -1)
             {
-                Rectangle rect = new Rectangle(0, 0, src.Width, src.Height);
-                int[] xxcnt = BitmapTools.CountXPixsum(src, rect);
-                int[] yycnt = BitmapTools.CountYPixsum(src, rect);
+
+                Rectangle r = new Rectangle(0, 0, src.Width, src.Height);
+                Rectangle area = new Rectangle(margin.X, margin.Y, src.Width - margin.X - margin.Width, src.Height - margin.Y - margin.Height);
+                Rectangle rect = DetectCorrectFromImgArea(src, area,continnuity,continuelength);
+                rect.Offset(margin.Location);
+                return rect;
+            }
+            private static Rectangle DetectCorrectFromImgArea(Bitmap src, Rectangle area) // 从30位算起
+            {
+                //验证参数准确性
+                int[] xxcnt = BitmapTools.CountXPixsum(src, area);
+                int[] yycnt = BitmapTools.CountYPixsum(src, area);
                 xxcnt = xxcnt.Select(r => yycnt.Length - r).ToArray();
                 yycnt = yycnt.Select(r => xxcnt.Length - r).ToArray();
                 int xxavg = (int)xxcnt.Average() / 3;
@@ -168,18 +208,18 @@ namespace  Tools
                 xxcnt = xxcnt.Select(r => r > xxavg ? 100 : 0).ToArray();
                 yycnt = yycnt.Select(r => r > yyavg ? 100 : 0).ToArray();
 
-                int xpos = xxcnt.Skip(margin.Left ).ToList().FindIndex(r => r > 0) + margin.Left;
-                int xendpos = xxcnt.Length - xxcnt.Reverse().Skip(margin.Right).ToList().FindIndex(r => r > 0) - margin.Right;
-                int ypos = yycnt.Skip(margin.Top).ToList().FindIndex(r => r > 0) + margin.Top;
-                int yendpos = yycnt.Length - yycnt.Reverse().Skip(margin.Bottom).ToList().FindIndex(r => r > 0) - margin.Bottom;
+                int xpos = xxcnt.ToList().FindIndex(r => r > 0) ;
+                int xendpos = xxcnt.Length - xxcnt.Reverse().ToList().FindIndex(r => r > 0) ;
+                int ypos = yycnt.ToList().FindIndex(r => r > 0) ;
+                int yendpos = yycnt.Length - yycnt.Reverse().ToList().FindIndex(r => r > 0);
                 //OutPixImage(xxcnt, yycnt);
                 return new Rectangle(xpos, ypos, xendpos - xpos, yendpos - ypos);
             }
-            private static Rectangle DetectCorrectFromImg(Bitmap src, Rectangle margin,bool continnuity,int continuelength = -1 ) // 从30位算起
+            private static Rectangle DetectCorrectFromImgArea(Bitmap src, Rectangle area, bool continnuity, int continuelength = -1) // 从30位算起
             {
-                Rectangle rect = new Rectangle(0, 0, src.Width, src.Height);
-                int[] xxcnt = BitmapTools.CountXPixsum(src, rect);
-                int[] yycnt = BitmapTools.CountYPixsum(src, rect);
+                //验证参数准确性
+                int[] xxcnt = BitmapTools.CountXPixsum(src, area);
+                int[] yycnt = BitmapTools.CountYPixsum(src, area);
                 xxcnt = xxcnt.Select(r => yycnt.Length - r).ToArray();
                 yycnt = yycnt.Select(r => xxcnt.Length - r).ToArray();
                 int xxavg = (int)xxcnt.Average() / 3;
@@ -195,13 +235,13 @@ namespace  Tools
                 //完全同上
                 //debugout
                 //OutPixImage(xxcnt, yycnt);
-                int xpos = xxcnt.Skip(margin.Left).ToList().FindIndex(r => r > 0) + margin.Left;
+                int xpos = xxcnt.ToList().FindIndex(r => r > 0);
                 int xendpos = xxcnt.Skip(xpos).ToList().FindIndex(r => r == 0) + xpos;
                 if (continnuity)
                 {
                     if (continuelength == -1 || continuelength < 1)
                         continuelength = src.Width / 8;
-                    while (xendpos - xpos < continuelength )
+                    while (xendpos - xpos < continuelength)
                     {
                         xpos = xxcnt.Skip(xendpos).ToList().FindIndex(r => r > 0);
                         if (xpos == -1 || xendpos == -1)
@@ -220,14 +260,14 @@ namespace  Tools
                     if (xpos == -1 || xendpos == -1)
                         return new Rectangle(1, 1, 0, 0);
                 }
-                    //xxcnt.Length - xxcnt.Reverse().Skip(margin.Right).ToList().FindIndex(r => r > 0) - margin.Right;
-                int ypos = yycnt.Skip(margin.Top).ToList().FindIndex(r => r > 0) + margin.Top;
-                int yendpos = yycnt.Skip(ypos).ToList().FindIndex(r => r == 0)+ypos; 
+                //xxcnt.Length - xxcnt.Reverse().Skip(margin.Right).ToList().FindIndex(r => r > 0) - margin.Right;
+                int ypos = yycnt.ToList().FindIndex(r => r > 0);
+                int yendpos = yycnt.Skip(ypos).ToList().FindIndex(r => r == 0) + ypos;
                 if (continnuity)
                 {
                     if (continuelength == -1 || continuelength < 1)
                         continuelength = src.Width / 8;
-                    while (yendpos - ypos <continuelength)
+                    while (yendpos - ypos < continuelength)
                     {
                         ypos = yycnt.Skip(yendpos).ToList().FindIndex(r => r > 0);
                         if (ypos == -1 || yendpos == -1)
@@ -245,9 +285,109 @@ namespace  Tools
                     if (ypos == -1 || yendpos == -1)
                         return new Rectangle(1, 1, 0, 0);
                 }
-            
+
                 return new Rectangle(xpos, ypos, xendpos - xpos, yendpos - ypos);
             }
+
+            private static Rectangle DetectCorrectFromImg_bake(Bitmap src, Rectangle margin) // 从30位算起
+            {
+                Rectangle rect = new Rectangle(0, 0, src.Width, src.Height);
+                int[] xxcnt = BitmapTools.CountXPixsum(src, rect);
+                int[] yycnt = BitmapTools.CountYPixsum(src, rect);
+                xxcnt = xxcnt.Select(r => yycnt.Length - r).ToArray();
+                yycnt = yycnt.Select(r => xxcnt.Length - r).ToArray();
+                int xxavg1 = (int)xxcnt.Average() / 3;
+                int yyavg1 = (int)yycnt.Average() / 3;
+                int xxavg = (int)(xxcnt.Skip(margin.Left).Take(xxcnt.Length - margin.Right).Average() / 3);
+                int yyavg = (int)(yycnt.Skip(margin.Top).Take(yycnt.Length - margin.Bottom).Average() / 3);
+                xxcnt = xxcnt.Select(r => r > xxavg ? 100 : 0).ToArray();
+                yycnt = yycnt.Select(r => r > yyavg ? 100 : 0).ToArray();
+
+                int xpos = xxcnt.Skip(margin.Left).ToList().FindIndex(r => r > 0) + margin.Left;
+                int xendpos = xxcnt.Length - xxcnt.Reverse().Skip(margin.Right).ToList().FindIndex(r => r > 0) - margin.Right;
+                int ypos = yycnt.Skip(margin.Top).ToList().FindIndex(r => r > 0) + margin.Top;
+                int yendpos = yycnt.Length - yycnt.Reverse().Skip(margin.Bottom).ToList().FindIndex(r => r > 0) - margin.Bottom;
+                //OutPixImage(xxcnt, yycnt);
+                return new Rectangle(xpos, ypos, xendpos - xpos, yendpos - ypos);
+            }
+            private static Rectangle DetectCorrectFromImg_bake(Bitmap src, Rectangle margin, bool continnuity, int continuelength = -1) // 从30位算起
+            {
+                Rectangle rect = new Rectangle(0, 0, src.Width, src.Height);
+                int[] xxcnt = BitmapTools.CountXPixsum(src, rect);
+                int[] yycnt = BitmapTools.CountYPixsum(src, rect);
+                xxcnt = xxcnt.Select(r => yycnt.Length - r).ToArray();
+                yycnt = yycnt.Select(r => xxcnt.Length - r).ToArray();
+                int xxavg1 = (int)xxcnt.Average() / 3;
+                int yyavg1 = (int)yycnt.Average() / 3;
+                int xxavg = (int)(xxcnt.Skip(margin.Left).Take(xxcnt.Length - margin.Right).Average() / 3);
+                int yyavg = (int)(yycnt.Skip(margin.Top).Take(yycnt.Length - margin.Bottom).Average() / 3);
+                if (continnuity)
+                {
+                    xxavg1 = (int)(xxcnt.Where(r => r > xxavg).Average() / 2);
+                    yyavg1 = (int)(yycnt.Where(r => r > yyavg).Average() / 2);
+                    xxavg = (int)(xxcnt.Skip(margin.Left).Take(xxcnt.Length - margin.Right).Where(r => r > xxavg).Average() / 2);
+                    yyavg = (int)(yycnt.Skip(margin.Top).Take(yycnt.Length - margin.Bottom).Where(r => r > yyavg).Average() / 2);
+                }
+                xxcnt = xxcnt.Select(r => r > xxavg ? 100 : 0).ToArray();
+                yycnt = yycnt.Select(r => r > yyavg ? 100 : 0).ToArray();
+
+                //完全同上
+                //debugout
+                //OutPixImage(xxcnt, yycnt);
+                int xpos = xxcnt.Skip(margin.Left).ToList().FindIndex(r => r > 0) + margin.Left;
+                int xendpos = xxcnt.Skip(xpos).ToList().FindIndex(r => r == 0) + xpos;
+                if (continnuity)
+                {
+                    if (continuelength == -1 || continuelength < 1)
+                        continuelength = src.Width / 8;
+                    while (xendpos - xpos < continuelength)
+                    {
+                        xpos = xxcnt.Skip(xendpos).ToList().FindIndex(r => r > 0);
+                        if (xpos == -1 || xendpos == -1)
+                            break;
+                        xpos += xendpos;
+                        xendpos = xxcnt.Skip(xpos).ToList().FindIndex(r => r == 0);
+                        // 修改逻辑错误
+                        if (xendpos == -1)
+                        {
+                            xendpos = xxcnt.Length - 1;
+                            break;
+                        }
+                        else
+                            xendpos += xpos;
+                    }
+                    if (xpos == -1 || xendpos == -1)
+                        return new Rectangle(1, 1, 0, 0);
+                }
+                //xxcnt.Length - xxcnt.Reverse().Skip(margin.Right).ToList().FindIndex(r => r > 0) - margin.Right;
+                int ypos = yycnt.Skip(margin.Top).ToList().FindIndex(r => r > 0) + margin.Top;
+                int yendpos = yycnt.Skip(ypos).ToList().FindIndex(r => r == 0) + ypos;
+                if (continnuity)
+                {
+                    if (continuelength == -1 || continuelength < 1)
+                        continuelength = src.Width / 8;
+                    while (yendpos - ypos < continuelength)
+                    {
+                        ypos = yycnt.Skip(yendpos).ToList().FindIndex(r => r > 0);
+                        if (ypos == -1 || yendpos == -1)
+                            break;
+                        ypos += yendpos;
+                        yendpos = yycnt.Skip(ypos).ToList().FindIndex(r => r == 0);
+                        if (yendpos == -1)
+                        {
+                            yendpos = yycnt.Length - 1;
+                            break;
+                        }
+                        else
+                            yendpos += ypos;
+                    }
+                    if (ypos == -1 || yendpos == -1)
+                        return new Rectangle(1, 1, 0, 0);
+                }
+
+                return new Rectangle(xpos, ypos, xendpos - xpos, yendpos - ypos);
+            }
+
             public static List<Rectangle> GetLrbRtb(Rectangle r, int width, int height)
             {
                 return new List<Rectangle>()

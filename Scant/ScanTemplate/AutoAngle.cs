@@ -80,11 +80,16 @@ namespace Tools
                 return _Angle2;
             }
         }
-        private double  Arcsin(Point P0, Point P1)
+        public static double ComputeAngle(Point point, Point point_2)
+        {
+            return Arcsin(point, point_2);
+        }
+        private static double  Arcsin(Point P0, Point P1)
         {
             double r = Math.Sqrt((P1.X - P0.X) * (P1.X - P0.X) + (P1.Y - P0.Y) * (P1.Y - P0.Y));
             return Math.Asin( (P1.X-P0.X)/r );
         }
+
         private void SetPaper(Point P0, Point P1, Point P2)
         {
             _P = new List<Point>(){P0,P1,P2};
@@ -95,5 +100,6 @@ namespace Tools
         private List<Point> _P;
         private double _Angle1;
         private double _Angle2;
+
     }
 }

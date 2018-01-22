@@ -82,6 +82,17 @@ namespace ScanTemplate
             {
                 dd = DetectImageTools.DetectImg(_src,m_Imgselection);
                 dd = DetectImageTools.DetectCorrect.ReDetectCorrectImg(_src, dd);
+                double _dangle = AutoAngle.ComputeAngle(dd.ListFeature[0].Location, dd.ListFeature[1].Location);
+                double angle = -_dangle  * 180 / Math.PI;
+                //Rorate
+                Bitmap _src1 = Tools.BitmapRotateTools.Rotate(_src, (float)angle);
+                _src1 = ConvertFormat.Convert(_src1, PixelFormat.Format1bppIndexed, false);
+
+                Rectangle Rect = dd.CorrectRect;
+                Rect.Inflate(40, 40);
+                Rect.Intersect(m_Imgselection);
+                dd = DetectImageTools.DetectImg(_src, Rect);
+                //dd = DetectImageTools.DetectCorrect.ReDetectCorrectImg(_src, dd);
             }
             catch
             {
@@ -439,20 +450,76 @@ namespace ScanTemplate
                     src.Save(_ActivePath + "\\img" + s);
                 }
                 else
+                {
+                    //File.Move(_ActivePath + s, _ActivePath + "\\UnRorate" + s);
                     sb.AppendLine(index.ToString());
+                }
                 index++;
             }
             if (DgShowMsg != null)
                 DgShowMsg("End 已经全部处理完，共处理" + index + "个"+sb.ToString());
         }
-        private Bitmap ImageWithUnLock(string s) //unuse
+        private Bitmap RorateImg1(Bitmap _src, Rectangle correct, int index)//one use
         {
-            FileStream _fs = new FileStream(_ActivePath + s, FileMode.Open, FileAccess.Read);
-            Bitmap src = (Bitmap)System.Drawing.Image.FromStream(_fs);
-            src = src.Clone(CorrectRect,src.PixelFormat);
-            src = Clone(src);
-            _fs.Close();
-            return src;
+            try
+            {
+                Rectangle area = new Rectangle(30,30,_src.Width-30,_src.Height-30);
+                DetectData dd = DetectImageTools.DetectImg(_src,area,correct);
+                if (dd.CorrectRect.Width > 0)
+                {
+                    List<Point> list = ListFeatureToPoints(dd);
+                    AutoAngle _angle = new AutoAngle(list);
+                    double angle = -_angle.Angle1 * 180 / Math.PI;
+                    //Rorate
+                    Bitmap _src1 = Tools.BitmapRotateTools.Rotate(_src, (float)angle);
+                    _src1 = ConvertFormat.Convert(_src1, PixelFormat.Format1bppIndexed, false);
+
+                    area = dd.CorrectRect;
+                    area.Inflate(30, 30);
+                    dd = DetectImageTools.DetectImg(_src, area);
+                    _src1 = (Bitmap)_src1.Clone(dd.CorrectRect,_src1.PixelFormat);
+                    return _src;
+                }
+            }
+            catch (Exception ee)
+            {
+                MessageBox.Show("检测失败" + ee.Message);
+            }
+            return null;
+        }
+
+        private static Point RedPointPostion(Bitmap _src1, Rectangle dectRect)//unuse
+        {          
+            BitmapData data = _src1.LockBits(dectRect, ImageLockMode.ReadOnly, _src1.PixelFormat);
+            Point p = new Point();
+            //StringBuilder sb = new StringBuilder();
+            unsafe
+            {
+                byte* ptr = (byte*)(data.Scan0);
+                byte* ptr1 = ptr;
+                if (_src1.PixelFormat == PixelFormat.Format32bppArgb)
+                {
+                    for (int i = 0; i < data.Height; i++)
+                    {
+                        for (int j = 0; j < data.Width; j++)
+                        { // write the logic implementation here 
+                            //sb.Append( ptr[0] + "_" + ptr[1] + "_" + ptr[2] + "_" + ptr[3] + " ");
+                            if (ptr[1] == 0 && ptr[2] == 255 && ptr[3] == 255)
+                            {
+                                p.X = i + dectRect.X;
+                                p.Y = j + dectRect.Y;
+                                break;
+                            }
+                            ptr += 4;
+                        }
+                        ptr += data.Stride - data.Width * 4;
+                        //sb.AppendLine();
+                    }
+                    //File.WriteAllText("F:\\allstr.txt", sb.ToString());
+                }
+            }
+            _src1.UnlockBits(data);
+            return p;
         }
         private Bitmap RorateImg_bake(Bitmap _src, Rectangle correct, int index)//unuse
         {
@@ -493,30 +560,6 @@ namespace ScanTemplate
             }
             return null;
         }
-        private Bitmap RorateImg1(Bitmap _src, Rectangle correct, int index)//one use
-        {
-            try
-            {
-                
-                DetectData dd = DetectImageTools.DetectImg(_src,new Rectangle(30,30,_src.Width-30,_src.Height-30), correct);
-                //DetectData dd = DetectImageTools.DetectImg(_src, correct);
-                if (dd.CorrectRect.Width > 0)
-                {
-                    Rectangle 
-                    cr = dd.CorrectRect;
-                    cr.Inflate(35, 35);
-                    cr.Intersect(new Rectangle(0, 0, _src.Width, _src.Height));
-                    _src = _src.Clone(cr, _src.PixelFormat);
-                    //_src = ConvertFormat.Convert(_src, PixelFormat.Format1bppIndexed, false);
-                    return _src;
-                }
-            }
-            catch (Exception ee)
-            {
-                MessageBox.Show("检测失败" + ee.Message);
-            }
-            return null;
-        }
         private Bitmap Clone(Bitmap _Source)
         {
             int _Width = _Source.Width;
@@ -537,7 +580,42 @@ namespace ScanTemplate
             Marshal.Copy(_NewByte, 0, _NewData.Scan0, _NewByte.Length);
             _NewBitmap.UnlockBits(_NewData); 
             return _NewBitmap;
+        } //unuse
+        private Bitmap ImageWithUnLock(string s) //unuse
+        {
+            FileStream _fs = new FileStream(_ActivePath + s, FileMode.Open, FileAccess.Read);
+            Bitmap src = (Bitmap)System.Drawing.Image.FromStream(_fs);
+            src = src.Clone(CorrectRect,src.PixelFormat);
+            src = Clone(src);
+            _fs.Close();
+            return src;
         }
+        /// <summary>
+        /// 获取移动角度的新坐标
+        /// </summary>
+        /// <param name="Rate">旋转角度</param>
+        /// <param name="CirPoint">圆心坐标</param>
+        /// <param name="MovePoint">移动的坐标</param>
+        /// <returns></returns>
+        private Point GetNewPoint(double Rate, Point CirPoint, Point MovePoint)
+        {
+            //double radian = angle * Math.PI / 180.0;
+            //double cos = Math.Cos(radian);
+            //double sin = Math.Sin(radian);
+
+            double Rage2 = Rate * Math.PI / 180.0;
+            //B点绕A点转R度得到C点坐标，flag: 顺时针1，反时针-1：B是转的点，A是圆心
+            //C.X=（B.X-A.X)*COS(R*flag)-(B.Y-A.Y)*Sin(R*flag);
+            //C.Y= (B.Y-A.Y)*COS(R*flag)+(B.X-A.X)*sin(R*flag);
+            //转的点坐标-圆心坐标
+            //圆心坐标+计算坐标=新位置的坐标
+            int newx = (int)((MovePoint.X - CirPoint.X) * Math.Cos(Rage2) - (MovePoint.Y - CirPoint.Y) * Math.Sin(Rage2));
+            int newy = (int)((MovePoint.Y - CirPoint.Y) * Math.Cos(Rage2) + (MovePoint.X - CirPoint.X) * Math.Sin(Rage2));
+            Point newpoint = new Point(CirPoint.X + newx, CirPoint.Y + newy);
+            //计算长度
+            double lineJ = Math.Sqrt(Math.Pow(Math.Max(newpoint.X, CirPoint.X) - Math.Min(newpoint.X, CirPoint.X), 2) + Math.Pow(Math.Max(newpoint.Y, CirPoint.Y) - Math.Min(newpoint.Y, CirPoint.Y), 2));
+            return newpoint;
+        } 
         private List<Point> ListFeatureToPoints(DetectData dd)
         {
             List<Point> list = dd.ListFeature.Select(r => r.Location).ToList();

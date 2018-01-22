@@ -26,7 +26,7 @@ namespace  Tools
             int ymid = (listrect.Select(r => r.Y).Min() + listrect.Select(r => r.Y).Max()) / 2;
             return new Point(xmid, ymid);
         }
-        private static Point DetectLT(Bitmap src,Rectangle area)
+        public static Point DetectLT(Bitmap src,Rectangle area)
         {
             Rectangle r = new Rectangle(new Point(), new Size(src.Width / 3, src.Height / 3));
             area.Intersect(r);

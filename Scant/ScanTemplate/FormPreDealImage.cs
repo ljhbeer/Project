@@ -450,6 +450,8 @@ namespace ScanTemplate
                 }
                 else
                 {
+                    if(!Directory.Exists( _ActivePath + "\\UnRorate"))
+                        Directory.CreateDirectory(_ActivePath + "\\UnRorate");
                     File.Move(_ActivePath + s, _ActivePath + "\\UnRorate" + s);
                     sb.AppendLine(index.ToString());
                 }

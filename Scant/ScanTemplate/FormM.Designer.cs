@@ -64,6 +64,7 @@
             this.buttonPreDealImage = new System.Windows.Forms.Button();
             this.checkBoxShowUnScanNamelist = new System.Windows.Forms.CheckBox();
             this.checkBoxReSingleScan = new System.Windows.Forms.CheckBox();
+            this.buttonRorateAndCutImage = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -394,9 +395,10 @@
             this.tableLayoutPanel2.Controls.Add(this.textBoxMsg, 4, 0);
             this.tableLayoutPanel2.Controls.Add(this.checkBoxDebug, 8, 0);
             this.tableLayoutPanel2.Controls.Add(this.buttonOutTextImage, 2, 0);
-            this.tableLayoutPanel2.Controls.Add(this.buttonPreDealImage, 3, 0);
             this.tableLayoutPanel2.Controls.Add(this.checkBoxShowUnScanNamelist, 7, 0);
             this.tableLayoutPanel2.Controls.Add(this.checkBoxReSingleScan, 6, 0);
+            this.tableLayoutPanel2.Controls.Add(this.buttonPreDealImage, 5, 0);
+            this.tableLayoutPanel2.Controls.Add(this.buttonRorateAndCutImage, 3, 0);
             this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 622);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
@@ -469,11 +471,11 @@
             // 
             // buttonPreDealImage
             // 
-            this.buttonPreDealImage.Location = new System.Drawing.Point(154, 3);
+            this.buttonPreDealImage.Location = new System.Drawing.Point(838, 3);
             this.buttonPreDealImage.Name = "buttonPreDealImage";
-            this.buttonPreDealImage.Size = new System.Drawing.Size(70, 22);
+            this.buttonPreDealImage.Size = new System.Drawing.Size(64, 22);
             this.buttonPreDealImage.TabIndex = 10;
-            this.buttonPreDealImage.Text = "预处理IMG";
+            this.buttonPreDealImage.Text = "重命名IMG";
             this.buttonPreDealImage.UseVisualStyleBackColor = true;
             this.buttonPreDealImage.Click += new System.EventHandler(this.buttonPreDealImage_Click);
             // 
@@ -500,6 +502,16 @@
             this.checkBoxReSingleScan.TabIndex = 12;
             this.checkBoxReSingleScan.Text = "ReSingleScan";
             this.checkBoxReSingleScan.UseVisualStyleBackColor = true;
+            // 
+            // buttonRorateAndCutImage
+            // 
+            this.buttonRorateAndCutImage.Location = new System.Drawing.Point(154, 3);
+            this.buttonRorateAndCutImage.Name = "buttonRorateAndCutImage";
+            this.buttonRorateAndCutImage.Size = new System.Drawing.Size(83, 22);
+            this.buttonRorateAndCutImage.TabIndex = 10;
+            this.buttonRorateAndCutImage.Text = "旋转剪切IMG";
+            this.buttonRorateAndCutImage.UseVisualStyleBackColor = true;
+            this.buttonRorateAndCutImage.Click += new System.EventHandler(this.buttonRorateAndCutImage_Click);
             // 
             // FormM
             // 
@@ -564,6 +576,7 @@
         private System.Windows.Forms.Button buttonOutTextImage;
         private System.Windows.Forms.Button buttonPreDealImage;
         private System.Windows.Forms.CheckBox checkBoxShowUnScanNamelist;
-        private System.Windows.Forms.CheckBox checkBoxReSingleScan;        
+        private System.Windows.Forms.CheckBox checkBoxReSingleScan;
+        private System.Windows.Forms.Button buttonRorateAndCutImage;        
     }
 }

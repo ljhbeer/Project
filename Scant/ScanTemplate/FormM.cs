@@ -214,6 +214,18 @@ namespace ScanTemplate
             f = null;
             this.Show();
         }
+        private void buttonRorateAndCutImage_Click(object sender, EventArgs e)
+        {
+            if (listBoxUnScanDir.SelectedIndex == -1) return;
+            UnScan dir = (UnScan)listBoxUnScanDir.SelectedItem;
+            List<string> nameList = dir.ImgList();
+            if (nameList.Count == 0) return;
+            this.Hide();
+            nameList = nameList.Select(r => r.Substring(dir.FullPath.Length)).ToList();
+            FormPreDealImage f = new FormPreDealImage(dir.FullPath, nameList);
+            f.ShowDialog();
+            this.Show();
+        }
 		private void listBoxData_SelectedIndexChanged(object sender, EventArgs e)
 		{
 			if (listBoxScantData.SelectedIndex == -1) return;

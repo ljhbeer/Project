@@ -42,13 +42,18 @@ namespace ScanTemplate.FormYJ
             if (comboBox1.SelectedIndex == -1) return;
             Imgsubject S = (Imgsubject)comboBox1.SelectedItem;
             InitColState( S.Score);
-            _SR.SetActiveSubject(S);            
+            _SR.SetActiveSubject(S);
+            _SR.LoadNextStudents(checkBoxBack.Checked);
             textBoxShow.Text = "本题未完成阅卷份数" + _SR.Students.Count + " 满分为" + S.Score + "分";         
             _imgsize = S.Rect.Size;
             _itemsize.Width = _imgsize.Width /2 + (S.Score + 2) * 27;
             _itemsize.Height = _imgsize.Height / 2;
             _cntx = (dgvs.Size.Width - 15) / _itemsize.Width;
             _cnty = (dgvs.Size.Height - 30) / _itemsize.Height;
+            if (checkBoxBack.Checked)
+            {
+                _cntx = (_SR.Students.Count + _cnty - 1) / _cnty;
+            }
             InitDtshow(_cntx);
             InitDgvUI();
             YueJuan();
@@ -83,7 +88,7 @@ namespace ScanTemplate.FormYJ
                     }
                     if (bbreak) break;
                 } //MessageBox.Show("已更新" + sum + "条数据");
-                _SR.LoadNextStudents();
+                _SR.LoadNextStudents(checkBoxBack.Checked);
 
                 if(_SR.Students.Count==0  && checkBoxAutoLoadNext.Checked)
                 {
@@ -245,6 +250,10 @@ namespace ScanTemplate.FormYJ
                     DataRow dr = _dtshow.Rows[y];
                     dr["object" + xx] = S;
                     dr["图片" + xx] = _SR.GetBitMap(S);
+                    if (checkBoxBack.Checked)
+                    {
+                        dr["得分" + xx] = S.BackScore;
+                    }
                 }
                 if (S==null) break;
             }

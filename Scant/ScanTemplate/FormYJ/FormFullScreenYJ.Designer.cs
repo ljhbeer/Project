@@ -48,6 +48,7 @@ namespace ScanTemplate.FormYJ
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.textBoxShow = new System.Windows.Forms.TextBox();
             this.buttonSubmitMulti = new System.Windows.Forms.Button();
+            this.checkBoxBack = new System.Windows.Forms.CheckBox();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvs)).BeginInit();
             this.panel1.SuspendLayout();
@@ -90,6 +91,7 @@ namespace ScanTemplate.FormYJ
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.checkBoxBack);
             this.panel1.Controls.Add(this.buttonSubmitMulti2);
             this.panel1.Controls.Add(this.checkBoxLoadSetMaxScore);
             this.panel1.Controls.Add(this.checkBoxLoadSetZero);
@@ -194,6 +196,16 @@ namespace ScanTemplate.FormYJ
             this.buttonSubmitMulti.UseVisualStyleBackColor = true;
             this.buttonSubmitMulti.Click += new System.EventHandler(this.ButtonSubmitMultiClick);
             // 
+            // checkBoxBack
+            // 
+            this.checkBoxBack.AutoSize = true;
+            this.checkBoxBack.Location = new System.Drawing.Point(505, 5);
+            this.checkBoxBack.Name = "checkBoxBack";
+            this.checkBoxBack.Size = new System.Drawing.Size(48, 16);
+            this.checkBoxBack.TabIndex = 17;
+            this.checkBoxBack.Text = "回评";
+            this.checkBoxBack.UseVisualStyleBackColor = true;
+            // 
             // FormFullScreenYJ
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -221,5 +233,6 @@ namespace ScanTemplate.FormYJ
         private System.Windows.Forms.CheckBox checkBoxLoadSetMaxScore;
         private System.Windows.Forms.CheckBox checkBoxLoadSetZero;
         private System.Windows.Forms.Button buttonSubmitMulti2;
+        private System.Windows.Forms.CheckBox checkBoxBack;
 	}
 }

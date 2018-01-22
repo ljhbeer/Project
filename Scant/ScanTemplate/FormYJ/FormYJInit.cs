@@ -700,9 +700,11 @@ namespace ScanTemplate.FormYJ
             }
             _src = null;
             Sort = new StudentSort();
+            BackScore = -1;
         }
         public Student()
         {
+            BackScore = -1;
         }
         public void InitDeserialize()
         {
@@ -712,6 +714,7 @@ namespace ScanTemplate.FormYJ
             _id %= 10000;
             Sort = new StudentSort();
             Sort.SetValue(Index);
+            BackScore = -1;
         }
         public string ResultInfo()
         {
@@ -754,6 +757,9 @@ namespace ScanTemplate.FormYJ
         public string Name { get; set; }
         public string ImgFilename { get { return _imgfilename; } }
         public int Index { get; set; }
+
+        [JsonIgnore]
+        public int BackScore { get; set; }
         [JsonIgnore]
         public StudentSort Sort { get; set; }
         [JsonIgnore]
@@ -1271,7 +1277,6 @@ namespace ScanTemplate.FormYJ
         {
             this._activesubject = S;
             _Ims.SetActiveSubject(S);
-            LoadNextStudents();
         }
         public void SetScoreByKh(Student S, int Score)
         {
@@ -1281,18 +1286,41 @@ namespace ScanTemplate.FormYJ
         {
             return _Ims.ActiveSubjectBitmap(S);
         }
-        public void LoadNextStudents()
+      
+        public void LoadNextStudents(bool back = false)
         {
-            Students = _Result[_activesubject.Index].Where(r => r < 0).Select(r => _Students.students[-r - 1]).ToList();
+            if (back)
+            {
+                int index = -1;
+                List<int> _back = _Result[_activesubject.Index].Select(r =>
+                {
+                    index++;
+                    return r >= 0 ? index : -1;
+                }).ToList(); 
+                Students = _back.Where(r => r >= 0).Select(r =>{
+                    Student s = _Students.students[r];
+                    s.BackScore = _Result[_activesubject.Index][r];
+                    return s;
+                }).ToList();
+            }
+            else
+                Students = _Result[_activesubject.Index].Where(r => r < 0).Select(r => _Students.students[-r - 1]).ToList();
             if(global.Debug || (global.tag & 2)>0)
                 if( Students.Count>0){
                     string str = "\r\n\r\nbefore:ID姓名：,"+ string.Join(",", Students.Select(r => r.ID + r.Name)) + "\r\nSortValue"
                         + string.Join(",", Students.Select(r => r.Sort.SortValue.ToString()));
                     File.AppendAllText( "F:\\Sortdebug.txt",str );
                 }
-            Students.Sort(delegate(Student S1,Student  S2){
-                return S1.Sort.SortValue - S2.Sort.SortValue;
-            });
+            if(back)
+                Students.Sort(delegate(Student S1, Student S2)
+                {
+                    return S1.BackScore - S2.BackScore;
+                });
+            else
+                Students.Sort(delegate(Student S1, Student S2)
+                {
+                    return S1.Sort.SortValue - S2.Sort.SortValue;
+                });
             if(global.Debug || (global.tag & 4)>0)
                 if( Students.Count>0){
                     string str = "\r\n\r\nsorted:ID姓名：," + string.Join(",", Students.Select(r => r.ID + r.Name)) + "\r\nSortValue"

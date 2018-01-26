@@ -184,8 +184,11 @@ namespace ScanTemplate.FormYJ
                 }
             }
             dtset.AcceptChanges();
-            _AvgUnImgHeight /= _Imgsubjects.Subjects.Count;
-            _AvgUnImgWith /= _Imgsubjects.Subjects.Count;
+            if (_Imgsubjects.Subjects.Count > 0)
+            {
+                _AvgUnImgHeight /= _Imgsubjects.Subjects.Count;
+                _AvgUnImgWith /= _Imgsubjects.Subjects.Count;
+            }
         }
         private void buttonShowXztSet_Click(object sender, EventArgs e)
         {

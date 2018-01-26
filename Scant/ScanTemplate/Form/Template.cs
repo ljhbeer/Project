@@ -646,19 +646,22 @@ namespace ARTemplate
                                 rr.Location = p;
                             }
                             //p = rr.Location;
-                            g.DrawRectangle(Pens.Green, I.Rect);
+                            if (!_angle.DxyModel)
+                                g.DrawRectangle(Pens.Green, I.Rect);
                             g.DrawRectangle(pen, rr);
 
                             if (I.HasImgSubArea())
                             {
                                 foreach (Rectangle r in I.ImgSubArea())
                                 {
-                                    Rectangle or = r;
-                                    or.Offset(I.Rect.Location);
-                                    g.DrawRectangle(Pens.Green, or);
-                                    or.Inflate(1, 1);
-                                    g.DrawRectangle(Pens.Green, or);
-
+                                    if (!_angle.DxyModel)
+                                    {
+                                        Rectangle or = r;
+                                        or.Offset(I.Rect.Location);
+                                        g.DrawRectangle(Pens.Green, or);
+                                        or.Inflate(1, 1);
+                                        g.DrawRectangle(Pens.Green, or);
+                                    }
                                     Rectangle nr = r;
                                     nr.Offset(p);
                                     g.DrawRectangle(pen, nr);

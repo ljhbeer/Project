@@ -398,10 +398,21 @@ namespace ScanTemplate
             StringBuilder sb = new StringBuilder();
             System.IO.FileStream fs = new System.IO.FileStream(s,System.IO.FileMode.Open, System.IO.FileAccess.Read);
             Bitmap orgsrc = (Bitmap)System.Drawing.Image.FromStream(fs);
-            Rectangle area =new  Rectangle(20, 20, orgsrc.Width-25, orgsrc.Height-25);
+            Rectangle area =new  Rectangle(15, 15, orgsrc.Width-15, orgsrc.Height-15);
             DetectData dd = DetectImageTools.DetectImg(orgsrc,area, this.Template.CorrectRect );         
             if (dd.CorrectRect.Width > 0 ) //TODO: 进一步判断
             {
+                int offset =
+                       _template.Manageareas.FeaturePoints.list[2].Rect.Height -
+                        dd.ListFeature[2].Height;
+                if (Math.Abs(offset) > 1)
+                {
+                    Rectangle r = dd.ListFeature[2];
+                    r.Offset(0, -offset);
+                    r.Height += 2;
+                    dd.ListFeature[2] = r;
+                }
+                _angle.DxyModel = true;
                 _angle.SetPaper(dd.ListFeature);
                
                 sb.Append(s + "," + dd.CorrectRect.ToString("-"));// 文件名 , CorrectRect

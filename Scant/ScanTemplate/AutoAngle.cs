@@ -21,15 +21,28 @@ namespace Tools
             {
                 _T = list;
             }
-
             _P = null;
             _Angle1 = Arcsin(_T[0], _T[1]);
         }
-        public void SetPaper(List<Rectangle> list)
-        {
-            if ((list.Count == 4|| list.Count == 3) && global.featuretype == 0  )
-               SetPaper(list[0].Location,list[1].Location,list[2].Location);
-            else if (list.Count == 4 && global.featuretype == 1 )
+        public void SetPaper(List<Rectangle> list)// 1 Bottom  2 right
+        {//
+            if ((list.Count == 4 || list.Count == 3) && global.featuretype == 0)
+            {
+                SetPaper(list[0].Location, list[1].Location, list[2].Location);
+                _P = new List<Point>();
+                foreach (Rectangle r in list)
+                    _P.Add(r.Location);
+                if (_P[0].X == 0 && _P[0].Y == 0 && _T[0].X == 0 && _T[0].Y == 0  && DxyModel )
+                {
+                    //double dx = _P;
+                 
+                    _dx =( _P[1].X - _T[1].X)*1.0 / _T[1].Y;
+                    _dy = (_P[2].Y - _T[2].Y) * 1.0 / _T[2].X;
+                    _ddx = (_P[2].X- _T[2].X) * 1.0 / _T[2].X;
+                    _ddy = (_P[1].Y - _T[1].Y) * 1.0 / _T[1].Y;
+                }
+            }
+            else if (list.Count == 4 && global.featuretype == 1)
             {
                 SetPaper(list[2].Location, list[3].Location, list[0].Location);
             }
@@ -37,7 +50,6 @@ namespace Tools
             {
                 SetPaper(list[0].Location, list[1].Location, list[2].Location);
             }
-            
         }
         public void SetPaper(double angle)
         {
@@ -45,6 +57,13 @@ namespace Tools
         }
         public Point GetCorrectPoint(int x, int y) //相对0，0而言
         {
+            if (DxyModel)
+            {
+                x +=(int)( _dx * y-.3   + _ddx * x       );
+                y +=(int)( _dy * x-.3 + _ddy * y);
+                return new Point(x, y);
+            }
+
             if (_T[0].X == 0)
             {
                 double r = Math.Sqrt(x * x + y * y);
@@ -90,6 +109,11 @@ namespace Tools
             return Math.Asin( (P1.X-P0.X)/r );
         }
 
+        private static double Arcsin2(Point P0, Point P1)
+        {
+            double r = Math.Sqrt((P1.X - P0.X) * (P1.X - P0.X) + (P1.Y - P0.Y) * (P1.Y - P0.Y));
+            return Math.Asin((P1.Y - P0.Y) / r);
+        }
         private void SetPaper(Point P0, Point P1, Point P2)
         {
             _P = new List<Point>(){P0,P1,P2};
@@ -100,6 +124,14 @@ namespace Tools
         private List<Point> _P;
         private double _Angle1;
         private double _Angle2;
+        private double _dy;
+        private double _dx;
+        private double _ddx;
+        private double _ddy;
 
+
+        public double SPAngle1 { get { return Arcsin2(_T[0],_T[2]); } }
+
+        public bool DxyModel { get; set; }
     }
 }

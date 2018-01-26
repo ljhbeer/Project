@@ -209,6 +209,19 @@ namespace ScanTemplate
                 FormPreDealImage f = new FormPreDealImage(_ActivePath, GetListBoxNameList(listBoxfilename));
                 f.ShowDialog();
                 this.Show();
+                return;
+            }
+
+            if (pictureBox1.Image != null && listBoxfilename.SelectedIndex!=-1)
+            {
+                this.Hide();
+                List<string> list = new List<string>();
+                list.Add(listBoxfilename.SelectedItem.ToString());
+                bool OneFileMode = true;
+                FormPreDealImage f = new FormPreDealImage(_ActivePath,list,OneFileMode);
+                f.ShowDialog();
+                this.Show();
+                return;
             }
         }
 

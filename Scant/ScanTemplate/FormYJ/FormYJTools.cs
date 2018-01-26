@@ -310,8 +310,11 @@ namespace ScanTemplate.FormYJ
                 dtset.Rows.Add(dr);
             }
             dtset.AcceptChanges();
-            _AvgUnImgHeight /= _exam.Subjects.Count;
-            _AvgUnImgWith /= _exam.Subjects.Count;
+            if (_exam.Subjects.Count > 0)
+            {
+                _AvgUnImgHeight /= _exam.Subjects.Count;
+                _AvgUnImgWith /= _exam.Subjects.Count;
+            }
         }
         private void AddStudentsdtset(ref DataTable dtset )
         {

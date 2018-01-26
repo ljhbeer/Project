@@ -66,13 +66,15 @@ namespace  Tools
                 //Rectangle area = new Rectangle(0, 0, src.Width, src.Height);
                 List<Rectangle> FourLtbRtbRect = GetLrbRtb(_CorrectRect, 40, 40);
                 List<Rectangle> list = new List<Rectangle>();
-                //int   cnt = 0;
+                int cnt = 0;
                 foreach (Rectangle r in FourLtbRtbRect)
                 {
                     r.Inflate(r.Size);
                     r.Intersect(area);
-                    Rectangle nr2 = DetectCorrectFromImg(src, r, true, r.Width / 6);                    
+                    Rectangle nr2 = DetectCorrectFromImg(src, r, true, r.Width / 6);
                     list.Add(nr2);
+                    //src.Clone(nr2, src.PixelFormat).Save("F:\\debug\\"+cnt+"-"+nr2.ToString("_")+".tif");
+                    cnt++;
                 }
                 return ConstructDetectData(HasCorrectRect, _CorrectRect,list);
             }

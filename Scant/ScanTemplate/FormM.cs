@@ -299,7 +299,8 @@ namespace ScanTemplate
                 InitReDoScan(filename);
                 return;
             }
-            string fn = _rundt.Rows[e.RowIndex]["文件名"].ToString().Replace("LJH\\", "LJH\\Correct\\").Replace("\\img","");
+            string fn = _rundt.Rows[e.RowIndex]["文件名"].ToString().Replace("LJH\\", "LJH\\Correct\\").Replace("\\img", "");
+            //string fn = _rundt.Rows[e.RowIndex]["文件名"].ToString();
             if (File.Exists(fn))
             {
                 double angle = (double)(_rundt.Rows[e.RowIndex]["校验角度"]);
@@ -307,7 +308,24 @@ namespace ScanTemplate
 
                 AutoAngle Angle = _scan.Template.Angle;
                 if (Angle != null)
-                    Angle.SetPaper(angle);
+                {
+                    Angle.DxyModel = true;
+                     Rectangle area =new  Rectangle(1, 1, bmp.Width-1, bmp.Height-1);
+                    DetectData dd = DetectImageTools.DetectImg(bmp,area,_scan.Template.CorrectRect );
+                    if (dd.CorrectRect.Width > 0) //TODO: 进一步判断
+                    {
+                        int offset =
+                        _scan.Template.Manageareas.FeaturePoints.list[2].Rect.Height -
+                        dd.ListFeature[2].Height;
+                        dd.ListFeature[2].Inflate(0, -offset);
+                        Rectangle r = dd.ListFeature[2];
+                        r.Offset(0, -offset);
+                        r.Height += 2;
+                        dd.ListFeature[2] = r;
+                        Angle.SetPaper(dd.ListFeature);
+                    }
+                   
+                }
                 pictureBox1.Image = ARTemplate.TemplateTools.DrawInfoBmp(bmp, _scan.Template, Angle);
             }
 		}

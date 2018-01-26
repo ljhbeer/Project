@@ -18,7 +18,7 @@ namespace ScanTemplate
 {
     public partial class FormPreDealImage : Form
     {
-        public FormPreDealImage(string _ActivePath, List<string> list)
+        public FormPreDealImage(string _ActivePath, List<string> list, bool OneFileMode = false)
         {
             InitializeComponent();
             this._ActivePath = _ActivePath;
@@ -27,6 +27,19 @@ namespace ScanTemplate
             _ListFeature = new List<Rectangle>();
             zoombox = new ZoomBox();
             listBoxfilename.Items.AddRange(list.ToArray());
+            this.OneFileMode = OneFileMode;
+
+            if (OneFileMode)
+            {
+                buttonAutoRorate.Visible = false;
+                buttonApplyCutToAllImage.Visible = false;
+                buttonApplyAll.Visible = false;
+                buttonAngle.Visible = true;
+                buttonTo2bpp.Visible = true;
+                buttonSaveActiveImage.Visible = true;
+                flowLayoutPanel1.Visible = true;
+                //tableLayoutPanel1.Visible = true;
+            }
         }
 
         private void buttonSetSeletion_Click(object sender, EventArgs e)
@@ -52,6 +65,8 @@ namespace ScanTemplate
                     textBoxOut.AppendText("_angle" + _angle.Angle1);
 
                     double angle = -_angle.Angle1 * 180 / Math.PI;
+                    if(checkBoxVertical.Checked)
+                        angle = _angle.SPAngle1* 180 / Math.PI;
                     textBoxAngle.Text = angle.ToString();
                     pictureBox1.Refresh();
                 }
@@ -100,7 +115,7 @@ namespace ScanTemplate
             }
             if (dd.CorrectRect.Width == 0) return;
 
-            _autororate = new AutoRorate(dd.CorrectRect, list, _ActivePath);
+            _autororate = new AutoRorate(dd.CorrectRect, list, _ActivePath,checkBoxVertical.Checked);
             _autororate.DgShowMsg = new DelegateShowScanMsg(ThreadShowMsg);
             _autororate.DoScan();
             _bScan = false;
@@ -420,17 +435,20 @@ namespace ScanTemplate
         private bool _bScan;
         private AutoRorate _autororate;
         private string Msg;
+        private bool OneFileMode;
     }
     public class AutoRorate
     {
         private Rectangle CorrectRect;
         private List<string> list;
         private string _ActivePath;
-        public AutoRorate(Rectangle correctRect, List<string> list, string _ActivePath)
+        private bool _Veritical;
+        public AutoRorate(Rectangle correctRect, List<string> list, string _ActivePath,bool Veritical = false)
         {
             this.CorrectRect = correctRect;
             this.list = list;
             this._ActivePath = _ActivePath;
+            this._Veritical = Veritical;
         }
         public void RunRorate()
         {
@@ -471,6 +489,8 @@ namespace ScanTemplate
                     List<Point> list = ListFeatureToPoints(dd);
                     AutoAngle _angle = new AutoAngle(list);
                     double angle = -_angle.Angle1 * 180 / Math.PI;
+                    if(_Veritical)
+                        angle = _angle.SPAngle1 * 180 / Math.PI;
                     //Rorate
                     Bitmap _src1 = Tools.BitmapRotateTools.Rotate(_src, (float)angle);
                     _src1 = ConvertFormat.Convert(_src1, PixelFormat.Format1bppIndexed, false);
@@ -493,7 +513,6 @@ namespace ScanTemplate
             }
             return null;
         }
-
         private List<Point> ListFeatureToPoints(DetectData dd)
         {
             List<Point> list = dd.ListFeature.Select(r => r.Location).ToList();

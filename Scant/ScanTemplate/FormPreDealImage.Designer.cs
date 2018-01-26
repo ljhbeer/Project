@@ -47,6 +47,7 @@
             this.buttonAngle = new System.Windows.Forms.Button();
             this.buttonTo2bpp = new System.Windows.Forms.Button();
             this.buttonSaveActiveImage = new System.Windows.Forms.Button();
+            this.checkBoxVertical = new System.Windows.Forms.CheckBox();
             this.tableLayoutPanel1.SuspendLayout();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -122,6 +123,7 @@
             this.flowLayoutPanel3.Controls.Add(this.buttonSetSeletion);
             this.flowLayoutPanel3.Controls.Add(this.button1);
             this.flowLayoutPanel3.Controls.Add(this.buttonAutoRorate);
+            this.flowLayoutPanel3.Controls.Add(this.checkBoxVertical);
             this.flowLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.flowLayoutPanel3.Location = new System.Drawing.Point(149, 3);
             this.flowLayoutPanel3.Name = "flowLayoutPanel3";
@@ -264,6 +266,16 @@
             this.buttonSaveActiveImage.UseVisualStyleBackColor = true;
             this.buttonSaveActiveImage.Click += new System.EventHandler(this.buttonSaveActiveImage_Click);
             // 
+            // checkBoxVertical
+            // 
+            this.checkBoxVertical.AutoSize = true;
+            this.checkBoxVertical.Location = new System.Drawing.Point(180, 3);
+            this.checkBoxVertical.Name = "checkBoxVertical";
+            this.checkBoxVertical.Size = new System.Drawing.Size(96, 16);
+            this.checkBoxVertical.TabIndex = 15;
+            this.checkBoxVertical.Text = "水平方向修正";
+            this.checkBoxVertical.UseVisualStyleBackColor = true;
+            // 
             // FormPreDealImage
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -277,6 +289,7 @@
             this.panel1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.flowLayoutPanel3.ResumeLayout(false);
+            this.flowLayoutPanel3.PerformLayout();
             this.flowLayoutPanel1.ResumeLayout(false);
             this.flowLayoutPanel1.PerformLayout();
             this.ResumeLayout(false);
@@ -304,5 +317,6 @@
         private System.Windows.Forms.Button buttonTo2bpp;
         private System.Windows.Forms.Button buttonSaveActiveImage;
         private System.Windows.Forms.Button buttonAutoRorate;
+        private System.Windows.Forms.CheckBox checkBoxVertical;
     }
 }

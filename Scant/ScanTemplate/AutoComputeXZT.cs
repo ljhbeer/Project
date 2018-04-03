@@ -33,7 +33,7 @@ namespace ScanTemplate
                 //BitmapData bmpdata = _src.LockBits(r,ImageLockMode.ReadOnly,_src.PixelFormat);
                 //暂不采用该方法
             	Rectangle rp = new Rectangle(0,0,sca.Size.Width,sca.Size.Height);
-                int validblackcnt = rp.Width * rp.Height * 8 / 20;
+                int validblackcnt = rp.Width * rp.Height * 14 / 20;
             	foreach(List<Point> lp in sca.list){
             		List<int> blackpixs = new List<int>();
             		foreach(Point p in lp){
@@ -117,6 +117,16 @@ namespace ScanTemplate
             }
             if (sb.Length > 0)
                 return sb.ToString();
+            int max = blackpixs.Max();
+            int avg =(int) blackpixs.Average();
+            int avg2 =(int)( (blackpixs.Sum() - max) * 1.5 / (blackpixs.Count - 1) );
+            List<int> st = blackpixs;
+            st.Sort();
+            if (max>avg2 && avg > st[2] && max - avg > avg - st[1])
+            {
+                int index = blackpixs.IndexOf(max);
+                return Convert.ToChar(index + 'A').ToString();
+            }
         	return "-";
         }
         public string GetKHOptions(List<int> blackpixs,int validblackcnt){

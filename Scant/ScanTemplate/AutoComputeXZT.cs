@@ -22,13 +22,18 @@ namespace ScanTemplate
         public string ComputeXZT(string num1, AutoAngle _angle)
         {
             StringBuilder sb = new StringBuilder();
+            int num = 1;
             foreach(SingleChoiceArea sca in _artemplate.Manageareas.SinglechoiceAreas.list)
             {
                 Rectangle r = sca.Rect;
                 Point nL = _angle.GetCorrectPoint(r.X, r.Y);
-                //((Bitmap)_src.Clone(r, _src.PixelFormat)).Save("f:\\img\\"+num+"_beforeoffset.jpg");
+
+                if (global.Debug || (global.tag & 16) > 0)
+                    ((Bitmap)_src.Clone(r, _src.PixelFormat)).Save("f:\\img\\" + (num++) + "_beforeoffset.jpg");
                 r.Location = nL;
-                //((Bitmap)_src.Clone(r, _src.PixelFormat)).Save("f:\\img\\" + num + "_offset2.jpg");            	
+
+                if (global.Debug || (global.tag & 16) > 0)
+                     ((Bitmap)_src.Clone(r, _src.PixelFormat)).Save("f:\\img\\" + num + "_offset2.jpg");            	
                 Bitmap bmp = (Bitmap)_src.Clone(r, _src.PixelFormat);
                 //BitmapData bmpdata = _src.LockBits(r,ImageLockMode.ReadOnly,_src.PixelFormat);
                 //暂不采用该方法
@@ -120,7 +125,7 @@ namespace ScanTemplate
             int max = blackpixs.Max();
             int avg =(int) blackpixs.Average();
             int avg2 =(int)( (blackpixs.Sum() - max) * 1.5 / (blackpixs.Count - 1) );
-            List<int> st = blackpixs;
+            List<int> st = blackpixs.Select(r=>r).ToList();
             st.Sort();
             if (max>avg2 && avg > st[2] && max - avg > avg - st[1])
             {

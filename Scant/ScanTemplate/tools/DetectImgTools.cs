@@ -73,7 +73,8 @@ namespace  Tools
                     r.Intersect(area);
                     Rectangle nr2 = DetectCorrectFromImg(src, r, true, r.Width / 6);
                     list.Add(nr2);
-                    //src.Clone(nr2, src.PixelFormat).Save("F:\\debug\\"+cnt+"-"+nr2.ToString("_")+".tif");
+                    if(global.Debug && (global.tag & 8)>0)
+                        src.Clone(nr2, src.PixelFormat).Save("F:\\debug\\" + cnt + "-" + nr2.ToString("_") + ".tif");
                     cnt++;
                 }
                 return ConstructDetectData(HasCorrectRect, _CorrectRect,list);

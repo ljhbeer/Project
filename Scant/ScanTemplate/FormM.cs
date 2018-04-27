@@ -299,34 +299,23 @@ namespace ScanTemplate
                 InitReDoScan(filename);
                 return;
             }
-            string fn = _rundt.Rows[e.RowIndex]["文件名"].ToString().Replace("LJH\\", "LJH\\Correct\\").Replace("\\img", "");
-            //string fn = _rundt.Rows[e.RowIndex]["文件名"].ToString();
+            //string fn = _rundt.Rows[e.RowIndex]["文件名"].ToString().Replace("LJH\\", "LJH\\Correct\\").Replace("\\img", "");
+            string fn = _rundt.Rows[e.RowIndex]["文件名"].ToString();
             if (File.Exists(fn))
             {
-                double angle = (double)(_rundt.Rows[e.RowIndex]["校验角度"]);
-                Bitmap bmp = (Bitmap)Bitmap.FromFile(fn);
+                {//SameTo FormYJTools.dgv_CellContentClick
+                    Student S = new Student();
+                    double S_angle = (double)(_rundt.Rows[e.RowIndex]["校验角度"]);
+                    Bitmap S_Src = (Bitmap)Bitmap.FromFile(fn);
+                    AutoAngle Angle = _scan.Template.Angle;
 
-                AutoAngle Angle = _scan.Template.Angle;
-                if (Angle != null)
-                {
-                    Angle.DxyModel = true;
-                     Rectangle area =new  Rectangle(1, 1, bmp.Width-1, bmp.Height-1);
-                    DetectData dd = DetectImageTools.DetectImg(bmp,area,_scan.Template.CorrectRect );
-                    if (dd.CorrectRect.Width > 0) //TODO: 进一步判断
-                    {
-                        int offset =
-                        _scan.Template.Manageareas.FeaturePoints.list[2].Rect.Height -
-                        dd.ListFeature[2].Height;
-                        dd.ListFeature[2].Inflate(0, -offset);
-                        Rectangle r = dd.ListFeature[2];
-                        r.Offset(0, -offset);
-                        r.Height += 2;
-                        dd.ListFeature[2] = r;
-                        Angle.SetPaper(dd.ListFeature);
-                    }
-                   
+                    string str = _rundt.Rows[e.RowIndex]["CorrectRect"].ToString();
+                    Rectangle S_SrcCorrectRect = Tools.StringTools.StringToRectangle(str, '-');
+                 
+                    if (Angle != null && S_SrcCorrectRect.Width>20&& S_SrcCorrectRect.Height>20 )
+                        Angle.SetPaper(S_angle);
+                    pictureBox1.Image = TemplateTools.DrawInfoBmp(S_Src.Clone(S_SrcCorrectRect,S_Src.PixelFormat),_scan.Template, Angle);
                 }
-                pictureBox1.Image = ARTemplate.TemplateTools.DrawInfoBmp(bmp, _scan.Template, Angle);
             }
 		}
 		private void Zoomrat(double rat, Point e)

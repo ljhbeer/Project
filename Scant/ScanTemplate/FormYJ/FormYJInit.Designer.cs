@@ -44,10 +44,10 @@
             this.buttonShowXztSet = new System.Windows.Forms.Button();
             this.buttonShowFXztSet = new System.Windows.Forms.Button();
             this.buttonImportOptionAnswerScore = new System.Windows.Forms.Button();
+            this.buttonShowScore = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.buttonShowScore = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.tableLayoutPanel2.SuspendLayout();
             this.panel3.SuspendLayout();
@@ -188,6 +188,7 @@
             this.dgv.RowTemplate.Height = 23;
             this.dgv.Size = new System.Drawing.Size(274, 396);
             this.dgv.TabIndex = 1;
+            this.dgv.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgv_CellContentClick);
             // 
             // splitContainer2
             // 
@@ -274,6 +275,16 @@
             this.buttonImportOptionAnswerScore.UseVisualStyleBackColor = true;
             this.buttonImportOptionAnswerScore.Click += new System.EventHandler(this.buttonImportOptionAnswerScore_Click);
             // 
+            // buttonShowScore
+            // 
+            this.buttonShowScore.Location = new System.Drawing.Point(177, 3);
+            this.buttonShowScore.Name = "buttonShowScore";
+            this.buttonShowScore.Size = new System.Drawing.Size(52, 18);
+            this.buttonShowScore.TabIndex = 5;
+            this.buttonShowScore.Text = "显示分值";
+            this.buttonShowScore.UseVisualStyleBackColor = true;
+            this.buttonShowScore.Click += new System.EventHandler(this.buttonShowScore_Click);
+            // 
             // panel1
             // 
             this.panel1.AutoScroll = true;
@@ -318,16 +329,6 @@
             this.splitContainer1.Size = new System.Drawing.Size(807, 483);
             this.splitContainer1.SplitterDistance = 37;
             this.splitContainer1.TabIndex = 1;
-            // 
-            // buttonShowScore
-            // 
-            this.buttonShowScore.Location = new System.Drawing.Point(177, 3);
-            this.buttonShowScore.Name = "buttonShowScore";
-            this.buttonShowScore.Size = new System.Drawing.Size(52, 18);
-            this.buttonShowScore.TabIndex = 5;
-            this.buttonShowScore.Text = "显示分值";
-            this.buttonShowScore.UseVisualStyleBackColor = true;
-            this.buttonShowScore.Click += new System.EventHandler(this.buttonShowScore_Click);
             // 
             // FormYJInit
             // 

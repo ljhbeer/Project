@@ -344,7 +344,28 @@ namespace ScanTemplate.FormYJ
             panel3.Invalidate();
             panel3.AutoScrollPosition = new Point(-S.X, -S.Y);
         }
+        private void dgv_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {//
+            if (e.RowIndex == -1 || e.ColumnIndex == -1|| _rundt == null)
+                return;         
+            string fn = _rundt.Rows[e.RowIndex]["文件名"].ToString();
+            if (File.Exists(fn))
+            {
+                {//SameTo FormYJTools.dgv_CellContentClick
+                    Student S = new Student();
+                    double S_angle = (double)(_rundt.Rows[e.RowIndex]["校验角度"]);
+                    Bitmap S_Src = (Bitmap)Bitmap.FromFile(fn);
+                    AutoAngle Angle =_artemplate.Angle;
 
+                    string str = _rundt.Rows[e.RowIndex]["CorrectRect"].ToString();
+                    Rectangle S_SrcCorrectRect = Tools.StringTools.StringToRectangle(str, '-');
+
+                    if (Angle != null && S_SrcCorrectRect.Width > 20 && S_SrcCorrectRect.Height > 20)
+                        Angle.SetPaper(S_angle);
+                    pictureBox1.Image = TemplateTools.DrawInfoBmp(S_Src.Clone(S_SrcCorrectRect, S_Src.PixelFormat),_artemplate, Angle);
+                }
+            }
+        }
         private Template _artemplate;
         private DataTable _rundt;
         private AutoAngle _angle;
@@ -362,6 +383,7 @@ namespace ScanTemplate.FormYJ
         private string _examname;
         private string _DataFullPath;
         private Tzsubjects _Tzsubjects;
+
     }    
     public class Optionsubjects
     {

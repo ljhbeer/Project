@@ -620,6 +620,8 @@ namespace ScanTemplate.FormYJ
         public Papers()
         {
             _papers = new List<Paper>();
+            _iddic = new Dictionary<int, Paper>();
+            _khdic = new Dictionary<int, Paper>();
         }
 
         public Papers(List<Paper> papers)
@@ -734,6 +736,10 @@ namespace ScanTemplate.FormYJ
                     _id = Convert.ToInt32(s.Substring(s.Length - 4));
                 }
             }
+        }
+        public void SetNewFileName(string imgfilename)
+        {
+            _imgfilename = imgfilename;
         }
         public string ToJsonString()
         {

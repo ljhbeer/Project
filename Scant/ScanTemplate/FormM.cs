@@ -411,19 +411,16 @@ namespace ScanTemplate
                 if (_bReScan)
                 {
                     _bReScan = false;
-                }
-              //
-                {
                     _bSingleTestScan = false;
                     this.Invoke(new MyInvoke(MyRefreshDgvAll));
                 }
             }else if (_bReScan)
             {
                 _bReScan = false;
-
                 string Datafilename = _scan.ScanDataPath + "\\data.txt.json";
                 _papers.SavePapers(Datafilename);
                 this.Invoke(new MyInvoke(MyRefresh));
+                this.Invoke(new MyInvoke(MyRefreshDgvAll));
             }
             else
             {
@@ -439,12 +436,14 @@ namespace ScanTemplate
                     File.Copy(_scan.TemplateName, NewTemplatename, true);
                     File.WriteAllText(_scan.ScanDataPath + "\\" + examname + ".exam", examname);
 
+                    foreach(Paper p in _papers.PaperList)
+                        p.SetNewFileName( p.ImgFilename.Replace(_scan.SourcePath, _scan.ScanDataPath + "\\img") );
                     //
-                    //exportdata = exportdata.Replace(_scan.SourcePath, _scan.ScanDataPath + "\\img");
+                    //exportdata = exportdata
                     //File.WriteAllText(Datafilename, string.Join(",", _scan.ExportTitles) + "\r\n" + exportdata);
                     Datafilename = _scan.ScanDataPath + "\\data.txt.json";
                     _papers.SavePapers(Datafilename);
-
+                    this.Invoke(new MyInvoke(MyRefreshDgvAll));
                     this.Invoke(new MyInvoke(MyRefresh));
                     global.SaveDirectoryMemo(_scan.ScanDataPath,examname);
                 }

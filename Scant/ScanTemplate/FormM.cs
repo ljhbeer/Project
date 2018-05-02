@@ -354,6 +354,34 @@ namespace ScanTemplate
             }
             _rundt.AcceptChanges();
         }
+        public void ShowMsg(Paper paper)
+        {
+            Papers _papers = new Papers();
+            _papers.AddPaper(paper);
+            DataRow dr = _rundt.NewRow();
+            dr["校验角度"] = paper.Angle;
+            dr["考号"] = paper.KH;
+            dr["序号"] = _rundt.Rows.Count + 1;
+            dr["姓名"] = paper.Name;
+            dr["文件名"] = paper.ImgFilename;
+            dr["CorrectRect"] = paper.SrcCorrectRect.ToString("-");
+            //foreach (KeyValuePair<string, int> kv in _scan.Titlepos)
+            //{
+            //    if (kv.Key.Contains("校验"))
+            //        dr[kv.Key] = Convert.ToDouble(ss[kv.Value]);
+            //    else
+            //        dr[kv.Key] = ss[kv.Value];
+            //}
+            if (paper.XZT.Count>0)
+            {
+                for (int ii = 0; ii < paper.XZT.Count; ii++)
+                    dr["x" + (ii + 1)] = paper.XZT[ii];
+            }
+
+
+           _rundt.Rows.Add(dr);
+            this.Invoke(new MyInvoke(MyRefreshDgv));
+        }
         public void ShowMsg(string  msg)
         {
             string[] ss = msg.Trim().Split(',');

@@ -615,6 +615,143 @@ namespace ScanTemplate.FormYJ
         //public int ID;
         //public Double Score;
     }
+    public class Papers 
+    {
+        public Papers()
+        {
+            _papers = new List<Paper>();
+        }
+
+        public void AddPaper(Paper p)
+        {
+
+            _papers.Add(p);
+        }
+        public Paper PaperFromID(int ID)
+        {
+            if (_iddic.ContainsKey(ID))
+                return _iddic[ID];
+            return new Paper();
+        }
+        public Paper PaperFromKh(int KH)
+        {
+            return _khdic[KH];
+        }
+        [JsonProperty]
+        private List<Paper> _papers;
+        private Dictionary<int, Paper> _iddic;
+        private Dictionary<int, Paper> _khdic;
+        // Can be null
+      
+    }
+    [JsonObject(MemberSerialization.OptOut)]
+    public class Paper
+    {
+        public Paper( )
+        {
+            BackScore = -1;
+        }
+        public Paper(string filename, Rectangle correctrect, List<Rectangle> listFeature)
+        {
+            // TODO: Complete member initialization
+            this._imgfilename = filename;
+            this._SrcCorrectRect = correctrect;
+            this.list = listFeature;
+
+            BackScore = -1;
+            _id = -1;
+            KH = -1;
+            Name = "";
+            _XZT = new List<string>();
+        }       
+        public string ResultInfo()
+        {
+            return ID + "," + KH + "," + Name + ",";
+        }
+        public bool CorrectXzt(int index, string answer)
+        {
+            if (index < 0 || index > _XZT.Count)
+                return false;
+            return _XZT[index] == answer;
+        }
+        public string OptionAnswer(int optionindex)
+        {
+            if (_XZT != null && optionindex >= 0 && optionindex < _XZT.Count)
+                return _XZT[optionindex];
+            return "";
+        }
+        public string OutXzt(List<string> optionanswer, List<float> maxscore, ref float sum)
+        {
+            int i = 0;
+            List<float> result = _XZT.Select(r =>
+            {
+                float ret = 0;
+                if (r == optionanswer[i])
+                    ret = maxscore[i];
+                i++;
+                return ret;
+            }).ToList();
+            sum = result.Sum();
+            return string.Join(",", result);
+        }
+       
+        [JsonIgnore]
+        public int ID { get { return _id; } }
+        public double Angle { get; set; }
+        public int KH { get; set; }
+        public string Name { get; set; }
+        public string ImgFilename { get { return _imgfilename; } }
+        public int Index { get; set; }
+        [JsonIgnore]
+        public int BackScore { get; set; }
+        [JsonIgnore]
+        public Bitmap Src
+        {
+            get
+            {
+                if (_src == null)
+                {
+                    if (System.IO.File.Exists(_imgfilename))
+                        _src = (Bitmap)Bitmap.FromFile(_imgfilename);
+                }
+                return _src;
+            }
+        }
+        [JsonIgnore]
+        public Rectangle SrcCorrectRect
+        {
+            get
+            {
+                return _SrcCorrectRect;
+            }
+        }
+
+        public List<String> XZT { get { return _XZT; } }
+        [JsonProperty]
+        private string _imgfilename;
+        [JsonProperty]
+        private List<Rectangle> list;
+        private int _id;
+        [JsonProperty]
+        private Rectangle _SrcCorrectRect;
+        private List<string> _XZT;
+        private Bitmap _src;
+
+        public  void AddXZT(string xzt)
+        {
+            if (xzt.EndsWith("|"))
+                xzt = xzt.Substring(0, xzt.Length - 1);
+            _XZT = xzt.Split('|').ToList();
+        }
+
+        public string Custom { get; set; }
+
+        public string ToString(string p)
+        {
+            return "";
+        }
+    }
+
     public class Students
     {
         public Students(DataTable _rundt)

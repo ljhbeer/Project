@@ -9,11 +9,13 @@ using System.Text;
 using ZXing.Common;
 using ZXing;
 using Tools;
+using ScanTemplate.FormYJ;
 
 namespace ScanTemplate
 {
-    public delegate void DelegateShowScanMsg(string msg);
-    public delegate void DelegateSaveScanData(string data);   
+    public delegate void DelegateShowScanMsg(Paper paper);
+    public delegate void DelegateShowMsg(string msg);
+    public delegate void DelegateSaveScanData(string data);
     public class ScanConfig
     {
         private UnScans _unscans;
@@ -382,10 +384,10 @@ namespace ScanTemplate
             _angle = _template.Angle;
 			foreach (string s in _nameList)
 			{
-				string _runmsg = DetectImg(s,ref msg);
-				sb.Append(_runmsg);
+                Paper paper = DetectImg(s,ref msg);
+				sb.Append(paper.ToString("json"));
                 if(DgShowScanMsg!=null)
-                DgShowScanMsg(_runmsg);//this.Invoke(new MyInvoke(ShowMsg));
+                DgShowScanMsg(paper);//this.Invoke(new MyInvoke(ShowMsg));
 				Thread.Sleep(10);
 			}
 			_exportdata = sb.ToString();
@@ -393,15 +395,18 @@ namespace ScanTemplate
             if (DgSaveScanData != null)//this.Invoke(new MyInvoke(ExportData));
                 DgSaveScanData(_exportdata);
         }
-        private string DetectImg(string s,ref StringBuilder  msg)
+        private Paper DetectImg(string s,ref StringBuilder  msg)
         {
+            Paper paper=null;
             StringBuilder sb = new StringBuilder();
             System.IO.FileStream fs = new System.IO.FileStream(s,System.IO.FileMode.Open, System.IO.FileAccess.Read);
             Bitmap orgsrc = (Bitmap)System.Drawing.Image.FromStream(fs);
             Rectangle area =new  Rectangle(15, 15, orgsrc.Width-15, orgsrc.Height-15);
-            DetectData dd = DetectImageTools.DetectImg(orgsrc,area, this.Template.CorrectRect );         
+            DetectData dd = DetectImageTools.DetectImg(orgsrc,area, this.Template.CorrectRect );
             if (dd.CorrectRect.Width > 0 ) //TODO: 进一步判断
             {
+                paper = new Paper(s, dd.CorrectRect,dd.ListFeature);
+               
                 int offset =
                        _template.Manageareas.FeaturePoints.list[2].Rect.Height -
                         dd.ListFeature[2].Height;
@@ -415,8 +420,8 @@ namespace ScanTemplate
                 _angle.DxyModel = true;
                 _angle.SetPaper(dd.ListFeature);
                
-                sb.Append(s + "," + dd.CorrectRect.ToString("-"));// 文件名 , CorrectRect
-                sb.Append("," + _angle.Angle2 ); //校验角度
+                //sb.Append(s + "," + dd.CorrectRect.ToString("-"));// 文件名 , CorrectRect
+                //sb.Append("," + _angle.Angle2 ); //校验角度
 
                 Bitmap src = (Bitmap)orgsrc.Clone(dd.CorrectRect, orgsrc.PixelFormat);
                 src.Save(CorrectPath + s.Substring(s.LastIndexOf("\\")));
@@ -431,31 +436,27 @@ namespace ScanTemplate
                         //barmap.Save("f:\\aa.tif");
                         //Ir.Offset(CorrectRect.Location);
                         ZXing.Result rs = _sc.BR.Decode(barmap);
-                        if (rs != null)
+                        if (rs != null) //kh必须是数字
                         {
-                            sb.Append("," + rs.Text);  //考号-条形码 姓名 MsgtoDr中处理
+                            paper.KH = Convert.ToInt32(rs.Text);
                             if ( _sc. Studentbases.HasStudentBase)
-                                sb.Append("," + _sc.Studentbases.GetName(Convert.ToInt32(rs.Text)));
-                            else
-                                sb.Append(",-");
+                                paper.Name = _sc.Studentbases.GetName(paper.KH);
                         }
                     }
                     else if ("1023456789".Contains(kha.Type))
                     {
+                        paper.KH = -1;
                         string kh = acx.ComputeKH(kha, _angle);
-                        if (kh.Contains("-"))
-                            sb.Append("," + kh + ",-");   //考号-涂卡 姓名-未知 MsgtoDr中处理
-                        else
+                        if (!kh.Contains("-"))
                         {
+                            paper.KH = Convert.ToInt32(kh);
                             if (_sc.Studentbases.HasStudentBase)
-                                sb.Append("," + kh + "," + _sc.Studentbases.GetName(Convert.ToInt32(kh)));
-                            else
-                                sb.Append("," + kh + ",-");
+                                paper.Name = _sc.Studentbases.GetName(paper.KH);
                         }
                     }
                 }
                 string str = s.Substring(s.Length - 7, 3);
-                sb.Append("," + acx.ComputeXZT(str,_angle)); //选择题
+                paper.AddXZT(acx.ComputeXZT(str,_angle));
                 //计算座位号
                 if (_template.Manageareas.Customareas.HasItems())
                 {
@@ -469,17 +470,16 @@ namespace ScanTemplate
                             tsb.Append(acx.ComputeCustomDF(ca, _angle) + "|");
                         }
                     }
-                    sb.Append("," + tsb); //自定义
+                    paper.Custom = tsb.ToString();
                 }
             }
             else
             {
                 msg.AppendLine(s);   
                 //检测失败
-            }
-            sb.AppendLine();
+            }        
             fs.Close();
-            return sb.ToString();
+            return paper;
         }
         public string CorrectPath { get { return _sc.Baseconfig.CorrectImgPath + "\\" + _dirname; } }
         public List<string> ExportTitles { get { return _template.GetTitles(); } }

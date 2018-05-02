@@ -116,7 +116,7 @@ namespace ScanTemplate
             if (dd.CorrectRect.Width == 0) return;
 
             _autororate = new AutoRorate(dd.CorrectRect, list, _ActivePath,checkBoxVertical.Checked);
-            _autororate.DgShowMsg = new DelegateShowScanMsg(ThreadShowMsg);
+            _autororate.DgShowMsg = new DelegateShowMsg(ThreadShowMsg);
             _autororate.DoScan();
             _bScan = false;
            
@@ -523,6 +523,6 @@ namespace ScanTemplate
             Thread thread = new Thread(new ThreadStart(RunRorate));
             thread.Start();
         }
-        public DelegateShowScanMsg DgShowMsg { get; set; }
+        public DelegateShowMsg DgShowMsg { get; set; }
     }
 }

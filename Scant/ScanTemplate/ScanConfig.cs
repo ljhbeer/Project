@@ -385,7 +385,7 @@ namespace ScanTemplate
 			foreach (string s in _nameList)
 			{
                 Paper paper = DetectImg(s,ref msg);
-				sb.Append(paper.ToString("json"));
+                sb.AppendLine(paper.ToJsonString()+",");
                 if(DgShowScanMsg!=null)
                 DgShowScanMsg(paper);//this.Invoke(new MyInvoke(ShowMsg));
 				Thread.Sleep(10);

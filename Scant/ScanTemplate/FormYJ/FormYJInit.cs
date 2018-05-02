@@ -622,27 +622,52 @@ namespace ScanTemplate.FormYJ
             _papers = new List<Paper>();
         }
 
+        public Papers(List<Paper> papers)
+        {
+            _papers = new List<Paper>();
+            _iddic = new Dictionary<int, Paper>();
+            _khdic = new Dictionary<int, Paper>();
+            foreach (Paper p in papers)
+                AddPaper(p);
+        }
+
         public void AddPaper(Paper p)
         {
-
+            _iddic[p.ID] = p;
+            _khdic[p.KH] = p;
             _papers.Add(p);
+        }
+        public void RebuildDic()
+        {
+            _khdic.Clear();
+            foreach (Paper p in _papers)
+                _khdic[p.KH] = p;
         }
         public Paper PaperFromID(int ID)
         {
             if (_iddic.ContainsKey(ID))
                 return _iddic[ID];
-            return new Paper();
+            return new Paper(); //null
         }
         public Paper PaperFromKh(int KH)
         {
+            if(_khdic.ContainsKey(KH))
             return _khdic[KH];
+            return new Paper(); //null
         }
+        public void SavePapers(string Datafilename)
+        {
+            string str = Tools.JsonFormatTool.ConvertJsonString(
+                Newtonsoft.Json.JsonConvert.SerializeObject(_papers));
+            File.WriteAllText(Datafilename, str);
+        }
+
         [JsonProperty]
         private List<Paper> _papers;
         private Dictionary<int, Paper> _iddic;
         private Dictionary<int, Paper> _khdic;
+        public List<Paper> PaperList { get { return _papers; } }
         // Can be null
-      
     }
     [JsonObject(MemberSerialization.OptOut)]
     public class Paper
@@ -664,10 +689,6 @@ namespace ScanTemplate.FormYJ
             Name = "";
             _XZT = new List<string>();
         }       
-        public string ResultInfo()
-        {
-            return ID + "," + KH + "," + Name + ",";
-        }
         public bool CorrectXzt(int index, string answer)
         {
             if (index < 0 || index > _XZT.Count)
@@ -694,16 +715,46 @@ namespace ScanTemplate.FormYJ
             sum = result.Sum();
             return string.Join(",", result);
         }
-       
-        [JsonIgnore]
-        public int ID { get { return _id; } }
+        public void AddXZT(string xzt)
+        {
+            if (xzt.EndsWith("|"))
+                xzt = xzt.Substring(0, xzt.Length - 1);
+            _XZT = xzt.Split('|').ToList();
+        }
+        public void InitID()
+        {
+            if (_imgfilename != "" && _imgfilename.Contains("."))
+            {
+                string s = _imgfilename.Substring(0, _imgfilename.IndexOf("."));
+                if (s.Contains("\\"))
+                    s = s.Substring(s.LastIndexOf("\\") + 1);
+                if (s.Contains("-"))
+                {
+                    s = s.Substring(s.LastIndexOf("-") + 1);
+                    _id = Convert.ToInt32(s.Substring(s.Length - 4));
+                }
+            }
+        }
+        public string ToJsonString()
+        {
+            return Tools.JsonFormatTool.ConvertJsonString(Newtonsoft.Json.JsonConvert.SerializeObject(this));
+        }
+        public string ResultInfo()
+        {
+            return ID + "," + KH + "," + Name + ",";
+        }
+
         public double Angle { get; set; }
         public int KH { get; set; }
         public string Name { get; set; }
-        public string ImgFilename { get { return _imgfilename; } }
         public int Index { get; set; }
+        public string Custom { get; set; }
+        [JsonIgnore]
+        public int ID { get { return _id; } }
         [JsonIgnore]
         public int BackScore { get; set; }
+        [JsonIgnore]
+        public string ImgFilename { get { return _imgfilename; } }
         [JsonIgnore]
         public Bitmap Src
         {
@@ -725,31 +776,21 @@ namespace ScanTemplate.FormYJ
                 return _SrcCorrectRect;
             }
         }
-
+        [JsonIgnore]
         public List<String> XZT { get { return _XZT; } }
+        
+        [JsonProperty]
+        private List<Rectangle> list;
+        [JsonProperty]
+        private int _id;
         [JsonProperty]
         private string _imgfilename;
         [JsonProperty]
-        private List<Rectangle> list;
-        private int _id;
-        [JsonProperty]
         private Rectangle _SrcCorrectRect;
+        [JsonProperty]
         private List<string> _XZT;
+        ///[JsonIgnore]
         private Bitmap _src;
-
-        public  void AddXZT(string xzt)
-        {
-            if (xzt.EndsWith("|"))
-                xzt = xzt.Substring(0, xzt.Length - 1);
-            _XZT = xzt.Split('|').ToList();
-        }
-
-        public string Custom { get; set; }
-
-        public string ToString(string p)
-        {
-            return "";
-        }
     }
 
     public class Students

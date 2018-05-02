@@ -24,10 +24,12 @@ namespace ScanTemplate
         private Scan _scan;
         private bool _bReScan;
         private bool _bSingleTestScan;
+        private Papers _papers;
 		public FormM()
 		{
 			InitializeComponent();
             _bReScan = false;
+            _papers = new Papers();
             _rundt = null;
 		}
 		private void FormM_Load(object sender, EventArgs e)
@@ -160,6 +162,7 @@ namespace ScanTemplate
                 _rundt = Tools.DataTableTools.ConstructDataTable(_scan.ColNames.ToArray());
                 dgv.DataSource = _rundt;
                 InitDgvUI();
+                _papers.PaperList.Clear();
                 _scan.DgSaveScanData = new DelegateSaveScanData(ExportData);
                 _scan.DgShowScanMsg = new DelegateShowScanMsg(ShowMsg);
                 _scan.DoScan();
@@ -192,6 +195,7 @@ namespace ScanTemplate
                 _rundt = Tools.DataTableTools.ConstructDataTable(_scan.ColNames.ToArray());
                 dgv.DataSource = _rundt;
                 InitDgvUI();
+                _papers.PaperList.Clear();
                 _scan.DgSaveScanData = new DelegateSaveScanData(ExportData);
                 _scan.DgShowScanMsg = new DelegateShowScanMsg(ShowMsg);
                 _scan.DoScan();
@@ -230,18 +234,30 @@ namespace ScanTemplate
 		{
 			if (listBoxScantData.SelectedIndex == -1) return;
             ScanData sd = (ScanData)listBoxScantData.SelectedItem;
+            if (!File.Exists(sd.DataFullName + ".json") && !File.Exists(sd.DataFullName)) return;
+
+            _scan = new Scan(_sc, sd.TemplateFileName, sd.ImgList, sd.Fullpath, false);
+            _rundt = Tools.DataTableTools.ConstructDataTable(_scan.ColNames.ToArray());
+            dgv.DataSource = _rundt;
+            InitDgvUI();
+
+            if(File.Exists( sd.DataFullName+".json")){
+                global.ScanDataJsonFormat = true;
+                List<Paper> papers = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Paper>>( 
+                    File.ReadAllText( sd.DataFullName+".json").Replace("}\r\n{","},\r\n{"));
+                _papers = new Papers(papers);
+                foreach (Paper p in papers)
+                    AddPaperToDt(p, _rundt);
+                _rundt.AcceptChanges();
+            }else
             if (File.Exists(sd.DataFullName))
             {
+                global.ScanDataJsonFormat = false;
                 string[] ls = File.ReadAllLines(sd.DataFullName);
                 List<string> titles = ls[0].Split(',').ToList();
-
                 if(_scan!=null){
                     _scan.Clear();
                 }
-                _scan = new Scan(_sc,sd.TemplateFileName,sd.ImgList,sd.Fullpath,false);
-                _rundt = Tools.DataTableTools.ConstructDataTable(_scan.ColNames.ToArray());
-                dgv.DataSource = _rundt;
-                InitDgvUI();
                 InitDgvData(ls);
             }
             else
@@ -356,31 +372,29 @@ namespace ScanTemplate
         }
         public void ShowMsg(Paper paper)
         {
-            Papers _papers = new Papers();
+            paper.InitID();
+            paper.Index = _papers.PaperList.Count;
             _papers.AddPaper(paper);
-            DataRow dr = _rundt.NewRow();
+            AddPaperToDt(paper,_rundt);
+            this.Invoke(new MyInvoke(MyRefreshDgv));
+        }
+
+        private void AddPaperToDt(Paper paper,DataTable rundt)
+        {
+            DataRow dr = rundt.NewRow();
             dr["校验角度"] = paper.Angle;
             dr["考号"] = paper.KH;
-            dr["序号"] = _rundt.Rows.Count + 1;
+            int xuhao =  rundt.Rows.Count + 1;
+            dr["序号"] = new ValueTag(xuhao.ToString(), paper);
             dr["姓名"] = paper.Name;
             dr["文件名"] = paper.ImgFilename;
             dr["CorrectRect"] = paper.SrcCorrectRect.ToString("-");
-            //foreach (KeyValuePair<string, int> kv in _scan.Titlepos)
-            //{
-            //    if (kv.Key.Contains("校验"))
-            //        dr[kv.Key] = Convert.ToDouble(ss[kv.Value]);
-            //    else
-            //        dr[kv.Key] = ss[kv.Value];
-            //}
-            if (paper.XZT.Count>0)
+            if (paper.XZT.Count > 0)
             {
                 for (int ii = 0; ii < paper.XZT.Count; ii++)
                     dr["x" + (ii + 1)] = paper.XZT[ii];
             }
-
-
-           _rundt.Rows.Add(dr);
-            this.Invoke(new MyInvoke(MyRefreshDgv));
+            rundt.Rows.Add(dr);
         }
         public void ShowMsg(string  msg)
         {
@@ -406,8 +420,9 @@ namespace ScanTemplate
             }else if (_bReScan)
             {
                 _bReScan = false;
-                string Datafilename = _scan.ScanDataPath + "\\data.txt";
-                File.WriteAllText(Datafilename, string.Join(",", _scan.ExportTitles) + "\r\n" + exportdata);
+
+                string Datafilename = _scan.ScanDataPath + "\\data.txt.json";
+                _papers.SavePapers(Datafilename);
                 this.Invoke(new MyInvoke(MyRefresh));
             }
             else
@@ -423,8 +438,13 @@ namespace ScanTemplate
                     Directory.Move(_scan.SourcePath, NewImgsPath);
                     File.Copy(_scan.TemplateName, NewTemplatename, true);
                     File.WriteAllText(_scan.ScanDataPath + "\\" + examname + ".exam", examname);
-                    exportdata = exportdata.Replace(_scan.SourcePath, _scan.ScanDataPath + "\\img");
-                    File.WriteAllText(Datafilename, string.Join(",", _scan.ExportTitles) + "\r\n" + exportdata);
+
+                    //
+                    //exportdata = exportdata.Replace(_scan.SourcePath, _scan.ScanDataPath + "\\img");
+                    //File.WriteAllText(Datafilename, string.Join(",", _scan.ExportTitles) + "\r\n" + exportdata);
+                    Datafilename = _scan.ScanDataPath + "\\data.txt.json";
+                    _papers.SavePapers(Datafilename);
+
                     this.Invoke(new MyInvoke(MyRefresh));
                     global.SaveDirectoryMemo(_scan.ScanDataPath,examname);
                 }
@@ -619,36 +639,59 @@ namespace ScanTemplate
                     if (f.Changed)
                     {
                         ScanData sd = (ScanData)listBoxScantData.SelectedItem;
-                        string[] ss = File.ReadAllLines(sd.DataFullName);
-                        Dictionary<string, int> _ssindex = new Dictionary<string, int>();
-                        for (int i = 1; i < ss.Length; i++)
+                        if (global.ScanDataJsonFormat == true)
                         {
-                            string[] item = ss[i].Split(',');
-                            _ssindex[item[0]] = i;
-                        }
-
-                        try
-                        {
-                            foreach(DataRow dr in _rundt.Rows)
+                            foreach (DataRow dr1 in _rundt.Rows)
                             {
-                                if(dr.RowState == DataRowState.Modified)
+                                if (dr1.RowState == DataRowState.Modified)
                                 {
-                                    string filename = dr["文件名"].ToString();
-                                    if (_ssindex.ContainsKey(filename))
+                                    ValueTag vt = (ValueTag)dr1["序号"];
+                                    Paper p = (Paper)vt.Tag;
+                                    try
                                     {
-                                        int index = _ssindex[filename];
-                                        string[] item = ss[index].Split(',');
-                                        item[3] = dr["考号"].ToString();
-                                        item[4] = dr["姓名"].ToString();
-                                        ss[index] = string.Join(",", item);
+                                        p.KH = Convert.ToInt32( dr1["考号"]);
+                                        p.Name = dr1["姓名"].ToString();
+                                    }
+                                    catch
+                                    {
+                                        ;
                                     }
                                 }
                             }
-                            File.WriteAllText(sd.DataFullName, string.Join("\r\n", ss));
+                            _papers.SavePapers(sd.DataFullName + ".json");
                         }
-                        catch (Exception ee)
+                        else
                         {
-                            MessageBox.Show("未保存更改，因为" + ee.Message);
+                            string[] ss = File.ReadAllLines(sd.DataFullName);
+                            Dictionary<string, int> _ssindex = new Dictionary<string, int>();
+                            for (int i = 1; i < ss.Length; i++)
+                            {
+                                string[] item = ss[i].Split(',');
+                                _ssindex[item[0]] = i;
+                            }
+                            try
+                            {
+                                foreach (DataRow dr in _rundt.Rows)
+                                {
+                                    if (dr.RowState == DataRowState.Modified)
+                                    {
+                                        string filename = dr["文件名"].ToString();
+                                        if (_ssindex.ContainsKey(filename))
+                                        {
+                                            int index = _ssindex[filename];
+                                            string[] item = ss[index].Split(',');
+                                            item[3] = dr["考号"].ToString();
+                                            item[4] = dr["姓名"].ToString();
+                                            ss[index] = string.Join(",", item);
+                                        }
+                                    }
+                                }
+                                File.WriteAllText(sd.DataFullName, string.Join("\r\n", ss));
+                            }
+                            catch (Exception ee)
+                            {
+                                MessageBox.Show("未保存更改，因为" + ee.Message);
+                            }
                         }
                     }
                 }
@@ -753,37 +796,63 @@ namespace ScanTemplate
                 {
                     if (f.Changed)
                     {
-                        
                         ScanData sd = (ScanData)listBoxScantData.SelectedItem;
-                        string[] ss = File.ReadAllLines(sd.DataFullName);// sd.ImgList.ToArray();
-                        //TODO: 应避免出现空行
-                        try
+                        if (global.ScanDataJsonFormat == true)
                         {
-                            for (int i = 1; i < ss.Length; i++)
+                            foreach (DataRow dr in _rundt.Rows)
                             {
-                                string[] item = ss[i].Split(',');
-                                string skh =  item[3];
-                                string name = item[4];
-                                int kh = -1;
-                                if (!skh.Contains("-"))
-                                    kh = Convert.ToInt32(skh);
-
-                                if ( kh<0 || !_sc.Studentbases.ContainsKey(kh) || name.Contains("-") || name.Trim()==""  )
+                                if (dr.RowState == DataRowState.Modified)
                                 {
-                                    DataRow[] drs = _rundt.Select("文件名='" + item[0] + "'");
-                                    if (drs.Length == 1)
+                                    ValueTag vt =(ValueTag ) dr["序号"];
+                                    Paper p =(Paper ) vt.Tag;
+                                    string skh = dr["考号"].ToString();
+                                    string name = dr["姓名"].ToString();
+                                    int kh = -1;
+                                    if (!skh.Contains("-"))
+                                        kh = Convert.ToInt32(skh);                                   
+                                    if (p.KH < 0 || !_sc.Studentbases.ContainsKey(p.KH) || p.Name.Contains("-") || p.Name.Trim() == "")
                                     {
-                                        item[3] = drs[0]["考号"].ToString();
-                                        item[4] = drs[0]["姓名"].ToString();
-                                        ss[i] = string.Join(",", item);
+                                        p.Name = name;
+                                        p.KH = kh;
                                     }
                                 }
                             }
-                            File.WriteAllText(sd.DataFullName, string.Join("\r\n", ss));
+                            _papers.RebuildDic();
+                            _papers.SavePapers(sd.DataFullName + ".json");
                         }
-                        catch (Exception ee)
+                        else
                         {
-                            MessageBox.Show("未保存更改，因为" + ee.Message);
+                            
+                            string[] ss = File.ReadAllLines(sd.DataFullName);// sd.ImgList.ToArray();
+                            //TODO: 应避免出现空行
+                            try
+                            {
+                                for (int i = 1; i < ss.Length; i++)
+                                {
+                                    string[] item = ss[i].Split(',');
+                                    string skh = item[3];
+                                    string name = item[4];
+                                    int kh = -1;
+                                    if (!skh.Contains("-"))
+                                        kh = Convert.ToInt32(skh);
+
+                                    if (kh < 0 || !_sc.Studentbases.ContainsKey(kh) || name.Contains("-") || name.Trim() == "")
+                                    {
+                                        DataRow[] drs = _rundt.Select("文件名='" + item[0] + "'");
+                                        if (drs.Length == 1)
+                                        {
+                                            item[3] = drs[0]["考号"].ToString();
+                                            item[4] = drs[0]["姓名"].ToString();
+                                            ss[i] = string.Join(",", item);
+                                        }
+                                    }
+                                }
+                                File.WriteAllText(sd.DataFullName, string.Join("\r\n", ss));
+                            }
+                            catch (Exception ee)
+                            {
+                                MessageBox.Show("未保存更改，因为" + ee.Message);
+                            }
                         }
                     }
                 }
@@ -851,45 +920,65 @@ namespace ScanTemplate
 
                                 bool bsave = false;
                                 ScanData sd = (ScanData)listBoxScantData.SelectedItem;
-                                string[] ss = File.ReadAllLines(sd.DataFullName);// sd.ImgList.ToArray();
-                                //TODO: 应避免出现空行
-                                try
+                                if (global.ScanDataJsonFormat == true)
                                 {
-                                    for (int i = 1; i < ss.Length; i++)
+                                    foreach (DataRow dr1 in _rundt.Rows)
                                     {
-                                        string[] item = ss[i].Split(',');
-                                        string skh = item[3];
-                                        string name = item[4];
-                                        int kh = -1;
-                                        if (!skh.Contains("-"))
-                                            kh = Convert.ToInt32(skh);
-                                        string xzt = item[5];
-                                        if(xzt.Contains("-|") || xzt.Length != xztcnt*2)
+                                        if (dr1.RowState == DataRowState.Modified)
                                         {
-                                            DataRow[] drs = _rundt.Select("文件名='" + item[0] + "'");
-                                            if (drs.Length == 1 && drs[0].RowState == DataRowState.Modified)
-                                            {
-                                                string strxzt = "";
-                                                for (int k = 0; k < xztcnt; k++)
-                                                {
-                                                    strxzt += drs[0]["x" + (k + 1)]+"|";
-                                                }
+                                            ValueTag vt = (ValueTag)dr1["序号"];
+                                            Paper p = (Paper)vt.Tag;
 
-                                                if (strxzt != xzt && strxzt.Length >= xztcnt*2)
-                                                {
-                                                    item[5] = strxzt;
-                                                    ss[i] = string.Join(",", item);
-                                                    bsave = true;
-                                                }
+                                            for (int index = 0; index < p.XZT.Count; index++)
+                                            {
+                                                p.XZT[index] = dr["x" + (index + 1)].ToString();
                                             }
                                         }
                                     }
-                                    if(bsave)
-                                    File.WriteAllText(sd.DataFullName, string.Join("\r\n", ss));
+                                    _papers.SavePapers(sd.DataFullName + ".json");
                                 }
-                                catch (Exception ee)
+                                else
                                 {
-                                    MessageBox.Show("未保存更改，因为" + ee.Message);
+                                    string[] ss = File.ReadAllLines(sd.DataFullName);// sd.ImgList.ToArray();
+                                    //TODO: 应避免出现空行
+                                    try
+                                    {
+                                        for (int i = 1; i < ss.Length; i++)
+                                        {
+                                            string[] item = ss[i].Split(',');
+                                            string skh = item[3];
+                                            string name = item[4];
+                                            int kh = -1;
+                                            if (!skh.Contains("-"))
+                                                kh = Convert.ToInt32(skh);
+                                            string xzt = item[5];
+                                            if (xzt.Contains("-|") || xzt.Length != xztcnt * 2)
+                                            {
+                                                DataRow[] drs = _rundt.Select("文件名='" + item[0] + "'");
+                                                if (drs.Length == 1 && drs[0].RowState == DataRowState.Modified)
+                                                {
+                                                    string strxzt = "";
+                                                    for (int k = 0; k < xztcnt; k++)
+                                                    {
+                                                        strxzt += drs[0]["x" + (k + 1)] + "|";
+                                                    }
+
+                                                    if (strxzt != xzt && strxzt.Length >= xztcnt * 2)
+                                                    {
+                                                        item[5] = strxzt;
+                                                        ss[i] = string.Join(",", item);
+                                                        bsave = true;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        if (bsave)
+                                            File.WriteAllText(sd.DataFullName, string.Join("\r\n", ss));
+                                    }
+                                    catch (Exception ee)
+                                    {
+                                        MessageBox.Show("未保存更改，因为" + ee.Message);
+                                    }
                                 }
                             }
                         }

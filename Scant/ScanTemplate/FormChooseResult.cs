@@ -38,6 +38,17 @@ namespace ScanTemplate
             _result = "exother";
             this.Close();
         }
+        private void button5_Click(object sender, EventArgs e)
+        {
+            _result = "exonlyoption";
+            this.Close();
+        }
+        private void button6_Click(object sender, EventArgs e)
+        {
+            _result = "exonlyoptionimages";
+            this.Close();
+        }
         public string Result { get { return _result; } }
+
     }
 }

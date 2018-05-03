@@ -55,14 +55,54 @@ namespace ScanTemplate.FormYJ
                     return false;
             }
             return true;
-        }        
+        }
+
+        private bool CheckOnlyOptions()
+        {
+            _Optionanswer = _exam.OSubjects.Select(r => r.Answer).ToList();
+            _OptionMaxscore = _exam.OSubjects.Select(r => r.Score).ToList();
+            if (!_Optionanswer.Exists(r => r.Length != 1 || !"ABCD".Contains(r))
+                && !_OptionMaxscore.Exists(r => r <= 0))
+                ;
+            else
+                return false;
+            _ABCD = new List<string>() { "A", "B", "C", "D" };
+            _dicABCDToOption = _ABCD.ToDictionary(r => r, r => r[0] - 'A');
+            return true;
+        }
         public void Export(string resultAction)
         {
             string FileName = "";
             if (!bReady)
             {
-                MessageBox.Show("还有选择题没有设定答案或者分值  或者 试卷未改完 \r\n" + _Msg);
-                return;
+                if (resultAction.Contains("exonlyoption"))
+                {
+                    if (CheckOnlyOptions())
+                    {
+                        if (resultAction == "exonlyoption")
+                        {
+                            FileName = _sc.Baseconfig.ExportResultFxPath + "\\" + _exam.Name + "_成绩分析";
+                            StringBuilder sb = new StringBuilder();
+                            sb.Append(ExportXztFx());
+                            File.WriteAllText(FileName + ".txt", sb.ToString());
+
+                            FileName = _sc.Baseconfig.ExportResultPath + "\\" + _exam.Name;
+                            ExportOptionsResult(FileName);
+                            MessageBox.Show("已输出成绩分析 和 成绩单到" + FileName);
+                        }
+                        else if (resultAction == "exonlyoptionimages")
+                        {
+                            string ImagePath = _sc.Baseconfig.ExportImageRootPath + "\\" + _exam.Name;
+                            ExportImages(ImagePath,true);
+                            MessageBox.Show("已输出到" + ImagePath);
+                        }
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("还有选择题没有设定答案或者分值  或者 试卷未改完 \r\n" + _Msg);
+                    return;
+                }
             }
             if (resultAction != "")
                 switch (resultAction)
@@ -91,13 +131,13 @@ namespace ScanTemplate.FormYJ
                         MessageBox.Show("已输出成绩分析");
                         break;
                 }
-        }       
-        private void ExportImages(string ImgPath)
+        }
+        private void ExportImages(string ImgPath,bool onlyoptions = false)
         {
             CheckFold(ImgPath);
             foreach (Student S in _students.students)
             {
-                PaperResult pr = ConstructPaperResult(S);
+                PaperResult pr = ConstructPaperResult(S,onlyoptions);
                 Bitmap bmp = TemplateTools.DrawInfoBmp(S, _angle, pr);
                 //Bitmap bmp = TemplateTools.DrawInfoBmp(S, _SR, _angle, _Optionanswer, ltz);
                 string filename =ImgPath + "\\" + S.ID + ".jpg";
@@ -112,7 +152,7 @@ namespace ScanTemplate.FormYJ
                 bmp.Save(filename);
             }
         }
-        private PaperResult ConstructPaperResult(Student S)
+        private PaperResult ConstructPaperResult(Student S,bool onlyoptions=false)
         {
             PaperResult pr = new PaperResult();
             float fsum = 0;
@@ -134,6 +174,11 @@ namespace ScanTemplate.FormYJ
                 r.Y -= 30;
             pr.Xzt = new ResultObj(r, fsum,0,true);
 
+            if (onlyoptions)
+            {
+                pr.ZF = new ResultObj(new Rectangle(r.Width / 3, 30, 30, 30), fsum, 0, true);
+                return pr;
+            }
             foreach (Tzsubject T in _Tzsubjects.Tzs)
             {
                 int subsum = 0;
@@ -162,6 +207,7 @@ namespace ScanTemplate.FormYJ
                 pr.Tz.Add(new ResultObj(TRect, subsum, 0,true));
             }
             pr.ZF = new ResultObj(new Rectangle(r.Width / 3, 30, 30, 30), fsum ,0, true);
+             
             return pr;
         }
         private void CheckFold(string ImgPath)
@@ -284,6 +330,35 @@ namespace ScanTemplate.FormYJ
                 string.Join("\r\n", list) +"\r\n\r\n"+ string.Join("\r\n", list1));
             tbl.DrawListInPaper(list,true).Save(FileName + "总分成绩单.jpg");
             tbl.DrawListInPaper(list1,true).Save(FileName + "_小题成绩单.jpg");
+        }
+        private void ExportOptionsResult(string FileName)
+        {
+            StringBuilder sblistscore = new StringBuilder("姓名,选择题\r\n");
+           
+            StringBuilder sbdetail = new StringBuilder();
+            foreach (Student S in _students.students)
+            {
+                PaperResult pr = ConstructPaperResult(S);
+                sblistscore.AppendLine(S.Name + "," +pr.Xzt.Floatscore);
+            }
+           
+            Tools.TextBitmapTool tbl = new TextBitmapTool(
+                new Rectangle(0, 0, 960, 720), new Rectangle(40, 90, 880, 600));
+            sblistscore = sblistscore.Replace(",", "\t");
+         
+            List<string> list = new List<string>(sblistscore.ToString().Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries));          
+            List<int> cids = _students.StudentsClassid(_sc);
+            if (cids.Count == 1)
+            {
+                List<int> kh = _students.students.Select(r => r.KH).ToList();
+                List<string> uncheckin = UnScanNameList(cids[0], kh, _sc).Select(r => r + "\t未交").ToList();
+                list.AddRange(uncheckin);
+            }
+            else
+            {
+                MessageBox.Show("存在多个班级");
+            }           
+            tbl.DrawListInPaper(list, true).Save(FileName + "选择题成绩单.jpg");
         }
         private string ZifuRate(double rightrate, int len = 20)
         {

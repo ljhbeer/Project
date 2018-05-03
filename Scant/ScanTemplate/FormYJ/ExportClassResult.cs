@@ -146,6 +146,21 @@ namespace ScanTemplate.FormYJ
                 fsum += subsum;
                 pr.Tz.Add(new ResultObj(T.Rect, subsum,true));
             }
+            if (pr.Tz.Count == 0 && _Imgsubjects.Subjects.Count>0)
+            {
+                int subsum = 0;
+                foreach (Imgsubject I in _Imgsubjects.Subjects)
+                {
+                    int score = _SR._Result[I.Index][S.Index];
+                    pr.AddOption(new ResultObj(I.Rect, score));
+                    subsum += score;
+                }
+                fsum += subsum;
+                Rectangle TRect = _Imgsubjects.Subjects[0].Rect;
+                TRect.Y -= 35;
+                TRect.X -= 30;
+                pr.Tz.Add(new ResultObj(TRect, subsum, true));
+            }
             pr.ZF = new ResultObj(new Rectangle(r.Width / 3, 30, 30, 30), fsum , true);
             return pr;
         }

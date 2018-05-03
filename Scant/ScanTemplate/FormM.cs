@@ -1030,12 +1030,9 @@ namespace ScanTemplate
             if (e.KeyCode == Keys.M)
             {
                 if (listBoxScantData.SelectedIndex == -1) return;
-                ScanData sd = (ScanData)listBoxScantData.SelectedItem;
-                if (File.Exists(sd.DataFullName))
+                ScanData sd = (ScanData)listBoxScantData.SelectedItem;               
+                if (File.Exists(sd.DataFullName) || File.Exists(sd.DataFullName+".json"))
                 {
-                    string[] ls = File.ReadAllLines(sd.DataFullName);
-                    List<string> titles = ls[0].Split(',').ToList();
-
                     Scan  _scan = new Scan(_sc, sd.TemplateFileName, sd.ImgList, sd.Fullpath, false);
                     FileInfo fi = new FileInfo(sd.TemplateFileName);
                     string path= fi.FullName.Substring(0, fi.FullName.Length - fi.Name.Length-1);

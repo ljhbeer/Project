@@ -757,7 +757,7 @@ namespace ARTemplate
                 Brush white = Brushes.White;
                 Brush Red = Brushes.Red;
                 Font font = new Font(SystemFonts.DefaultFont.SystemFontName, 25, FontStyle.Bold);
-                Font font1 = new Font(SystemFonts.DefaultFont.SystemFontName, 16, FontStyle.Bold);
+                Font font1 = new Font(SystemFonts.DefaultFont.SystemFontName, 36, FontStyle.Bold);
                 Font font2 = new Font(SystemFonts.DefaultFont.SystemFontName, 20, FontStyle.Bold);
 
                 foreach (ResultObj I in pr.TotalObjs())
@@ -767,7 +767,7 @@ namespace ARTemplate
                     r.Location = p;
                     //g.DrawRectangle(pen, I.Rect);
                     //g.DrawRectangle(pen, r);
-                    g.DrawString(I.Txt, font1, Red, p);
+                    g.DrawString(I.Txt, font2, Red, p);
                 }
             }
             return bmp;

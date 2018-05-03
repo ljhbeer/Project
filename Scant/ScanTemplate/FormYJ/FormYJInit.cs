@@ -981,6 +981,11 @@ namespace ScanTemplate.FormYJ
                     if (System.IO.File.Exists(_imgfilename))
                         _src =(Bitmap) Bitmap.FromFile(_imgfilename);
                 }
+                if (_src != null)
+                {
+                    if (_src.VerticalResolution != 200 || _src.HorizontalResolution != 200)
+                        _src.SetResolution(200, 200);
+                }
                 return _src;
             }
         }

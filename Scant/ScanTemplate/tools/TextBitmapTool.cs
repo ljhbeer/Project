@@ -38,7 +38,11 @@ namespace Tools
             WhiteImage();
             using (Graphics g = Graphics.FromImage(Src))
             {
-                int fontsize = ComputFontSize(list.Count,list[1], g);
+                string maxstr = "";
+                for(int index = 1; index<list.Count; index++)
+                    if (maxstr.Length < list[index].Length)
+                        maxstr = list[index];
+                int fontsize = ComputFontSize(list.Count,maxstr, g);
                 Font font = new Font(SystemFonts.DefaultFont.SystemFontName, fontsize, FontStyle.Bold);
                 Brush br = Brushes.Red;
                 if(blackfont) 

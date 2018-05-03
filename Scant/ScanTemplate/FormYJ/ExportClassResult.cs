@@ -127,12 +127,12 @@ namespace ScanTemplate.FormYJ
                 Rectangle RO = O.Rect;
                 if (O.List.Count > listindex)
                     RO.Offset(O.List[listindex]);
-                pr.AddOption(new ResultObj(RO, score));
+                pr.AddOption(new ResultObj(RO, score,O.Score));
                 fsum += score;
             }
             if (r.Y > 30)
                 r.Y -= 30;
-            pr.Xzt = new ResultObj(r, fsum,true);
+            pr.Xzt = new ResultObj(r, fsum,0,true);
 
             foreach (Tzsubject T in _Tzsubjects.Tzs)
             {
@@ -140,11 +140,11 @@ namespace ScanTemplate.FormYJ
                 foreach (Imgsubject I in T.Subjects)
                 {
                     int score = _SR._Result[I.Index][S.Index];
-                    pr.AddOption(new ResultObj(I.Rect, score));
+                    pr.AddOption(new ResultObj(I.Rect, score,I.Score));
                     subsum += score;
                 }
                 fsum += subsum;
-                pr.Tz.Add(new ResultObj(T.Rect, subsum,true));
+                pr.Tz.Add(new ResultObj(T.Rect, subsum,0,true));
             }
             if (pr.Tz.Count == 0 && _Imgsubjects.Subjects.Count>0)
             {
@@ -152,16 +152,16 @@ namespace ScanTemplate.FormYJ
                 foreach (Imgsubject I in _Imgsubjects.Subjects)
                 {
                     int score = _SR._Result[I.Index][S.Index];
-                    pr.AddOption(new ResultObj(I.Rect, score));
+                    pr.AddOption(new ResultObj(I.Rect, score,I.Score));
                     subsum += score;
                 }
                 fsum += subsum;
                 Rectangle TRect = _Imgsubjects.Subjects[0].Rect;
                 TRect.Y -= 35;
                 TRect.X -= 30;
-                pr.Tz.Add(new ResultObj(TRect, subsum, true));
+                pr.Tz.Add(new ResultObj(TRect, subsum, 0,true));
             }
-            pr.ZF = new ResultObj(new Rectangle(r.Width / 3, 30, 30, 30), fsum , true);
+            pr.ZF = new ResultObj(new Rectangle(r.Width / 3, 30, 30, 30), fsum ,0, true);
             return pr;
         }
         private void CheckFold(string ImgPath)
@@ -262,27 +262,28 @@ namespace ScanTemplate.FormYJ
                 sblisttizu.AppendLine(S.Name + "," + pr.TotalTz());
                 sbdetail .AppendLine(S.Name + "," + pr.Detail());
             }
-            File.WriteAllText(FileName+".txt", sbdetail.ToString());
+            File.WriteAllText(FileName+"小题分.txt", sbdetail.ToString());
             Tools.TextBitmapTool tbl = new TextBitmapTool(
-                new Rectangle(0, 0, 960, 720), new Rectangle(40, 30, 880, 660));
-
+                new Rectangle(0, 0, 960, 720), new Rectangle(40, 90, 880, 600));
+            sblistscore = sblistscore.Replace(",", "\t");
+            sblisttizu = sblisttizu.Replace(",", "\t");
             List<string> list = new List<string>(sblistscore.ToString().Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries));
             List<string> list1 = new List<string>(sblisttizu.ToString().Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries));
             List<int> cids = _students.StudentsClassid(_sc);
             if (cids.Count == 1)
             {
                 List<int> kh = _students.students.Select(r => r.KH).ToList();
-                list.AddRange(
-                    UnScanNameList(cids[0],kh,_sc).Select( r => r+",未交").ToList()
-                    );
+                List<string> uncheckin = UnScanNameList(cids[0], kh, _sc).Select(r => r + "\t未交").ToList();
+                list.AddRange(uncheckin);
+                list1.AddRange(uncheckin);
             }else
             {
                 MessageBox.Show("存在多个班级");
             }
             File.WriteAllText(FileName + "_总分.大题分.txt",
                 string.Join("\r\n", list) +"\r\n\r\n"+ string.Join("\r\n", list1));
-            tbl.DrawListInPaper(list).Save(FileName + ".jpg");
-            tbl.DrawListInPaper(list1).Save(FileName + "_1.jpg");
+            tbl.DrawListInPaper(list,true).Save(FileName + "总分成绩单.jpg");
+            tbl.DrawListInPaper(list1,true).Save(FileName + "_小题成绩单.jpg");
         }
         private string ZifuRate(double rightrate, int len = 20)
         {

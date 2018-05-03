@@ -61,14 +61,16 @@ namespace ScanTemplate.FormYJ
         public ResultObj()
         {
         }
-        public ResultObj(Rectangle rect, float score,bool showscore = false)
+        public ResultObj(Rectangle rect, float score,float maxscore,bool showscore = false)
         {
+            HalfRightMode = false;
             this.Rect = rect;
             this.Floatscore = score;
             this.Score = (int)score;
             if (showscore)
             {
                 Txt = score.ToString();
+                NumberMode = true;
             }
             else
             {
@@ -79,12 +81,17 @@ namespace ScanTemplate.FormYJ
                 else
                 {
                     Txt = "√";
-                }
+                    if (maxscore -score > 0.2 )
+                        HalfRightMode = true;
+                }                
+                NumberMode = false;
             }
         }
         public float Floatscore;
         public Rectangle Rect;
         public int Score;
-        public string Txt; 
+        public string Txt;
+        public Boolean NumberMode;
+        public Boolean HalfRightMode;
     }
 }

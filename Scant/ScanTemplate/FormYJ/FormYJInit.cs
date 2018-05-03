@@ -119,11 +119,13 @@ namespace ScanTemplate.FormYJ
             {
                 dgvSet.RowTemplate.Height = 24;
                 dgvSet.DataSource = _dtsetxzt;
+                DgvShowOptionMode = true;
             }
             else
             {
                 dgvSet.RowTemplate.Height = _AvgUnImgHeight;
                 dgvSet.DataSource = _dtsetfxzt;
+                DgvShowOptionMode = false;
             }
 
             foreach (DataGridViewColumn dc in dgvSet.Columns)
@@ -237,7 +239,24 @@ namespace ScanTemplate.FormYJ
             msg += "\r\n选择题共： " + _Optionsubjects.OptionSubjects.Select(r => r.Score).Sum() + "分";
             msg += "\r\n 非选择题共： " + _Imgsubjects.Subjects.Select(r => r.Score).Sum() + "分";
             msg += "\r\n 合计共： " + (_Optionsubjects.OptionSubjects.Select(r => r.Score).Sum() + _Imgsubjects.Subjects.Select(r => r.Score).Sum()) + "分";
-            MessageBox.Show(msg);
+            ShowOptionScoreMsg();
+            MessageBox.Show(msg);            
+        }
+        private void ShowOptionScoreMsg()
+        {
+            string msg = "非选择题分值";
+            int score = 0;
+            foreach (DataRow dr in _dtsetfxzt.Rows )
+            {
+                score += Convert.ToInt32( dr["最大分值"].ToString());
+            }
+            textBoxMsg.Text = msg + score;
+        }
+        private void dgvSet_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            if (DgvShowOptionMode) return;
+            if (_dtsetfxzt.Columns[e.ColumnIndex].ColumnName == "最大分值")
+                ShowOptionScoreMsg();
         }
         private void AcceptXztDataTableModified()
         {
@@ -383,6 +402,7 @@ namespace ScanTemplate.FormYJ
         private string _examname;
         private string _DataFullPath;
         private Tzsubjects _Tzsubjects;
+        private bool DgvShowOptionMode;
 
     }    
     public class Optionsubjects

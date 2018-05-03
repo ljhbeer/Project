@@ -29,11 +29,12 @@
         private void InitializeComponent()
         {
             this.panel2 = new System.Windows.Forms.Panel();
-            this.buttonLeftHide = new System.Windows.Forms.Button();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
+            this.buttonLeftHide = new System.Windows.Forms.Button();
             this.buttonRightHide = new System.Windows.Forms.Button();
             this.buttonVerify = new System.Windows.Forms.Button();
+            this.textBoxMsg = new System.Windows.Forms.TextBox();
             this.buttonCreateYJData = new System.Windows.Forms.Button();
             this.panel3 = new System.Windows.Forms.Panel();
             this.TLP = new System.Windows.Forms.TableLayoutPanel();
@@ -76,16 +77,6 @@
             this.panel2.Size = new System.Drawing.Size(807, 37);
             this.panel2.TabIndex = 3;
             // 
-            // buttonLeftHide
-            // 
-            this.buttonLeftHide.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.buttonLeftHide.Location = new System.Drawing.Point(3, 3);
-            this.buttonLeftHide.Name = "buttonLeftHide";
-            this.buttonLeftHide.Size = new System.Drawing.Size(44, 22);
-            this.buttonLeftHide.TabIndex = 0;
-            this.buttonLeftHide.Text = "<<";
-            this.buttonLeftHide.UseVisualStyleBackColor = true;
-            // 
             // pictureBox1
             // 
             this.pictureBox1.AccessibleRole = System.Windows.Forms.AccessibleRole.ScrollBar;
@@ -107,18 +98,30 @@
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 50F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 50F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 51F));
             this.tableLayoutPanel2.Controls.Add(this.buttonLeftHide, 0, 0);
             this.tableLayoutPanel2.Controls.Add(this.buttonRightHide, 5, 0);
             this.tableLayoutPanel2.Controls.Add(this.buttonVerify, 1, 0);
+            this.tableLayoutPanel2.Controls.Add(this.textBoxMsg, 2, 0);
             this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 411);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.RowCount = 1;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 28F));
             this.tableLayoutPanel2.Size = new System.Drawing.Size(801, 28);
             this.tableLayoutPanel2.TabIndex = 1;
+            // 
+            // buttonLeftHide
+            // 
+            this.buttonLeftHide.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.buttonLeftHide.Location = new System.Drawing.Point(3, 3);
+            this.buttonLeftHide.Name = "buttonLeftHide";
+            this.buttonLeftHide.Size = new System.Drawing.Size(44, 22);
+            this.buttonLeftHide.TabIndex = 0;
+            this.buttonLeftHide.Text = "<<";
+            this.buttonLeftHide.UseVisualStyleBackColor = true;
+            this.buttonLeftHide.Visible = false;
             // 
             // buttonRightHide
             // 
@@ -128,6 +131,7 @@
             this.buttonRightHide.TabIndex = 3;
             this.buttonRightHide.Text = ">>";
             this.buttonRightHide.UseVisualStyleBackColor = true;
+            this.buttonRightHide.Visible = false;
             // 
             // buttonVerify
             // 
@@ -139,6 +143,14 @@
             this.buttonVerify.UseVisualStyleBackColor = true;
             this.buttonVerify.Visible = false;
             this.buttonVerify.Click += new System.EventHandler(this.buttonVerify_Click);
+            // 
+            // textBoxMsg
+            // 
+            this.textBoxMsg.Location = new System.Drawing.Point(103, 3);
+            this.textBoxMsg.Name = "textBoxMsg";
+            this.textBoxMsg.ReadOnly = true;
+            this.textBoxMsg.Size = new System.Drawing.Size(294, 21);
+            this.textBoxMsg.TabIndex = 5;
             // 
             // buttonCreateYJData
             // 
@@ -243,6 +255,7 @@
             this.dgvSet.RowTemplate.Resizable = System.Windows.Forms.DataGridViewTriState.True;
             this.dgvSet.Size = new System.Drawing.Size(228, 324);
             this.dgvSet.TabIndex = 2;
+            this.dgvSet.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvSet_CellValueChanged);
             // 
             // buttonShowXztSet
             // 
@@ -341,6 +354,7 @@
             this.Load += new System.EventHandler(this.FormYJInit_Load);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.tableLayoutPanel2.ResumeLayout(false);
+            this.tableLayoutPanel2.PerformLayout();
             this.panel3.ResumeLayout(false);
             this.TLP.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgv)).EndInit();
@@ -363,7 +377,6 @@
         #endregion
 
         private System.Windows.Forms.Panel panel2;
-        private System.Windows.Forms.Button buttonLeftHide;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
         private System.Windows.Forms.Button buttonRightHide;
@@ -382,5 +395,7 @@
         private System.Windows.Forms.Button buttonShowFXztSet;
         private System.Windows.Forms.Button buttonImportOptionAnswerScore;
         private System.Windows.Forms.Button buttonShowScore;
+        private System.Windows.Forms.Button buttonLeftHide;
+        private System.Windows.Forms.TextBox textBoxMsg;
     }
 }

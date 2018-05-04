@@ -49,6 +49,7 @@ namespace ScanTemplate.FormYJ
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.textBoxShow = new System.Windows.Forms.TextBox();
             this.buttonSubmitMulti = new System.Windows.Forms.Button();
+            this.buttonSortByPixes = new System.Windows.Forms.Button();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvs)).BeginInit();
             this.panel1.SuspendLayout();
@@ -70,7 +71,7 @@ namespace ScanTemplate.FormYJ
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 27F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(762, 438);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(855, 438);
             this.tableLayoutPanel1.TabIndex = 0;
             // 
             // dgvs
@@ -84,13 +85,15 @@ namespace ScanTemplate.FormYJ
             this.dgvs.Name = "dgvs";
             this.dgvs.RowHeadersVisible = false;
             this.dgvs.RowTemplate.Height = 23;
-            this.dgvs.Size = new System.Drawing.Size(732, 375);
+            this.dgvs.Size = new System.Drawing.Size(825, 375);
             this.dgvs.TabIndex = 1;
             this.dgvs.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DgvsCellClick);
+            this.dgvs.CellMouseUp += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dgvs_CellMouseUp);
             this.dgvs.CellPainting += new System.Windows.Forms.DataGridViewCellPaintingEventHandler(this.DgvsCellPainting);
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.buttonSortByPixes);
             this.panel1.Controls.Add(this.checkBoxBack);
             this.panel1.Controls.Add(this.buttonSubmitMulti2);
             this.panel1.Controls.Add(this.checkBoxLoadSetMaxScore);
@@ -103,7 +106,7 @@ namespace ScanTemplate.FormYJ
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(15, 3);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(732, 24);
+            this.panel1.Size = new System.Drawing.Size(825, 24);
             this.panel1.TabIndex = 13;
             // 
             // checkBoxBack
@@ -190,7 +193,7 @@ namespace ScanTemplate.FormYJ
             // textBoxShow
             // 
             this.textBoxShow.Dock = System.Windows.Forms.DockStyle.Right;
-            this.textBoxShow.Location = new System.Drawing.Point(561, 0);
+            this.textBoxShow.Location = new System.Drawing.Point(654, 0);
             this.textBoxShow.Name = "textBoxShow";
             this.textBoxShow.Size = new System.Drawing.Size(171, 21);
             this.textBoxShow.TabIndex = 12;
@@ -200,17 +203,27 @@ namespace ScanTemplate.FormYJ
             this.buttonSubmitMulti.Dock = System.Windows.Forms.DockStyle.Fill;
             this.buttonSubmitMulti.Location = new System.Drawing.Point(15, 414);
             this.buttonSubmitMulti.Name = "buttonSubmitMulti";
-            this.buttonSubmitMulti.Size = new System.Drawing.Size(732, 21);
+            this.buttonSubmitMulti.Size = new System.Drawing.Size(825, 21);
             this.buttonSubmitMulti.TabIndex = 15;
             this.buttonSubmitMulti.Text = "提交";
             this.buttonSubmitMulti.UseVisualStyleBackColor = true;
             this.buttonSubmitMulti.Click += new System.EventHandler(this.ButtonSubmitMultiClick);
             // 
+            // buttonSortByPixes
+            // 
+            this.buttonSortByPixes.Location = new System.Drawing.Point(571, 0);
+            this.buttonSortByPixes.Name = "buttonSortByPixes";
+            this.buttonSortByPixes.Size = new System.Drawing.Size(64, 24);
+            this.buttonSortByPixes.TabIndex = 18;
+            this.buttonSortByPixes.Text = "像素排序";
+            this.buttonSortByPixes.UseVisualStyleBackColor = true;
+            this.buttonSortByPixes.Click += new System.EventHandler(this.buttonSortByPixes_Click);
+            // 
             // FormFullScreenYJ
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(762, 438);
+            this.ClientSize = new System.Drawing.Size(855, 438);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Name = "FormFullScreenYJ";
             this.Text = "FormFullScreenYJ";
@@ -234,5 +247,6 @@ namespace ScanTemplate.FormYJ
         private System.Windows.Forms.CheckBox checkBoxLoadSetZero;
         private System.Windows.Forms.Button buttonSubmitMulti2;
         private System.Windows.Forms.CheckBox checkBoxBack;
+        private System.Windows.Forms.Button buttonSortByPixes;
 	}
 }

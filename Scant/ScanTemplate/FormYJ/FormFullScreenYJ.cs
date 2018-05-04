@@ -57,7 +57,33 @@ namespace ScanTemplate.FormYJ
             InitDtshow(_cntx);
             InitDgvUI();
             YueJuan();
-		}      
+		}
+        private void buttonSortByPixes_Click(object sender, EventArgs e)
+        {
+            if (_SR.ActiveSubject == null)
+                return;
+            _SR.LoadNextStudents(checkBoxBack.Checked);
+            _SR.Students.Sort(delegate(Student S1, Student S2)
+            {
+                Bitmap b1 = _SR.GetBitMap(S1);
+                Bitmap b2 = _SR.GetBitMap(S2);
+                int p1 =Tools.BitmapTools.CountRectBlackcnt(b1, new Rectangle(0,0,b1.Width,b1.Height));
+                int p2 = Tools.BitmapTools.CountRectBlackcnt(b2,new Rectangle(0,0,b2.Width,b2.Height));
+                return p1-p2;
+            });
+
+            if (_SR.Students.Count == 0 && checkBoxAutoLoadNext.Checked)
+            {
+                int selectindex = comboBox1.SelectedIndex;
+                if (selectindex != -1 && selectindex + 1 < comboBox1.Items.Count)
+                {
+                    comboBox1.SelectedIndex = selectindex + 1;
+                    return;
+                }
+            }
+            ShowItemsInDgv();
+            textBoxShow.Text = "本题未完成阅卷份数" + _SR.Students.Count + " 满分为" + _SR.ActiveSubject.Score + "分";
+        }
 		private void ButtonSubmitMultiClick(object sender, EventArgs e)
 		{
             if (_SR.ActiveSubject == null)
@@ -134,7 +160,48 @@ namespace ScanTemplate.FormYJ
                     dgvs.InvalidateRow(e.RowIndex); 
                 }
             }
-		}
+        }
+        private void SetScores(int ColumnIndex, int RowIndex)
+        {
+            int score = _ColState[ColumnIndex] - 1;
+            int scoreindex = ColumnIndex - score - 1;
+            if (RowIndex == -1)
+            {
+                for (int i = 0; i < dgvs.Rows.Count; i++)
+                    dgvs.Rows[i].Cells[scoreindex].Value = score;
+                dgvs.Invalidate();
+            }
+            else
+            {
+                dgvs.Rows[RowIndex].Cells[scoreindex].Value = score;
+                dgvs.InvalidateRow(RowIndex);
+            }
+        }
+        private void dgvs_CellMouseUp(object sender, DataGridViewCellMouseEventArgs ee)
+        {
+            string str = "count=" + dgvs.SelectedCells.Count + "  rows=" + dgvs.SelectedRows.Count +
+                " col=" + dgvs.SelectedColumns.Count;
+            //MessageBox.Show(""+str);
+            if (TestSelectedCells())
+            {
+                foreach (DataGridViewCell e in dgvs.SelectedCells)
+                    SetScores(e.ColumnIndex, e.RowIndex);
+            }
+        }
+        private bool TestSelectedCells()
+        {
+            List<int> rows = new List<int>();
+            List<int> cols = new List<int>();
+            foreach (DataGridViewCell dgc in dgvs.SelectedCells)
+            {
+                rows.Add(dgc.RowIndex);
+                cols.Add(dgc.ColumnIndex);
+            }
+            int colcnt = cols.Distinct().Count();
+            if (colcnt == 1 && _ColState[cols[0]] > 0)
+                return true;
+            return false;
+        }
 		private void DgvsCellPainting(object sender, DataGridViewCellPaintingEventArgs e)
 		{
 			if(e.ColumnIndex==-1 || e.RowIndex == -1) return;

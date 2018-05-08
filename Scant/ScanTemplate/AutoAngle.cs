@@ -133,5 +133,15 @@ namespace Tools
         public double SPAngle1 { get { return Arcsin2(_T[0],_T[2]); } }
 
         public bool DxyModel { get; set; }
+
+        public List<Rectangle> ListFeature
+        {
+            get
+            {
+                if (_T != null)
+                    return _T.Select(r => new Rectangle(r, new Size())).ToList();
+                return null;
+            }
+        }
     }
 }

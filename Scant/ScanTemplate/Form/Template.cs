@@ -22,7 +22,7 @@ namespace ARTemplate
             _dic["特征点"].AddRange( FeaturePoints.GetFeaturesfromrects(list) );
             _manageareas = null;
             
-            _angle = new AutoAngle( list.Select(r => new Point(r.X - CorrectRect.X,r.Y-CorrectRect.Y)).ToList() ); 
+            _angle = new AutoAngle( list.Select(r =>r.Location).ToList() ); 
         }
         public Template(TemplateData td)
         {
@@ -244,14 +244,15 @@ namespace ARTemplate
         public AutoAngle Angle { get { return _angle; } }
         public void Match(Template t)
         {
-           //_angle.SetPaper( t._angle.Angle1 );
-           t.Angle.SetPaper(_angle.Angle1);
+            AutoAngle t_angle = t.Angle;
+            t_angle.DxyModel = true;
+            t_angle.SetPaper(_angle.ListFeature);
            foreach (string s in t.Dic.Keys)
                 if (s != "特征点")
                 {
                     foreach (Area I in t.Dic[s])
                     {
-                        I.Rect.Location  =t.Angle.GetCorrectPoint(I.Rect.X,I.Rect.Y);
+                        I.Rect.Location  =t_angle.GetCorrectPoint(I.Rect.X,I.Rect.Y);
                         _dic[s].Add(I);
                     }
                 }

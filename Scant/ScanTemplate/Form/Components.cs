@@ -109,6 +109,17 @@ namespace ARTemplate
         
     }
     [JsonObject(MemberSerialization.OptIn)]
+    public class ListArea:Area
+    {
+        public ListArea()
+        {
+        }
+        [JsonIgnore]
+        public virtual Size ItemSize { get { return  new Size(); } }
+        [JsonProperty]
+        public List<List<Point>> list;
+    }
+    [JsonObject(MemberSerialization.OptIn)]
     public class FeaturePoint : Area
     {
         public FeaturePoint(Rectangle r, Point midpoint) // 0,左上  1，右上  2左下 3又下
@@ -145,7 +156,7 @@ namespace ARTemplate
         public int Direction { get; set; }
     }
     [JsonObject(MemberSerialization.OptIn)]
-    public class KaoHaoChoiceArea : Area
+    public class KaoHaoChoiceArea : ListArea
     {
         public KaoHaoChoiceArea()
         {
@@ -205,6 +216,13 @@ namespace ARTemplate
                 return _name;
             }
         }
+        public override Size ItemSize
+        {
+            get
+            {
+                return Size;
+            }
+        }
         public override string ToString()
         {
             return _name;
@@ -218,13 +236,13 @@ namespace ARTemplate
         [JsonProperty]
         public string Type { get; set; }
         // "填涂横向" || Type == "填涂纵向"
-        [JsonProperty]
-        public List<List<Point>> list;
+        //[JsonProperty]
+        //public List<List<Point>> list;
         [JsonProperty]
         public Size Size;
     }
     [JsonObject(MemberSerialization.OptIn)]
-    public class SingleChoiceArea : Area
+    public class SingleChoiceArea : ListArea
     {
         public SingleChoiceArea()
         {
@@ -275,6 +293,13 @@ namespace ARTemplate
                 return _name;
             }
         }
+        public override Size ItemSize
+        {
+            get
+            {
+                return Size;
+            }
+        }
         public int Count
         {
             get
@@ -287,8 +312,8 @@ namespace ARTemplate
             _name = name;
         }
         public string Name { get { return _name; } }
-        [JsonProperty]
-        public List<List<Point>> list;
+        //[JsonProperty]
+        //public List<List<Point>> list;
         [JsonProperty]
         public Size Size;
         [JsonProperty]
@@ -452,7 +477,7 @@ namespace ARTemplate
         private List<Area> _subareas;       
     }
     [JsonObject(MemberSerialization.OptIn)]
-    public class CustomArea : Area
+    public class CustomArea : ListArea
     {
         public CustomArea()
         {
@@ -502,6 +527,13 @@ namespace ARTemplate
                 return Name;
             }
         }
+        public override Size ItemSize
+        {
+            get
+            {
+                return Size;
+            }
+        }
         public override String ToString()
         {
             return Name;
@@ -516,8 +548,8 @@ namespace ARTemplate
         [JsonProperty]
         public string Type { get; set; }
         // "填涂横向" || Type == "填涂纵向"
-        [JsonProperty]
-        public List<List<Point>> list;
+        //[JsonProperty]
+        //public List<List<Point>> list;
         [JsonProperty]
         public Size Size;
     }

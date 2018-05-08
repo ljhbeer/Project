@@ -35,24 +35,10 @@ namespace ScanTemplate
                 if (global.Debug || (global.tag & 16) > 0)
                      ((Bitmap)_src.Clone(r, _src.PixelFormat)).Save("f:\\img\\" + num + "_offset2.jpg");            	
                 Bitmap bmp = (Bitmap)_src.Clone(r, _src.PixelFormat);
-                //BitmapData bmpdata = _src.LockBits(r,ImageLockMode.ReadOnly,_src.PixelFormat);
-                //暂不采用该方法
-            	Rectangle rp = new Rectangle(0,0,sca.Size.Width,sca.Size.Height);
-                int validblackcnt = rp.Width * rp.Height * 14 / 20;
-            	foreach(List<Point> lp in sca.list){
-            		List<int> blackpixs = new List<int>();
-            		foreach(Point p in lp){
-            			rp.Location = p;
-                        int cnt = Tools.BitmapTools.CountRectBlackcnt(bmp, rp);
-            			blackpixs.Add(cnt);
-            		}
-            		sb.Append( GetOptions(blackpixs,validblackcnt)+"|");
-            	}
-                //_src.UnlockBits(bmpdata);
+                ComputeSelectedOption(sb, sca, bmp);
             }
             return sb.ToString();
-        }
-        public string ComputeCustomDF(CustomArea sca, AutoAngle _angle ) // 改用接口 //KH
+        }public string ComputeCustomDF(CustomArea sca, AutoAngle _angle ) // 改用接口 //KH
         {
             StringBuilder sb = new StringBuilder();
             {
@@ -62,22 +48,7 @@ namespace ScanTemplate
                 r.Location = nL;
                 //((Bitmap)_src.Clone(r, _src.PixelFormat)).Save("f:\\out\\" + 22 + "_offset2.jpg");            	
                 Bitmap bmp = (Bitmap)_src.Clone(r, _src.PixelFormat);
-                //BitmapData bmpdata = _src.LockBits(r,ImageLockMode.ReadOnly,_src.PixelFormat);
-                //暂不采用该方法
-                Rectangle rp = new Rectangle(0, 0, sca.Size.Width, sca.Size.Height);
-                int validblackcnt = rp.Width * rp.Height * 8 / 20;
-                foreach (List<Point> lp in sca.list)
-                {
-                    List<int> blackpixs = new List<int>();
-                    foreach (Point p in lp)
-                    {
-                        rp.Location = p;
-                        int cnt = Tools.BitmapTools.CountRectBlackcnt(bmp, rp);
-                        blackpixs.Add(cnt);
-                    }
-                    sb.Append(GetKHOptions(blackpixs, validblackcnt));
-                }
-                //_src.UnlockBits(bmpdata);
+                ComputeSelectedOption(sb, sca, bmp,false);               
             }
             return sb.ToString();
         }
@@ -91,34 +62,38 @@ namespace ScanTemplate
                 r.Location = nL;
                 //((Bitmap)_src.Clone(r, _src.PixelFormat)).Save("f:\\out\\" + 22 + "_offset2.jpg");            	
                 Bitmap bmp = (Bitmap)_src.Clone(r, _src.PixelFormat);
-                //BitmapData bmpdata = _src.LockBits(r,ImageLockMode.ReadOnly,_src.PixelFormat);
-                //暂不采用该方法
-                Rectangle rp = new Rectangle(0, 0, sca.Size.Width, sca.Size.Height);
-                int validblackcnt = rp.Width * rp.Height * 8 / 20;
-                if(sca.Size.Height<25)
-                    validblackcnt = rp.Width * rp.Height * 12 / 20;
-                foreach (List<Point> lp in sca.list)
-                {
-                    List<int> blackpixs = new List<int>();
-                    foreach (Point p in lp)
-                    {
-                        rp.Location = p;
-                        int cnt = Tools.BitmapTools.CountRectBlackcnt(bmp, rp);
-                        blackpixs.Add(cnt);
-                    }
-                    sb.Append(GetKHOptions(blackpixs, validblackcnt));
-                }
-                //_src.UnlockBits(bmpdata);
+                ComputeSelectedOption(sb, sca, bmp,false);                
             }
+            sb.Replace("|", "");
             return sb.ToString();
         }
-        public string GetOptions(List<int> blackpixs,int validblackcnt){
-
+        private void ComputeSelectedOption(StringBuilder sb, ListArea sca, Bitmap bmp,bool ABCDMode = true) //ABCDMode = false means NumberMode
+        {
+            Rectangle rp = new Rectangle(0, 0, sca.ItemSize.Width, sca.ItemSize.Height);
+            int validblackcnt = rp.Width * rp.Height * 14 / 20;
+            foreach (List<Point> lp in sca.list)
+            {
+                List<int> blackpixs = new List<int>();
+                foreach (Point p in lp)
+                {
+                    rp.Location = p;
+                    int cnt = Tools.BitmapTools.CountRectBlackcnt(bmp, rp);
+                    blackpixs.Add(cnt);
+                }
+                sb.Append(GetOptions(blackpixs, validblackcnt,ABCDMode ) + "|");
+            }
+        }
+        private string GetOptions(List<int> blackpixs, int validblackcnt, bool ABCDMode = true)
+        {
+            char startchar = 'A';
+            if(!ABCDMode)
+                startchar = '0';
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < blackpixs.Count; i++)
             {
                 if (blackpixs[i] > validblackcnt)
-                    sb.Append(Convert.ToChar(i + 'A'));
+                    sb.Append(Convert.ToChar(i + startchar));
+
             }
             if (sb.Length > 0)
                 return sb.ToString();
@@ -130,20 +105,10 @@ namespace ScanTemplate
             if (max>avg2 && avg > st[2] && max - avg > avg - st[1])
             {
                 int index = blackpixs.IndexOf(max);
-                return Convert.ToChar(index + 'A').ToString();
+                return Convert.ToChar(index + startchar).ToString();
             }
         	return "-";
         }
-        public string GetKHOptions(List<int> blackpixs,int validblackcnt){
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < blackpixs.Count; i++)
-            {
-                if (blackpixs[i] > validblackcnt)
-                    sb.Append(Convert.ToChar(i + '0'));
-            }
-            if (sb.Length > 0)
-                return sb.ToString();
-        	return "-";
-        }
+        
     }
 }

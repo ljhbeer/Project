@@ -68,7 +68,7 @@
             this.buttonConfirm.Dock = System.Windows.Forms.DockStyle.Fill;
             this.buttonConfirm.Location = new System.Drawing.Point(3, 3);
             this.buttonConfirm.Name = "buttonConfirm";
-            this.buttonConfirm.Size = new System.Drawing.Size(81, 459);
+            this.buttonConfirm.Size = new System.Drawing.Size(225, 164);
             this.buttonConfirm.TabIndex = 2;
             this.buttonConfirm.Text = "确认";
             this.buttonConfirm.UseVisualStyleBackColor = true;
@@ -83,7 +83,7 @@
             this.dgv.Location = new System.Drawing.Point(3, 3);
             this.dgv.Name = "dgv";
             this.dgv.RowTemplate.Height = 23;
-            this.dgv.Size = new System.Drawing.Size(705, 690);
+            this.dgv.Size = new System.Drawing.Size(561, 690);
             this.dgv.TabIndex = 3;
             this.dgv.CellBeginEdit += new System.Windows.Forms.DataGridViewCellCancelEventHandler(this.dgv_CellBeginEdit);
             this.dgv.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DgvCellClick);
@@ -94,7 +94,7 @@
             // 
             this.tableLayoutPanel1.ColumnCount = 2;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 93F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 237F));
             this.tableLayoutPanel1.Controls.Add(this.dgv, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.panel2, 1, 0);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -110,9 +110,9 @@
             // 
             this.panel2.Controls.Add(this.tableLayoutPanel2);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel2.Location = new System.Drawing.Point(714, 3);
+            this.panel2.Location = new System.Drawing.Point(570, 3);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(87, 690);
+            this.panel2.Size = new System.Drawing.Size(231, 690);
             this.panel2.TabIndex = 5;
             // 
             // tableLayoutPanel2
@@ -126,10 +126,10 @@
             this.tableLayoutPanel2.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.RowCount = 3;
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 70F));
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 30F));
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(87, 690);
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25.79185F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 74.20815F));
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(231, 690);
             this.tableLayoutPanel2.TabIndex = 0;
             // 
             // listBox1
@@ -137,17 +137,17 @@
             this.listBox1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.listBox1.FormattingEnabled = true;
             this.listBox1.ItemHeight = 12;
-            this.listBox1.Location = new System.Drawing.Point(3, 493);
+            this.listBox1.Location = new System.Drawing.Point(3, 200);
             this.listBox1.Name = "listBox1";
-            this.listBox1.Size = new System.Drawing.Size(81, 194);
+            this.listBox1.Size = new System.Drawing.Size(225, 487);
             this.listBox1.TabIndex = 0;
             // 
             // textBox1
             // 
             this.textBox1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.textBox1.Location = new System.Drawing.Point(3, 468);
+            this.textBox1.Location = new System.Drawing.Point(3, 173);
             this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(81, 21);
+            this.textBox1.Size = new System.Drawing.Size(225, 21);
             this.textBox1.TabIndex = 3;
             this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
             // 

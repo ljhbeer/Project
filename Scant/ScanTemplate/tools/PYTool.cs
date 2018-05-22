@@ -45,7 +45,8 @@ namespace Tools
                         return Encoding.Default.GetString(new byte[] { (byte)(65 + i) });
                     }
                 }
-                return "*";
+                return  CnPYTool.GetChineseSpell(cnChar);
+                //return "*";
             }
             else
                 return cnChar;

@@ -1,0 +1,1377 @@
+diff --git a/Scant/ScanTemplate/Form/Components.cs b/Scant/ScanTemplate/Form/Components.cs
+index 6e60e22..ea5bf3f 100644
+--- a/Scant/ScanTemplate/Form/Components.cs
++++ b/Scant/ScanTemplate/Form/Components.cs
+@@ -181,7 +181,7 @@ namespace ARTemplate
+         }
+         public override bool HasImgSubArea()
+         {
+-            if (Type == "条形码")
++            if (Type == "条形码" || Type  == "无")
+                 return false;
+             return true;
+         }
+diff --git a/Scant/ScanTemplate/Form/DetectChoiceArea.cs b/Scant/ScanTemplate/Form/DetectChoiceArea.cs
+index e9e4bac..9f2b047 100644
+--- a/Scant/ScanTemplate/Form/DetectChoiceArea.cs
++++ b/Scant/ScanTemplate/Form/DetectChoiceArea.cs
+@@ -178,7 +178,7 @@ namespace ARTemplate
+             //DrawToFile(xcnt);
+             return false;
+         }
+-        public bool Detect()
++        public bool Detect(bool hengpai=true)
+         {               
+             List<int> xposlen,yposlen;
+             Rectangle rt = new Rectangle(0, 0, _src.Size.Width, _src.Size.Height);
+@@ -198,30 +198,69 @@ namespace ARTemplate
+                 return false;
+             MergeSection(yposlen);
+             MergeSection(xposlen);
+-            if (RemoveAndCheck(xposlen,4) && RemoveAndCheck(yposlen,choicecount))
++            int xcheck = 4;
++            int ycheck = choicecount;
++            if (!hengpai)
+             {
+-                m_choicepoint = new List<List<Point>>();
+-                int sum = 0;
+-                for (int i = 1; i < xposlen.Count; i += 2)
+-                {
+-                    sum += xposlen[i] * xposlen[i];
+-                }
+-                choicesize.Width = (int)Math.Sqrt(sum * 2 / xposlen.Count);
+-                sum = 0;
+-                for (int i = 1; i < yposlen.Count; i += 2)
++                xcheck = ycheck;
++                ycheck = 4;
++            }
++
++            if (hengpai)
++            {
++                if (RemoveAndCheck(xposlen, xcheck) && RemoveAndCheck(yposlen, ycheck))
+                 {
+-                    sum += yposlen[i] * yposlen[i];
++                    m_choicepoint = new List<List<Point>>();
++                    int sum = 0;
++                    for (int i = 1; i < xposlen.Count; i += 2)
++                    {
++                        sum += xposlen[i] * xposlen[i];
++                    }
++                    choicesize.Width = (int)Math.Sqrt(sum * 2 / xposlen.Count);
++                    sum = 0;
++                    for (int i = 1; i < yposlen.Count; i += 2)
++                    {
++                        sum += yposlen[i] * yposlen[i];
++                    }
++                    choicesize.Height = (int)Math.Sqrt(sum * 2 / yposlen.Count);
++
++                    for (int i = 0; i < yposlen.Count; i += 2)
++                    {
++                        List<Point> c = new List<Point>();
++                        for (int j = 0; j < xposlen.Count; j += 2)
++                            c.Add(new Point(xposlen[j], yposlen[i]));
++                        m_choicepoint.Add(c);
++                    }
++                    return true;
+                 }
+-                choicesize.Height = (int)Math.Sqrt(sum * 2 / yposlen.Count);
+-                
+-                for (int i = 0; i < yposlen.Count; i+=2)
++            }
++            else//竖排
++            {
++                if (RemoveAndCheck(xposlen, xcheck) && RemoveAndCheck(yposlen, ycheck))
+                 {
+-                    List<Point> c = new List<Point>();
+-                    for (int j = 0; j < xposlen.Count; j += 2) 
+-                        c.Add(new Point(xposlen[j],yposlen[i]));
+-                    m_choicepoint.Add(c);
++                    m_choicepoint = new List<List<Point>>();
++                    int sum = 0;
++                    for (int i = 1; i < xposlen.Count; i += 2)
++                    {
++                        sum += xposlen[i] * xposlen[i];
++                    }
++                    choicesize.Width = (int)Math.Sqrt(sum * 2 / xposlen.Count);
++                    sum = 0;
++                    for (int i = 1; i < yposlen.Count; i += 2)
++                    {
++                        sum += yposlen[i] * yposlen[i];
++                    }
++                    choicesize.Height = (int)Math.Sqrt(sum * 2 / yposlen.Count);
++
++                    for (int j = 0; j < xposlen.Count; j += 2)
++                    {
++                        List<Point> c = new List<Point>();
++                        for (int i = 0; i < yposlen.Count; i += 2)
++                            c.Add(new Point(xposlen[j], yposlen[i]));
++                        m_choicepoint.Add(c);
++                    }
++                    return true;
+                 }
+-                return true;
+             }
+             //DrawToFile(xcnt);
+             return false;
+diff --git a/Scant/ScanTemplate/Form/FormTemplate.Designer.cs b/Scant/ScanTemplate/Form/FormTemplate.Designer.cs
+index dfec161..4fd6091 100644
+--- a/Scant/ScanTemplate/Form/FormTemplate.Designer.cs
++++ b/Scant/ScanTemplate/Form/FormTemplate.Designer.cs
+@@ -59,6 +59,7 @@
+             this.toolStripButtonZoomNone = new System.Windows.Forms.ToolStripButton();
+             this.toolStripComboBoxKHFormat = new System.Windows.Forms.ToolStripComboBox();
+             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
++            this.toolStripComboBoxChooseType = new System.Windows.Forms.ToolStripComboBox();
+             this.toolStrip1.SuspendLayout();
+             this.toolStripContainer1.ContentPanel.SuspendLayout();
+             this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
+@@ -101,7 +102,7 @@
+             this.toolStripButtonToDark,
+             this.toolStripButtonSetGroup,
+             this.toolStripButtonCustomDefine});
+-            this.toolStrip1.Location = new System.Drawing.Point(3, 25);
++            this.toolStrip1.Location = new System.Drawing.Point(3, 0);
+             this.toolStrip1.Name = "toolStrip1";
+             this.toolStrip1.Size = new System.Drawing.Size(697, 25);
+             this.toolStrip1.TabIndex = 1;
+@@ -246,7 +247,7 @@
+             // toolStripContainer1.ContentPanel
+             // 
+             this.toolStripContainer1.ContentPanel.Controls.Add(this.tableLayoutPanel1);
+-            this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(952, 636);
++            this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(952, 657);
+             this.toolStripContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
+             this.toolStripContainer1.Location = new System.Drawing.Point(0, 0);
+             this.toolStripContainer1.Name = "toolStripContainer1";
+@@ -256,8 +257,8 @@
+             // 
+             // toolStripContainer1.TopToolStripPanel
+             // 
+-            this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.toolStrip1);
+             this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.toolStrip2);
++            this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.toolStrip1);
+             // 
+             // tableLayoutPanel1
+             // 
+@@ -273,7 +274,7 @@
+             this.tableLayoutPanel1.RowCount = 2;
+             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 27F));
+             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 92.46468F));
+-            this.tableLayoutPanel1.Size = new System.Drawing.Size(952, 636);
++            this.tableLayoutPanel1.Size = new System.Drawing.Size(952, 657);
+             this.tableLayoutPanel1.TabIndex = 1;
+             // 
+             // treeView1
+@@ -281,7 +282,7 @@
+             this.treeView1.Dock = System.Windows.Forms.DockStyle.Fill;
+             this.treeView1.Location = new System.Drawing.Point(3, 30);
+             this.treeView1.Name = "treeView1";
+-            this.treeView1.Size = new System.Drawing.Size(151, 603);
++            this.treeView1.Size = new System.Drawing.Size(151, 624);
+             this.treeView1.TabIndex = 1;
+             this.treeView1.KeyUp += new System.Windows.Forms.KeyEventHandler(this.treeView1_KeyUp);
+             // 
+@@ -293,7 +294,7 @@
+             this.panel1.Location = new System.Drawing.Point(160, 3);
+             this.panel1.Name = "panel1";
+             this.tableLayoutPanel1.SetRowSpan(this.panel1, 2);
+-            this.panel1.Size = new System.Drawing.Size(789, 630);
++            this.panel1.Size = new System.Drawing.Size(789, 651);
+             this.panel1.TabIndex = 0;
+             // 
+             // pictureBox1
+@@ -324,10 +325,11 @@
+             this.toolStrip2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+             this.toolStripButtonCloseAndOutImages,
+             this.toolStripButtonZoomNone,
+-            this.toolStripComboBoxKHFormat});
+-            this.toolStrip2.Location = new System.Drawing.Point(3, 0);
++            this.toolStripComboBoxKHFormat,
++            this.toolStripComboBoxChooseType});
++            this.toolStrip2.Location = new System.Drawing.Point(700, 0);
+             this.toolStrip2.Name = "toolStrip2";
+-            this.toolStrip2.Size = new System.Drawing.Size(231, 25);
++            this.toolStrip2.Size = new System.Drawing.Size(252, 29);
+             this.toolStrip2.TabIndex = 2;
+             // 
+             // toolStripButtonCloseAndOutImages
+@@ -336,7 +338,7 @@
+             this.toolStripButtonCloseAndOutImages.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonCloseAndOutImages.Image")));
+             this.toolStripButtonCloseAndOutImages.ImageTransparentColor = System.Drawing.Color.Magenta;
+             this.toolStripButtonCloseAndOutImages.Name = "toolStripButtonCloseAndOutImages";
+-            this.toolStripButtonCloseAndOutImages.Size = new System.Drawing.Size(60, 22);
++            this.toolStripButtonCloseAndOutImages.Size = new System.Drawing.Size(60, 26);
+             this.toolStripButtonCloseAndOutImages.Text = "保存退出";
+             this.toolStripButtonCloseAndOutImages.Click += new System.EventHandler(this.toolStripButtonCloseAndOutImages_Click);
+             // 
+@@ -346,7 +348,7 @@
+             this.toolStripButtonZoomNone.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonZoomNone.Image")));
+             this.toolStripButtonZoomNone.ImageTransparentColor = System.Drawing.Color.Magenta;
+             this.toolStripButtonZoomNone.Name = "toolStripButtonZoomNone";
+-            this.toolStripButtonZoomNone.Size = new System.Drawing.Size(36, 22);
++            this.toolStripButtonZoomNone.Size = new System.Drawing.Size(36, 26);
+             this.toolStripButtonZoomNone.Text = "还原";
+             this.toolStripButtonZoomNone.Click += new System.EventHandler(this.toolStripButtonZoomNone_Click);
+             // 
+@@ -361,11 +363,21 @@
+             "考号-涂卡7位",
+             "考号-涂卡8位",
+             "考号-涂卡9位",
+-            "考号-涂卡10位"});
++            "考号-涂卡10位",
++            "考号-无"});
+             this.toolStripComboBoxKHFormat.Name = "toolStripComboBoxKHFormat";
+-            this.toolStripComboBoxKHFormat.Size = new System.Drawing.Size(121, 25);
++            this.toolStripComboBoxKHFormat.Size = new System.Drawing.Size(121, 29);
+             this.toolStripComboBoxKHFormat.Text = "考号格式";
+             // 
++            // toolStripComboBoxChooseType
++            // 
++            this.toolStripComboBoxChooseType.Items.AddRange(new object[] {
++            "横排",
++            "竖排"});
++            this.toolStripComboBoxChooseType.Name = "toolStripComboBoxChooseType";
++            this.toolStripComboBoxChooseType.Size = new System.Drawing.Size(121, 25);
++            this.toolStripComboBoxChooseType.Text = "选择题横排竖排";
++            // 
+             // FormTemplate
+             // 
+             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
+@@ -424,6 +436,7 @@
+         private System.Windows.Forms.ToolStripButton toolStripButtonZoomNone;
+         private System.Windows.Forms.ToolStripComboBox toolStripComboBoxKHFormat;
+         private System.Windows.Forms.ToolStripButton toolStripButtonCustomDefine;
++        private System.Windows.Forms.ToolStripComboBox toolStripComboBoxChooseType;
+     }
+ }
+ 
+diff --git a/Scant/ScanTemplate/Form/FormTemplate.cs b/Scant/ScanTemplate/Form/FormTemplate.cs
+index 76594bf..9e1be07 100644
+--- a/Scant/ScanTemplate/Form/FormTemplate.cs
++++ b/Scant/ScanTemplate/Form/FormTemplate.cs
+@@ -98,6 +98,7 @@ namespace ARTemplate
+                 switch (kh.Type) //数字means横向 涂卡
+                 {
+                     case "条形码": toolStripComboBoxKHFormat.SelectedIndex = 0; break;
++                    case "无": toolStripComboBoxKHFormat.SelectedIndex = 9; break;
+                     case "3": toolStripComboBoxKHFormat.SelectedIndex = 1; break;
+                     case "4": toolStripComboBoxKHFormat.SelectedIndex = 2; break;
+                     case "5": toolStripComboBoxKHFormat.SelectedIndex = 3; break;
+@@ -520,7 +521,7 @@ namespace ARTemplate
+                     Rectangle m_Imgselection = zoombox.BoxToImgSelection(MT.Selection);
+                     TreeNode t = new TreeNode();
+                     t.Name = t.Text = keyname;
+-                    if (type == "条形码")
++                    if (type == "条形码" || type == "无")
+                     {
+                         t.Tag = new KaoHaoChoiceArea(m_Imgselection, t.Name, type);
+                         m_tn.Nodes[keyname].Nodes.Add(t);
+@@ -597,6 +598,12 @@ namespace ARTemplate
+         private void CompleteDeFineChoose()
+         {
+             String keyname = "选择题";
++            bool Hengpai = true;
++            if (toolStripComboBoxChooseType.SelectedIndex != -1)
++            {
++                if (toolStripComboBoxChooseType.SelectedItem.ToString() == "竖排")
++                    Hengpai = false;
++            }
+             if (!ExistDeFineSelection(keyname))
+             {
+                 TreeNode t = new TreeNode();
+@@ -610,8 +617,10 @@ namespace ARTemplate
+                 {
+                     return;
+                 }
++                
++                Bitmap bitmap = GetDrawedbyBlackWhiteBitMap();
++                if (Hengpai)
+                 {//TODO:仅支持 横向填涂
+-                    Bitmap bitmap = GetDrawedbyBlackWhiteBitMap();
+                     DetectChoiceArea dca = new DetectChoiceArea(bitmap, count);
+                     if (dca.Detect())
+                     {
+@@ -620,8 +629,17 @@ namespace ARTemplate
+                             t.Name, dca.Choicepoint, dca.Choicesize);
+                         m_tn.Nodes[keyname].Nodes.Add(t);
+                     }
+-                    //else 
+-                    //    bitmap.Save("f:\\" + choosename + ".jpg");
++                }
++                else
++                {
++                    DetectChoiceArea dca = new DetectChoiceArea(bitmap, count);
++                    if (dca.Detect(Hengpai))
++                    {
++                        t.Name = t.Text = choosename;
++                        t.Tag = new SingleChoiceArea(m_Imgselection,
++                            t.Name, dca.Choicepoint, dca.Choicesize);
++                        m_tn.Nodes[keyname].Nodes.Add(t);
++                    }
+                 }
+             }
+         }
+diff --git a/Scant/ScanTemplate/Form/FormTemplate.resx b/Scant/ScanTemplate/Form/FormTemplate.resx
+index e345b4a..26932fd 100644
+--- a/Scant/ScanTemplate/Form/FormTemplate.resx
++++ b/Scant/ScanTemplate/Form/FormTemplate.resx
+@@ -133,151 +133,151 @@
+   <data name="toolStripButtonSaveTemplate.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+     <value>
+         iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+-        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAgxJREFUOE+lkvtL
+-        U2EYx+0PEbtpFwnBKPGKiJImGP0gYhIYs1E5GF5gIxkpA00JRSmMEF0ohMh+GaRWYlqabMVcNdS2QpaI
+-        VqiDIYhk397vA6fXhCjyhYdzeM/5fp7vczkAdeL2cwho7v/wWzT1zcN+Pwhr51uY2/y41PQaF+wzKKiZ
+-        QvaN58g0jyLd5KEUcQbg+84P/Cm2tncQjW3j68YWIqubCC3FcOJc478BAuGoZM6zvoRnakXEruEIjhc4
+-        /g5gZop9c+voGAyLbQIfeBZxLL9BA1jzXvuGbWamuKh+GmmVbswE19A59FEBbmoAG7YbsLtm2mZmiml9
+-        cvabNDwpz6YB7LYBoMXCumkJr7LOmnnHzBQ/9X2Bo2cOibm1GsBREbAQiYmw/8lnuCeWkVzcgnZlnw1j
+-        3HV/wuNXK6i/9x5Hc6wawDlTXHbLJ+LZUBQPRyKwdQdxutwl1h+NLXHh5Ht1ewBHsiwawCW57HyDAfWR
+-        dvl0uhZQ1eqX8aVc7EKLqrum651ATLf9OJx5XQM4KmY0xPzZ0hFAiQJnXB0WwME0E3IsL5B17ZlADqWb
+-        NYDrOepdlcysmTWWOrxqbceRWtaLk0VO1XW72D5Vckd2gMBfq8zdpmUG62NJvKM4+XyziDk24xmfWoGE
+-        s1c0gHPmbrPTpHNJKOCo2G1mZs20zcwUJ5yp1AB5+8/zEwgF5GMVDxh4AAAAAElFTkSuQmCC
++        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAIISURBVDhPpZP7S1NxGMbPPxKaXVUkMEq8IpKUCoY/hGgI
++        ymqkDYYXcCjDZOANURSjCNGFQUTsl4GXVMxKk62YU4fXQpaIlygHQxBRH8/zwvyaIAYe+HLgnPN8nue9
++        HA3nvDTq63oW/jm13XOwvPTB3DYFY5MH+bXfcN8ygfTSMSSXfESicQDxBqdYHwH29g9w2tnZ3UcguIvN
++        rR3417exuBJE5N1n/wfwLgXEOc38Bc6xNRHb+/y4nm49G0Bnit2zf9H6bkliE/jKuYxrd6oVgDWfjB+K
++        TWeKMyrGEVfowITvD9re/9ABVQrAhh0HHK+ZselMMaN/mvwtDb+aVqkA7HYIwIj3ysfluPTorJnP6Ezx
++        oHsD1s5ZXEktUwCOioB5f1CEPR9+wTG6iuiserTo8dkwng7HT/R+XUPF8xlcTjErAOdMcW6NW8STiwG8
++        7vej8oUPN/PsEv3t8Ao0TZP3T1u8uJRkUgAuSYHtO97oLxmXd5t9Ho8aPTK+GzntqNfrLm2fFoihwYOI
++        xGIF4KjoGBLzY1OrF9k6OOFxnwDC4wxIMX1G0pMhgVyMNyoA13PAtS7OrJk1PrC69LUdQWxuF6IybHrX
++        LRI7JrtZdoDAo1XmbjMyD+tjSXxGcXRmnYg5ttD9QuxDhN0uUgDOmbvNTpPOJaGAo2K36cyaGZvOFIfd
++        KlSA8/zRh9ABIDUG+1JpAAAAAElFTkSuQmCC
+ </value>
+   </data>
+   <data name="toolStripButtonImportTemplate.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+     <value>
+         iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+-        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAgxJREFUOE+lkvtL
+-        U2EYx+0PEbtpFwnBKPGKiJImGP0gYhIYs1E5GF5gIxkpA00JRSmMEF0ohMh+GaRWYlqabMVcNdS2QpaI
+-        VqiDIYhk397vA6fXhCjyhYdzeM/5fp7vczkAdeL2cwho7v/wWzT1zcN+Pwhr51uY2/y41PQaF+wzKKiZ
+-        QvaN58g0jyLd5KEUcQbg+84P/Cm2tncQjW3j68YWIqubCC3FcOJc478BAuGoZM6zvoRnakXEruEIjhc4
+-        /g5gZop9c+voGAyLbQIfeBZxLL9BA1jzXvuGbWamuKh+GmmVbswE19A59FEBbmoAG7YbsLtm2mZmiml9
+-        cvabNDwpz6YB7LYBoMXCumkJr7LOmnnHzBQ/9X2Bo2cOibm1GsBREbAQiYmw/8lnuCeWkVzcgnZlnw1j
+-        3HV/wuNXK6i/9x5Hc6wawDlTXHbLJ+LZUBQPRyKwdQdxutwl1h+NLXHh5Ht1ewBHsiwawCW57HyDAfWR
+-        dvl0uhZQ1eqX8aVc7EKLqrum651ATLf9OJx5XQM4KmY0xPzZ0hFAiQJnXB0WwME0E3IsL5B17ZlADqWb
+-        NYDrOepdlcysmTWWOrxqbceRWtaLk0VO1XW72D5Vckd2gMBfq8zdpmUG62NJvKM4+XyziDk24xmfWoGE
+-        s1c0gHPmbrPTpHNJKOCo2G1mZs20zcwUJ5yp1AB5+8/zEwgF5GMVDxh4AAAAAElFTkSuQmCC
++        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAIISURBVDhPpZP7S1NxGMbPPxKaXVUkMEq8IpKUCoY/hGgI
++        ymqkDYYXcCjDZOANURSjCNGFQUTsl4GXVMxKk62YU4fXQpaIlygHQxBRH8/zwvyaIAYe+HLgnPN8nue9
++        HA3nvDTq63oW/jm13XOwvPTB3DYFY5MH+bXfcN8ygfTSMSSXfESicQDxBqdYHwH29g9w2tnZ3UcguIvN
++        rR3417exuBJE5N1n/wfwLgXEOc38Bc6xNRHb+/y4nm49G0Bnit2zf9H6bkliE/jKuYxrd6oVgDWfjB+K
++        TWeKMyrGEVfowITvD9re/9ABVQrAhh0HHK+ZselMMaN/mvwtDb+aVqkA7HYIwIj3ysfluPTorJnP6Ezx
++        oHsD1s5ZXEktUwCOioB5f1CEPR9+wTG6iuiserTo8dkwng7HT/R+XUPF8xlcTjErAOdMcW6NW8STiwG8
++        7vej8oUPN/PsEv3t8Ao0TZP3T1u8uJRkUgAuSYHtO97oLxmXd5t9Ho8aPTK+GzntqNfrLm2fFoihwYOI
++        xGIF4KjoGBLzY1OrF9k6OOFxnwDC4wxIMX1G0pMhgVyMNyoA13PAtS7OrJk1PrC69LUdQWxuF6IybHrX
++        LRI7JrtZdoDAo1XmbjMyD+tjSXxGcXRmnYg5ttD9QuxDhN0uUgDOmbvNTpPOJaGAo2K36cyaGZvOFIfd
++        KlSA8/zRh9ABIDUG+1JpAAAAAElFTkSuQmCC
+ </value>
+   </data>
+   <data name="toolStripButtonName.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+     <value>
+         iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+-        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAgxJREFUOE+lkvtL
+-        U2EYx+0PEbtpFwnBKPGKiJImGP0gYhIYs1E5GF5gIxkpA00JRSmMEF0ohMh+GaRWYlqabMVcNdS2QpaI
+-        VqiDIYhk397vA6fXhCjyhYdzeM/5fp7vczkAdeL2cwho7v/wWzT1zcN+Pwhr51uY2/y41PQaF+wzKKiZ
+-        QvaN58g0jyLd5KEUcQbg+84P/Cm2tncQjW3j68YWIqubCC3FcOJc478BAuGoZM6zvoRnakXEruEIjhc4
+-        /g5gZop9c+voGAyLbQIfeBZxLL9BA1jzXvuGbWamuKh+GmmVbswE19A59FEBbmoAG7YbsLtm2mZmiml9
+-        cvabNDwpz6YB7LYBoMXCumkJr7LOmnnHzBQ/9X2Bo2cOibm1GsBREbAQiYmw/8lnuCeWkVzcgnZlnw1j
+-        3HV/wuNXK6i/9x5Hc6wawDlTXHbLJ+LZUBQPRyKwdQdxutwl1h+NLXHh5Ht1ewBHsiwawCW57HyDAfWR
+-        dvl0uhZQ1eqX8aVc7EKLqrum651ATLf9OJx5XQM4KmY0xPzZ0hFAiQJnXB0WwME0E3IsL5B17ZlADqWb
+-        NYDrOepdlcysmTWWOrxqbceRWtaLk0VO1XW72D5Vckd2gMBfq8zdpmUG62NJvKM4+XyziDk24xmfWoGE
+-        s1c0gHPmbrPTpHNJKOCo2G1mZs20zcwUJ5yp1AB5+8/zEwgF5GMVDxh4AAAAAElFTkSuQmCC
++        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAIISURBVDhPpZP7S1NxGMbPPxKaXVUkMEq8IpKUCoY/hGgI
++        ymqkDYYXcCjDZOANURSjCNGFQUTsl4GXVMxKk62YU4fXQpaIlygHQxBRH8/zwvyaIAYe+HLgnPN8nue9
++        HA3nvDTq63oW/jm13XOwvPTB3DYFY5MH+bXfcN8ygfTSMSSXfESicQDxBqdYHwH29g9w2tnZ3UcguIvN
++        rR3417exuBJE5N1n/wfwLgXEOc38Bc6xNRHb+/y4nm49G0Bnit2zf9H6bkliE/jKuYxrd6oVgDWfjB+K
++        TWeKMyrGEVfowITvD9re/9ABVQrAhh0HHK+ZselMMaN/mvwtDb+aVqkA7HYIwIj3ysfluPTorJnP6Ezx
++        oHsD1s5ZXEktUwCOioB5f1CEPR9+wTG6iuiserTo8dkwng7HT/R+XUPF8xlcTjErAOdMcW6NW8STiwG8
++        7vej8oUPN/PsEv3t8Ao0TZP3T1u8uJRkUgAuSYHtO97oLxmXd5t9Ho8aPTK+GzntqNfrLm2fFoihwYOI
++        xGIF4KjoGBLzY1OrF9k6OOFxnwDC4wxIMX1G0pMhgVyMNyoA13PAtS7OrJk1PrC69LUdQWxuF6IybHrX
++        LRI7JrtZdoDAo1XmbjMyD+tjSXxGcXRmnYg5ttD9QuxDhN0uUgDOmbvNTpPOJaGAo2K36cyaGZvOFIfd
++        KlSA8/zRh9ABIDUG+1JpAAAAAElFTkSuQmCC
+ </value>
+   </data>
+   <data name="toolStripButtonZoomout.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+     <value>
+         iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+-        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAgxJREFUOE+lkvtL
+-        U2EYx+0PEbtpFwnBKPGKiJImGP0gYhIYs1E5GF5gIxkpA00JRSmMEF0ohMh+GaRWYlqabMVcNdS2QpaI
+-        VqiDIYhk397vA6fXhCjyhYdzeM/5fp7vczkAdeL2cwho7v/wWzT1zcN+Pwhr51uY2/y41PQaF+wzKKiZ
+-        QvaN58g0jyLd5KEUcQbg+84P/Cm2tncQjW3j68YWIqubCC3FcOJc478BAuGoZM6zvoRnakXEruEIjhc4
+-        /g5gZop9c+voGAyLbQIfeBZxLL9BA1jzXvuGbWamuKh+GmmVbswE19A59FEBbmoAG7YbsLtm2mZmiml9
+-        cvabNDwpz6YB7LYBoMXCumkJr7LOmnnHzBQ/9X2Bo2cOibm1GsBREbAQiYmw/8lnuCeWkVzcgnZlnw1j
+-        3HV/wuNXK6i/9x5Hc6wawDlTXHbLJ+LZUBQPRyKwdQdxutwl1h+NLXHh5Ht1ewBHsiwawCW57HyDAfWR
+-        dvl0uhZQ1eqX8aVc7EKLqrum651ATLf9OJx5XQM4KmY0xPzZ0hFAiQJnXB0WwME0E3IsL5B17ZlADqWb
+-        NYDrOepdlcysmTWWOrxqbceRWtaLk0VO1XW72D5Vckd2gMBfq8zdpmUG62NJvKM4+XyziDk24xmfWoGE
+-        s1c0gHPmbrPTpHNJKOCo2G1mZs20zcwUJ5yp1AB5+8/zEwgF5GMVDxh4AAAAAElFTkSuQmCC
++        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAIISURBVDhPpZP7S1NxGMbPPxKaXVUkMEq8IpKUCoY/hGgI
++        ymqkDYYXcCjDZOANURSjCNGFQUTsl4GXVMxKk62YU4fXQpaIlygHQxBRH8/zwvyaIAYe+HLgnPN8nue9
++        HA3nvDTq63oW/jm13XOwvPTB3DYFY5MH+bXfcN8ygfTSMSSXfESicQDxBqdYHwH29g9w2tnZ3UcguIvN
++        rR3417exuBJE5N1n/wfwLgXEOc38Bc6xNRHb+/y4nm49G0Bnit2zf9H6bkliE/jKuYxrd6oVgDWfjB+K
++        TWeKMyrGEVfowITvD9re/9ABVQrAhh0HHK+ZselMMaN/mvwtDb+aVqkA7HYIwIj3ysfluPTorJnP6Ezx
++        oHsD1s5ZXEktUwCOioB5f1CEPR9+wTG6iuiserTo8dkwng7HT/R+XUPF8xlcTjErAOdMcW6NW8STiwG8
++        7vej8oUPN/PsEv3t8Ao0TZP3T1u8uJRkUgAuSYHtO97oLxmXd5t9Ho8aPTK+GzntqNfrLm2fFoihwYOI
++        xGIF4KjoGBLzY1OrF9k6OOFxnwDC4wxIMX1G0pMhgVyMNyoA13PAtS7OrJk1PrC69LUdQWxuF6IybHrX
++        LRI7JrtZdoDAo1XmbjMyD+tjSXxGcXRmnYg5ttD9QuxDhN0uUgDOmbvNTpPOJaGAo2K36cyaGZvOFIfd
++        KlSA8/zRh9ABIDUG+1JpAAAAAElFTkSuQmCC
+ </value>
+   </data>
+   <data name="toolStripButtonZoomin.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+     <value>
+         iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+-        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAgxJREFUOE+lkvtL
+-        U2EYx+0PEbtpFwnBKPGKiJImGP0gYhIYs1E5GF5gIxkpA00JRSmMEF0ohMh+GaRWYlqabMVcNdS2QpaI
+-        VqiDIYhk397vA6fXhCjyhYdzeM/5fp7vczkAdeL2cwho7v/wWzT1zcN+Pwhr51uY2/y41PQaF+wzKKiZ
+-        QvaN58g0jyLd5KEUcQbg+84P/Cm2tncQjW3j68YWIqubCC3FcOJc478BAuGoZM6zvoRnakXEruEIjhc4
+-        /g5gZop9c+voGAyLbQIfeBZxLL9BA1jzXvuGbWamuKh+GmmVbswE19A59FEBbmoAG7YbsLtm2mZmiml9
+-        cvabNDwpz6YB7LYBoMXCumkJr7LOmnnHzBQ/9X2Bo2cOibm1GsBREbAQiYmw/8lnuCeWkVzcgnZlnw1j
+-        3HV/wuNXK6i/9x5Hc6wawDlTXHbLJ+LZUBQPRyKwdQdxutwl1h+NLXHh5Ht1ewBHsiwawCW57HyDAfWR
+-        dvl0uhZQ1eqX8aVc7EKLqrum651ATLf9OJx5XQM4KmY0xPzZ0hFAiQJnXB0WwME0E3IsL5B17ZlADqWb
+-        NYDrOepdlcysmTWWOrxqbceRWtaLk0VO1XW72D5Vckd2gMBfq8zdpmUG62NJvKM4+XyziDk24xmfWoGE
+-        s1c0gHPmbrPTpHNJKOCo2G1mZs20zcwUJ5yp1AB5+8/zEwgF5GMVDxh4AAAAAElFTkSuQmCC
++        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAIISURBVDhPpZP7S1NxGMbPPxKaXVUkMEq8IpKUCoY/hGgI
++        ymqkDYYXcCjDZOANURSjCNGFQUTsl4GXVMxKk62YU4fXQpaIlygHQxBRH8/zwvyaIAYe+HLgnPN8nue9
++        HA3nvDTq63oW/jm13XOwvPTB3DYFY5MH+bXfcN8ygfTSMSSXfESicQDxBqdYHwH29g9w2tnZ3UcguIvN
++        rR3417exuBJE5N1n/wfwLgXEOc38Bc6xNRHb+/y4nm49G0Bnit2zf9H6bkliE/jKuYxrd6oVgDWfjB+K
++        TWeKMyrGEVfowITvD9re/9ABVQrAhh0HHK+ZselMMaN/mvwtDb+aVqkA7HYIwIj3ysfluPTorJnP6Ezx
++        oHsD1s5ZXEktUwCOioB5f1CEPR9+wTG6iuiserTo8dkwng7HT/R+XUPF8xlcTjErAOdMcW6NW8STiwG8
++        7vej8oUPN/PsEv3t8Ao0TZP3T1u8uJRkUgAuSYHtO97oLxmXd5t9Ho8aPTK+GzntqNfrLm2fFoihwYOI
++        xGIF4KjoGBLzY1OrF9k6OOFxnwDC4wxIMX1G0pMhgVyMNyoA13PAtS7OrJk1PrC69LUdQWxuF6IybHrX
++        LRI7JrtZdoDAo1XmbjMyD+tjSXxGcXRmnYg5ttD9QuxDhN0uUgDOmbvNTpPOJaGAo2K36cyaGZvOFIfd
++        KlSA8/zRh9ABIDUG+1JpAAAAAElFTkSuQmCC
+ </value>
+   </data>
+   <data name="toolStripButtonZoomMouse.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+     <value>
+         iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+-        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAgxJREFUOE+lkvtL
+-        U2EYx+0PEbtpFwnBKPGKiJImGP0gYhIYs1E5GF5gIxkpA00JRSmMEF0ohMh+GaRWYlqabMVcNdS2QpaI
+-        VqiDIYhk397vA6fXhCjyhYdzeM/5fp7vczkAdeL2cwho7v/wWzT1zcN+Pwhr51uY2/y41PQaF+wzKKiZ
+-        QvaN58g0jyLd5KEUcQbg+84P/Cm2tncQjW3j68YWIqubCC3FcOJc478BAuGoZM6zvoRnakXEruEIjhc4
+-        /g5gZop9c+voGAyLbQIfeBZxLL9BA1jzXvuGbWamuKh+GmmVbswE19A59FEBbmoAG7YbsLtm2mZmiml9
+-        cvabNDwpz6YB7LYBoMXCumkJr7LOmnnHzBQ/9X2Bo2cOibm1GsBREbAQiYmw/8lnuCeWkVzcgnZlnw1j
+-        3HV/wuNXK6i/9x5Hc6wawDlTXHbLJ+LZUBQPRyKwdQdxutwl1h+NLXHh5Ht1ewBHsiwawCW57HyDAfWR
+-        dvl0uhZQ1eqX8aVc7EKLqrum651ATLf9OJx5XQM4KmY0xPzZ0hFAiQJnXB0WwME0E3IsL5B17ZlADqWb
+-        NYDrOepdlcysmTWWOrxqbceRWtaLk0VO1XW72D5Vckd2gMBfq8zdpmUG62NJvKM4+XyziDk24xmfWoGE
+-        s1c0gHPmbrPTpHNJKOCo2G1mZs20zcwUJ5yp1AB5+8/zEwgF5GMVDxh4AAAAAElFTkSuQmCC
++        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAIISURBVDhPpZP7S1NxGMbPPxKaXVUkMEq8IpKUCoY/hGgI
++        ymqkDYYXcCjDZOANURSjCNGFQUTsl4GXVMxKk62YU4fXQpaIlygHQxBRH8/zwvyaIAYe+HLgnPN8nue9
++        HA3nvDTq63oW/jm13XOwvPTB3DYFY5MH+bXfcN8ygfTSMSSXfESicQDxBqdYHwH29g9w2tnZ3UcguIvN
++        rR3417exuBJE5N1n/wfwLgXEOc38Bc6xNRHb+/y4nm49G0Bnit2zf9H6bkliE/jKuYxrd6oVgDWfjB+K
++        TWeKMyrGEVfowITvD9re/9ABVQrAhh0HHK+ZselMMaN/mvwtDb+aVqkA7HYIwIj3ysfluPTorJnP6Ezx
++        oHsD1s5ZXEktUwCOioB5f1CEPR9+wTG6iuiserTo8dkwng7HT/R+XUPF8xlcTjErAOdMcW6NW8STiwG8
++        7vej8oUPN/PsEv3t8Ao0TZP3T1u8uJRkUgAuSYHtO97oLxmXd5t9Ho8aPTK+GzntqNfrLm2fFoihwYOI
++        xGIF4KjoGBLzY1OrF9k6OOFxnwDC4wxIMX1G0pMhgVyMNyoA13PAtS7OrJk1PrC69LUdQWxuF6IybHrX
++        LRI7JrtZdoDAo1XmbjMyD+tjSXxGcXRmnYg5ttD9QuxDhN0uUgDOmbvNTpPOJaGAo2K36cyaGZvOFIfd
++        KlSA8/zRh9ABIDUG+1JpAAAAAElFTkSuQmCC
+ </value>
+   </data>
+   <data name="toolStripButtonWhite.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+     <value>
+         iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+-        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAgxJREFUOE+lkvtL
+-        U2EYx+0PEbtpFwnBKPGKiJImGP0gYhIYs1E5GF5gIxkpA00JRSmMEF0ohMh+GaRWYlqabMVcNdS2QpaI
+-        VqiDIYhk397vA6fXhCjyhYdzeM/5fp7vczkAdeL2cwho7v/wWzT1zcN+Pwhr51uY2/y41PQaF+wzKKiZ
+-        QvaN58g0jyLd5KEUcQbg+84P/Cm2tncQjW3j68YWIqubCC3FcOJc478BAuGoZM6zvoRnakXEruEIjhc4
+-        /g5gZop9c+voGAyLbQIfeBZxLL9BA1jzXvuGbWamuKh+GmmVbswE19A59FEBbmoAG7YbsLtm2mZmiml9
+-        cvabNDwpz6YB7LYBoMXCumkJr7LOmnnHzBQ/9X2Bo2cOibm1GsBREbAQiYmw/8lnuCeWkVzcgnZlnw1j
+-        3HV/wuNXK6i/9x5Hc6wawDlTXHbLJ+LZUBQPRyKwdQdxutwl1h+NLXHh5Ht1ewBHsiwawCW57HyDAfWR
+-        dvl0uhZQ1eqX8aVc7EKLqrum651ATLf9OJx5XQM4KmY0xPzZ0hFAiQJnXB0WwME0E3IsL5B17ZlADqWb
+-        NYDrOepdlcysmTWWOrxqbceRWtaLk0VO1XW72D5Vckd2gMBfq8zdpmUG62NJvKM4+XyziDk24xmfWoGE
+-        s1c0gHPmbrPTpHNJKOCo2G1mZs20zcwUJ5yp1AB5+8/zEwgF5GMVDxh4AAAAAElFTkSuQmCC
++        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAIISURBVDhPpZP7S1NxGMbPPxKaXVUkMEq8IpKUCoY/hGgI
++        ymqkDYYXcCjDZOANURSjCNGFQUTsl4GXVMxKk62YU4fXQpaIlygHQxBRH8/zwvyaIAYe+HLgnPN8nue9
++        HA3nvDTq63oW/jm13XOwvPTB3DYFY5MH+bXfcN8ygfTSMSSXfESicQDxBqdYHwH29g9w2tnZ3UcguIvN
++        rR3417exuBJE5N1n/wfwLgXEOc38Bc6xNRHb+/y4nm49G0Bnit2zf9H6bkliE/jKuYxrd6oVgDWfjB+K
++        TWeKMyrGEVfowITvD9re/9ABVQrAhh0HHK+ZselMMaN/mvwtDb+aVqkA7HYIwIj3ysfluPTorJnP6Ezx
++        oHsD1s5ZXEktUwCOioB5f1CEPR9+wTG6iuiserTo8dkwng7HT/R+XUPF8xlcTjErAOdMcW6NW8STiwG8
++        7vej8oUPN/PsEv3t8Ao0TZP3T1u8uJRkUgAuSYHtO97oLxmXd5t9Ho8aPTK+GzntqNfrLm2fFoihwYOI
++        xGIF4KjoGBLzY1OrF9k6OOFxnwDC4wxIMX1G0pMhgVyMNyoA13PAtS7OrJk1PrC69LUdQWxuF6IybHrX
++        LRI7JrtZdoDAo1XmbjMyD+tjSXxGcXRmnYg5ttD9QuxDhN0uUgDOmbvNTpPOJaGAo2K36cyaGZvOFIfd
++        KlSA8/zRh9ABIDUG+1JpAAAAAElFTkSuQmCC
+ </value>
+   </data>
+   <data name="toolStripButtonToDark.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+     <value>
+         iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+-        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAgxJREFUOE+lkvtL
+-        U2EYx+0PEbtpFwnBKPGKiJImGP0gYhIYs1E5GF5gIxkpA00JRSmMEF0ohMh+GaRWYlqabMVcNdS2QpaI
+-        VqiDIYhk397vA6fXhCjyhYdzeM/5fp7vczkAdeL2cwho7v/wWzT1zcN+Pwhr51uY2/y41PQaF+wzKKiZ
+-        QvaN58g0jyLd5KEUcQbg+84P/Cm2tncQjW3j68YWIqubCC3FcOJc478BAuGoZM6zvoRnakXEruEIjhc4
+-        /g5gZop9c+voGAyLbQIfeBZxLL9BA1jzXvuGbWamuKh+GmmVbswE19A59FEBbmoAG7YbsLtm2mZmiml9
+-        cvabNDwpz6YB7LYBoMXCumkJr7LOmnnHzBQ/9X2Bo2cOibm1GsBREbAQiYmw/8lnuCeWkVzcgnZlnw1j
+-        3HV/wuNXK6i/9x5Hc6wawDlTXHbLJ+LZUBQPRyKwdQdxutwl1h+NLXHh5Ht1ewBHsiwawCW57HyDAfWR
+-        dvl0uhZQ1eqX8aVc7EKLqrum651ATLf9OJx5XQM4KmY0xPzZ0hFAiQJnXB0WwME0E3IsL5B17ZlADqWb
+-        NYDrOepdlcysmTWWOrxqbceRWtaLk0VO1XW72D5Vckd2gMBfq8zdpmUG62NJvKM4+XyziDk24xmfWoGE
+-        s1c0gHPmbrPTpHNJKOCo2G1mZs20zcwUJ5yp1AB5+8/zEwgF5GMVDxh4AAAAAElFTkSuQmCC
++        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAIISURBVDhPpZP7S1NxGMbPPxKaXVUkMEq8IpKUCoY/hGgI
++        ymqkDYYXcCjDZOANURSjCNGFQUTsl4GXVMxKk62YU4fXQpaIlygHQxBRH8/zwvyaIAYe+HLgnPN8nue9
++        HA3nvDTq63oW/jm13XOwvPTB3DYFY5MH+bXfcN8ygfTSMSSXfESicQDxBqdYHwH29g9w2tnZ3UcguIvN
++        rR3417exuBJE5N1n/wfwLgXEOc38Bc6xNRHb+/y4nm49G0Bnit2zf9H6bkliE/jKuYxrd6oVgDWfjB+K
++        TWeKMyrGEVfowITvD9re/9ABVQrAhh0HHK+ZselMMaN/mvwtDb+aVqkA7HYIwIj3ysfluPTorJnP6Ezx
++        oHsD1s5ZXEktUwCOioB5f1CEPR9+wTG6iuiserTo8dkwng7HT/R+XUPF8xlcTjErAOdMcW6NW8STiwG8
++        7vej8oUPN/PsEv3t8Ao0TZP3T1u8uJRkUgAuSYHtO97oLxmXd5t9Ho8aPTK+GzntqNfrLm2fFoihwYOI
++        xGIF4KjoGBLzY1OrF9k6OOFxnwDC4wxIMX1G0pMhgVyMNyoA13PAtS7OrJk1PrC69LUdQWxuF6IybHrX
++        LRI7JrtZdoDAo1XmbjMyD+tjSXxGcXRmnYg5ttD9QuxDhN0uUgDOmbvNTpPOJaGAo2K36cyaGZvOFIfd
++        KlSA8/zRh9ABIDUG+1JpAAAAAElFTkSuQmCC
+ </value>
+   </data>
+   <data name="toolStripButtonSetGroup.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+     <value>
+         iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+-        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAgxJREFUOE+lkvtL
+-        U2EYx+0PEbtpFwnBKPGKiJImGP0gYhIYs1E5GF5gIxkpA00JRSmMEF0ohMh+GaRWYlqabMVcNdS2QpaI
+-        VqiDIYhk397vA6fXhCjyhYdzeM/5fp7vczkAdeL2cwho7v/wWzT1zcN+Pwhr51uY2/y41PQaF+wzKKiZ
+-        QvaN58g0jyLd5KEUcQbg+84P/Cm2tncQjW3j68YWIqubCC3FcOJc478BAuGoZM6zvoRnakXEruEIjhc4
+-        /g5gZop9c+voGAyLbQIfeBZxLL9BA1jzXvuGbWamuKh+GmmVbswE19A59FEBbmoAG7YbsLtm2mZmiml9
+-        cvabNDwpz6YB7LYBoMXCumkJr7LOmnnHzBQ/9X2Bo2cOibm1GsBREbAQiYmw/8lnuCeWkVzcgnZlnw1j
+-        3HV/wuNXK6i/9x5Hc6wawDlTXHbLJ+LZUBQPRyKwdQdxutwl1h+NLXHh5Ht1ewBHsiwawCW57HyDAfWR
+-        dvl0uhZQ1eqX8aVc7EKLqrum651ATLf9OJx5XQM4KmY0xPzZ0hFAiQJnXB0WwME0E3IsL5B17ZlADqWb
+-        NYDrOepdlcysmTWWOrxqbceRWtaLk0VO1XW72D5Vckd2gMBfq8zdpmUG62NJvKM4+XyziDk24xmfWoGE
+-        s1c0gHPmbrPTpHNJKOCo2G1mZs20zcwUJ5yp1AB5+8/zEwgF5GMVDxh4AAAAAElFTkSuQmCC
++        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAIISURBVDhPpZP7S1NxGMbPPxKaXVUkMEq8IpKUCoY/hGgI
++        ymqkDYYXcCjDZOANURSjCNGFQUTsl4GXVMxKk62YU4fXQpaIlygHQxBRH8/zwvyaIAYe+HLgnPN8nue9
++        HA3nvDTq63oW/jm13XOwvPTB3DYFY5MH+bXfcN8ygfTSMSSXfESicQDxBqdYHwH29g9w2tnZ3UcguIvN
++        rR3417exuBJE5N1n/wfwLgXEOc38Bc6xNRHb+/y4nm49G0Bnit2zf9H6bkliE/jKuYxrd6oVgDWfjB+K
++        TWeKMyrGEVfowITvD9re/9ABVQrAhh0HHK+ZselMMaN/mvwtDb+aVqkA7HYIwIj3ysfluPTorJnP6Ezx
++        oHsD1s5ZXEktUwCOioB5f1CEPR9+wTG6iuiserTo8dkwng7HT/R+XUPF8xlcTjErAOdMcW6NW8STiwG8
++        7vej8oUPN/PsEv3t8Ao0TZP3T1u8uJRkUgAuSYHtO97oLxmXd5t9Ho8aPTK+GzntqNfrLm2fFoihwYOI
++        xGIF4KjoGBLzY1OrF9k6OOFxnwDC4wxIMX1G0pMhgVyMNyoA13PAtS7OrJk1PrC69LUdQWxuF6IybHrX
++        LRI7JrtZdoDAo1XmbjMyD+tjSXxGcXRmnYg5ttD9QuxDhN0uUgDOmbvNTpPOJaGAo2K36cyaGZvOFIfd
++        KlSA8/zRh9ABIDUG+1JpAAAAAElFTkSuQmCC
+ </value>
+   </data>
+   <data name="toolStripButtonCustomDefine.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+     <value>
+         iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+-        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAgxJREFUOE+lkvtL
+-        U2EYx+0PEbtpFwnBKPGKiJImGP0gYhIYs1E5GF5gIxkpA00JRSmMEF0ohMh+GaRWYlqabMVcNdS2QpaI
+-        VqiDIYhk397vA6fXhCjyhYdzeM/5fp7vczkAdeL2cwho7v/wWzT1zcN+Pwhr51uY2/y41PQaF+wzKKiZ
+-        QvaN58g0jyLd5KEUcQbg+84P/Cm2tncQjW3j68YWIqubCC3FcOJc478BAuGoZM6zvoRnakXEruEIjhc4
+-        /g5gZop9c+voGAyLbQIfeBZxLL9BA1jzXvuGbWamuKh+GmmVbswE19A59FEBbmoAG7YbsLtm2mZmiml9
+-        cvabNDwpz6YB7LYBoMXCumkJr7LOmnnHzBQ/9X2Bo2cOibm1GsBREbAQiYmw/8lnuCeWkVzcgnZlnw1j
+-        3HV/wuNXK6i/9x5Hc6wawDlTXHbLJ+LZUBQPRyKwdQdxutwl1h+NLXHh5Ht1ewBHsiwawCW57HyDAfWR
+-        dvl0uhZQ1eqX8aVc7EKLqrum651ATLf9OJx5XQM4KmY0xPzZ0hFAiQJnXB0WwME0E3IsL5B17ZlADqWb
+-        NYDrOepdlcysmTWWOrxqbceRWtaLk0VO1XW72D5Vckd2gMBfq8zdpmUG62NJvKM4+XyziDk24xmfWoGE
+-        s1c0gHPmbrPTpHNJKOCo2G1mZs20zcwUJ5yp1AB5+8/zEwgF5GMVDxh4AAAAAElFTkSuQmCC
++        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAIISURBVDhPpZP7S1NxGMbPPxKaXVUkMEq8IpKUCoY/hGgI
++        ymqkDYYXcCjDZOANURSjCNGFQUTsl4GXVMxKk62YU4fXQpaIlygHQxBRH8/zwvyaIAYe+HLgnPN8nue9
++        HA3nvDTq63oW/jm13XOwvPTB3DYFY5MH+bXfcN8ygfTSMSSXfESicQDxBqdYHwH29g9w2tnZ3UcguIvN
++        rR3417exuBJE5N1n/wfwLgXEOc38Bc6xNRHb+/y4nm49G0Bnit2zf9H6bkliE/jKuYxrd6oVgDWfjB+K
++        TWeKMyrGEVfowITvD9re/9ABVQrAhh0HHK+ZselMMaN/mvwtDb+aVqkA7HYIwIj3ysfluPTorJnP6Ezx
++        oHsD1s5ZXEktUwCOioB5f1CEPR9+wTG6iuiserTo8dkwng7HT/R+XUPF8xlcTjErAOdMcW6NW8STiwG8
++        7vej8oUPN/PsEv3t8Ao0TZP3T1u8uJRkUgAuSYHtO97oLxmXd5t9Ho8aPTK+GzntqNfrLm2fFoihwYOI
++        xGIF4KjoGBLzY1OrF9k6OOFxnwDC4wxIMX1G0pMhgVyMNyoA13PAtS7OrJk1PrC69LUdQWxuF6IybHrX
++        LRI7JrtZdoDAo1XmbjMyD+tjSXxGcXRmnYg5ttD9QuxDhN0uUgDOmbvNTpPOJaGAo2K36cyaGZvOFIfd
++        KlSA8/zRh9ABIDUG+1JpAAAAAElFTkSuQmCC
+ </value>
+   </data>
+   <metadata name="toolStrip2.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+@@ -286,31 +286,31 @@
+   <data name="toolStripButtonCloseAndOutImages.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+     <value>
+         iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+-        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAgxJREFUOE+lkvtL
+-        U2EYx+0PEbtpFwnBKPGKiJImGP0gYhIYs1E5GF5gIxkpA00JRSmMEF0ohMh+GaRWYlqabMVcNdS2QpaI
+-        VqiDIYhk397vA6fXhCjyhYdzeM/5fp7vczkAdeL2cwho7v/wWzT1zcN+Pwhr51uY2/y41PQaF+wzKKiZ
+-        QvaN58g0jyLd5KEUcQbg+84P/Cm2tncQjW3j68YWIqubCC3FcOJc478BAuGoZM6zvoRnakXEruEIjhc4
+-        /g5gZop9c+voGAyLbQIfeBZxLL9BA1jzXvuGbWamuKh+GmmVbswE19A59FEBbmoAG7YbsLtm2mZmiml9
+-        cvabNDwpz6YB7LYBoMXCumkJr7LOmnnHzBQ/9X2Bo2cOibm1GsBREbAQiYmw/8lnuCeWkVzcgnZlnw1j
+-        3HV/wuNXK6i/9x5Hc6wawDlTXHbLJ+LZUBQPRyKwdQdxutwl1h+NLXHh5Ht1ewBHsiwawCW57HyDAfWR
+-        dvl0uhZQ1eqX8aVc7EKLqrum651ATLf9OJx5XQM4KmY0xPzZ0hFAiQJnXB0WwME0E3IsL5B17ZlADqWb
+-        NYDrOepdlcysmTWWOrxqbceRWtaLk0VO1XW72D5Vckd2gMBfq8zdpmUG62NJvKM4+XyziDk24xmfWoGE
+-        s1c0gHPmbrPTpHNJKOCo2G1mZs20zcwUJ5yp1AB5+8/zEwgF5GMVDxh4AAAAAElFTkSuQmCC
++        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAIISURBVDhPpZP7S1NxGMbPPxKaXVUkMEq8IpKUCoY/hGgI
++        ymqkDYYXcCjDZOANURSjCNGFQUTsl4GXVMxKk62YU4fXQpaIlygHQxBRH8/zwvyaIAYe+HLgnPN8nue9
++        HA3nvDTq63oW/jm13XOwvPTB3DYFY5MH+bXfcN8ygfTSMSSXfESicQDxBqdYHwH29g9w2tnZ3UcguIvN
++        rR3417exuBJE5N1n/wfwLgXEOc38Bc6xNRHb+/y4nm49G0Bnit2zf9H6bkliE/jKuYxrd6oVgDWfjB+K
++        TWeKMyrGEVfowITvD9re/9ABVQrAhh0HHK+ZselMMaN/mvwtDb+aVqkA7HYIwIj3ysfluPTorJnP6Ezx
++        oHsD1s5ZXEktUwCOioB5f1CEPR9+wTG6iuiserTo8dkwng7HT/R+XUPF8xlcTjErAOdMcW6NW8STiwG8
++        7vej8oUPN/PsEv3t8Ao0TZP3T1u8uJRkUgAuSYHtO97oLxmXd5t9Ho8aPTK+GzntqNfrLm2fFoihwYOI
++        xGIF4KjoGBLzY1OrF9k6OOFxnwDC4wxIMX1G0pMhgVyMNyoA13PAtS7OrJk1PrC69LUdQWxuF6IybHrX
++        LRI7JrtZdoDAo1XmbjMyD+tjSXxGcXRmnYg5ttD9QuxDhN0uUgDOmbvNTpPOJaGAo2K36cyaGZvOFIfd
++        KlSA8/zRh9ABIDUG+1JpAAAAAElFTkSuQmCC
+ </value>
+   </data>
+   <data name="toolStripButtonZoomNone.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+     <value>
+         iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+-        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAgxJREFUOE+lkvtL
+-        U2EYx+0PEbtpFwnBKPGKiJImGP0gYhIYs1E5GF5gIxkpA00JRSmMEF0ohMh+GaRWYlqabMVcNdS2QpaI
+-        VqiDIYhk397vA6fXhCjyhYdzeM/5fp7vczkAdeL2cwho7v/wWzT1zcN+Pwhr51uY2/y41PQaF+wzKKiZ
+-        QvaN58g0jyLd5KEUcQbg+84P/Cm2tncQjW3j68YWIqubCC3FcOJc478BAuGoZM6zvoRnakXEruEIjhc4
+-        /g5gZop9c+voGAyLbQIfeBZxLL9BA1jzXvuGbWamuKh+GmmVbswE19A59FEBbmoAG7YbsLtm2mZmiml9
+-        cvabNDwpz6YB7LYBoMXCumkJr7LOmnnHzBQ/9X2Bo2cOibm1GsBREbAQiYmw/8lnuCeWkVzcgnZlnw1j
+-        3HV/wuNXK6i/9x5Hc6wawDlTXHbLJ+LZUBQPRyKwdQdxutwl1h+NLXHh5Ht1ewBHsiwawCW57HyDAfWR
+-        dvl0uhZQ1eqX8aVc7EKLqrum651ATLf9OJx5XQM4KmY0xPzZ0hFAiQJnXB0WwME0E3IsL5B17ZlADqWb
+-        NYDrOepdlcysmTWWOrxqbceRWtaLk0VO1XW72D5Vckd2gMBfq8zdpmUG62NJvKM4+XyziDk24xmfWoGE
+-        s1c0gHPmbrPTpHNJKOCo2G1mZs20zcwUJ5yp1AB5+8/zEwgF5GMVDxh4AAAAAElFTkSuQmCC
++        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAIISURBVDhPpZP7S1NxGMbPPxKaXVUkMEq8IpKUCoY/hGgI
++        ymqkDYYXcCjDZOANURSjCNGFQUTsl4GXVMxKk62YU4fXQpaIlygHQxBRH8/zwvyaIAYe+HLgnPN8nue9
++        HA3nvDTq63oW/jm13XOwvPTB3DYFY5MH+bXfcN8ygfTSMSSXfESicQDxBqdYHwH29g9w2tnZ3UcguIvN
++        rR3417exuBJE5N1n/wfwLgXEOc38Bc6xNRHb+/y4nm49G0Bnit2zf9H6bkliE/jKuYxrd6oVgDWfjB+K
++        TWeKMyrGEVfowITvD9re/9ABVQrAhh0HHK+ZselMMaN/mvwtDb+aVqkA7HYIwIj3ysfluPTorJnP6Ezx
++        oHsD1s5ZXEktUwCOioB5f1CEPR9+wTG6iuiserTo8dkwng7HT/R+XUPF8xlcTjErAOdMcW6NW8STiwG8
++        7vej8oUPN/PsEv3t8Ao0TZP3T1u8uJRkUgAuSYHtO97oLxmXd5t9Ho8aPTK+GzntqNfrLm2fFoihwYOI
++        xGIF4KjoGBLzY1OrF9k6OOFxnwDC4wxIMX1G0pMhgVyMNyoA13PAtS7OrJk1PrC69LUdQWxuF6IybHrX
++        LRI7JrtZdoDAo1XmbjMyD+tjSXxGcXRmnYg5ttD9QuxDhN0uUgDOmbvNTpPOJaGAo2K36cyaGZvOFIfd
++        KlSA8/zRh9ABIDUG+1JpAAAAAElFTkSuQmCC
+ </value>
+   </data>
+   <metadata name="folderBrowserDialog1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+diff --git a/Scant/ScanTemplate/FormYJ/ExportClassResult.cs b/Scant/ScanTemplate/FormYJ/ExportClassResult.cs
+index 724c0a5..86dfa43 100644
+--- a/Scant/ScanTemplate/FormYJ/ExportClassResult.cs
++++ b/Scant/ScanTemplate/FormYJ/ExportClassResult.cs
+@@ -61,7 +61,7 @@ namespace ScanTemplate.FormYJ
+         {
+             _Optionanswer = _exam.OSubjects.Select(r => r.Answer).ToList();
+             _OptionMaxscore = _exam.OSubjects.Select(r => r.Score).ToList();
+-            if (!_Optionanswer.Exists(r => r.Length != 1 || !"ABCD".Contains(r))
++            if (!_Optionanswer.Exists(r => r.Length == 0 )//|| !"ABCD".Contains(r)  //有不定项选择
+                 && !_OptionMaxscore.Exists(r => r <= 0))
+                 ;
+             else
+@@ -135,6 +135,18 @@ namespace ScanTemplate.FormYJ
+         private void ExportImages(string ImgPath,bool onlyoptions = false)
+         {
+             CheckFold(ImgPath);
++            List<Rectangle> drawrect = new List<Rectangle>();
++            foreach (Optionsubject O in _Optionsubjects.OptionSubjects)
++            {
++                List<int> listanswer = O.Answer.Select(rr => rr - 'A').ToList();
++                foreach (int index in listanswer)
++                {
++                    Rectangle RO = new Rectangle(O.List[index], O.Size);
++                    RO.Offset(O.Rect.Location );
++                    drawrect.Add(RO);
++                }
++            }
++
+             foreach (Student S in _students.students)
+             {
+                 PaperResult pr = ConstructPaperResult(S,onlyoptions);
+@@ -149,6 +161,18 @@ namespace ScanTemplate.FormYJ
+                         filename = ImgPath + "\\" + S.ID + "_" + name + ".jpg";
+                     }
+                 }
++
++                using (Graphics g = Graphics.FromImage(bmp))
++                {
++                    Pen pen = Pens.Red;
++                    foreach (Rectangle rr in drawrect)
++                    {
++                        Rectangle r = rr;
++                        Point p = _angle.GetCorrectPoint(r.X, r.Y);
++                        r.Location = p;
++                        g.DrawRectangle(pen, r);
++                    }
++                }
+                 bmp.Save(filename);
+             }
+         }
+@@ -162,8 +186,28 @@ namespace ScanTemplate.FormYJ
+             foreach (Optionsubject O in _Optionsubjects.OptionSubjects)
+             {
+                 r = Rectangle.Union(r, O.Rect);
+-                float score = S.CorrectXzt(O.Index, _Optionanswer[O.Index]) ? _OptionMaxscore[O.Index] : 0;
+-                int listindex = _dicABCDToOption[_Optionanswer[O.Index]];
++                float score = 0;
++                if (O.Type == "S" || O.Type == "M")
++                    score = S.CorrectXzt(O.Index, _Optionanswer[O.Index]) ? _OptionMaxscore[O.Index] : 0;
++                else  if(O.Type == "U")
++                {
++                    List<int> listanswer = O.Answer.Select(rr => rr - 'A').ToList();
++                    List<int> paperanswer = S.OptionAnswer( O.Index).Select(rr => rr - 'A').ToList().ToList();
++                   
++                    if (paperanswer.Count==0 || paperanswer.Exists( rr=> !listanswer.Contains(rr)))
++                    {
++                        score = 0;
++                    }
++                    else 
++                    {
++                        if (listanswer.Exists(rr => !paperanswer.Contains(rr)))
++                            score = O.HalfScore;
++                        else
++                            score = O.Score;
++                    }
++                }
++                //TODO:  只适合单选
++                int listindex = _dicABCDToOption[_Optionanswer[O.Index].Substring(0,1)];
+                 Rectangle RO = O.Rect;
+                 if (O.List.Count > listindex)
+                     RO.Offset(O.List[listindex]);
+@@ -227,7 +271,8 @@ namespace ScanTemplate.FormYJ
+             {
+                 List<int> Iabcd = _ABCD.Select(r =>
+                     _students.students.Where(rr => rr.SelectOption(r, O.Index)).Count()).ToList();
+-                int okindex = _dicABCDToOption[_Optionanswer[O.Index]];
++                // TODO: 不定项没有统计
++                int okindex = _dicABCDToOption[_Optionanswer[O.Index].Substring(0,1)]; //存在不定项
+                 int rightcnt = Iabcd[okindex];
+                 int count = _students.students.Count;
+                 Double rightrate = rightcnt * 1.0 / count;
+@@ -339,7 +384,8 @@ namespace ScanTemplate.FormYJ
+             foreach (Student S in _students.students)
+             {
+                 PaperResult pr = ConstructPaperResult(S);
+-                sblistscore.AppendLine(S.Name + "," +pr.Xzt.Floatscore);
++                
++                sblistscore.AppendLine(S.Name=="-"?S.ID.ToString() : S.Name + "," +pr.Xzt.Floatscore);
+             }
+            
+             Tools.TextBitmapTool tbl = new TextBitmapTool(
+diff --git a/Scant/ScanTemplate/FormYJ/FormSetscore.Designer.cs b/Scant/ScanTemplate/FormYJ/FormSetscore.Designer.cs
+index 15bc567..e50f628 100644
+--- a/Scant/ScanTemplate/FormYJ/FormSetscore.Designer.cs
++++ b/Scant/ScanTemplate/FormYJ/FormSetscore.Designer.cs
+@@ -44,12 +44,17 @@
+             this.textBoxAnswer = new System.Windows.Forms.TextBox();
+             this.label3 = new System.Windows.Forms.Label();
+             this.buttonOK = new System.Windows.Forms.Button();
++            this.buttonSetOptionType = new System.Windows.Forms.Button();
++            this.label9 = new System.Windows.Forms.Label();
++            this.comboBoxType = new System.Windows.Forms.ComboBox();
++            this.buttonSetHalfScore = new System.Windows.Forms.Button();
++            this.buttonImportMultiAnswer = new System.Windows.Forms.Button();
+             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewAnswer)).BeginInit();
+             this.SuspendLayout();
+             // 
+             // buttonClearanswer
+             // 
+-            this.buttonClearanswer.Location = new System.Drawing.Point(5, 67);
++            this.buttonClearanswer.Location = new System.Drawing.Point(452, 5);
+             this.buttonClearanswer.Name = "buttonClearanswer";
+             this.buttonClearanswer.Size = new System.Drawing.Size(52, 25);
+             this.buttonClearanswer.TabIndex = 50;
+@@ -58,7 +63,7 @@
+             // 
+             // buttonSetScore
+             // 
+-            this.buttonSetScore.Location = new System.Drawing.Point(415, 59);
++            this.buttonSetScore.Location = new System.Drawing.Point(467, 61);
+             this.buttonSetScore.Name = "buttonSetScore";
+             this.buttonSetScore.Size = new System.Drawing.Size(37, 27);
+             this.buttonSetScore.TabIndex = 49;
+@@ -69,7 +74,7 @@
+             // label8
+             // 
+             this.label8.AutoSize = true;
+-            this.label8.Location = new System.Drawing.Point(392, 67);
++            this.label8.Location = new System.Drawing.Point(444, 69);
+             this.label8.Name = "label8";
+             this.label8.Size = new System.Drawing.Size(17, 12);
+             this.label8.TabIndex = 48;
+@@ -77,7 +82,7 @@
+             // 
+             // textBoxScore
+             // 
+-            this.textBoxScore.Location = new System.Drawing.Point(338, 63);
++            this.textBoxScore.Location = new System.Drawing.Point(390, 65);
+             this.textBoxScore.Name = "textBoxScore";
+             this.textBoxScore.Size = new System.Drawing.Size(51, 21);
+             this.textBoxScore.TabIndex = 47;
+@@ -85,7 +90,7 @@
+             // label7
+             // 
+             this.label7.AutoSize = true;
+-            this.label7.Location = new System.Drawing.Point(304, 68);
++            this.label7.Location = new System.Drawing.Point(356, 70);
+             this.label7.Name = "label7";
+             this.label7.Size = new System.Drawing.Size(29, 12);
+             this.label7.TabIndex = 46;
+@@ -94,7 +99,7 @@
+             // label6
+             // 
+             this.label6.AutoSize = true;
+-            this.label6.Location = new System.Drawing.Point(430, 40);
++            this.label6.Location = new System.Drawing.Point(482, 42);
+             this.label6.Name = "label6";
+             this.label6.Size = new System.Drawing.Size(17, 12);
+             this.label6.TabIndex = 45;
+@@ -103,7 +108,7 @@
+             // comboBoxEnd
+             // 
+             this.comboBoxEnd.FormattingEnabled = true;
+-            this.comboBoxEnd.Location = new System.Drawing.Point(379, 36);
++            this.comboBoxEnd.Location = new System.Drawing.Point(431, 38);
+             this.comboBoxEnd.Name = "comboBoxEnd";
+             this.comboBoxEnd.Size = new System.Drawing.Size(45, 20);
+             this.comboBoxEnd.TabIndex = 44;
+@@ -111,7 +116,7 @@
+             // label5
+             // 
+             this.label5.AutoSize = true;
+-            this.label5.Location = new System.Drawing.Point(363, 40);
++            this.label5.Location = new System.Drawing.Point(415, 42);
+             this.label5.Name = "label5";
+             this.label5.Size = new System.Drawing.Size(17, 12);
+             this.label5.TabIndex = 43;
+@@ -120,7 +125,7 @@
+             // comboBoxBegin
+             // 
+             this.comboBoxBegin.FormattingEnabled = true;
+-            this.comboBoxBegin.Location = new System.Drawing.Point(319, 36);
++            this.comboBoxBegin.Location = new System.Drawing.Point(371, 38);
+             this.comboBoxBegin.Name = "comboBoxBegin";
+             this.comboBoxBegin.Size = new System.Drawing.Size(45, 20);
+             this.comboBoxBegin.TabIndex = 42;
+@@ -129,7 +134,7 @@
+             // label4
+             // 
+             this.label4.AutoSize = true;
+-            this.label4.Location = new System.Drawing.Point(303, 40);
++            this.label4.Location = new System.Drawing.Point(355, 42);
+             this.label4.Name = "label4";
+             this.label4.Size = new System.Drawing.Size(17, 12);
+             this.label4.TabIndex = 41;
+@@ -138,7 +143,7 @@
+             // label1
+             // 
+             this.label1.AutoSize = true;
+-            this.label1.Location = new System.Drawing.Point(303, 16);
++            this.label1.Location = new System.Drawing.Point(355, 18);
+             this.label1.Name = "label1";
+             this.label1.Size = new System.Drawing.Size(77, 12);
+             this.label1.TabIndex = 40;
+@@ -150,14 +155,14 @@
+             this.dataGridViewAnswer.Location = new System.Drawing.Point(5, 96);
+             this.dataGridViewAnswer.Name = "dataGridViewAnswer";
+             this.dataGridViewAnswer.RowTemplate.Height = 23;
+-            this.dataGridViewAnswer.Size = new System.Drawing.Size(292, 417);
++            this.dataGridViewAnswer.Size = new System.Drawing.Size(345, 417);
+             this.dataGridViewAnswer.TabIndex = 39;
+             // 
+             // buttonImportAnswer
+             // 
+-            this.buttonImportAnswer.Location = new System.Drawing.Point(4, 41);
++            this.buttonImportAnswer.Location = new System.Drawing.Point(3, 12);
+             this.buttonImportAnswer.Name = "buttonImportAnswer";
+-            this.buttonImportAnswer.Size = new System.Drawing.Size(52, 25);
++            this.buttonImportAnswer.Size = new System.Drawing.Size(100, 25);
+             this.buttonImportAnswer.TabIndex = 38;
+             this.buttonImportAnswer.Text = "导入";
+             this.buttonImportAnswer.UseVisualStyleBackColor = true;
+@@ -165,16 +170,16 @@
+             // 
+             // textBoxAnswer
+             // 
+-            this.textBoxAnswer.Location = new System.Drawing.Point(62, 12);
++            this.textBoxAnswer.Location = new System.Drawing.Point(109, 12);
+             this.textBoxAnswer.Multiline = true;
+             this.textBoxAnswer.Name = "textBoxAnswer";
+-            this.textBoxAnswer.Size = new System.Drawing.Size(235, 80);
++            this.textBoxAnswer.Size = new System.Drawing.Size(241, 80);
+             this.textBoxAnswer.TabIndex = 37;
+             // 
+             // label3
+             // 
+             this.label3.AutoSize = true;
+-            this.label3.Location = new System.Drawing.Point(3, 12);
++            this.label3.Location = new System.Drawing.Point(2, 0);
+             this.label3.Name = "label3";
+             this.label3.Size = new System.Drawing.Size(53, 12);
+             this.label3.TabIndex = 36;
+@@ -182,7 +187,7 @@
+             // 
+             // buttonOK
+             // 
+-            this.buttonOK.Location = new System.Drawing.Point(335, 185);
++            this.buttonOK.Location = new System.Drawing.Point(355, 250);
+             this.buttonOK.Name = "buttonOK";
+             this.buttonOK.Size = new System.Drawing.Size(97, 28);
+             this.buttonOK.TabIndex = 51;
+@@ -190,11 +195,67 @@
+             this.buttonOK.UseVisualStyleBackColor = true;
+             this.buttonOK.Click += new System.EventHandler(this.buttonOK_Click);
+             // 
++            // buttonSetOptionType
++            // 
++            this.buttonSetOptionType.Location = new System.Drawing.Point(356, 162);
++            this.buttonSetOptionType.Name = "buttonSetOptionType";
++            this.buttonSetOptionType.Size = new System.Drawing.Size(141, 26);
++            this.buttonSetOptionType.TabIndex = 55;
++            this.buttonSetOptionType.Text = "设置选择题型";
++            this.buttonSetOptionType.UseVisualStyleBackColor = true;
++            this.buttonSetOptionType.Click += new System.EventHandler(this.buttonSetOptionType_Click);
++            // 
++            // label9
++            // 
++            this.label9.AutoSize = true;
++            this.label9.Location = new System.Drawing.Point(356, 139);
++            this.label9.Name = "label9";
++            this.label9.Size = new System.Drawing.Size(77, 12);
++            this.label9.TabIndex = 52;
++            this.label9.Text = "设置选择题型";
++            // 
++            // comboBoxType
++            // 
++            this.comboBoxType.FormattingEnabled = true;
++            this.comboBoxType.Items.AddRange(new object[] {
++            "单选",
++            "多选",
++            "不定项"});
++            this.comboBoxType.Location = new System.Drawing.Point(438, 137);
++            this.comboBoxType.Name = "comboBoxType";
++            this.comboBoxType.Size = new System.Drawing.Size(65, 20);
++            this.comboBoxType.TabIndex = 56;
++            // 
++            // buttonSetHalfScore
++            // 
++            this.buttonSetHalfScore.Location = new System.Drawing.Point(355, 104);
++            this.buttonSetHalfScore.Name = "buttonSetHalfScore";
++            this.buttonSetHalfScore.Size = new System.Drawing.Size(142, 26);
++            this.buttonSetHalfScore.TabIndex = 57;
++            this.buttonSetHalfScore.Text = "设置选对但不全分值";
++            this.buttonSetHalfScore.UseVisualStyleBackColor = true;
++            this.buttonSetHalfScore.Click += new System.EventHandler(this.buttonSetHalfScore_Click);
++            // 
++            // buttonImportMultiAnswer
++            // 
++            this.buttonImportMultiAnswer.Location = new System.Drawing.Point(3, 36);
++            this.buttonImportMultiAnswer.Name = "buttonImportMultiAnswer";
++            this.buttonImportMultiAnswer.Size = new System.Drawing.Size(100, 54);
++            this.buttonImportMultiAnswer.TabIndex = 58;
++            this.buttonImportMultiAnswer.Text = "导入不定项选择答案";
++            this.buttonImportMultiAnswer.UseVisualStyleBackColor = true;
++            this.buttonImportMultiAnswer.Click += new System.EventHandler(this.buttonImportMultiAnswer_Click);
++            // 
+             // FormSetscore
+             // 
+             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
+             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+-            this.ClientSize = new System.Drawing.Size(462, 516);
++            this.ClientSize = new System.Drawing.Size(509, 516);
++            this.Controls.Add(this.buttonImportMultiAnswer);
++            this.Controls.Add(this.buttonSetHalfScore);
++            this.Controls.Add(this.comboBoxType);
++            this.Controls.Add(this.buttonSetOptionType);
++            this.Controls.Add(this.label9);
+             this.Controls.Add(this.buttonOK);
+             this.Controls.Add(this.buttonClearanswer);
+             this.Controls.Add(this.buttonSetScore);
+@@ -213,6 +274,7 @@
+             this.Controls.Add(this.label3);
+             this.Name = "FormSetscore";
+             this.Text = "FormSetscore";
++            this.Load += new System.EventHandler(this.FormSetscore_Load);
+             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewAnswer)).EndInit();
+             this.ResumeLayout(false);
+             this.PerformLayout();
+@@ -237,5 +299,10 @@
+         private System.Windows.Forms.TextBox textBoxAnswer;
+         private System.Windows.Forms.Label label3;
+         private System.Windows.Forms.Button buttonOK;
++        private System.Windows.Forms.Button buttonSetOptionType;
++        private System.Windows.Forms.Label label9;
++        private System.Windows.Forms.ComboBox comboBoxType;
++        private System.Windows.Forms.Button buttonSetHalfScore;
++        private System.Windows.Forms.Button buttonImportMultiAnswer;
+     }
+ }
+\ No newline at end of file
+diff --git a/Scant/ScanTemplate/FormYJ/FormSetscore.cs b/Scant/ScanTemplate/FormYJ/FormSetscore.cs
+index 1e5e98a..55d0b9e 100644
+--- a/Scant/ScanTemplate/FormYJ/FormSetscore.cs
++++ b/Scant/ScanTemplate/FormYJ/FormSetscore.cs
+@@ -6,6 +6,7 @@ using System.Drawing;
+ using System.Linq;
+ using System.Text;
+ using System.Windows.Forms;
++using System.Text.RegularExpressions;
+ 
+ namespace ScanTemplate.FormYJ
+ {
+@@ -16,16 +17,16 @@ namespace ScanTemplate.FormYJ
+             this._dtsetxzt = _dtsetxzt;
+             InitializeComponent();
+             buttonClearanswer.Visible = false;
+-
++            
+             InitXZTQuestion(_dtsetxzt);
+             InitDgvAndCbx();
+             ReFreshDgv();            
+         }
+         private void InitDgv(int questioncnt, DataGridView dgv) // used by settypeform
+         {
+-            string[] strxq = new string[] { "题型", "答案", "分值" };
++            string[] strxq = new string[] { "题型", "答案", "分值","半对分值" };
+             dgv.RowCount = questioncnt > 0 ? questioncnt : 1;
+-            dgv.ColumnCount = 3;
++            dgv.ColumnCount = 4;
+             dgv.ReadOnly = true;
+ 
+             dgv.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None;
+@@ -57,10 +58,35 @@ namespace ScanTemplate.FormYJ
+             }
+         }
+         private void buttonSetScore_Click(object sender, EventArgs e)
++        {
++            float score = ReadScore();
++            if (score < 0)
++                return;
++           
++            int begin = comboBoxBegin.SelectedIndex;
++            int end = comboBoxEnd.SelectedIndex + 1;
++            if (begin == -1 || end == -1 || begin > end)
++            {
++                MessageBox.Show("请正确地选择起始题和末尾题");
++                return ;
++            }
++            for (int i = begin; i < end; i++)
++            {
++                _xzt[i].Score = score;
++            }
++            ReFreshDgv();
++
++        }
++
++        private float ReadScore()
+         {
+             string text = textBoxScore.Text;
+             bool bdot = false;
+-            if (text == "") return;
++            if (text == "")
++            {
++                MessageBox.Show("请输入数值，并在0.5-100之间");
++                return -1;
++            }
+             foreach (char c in text)
+             {
+                 if (!Char.IsNumber(c))
+@@ -73,7 +99,7 @@ namespace ScanTemplate.FormYJ
+                     {
+                         textBoxScore.Text = "";
+                         MessageBox.Show("请输入数值，并在0.5-100之间");
+-                        return;
++                        return -1;
+                     }
+                 }
+             }
+@@ -82,21 +108,9 @@ namespace ScanTemplate.FormYJ
+             {
+                 textBoxScore.Text = "";
+                 MessageBox.Show("请输入数值，并在0.5-100之间");
+-                return;
++                return -1;
+             }
+-            int begin = comboBoxBegin.SelectedIndex;
+-            int end = comboBoxEnd.SelectedIndex + 1;
+-            if (begin == -1 || end == -1 || begin > end)
+-            {
+-                MessageBox.Show("请正确地选择起始题和末尾题");
+-                return;
+-            }
+-            for (int i = begin; i < end; i++)
+-            {
+-                _xzt[i].Score = score;
+-            }
+-            ReFreshDgv();
+-
++            return score;
+         }        
+         private void buttonImportAnswer_Click(object sender, EventArgs e)
+         {
+@@ -129,6 +143,33 @@ namespace ScanTemplate.FormYJ
+             InitDgvAndCbx();
+             ReFreshDgv();
+         }
++        private void buttonImportMultiAnswer_Click(object sender, EventArgs e)
++        {
++            List<int> la = new List<int>();
++            string str = textBoxAnswer.Text.ToUpper();
++
++            str = Regex.Replace(str, "[^A-Z ]", " ");
++            List<string> list = str.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries).ToList();
++
++            int begin = comboBoxBegin.SelectedIndex;
++            int end = comboBoxEnd.SelectedIndex + 1;
++            if (begin == -1 || end == -1 || begin > end)
++            {
++                MessageBox.Show("请正确地选择起始题和末尾题");
++                return;
++            }
++
++            int index = 0;
++            for (int i = begin; i < end  && index< list.Count; i++,index++)
++            {
++                if(_xzt[i].Type == "U" || _xzt[i].Type == "M" )
++                    _xzt[i].OptionAnswer = list[index];
++            }
++           
++            textBoxAnswer.Text = str;
++            InitDgvAndCbx();
++            ReFreshDgv();
++        }
+         private void buttonOK_Click(object sender, EventArgs e)
+         {
+             this.DialogResult = System.Windows.Forms.DialogResult.OK;
+@@ -155,10 +196,11 @@ namespace ScanTemplate.FormYJ
+         private void ReFreshDgv()
+         {
+             for (int i = 0; i < _xzt.Count; i++)
+-            {              
+-                dataGridViewAnswer[0, i].Value = "单选题";               
+-                dataGridViewAnswer[1, i].Value = _xzt[i].OptionAnswer;              
++            {
++                dataGridViewAnswer[0, i].Value = _xzt[i].TypeName();
++                dataGridViewAnswer[1, i].Value = _xzt[i].OptionAnswer;
+                 dataGridViewAnswer[2, i].Value = _xzt[i].Score;
++                dataGridViewAnswer[3, i].Value = _xzt[i].HalfScore;
+             }
+         }
+         private void InitDgvAndCbx()
+@@ -200,6 +242,54 @@ namespace ScanTemplate.FormYJ
+             }
+             return true;
+         }
++        private void buttonSetHalfScore_Click(object sender, EventArgs e)
++        {
++            float score = ReadScore();
++            if (score < 0)
++                return;
++
++            int begin = comboBoxBegin.SelectedIndex;
++            int end = comboBoxEnd.SelectedIndex + 1;
++            if (begin == -1 || end == -1 || begin > end)
++            {
++                MessageBox.Show("请正确地选择起始题和末尾题");
++                return;
++            }
++            for (int i = begin; i < end; i++)
++            {
++                if(_xzt[i].Type == "U")
++                    _xzt[i].HalfScore = score;
++            }
++            ReFreshDgv();
++        }
++        private void buttonSetOptionType_Click(object sender, EventArgs e)
++        {
++            int begin = comboBoxBegin.SelectedIndex;
++            int end = comboBoxEnd.SelectedIndex + 1;
++            if (begin == -1 || end == -1 || begin > end)
++            {
++                MessageBox.Show("请正确地选择起始题和末尾题");
++                return;
++            }
++            string Type = "S";
++            if (comboBoxType.SelectedIndex != -1)
++            {
++                if (comboBoxType.SelectedItem.ToString() == "多选")
++                    Type = "M";
++                else if (comboBoxType.SelectedItem.ToString() == "不定项")
++                    Type = "U";
++            }
++
++            for (int i = begin; i < end; i++)
++            {
++                _xzt[i].Type = Type;
++            }
++            ReFreshDgv();
++        }
++        private void FormSetscore_Load(object sender, EventArgs e)
++        {
++            comboBoxType.SelectedIndex = 0;
++        }
+     }
+     
+     public class XztQuestion
+@@ -207,5 +297,19 @@ namespace ScanTemplate.FormYJ
+         public int ID{ get; set; }
+         public string OptionAnswer { get; set; }
+         public float Score { get; set; }
++        public string Type { get; set; }
++        public float HalfScore { get; set; }
++
++        public string TypeName()
++        {
++            if (Type == "S")
++                return "单选";
++            if (Type == "M")
++                return "多选";
++            if (Type == "U")
++                return "不定项";
++            Type = "S";
++            return "单选";
++        }
+     }
+ }
+diff --git a/Scant/ScanTemplate/FormYJ/FormYJInit.cs b/Scant/ScanTemplate/FormYJ/FormYJInit.cs
+index 5a9294c..f3ab29b 100644
+--- a/Scant/ScanTemplate/FormYJ/FormYJInit.cs
++++ b/Scant/ScanTemplate/FormYJ/FormYJInit.cs
+@@ -319,6 +319,11 @@ namespace ScanTemplate.FormYJ
+                         _dtsetxzt.Rows[i]["最大分值"] = f.Xzt()[i].Score;
+                         O.Answer = f.Xzt()[i].OptionAnswer;
+                         O.Score = f.Xzt()[i].Score;
++                        O.Type = f.Xzt()[i].Type;
++                        if (O.Type == "U") // S 单选, M 多选,U 不定项
++                        {
++                            O.HalfScore = f.Xzt()[i].HalfScore;
++                        }
+                     }
+                 }
+             }
+@@ -454,6 +459,9 @@ namespace ScanTemplate.FormYJ
+         public string Name() { return "x" + ID; }
+         public string OutName { get { return "选择题" + ID; } }
+         public string Answer { get; set; }
++
++        public float HalfScore { get; set; }
++        public string Type { get; set; }
+         [JsonProperty]
+         private Rectangle _Rect;
+ 
+@@ -466,6 +474,7 @@ namespace ScanTemplate.FormYJ
+         [JsonIgnore]
+         private SingleChoiceArea U;
+ 
++
+     }
+     [JsonObject(MemberSerialization.OptIn)]
+     public class Tzsubjects
+diff --git a/Scant/ScanTemplate/ScanConfig.cs b/Scant/ScanTemplate/ScanConfig.cs
+index 6b279e2..2ea311c 100644
+--- a/Scant/ScanTemplate/ScanConfig.cs
++++ b/Scant/ScanTemplate/ScanConfig.cs
+@@ -292,7 +292,8 @@ namespace ScanTemplate
+             System.IO.FileStream fs = new System.IO.FileStream(imgfilename, System.IO.FileMode.Open, System.IO.FileAccess.Read);
+             Bitmap _src = (Bitmap)System.Drawing.Image.FromStream(fs);
+ 
+-            Rectangle area = new Rectangle(10, 10, _src.Width-10, _src.Height-10);
++            Rectangle area = new Rectangle(10, 10, _src.Width-20, _src.Height-20);
++            area.Inflate(9, 9);
+             Rectangle cr = new Rectangle();
+             if (ti != null)
+             {
+@@ -300,7 +301,7 @@ namespace ScanTemplate
+             }
+             else
+             {
+-                area.Inflate(-20, -20);
++                area.Inflate(-9, -9);
+             }
+             DetectData dd = DetectImageTools.DetectImg(_src,area,cr);
+             //dd = DetectImageTools.DetectImg(_src, dd.CorrectRect);
+@@ -384,10 +385,32 @@ namespace ScanTemplate
+             _angle = _template.Angle;
+ 			foreach (string s in _nameList)
+ 			{
+-                Paper paper = DetectImg(s,ref msg);
+-                sb.AppendLine(paper.ToJsonString()+",");
+-                if(DgShowScanMsg!=null)
+-                DgShowScanMsg(paper);//this.Invoke(new MyInvoke(ShowMsg));
++                bool redo = false;
++                try
++                {
++                    Paper paper = DetectImg(s, ref msg);
++                    sb.AppendLine(paper.ToJsonString() + ",");
++                    if (DgShowScanMsg != null)
++                        DgShowScanMsg(paper);//this.Invoke(new MyInvoke(ShowMsg));
++                }catch
++                {
++                    redo = true;
++                }
++               while (redo)
++                {
++                    try
++                    {
++                        Paper paper = DetectImg(s, ref msg);
++                        sb.AppendLine(paper.ToJsonString() + ",");
++                        if (DgShowScanMsg != null)
++                            DgShowScanMsg(paper);//this.Invoke(new MyInvoke(ShowMsg));
++                    }
++                    catch
++                    {
++                    }
++                    redo = false;
++                }
++
+ 				Thread.Sleep(10);
+ 			}
+ 			_exportdata = sb.ToString();
+@@ -401,7 +424,8 @@ namespace ScanTemplate
+             StringBuilder sb = new StringBuilder();
+             System.IO.FileStream fs = new System.IO.FileStream(s,System.IO.FileMode.Open, System.IO.FileAccess.Read);
+             Bitmap orgsrc = (Bitmap)System.Drawing.Image.FromStream(fs);
+-            Rectangle area =new  Rectangle(15, 15, orgsrc.Width-15, orgsrc.Height-15);
++            //Rectangle area = new Rectangle(15, 15, orgsrc.Width - 15, orgsrc.Height - 15);
++            Rectangle area = new Rectangle(1, 1, orgsrc.Width - 2, orgsrc.Height - 2);
+             DetectData dd = DetectImageTools.DetectImg(orgsrc,area, this.Template.CorrectRect );
+             if (dd.CorrectRect.Width > 0 ) //TODO: 进一步判断
+             {
+@@ -443,6 +467,11 @@ namespace ScanTemplate
+                                 paper.Name = _sc.Studentbases.GetName(paper.KH);
+                         }
+                     }
++                    else if (kha.Type == "无")
++                    {
++                        paper.KH = -1;
++                        paper.Name = "-";
++                    }
+                     else if ("1023456789".Contains(kha.Type))
+                     {
+                         paper.KH = -1;
+diff --git a/Scant/ScanTemplate/tools/DetectImgTools.cs b/Scant/ScanTemplate/tools/DetectImgTools.cs
+index ce2c44b..5dcd0c2 100644
+--- a/Scant/ScanTemplate/tools/DetectImgTools.cs
++++ b/Scant/ScanTemplate/tools/DetectImgTools.cs
+@@ -13,7 +13,7 @@ namespace  Tools
+         {
+             if(templateCorrectRect.Width==0)
+                 return DetectCorrect.DetectCorrectImg(src,area,templateCorrectRect);
+-            Point p = DetectLT(src,area);
++            Point p = DetectLT(src,area,true);
+             if (p.X < 0 || p.Y < 0)
+                 return new DetectData(new Rectangle(),null);
+             Rectangle correctrect = templateCorrectRect;
+@@ -26,11 +26,12 @@ namespace  Tools
+             int ymid = (listrect.Select(r => r.Y).Min() + listrect.Select(r => r.Y).Max()) / 2;
+             return new Point(xmid, ymid);
+         }
+-        public static Point DetectLT(Bitmap src,Rectangle area)
++        public static Point DetectLT(Bitmap src,Rectangle area,bool debug = false)
+         {
+-            Rectangle r = new Rectangle(new Point(), new Size(src.Width / 3, src.Height / 3));
++            Rectangle r = new Rectangle(new Point(), new Size(src.Width / 6, src.Height / 6));
++            //Rectangle r = new Rectangle(new Point(), new Size(src.Width / 3, src.Height / 3));
+             area.Intersect(r);
+-            Rectangle cr = DetectCorrect.DetectCorrectFromImg(src,area,true,20);
++            Rectangle cr = DetectCorrect.DetectCorrectFromImg(src,area,true,10,debug);
+             if (cr.Width == 0 || cr.Height == 0)
+                 return new Point(-1, -1);
+             //src.Clone(cr, src.PixelFormat).Save("F:\\debug\\LT.tif");
+@@ -79,12 +80,12 @@ namespace  Tools
+                 }
+                 return ConstructDetectData(HasCorrectRect, _CorrectRect,list);
+             }
+-            public static Rectangle DetectCorrectFromImg(Bitmap src, Rectangle area, Boolean continnuity = true, int continuelength = -1)
++            public static Rectangle DetectCorrectFromImg(Bitmap src, Rectangle area, Boolean continnuity = true, int continuelength = -1,bool debug = false)
+             {
+                 Rectangle rect;
+                 if (continnuity)
+                 {
+-                    rect = DetectCorrectFromImgArea(src, area,continnuity,continuelength);
++                    rect = DetectCorrectFromImgArea(src, area,continnuity,continuelength,debug);
+                 }
+                 else
+                 {
+@@ -145,7 +146,7 @@ namespace  Tools
+                 //OutPixImage(xxcnt, yycnt);
+                 return new Rectangle(xpos, ypos, xendpos - xpos, yendpos - ypos);
+             }
+-            private static Rectangle DetectCorrectFromImgArea(Bitmap src, Rectangle area, bool continnuity, int continuelength = -1) // 从30位算起
++            private static Rectangle DetectCorrectFromImgArea(Bitmap src, Rectangle area, bool continnuity, int continuelength = -1,bool debug = false) // 从30位算起
+             {
+                 //验证参数准确性
+                 int[] xxcnt = BitmapTools.CountXPixsum(src, area);
+@@ -164,7 +165,8 @@ namespace  Tools
+ 
+                 //完全同上
+                 //debugout
+-                //OutPixImage(xxcnt, yycnt);
++                if(debug)
++                    OutPixImage(xxcnt, yycnt);
+                 int xpos = xxcnt.ToList().FindIndex(r => r > 0);
+                 int xendpos = xxcnt.Skip(xpos).ToList().FindIndex(r => r == 0) + xpos;
+                 if (continnuity)

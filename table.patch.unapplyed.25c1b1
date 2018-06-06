@@ -1,0 +1,648 @@
+diff --git a/Scant/ScanTemplate/FormM.Designer.cs b/Scant/ScanTemplate/FormM.Designer.cs
+index e34e4da..edda2b8 100644
+--- a/Scant/ScanTemplate/FormM.Designer.cs
++++ b/Scant/ScanTemplate/FormM.Designer.cs
+@@ -61,10 +61,11 @@
+             this.textBoxMsg = new System.Windows.Forms.TextBox();
+             this.checkBoxDebug = new System.Windows.Forms.CheckBox();
+             this.buttonOutTextImage = new System.Windows.Forms.Button();
+-            this.buttonPreDealImage = new System.Windows.Forms.Button();
+             this.checkBoxShowUnScanNamelist = new System.Windows.Forms.CheckBox();
+             this.checkBoxReSingleScan = new System.Windows.Forms.CheckBox();
++            this.buttonPreDealImage = new System.Windows.Forms.Button();
+             this.buttonRorateAndCutImage = new System.Windows.Forms.Button();
++            this.checkBoxTable = new System.Windows.Forms.CheckBox();
+             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
+             this.splitContainer1.Panel1.SuspendLayout();
+             this.splitContainer1.Panel2.SuspendLayout();
+@@ -378,27 +379,29 @@
+             // 
+             // tableLayoutPanel2
+             // 
+-            this.tableLayoutPanel2.ColumnCount = 10;
++            this.tableLayoutPanel2.ColumnCount = 11;
+             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 50F));
+             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 50F));
+             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 51F));
+             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 100F));
++            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 501F));
+             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 70F));
++            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 86F));
+             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 105F));
+             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 118F));
+             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 79F));
+             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 51F));
+             this.tableLayoutPanel2.Controls.Add(this.buttonOpenTemplate, 0, 0);
+             this.tableLayoutPanel2.Controls.Add(this.buttonLeftHide, 0, 0);
+-            this.tableLayoutPanel2.Controls.Add(this.buttonRightHide, 9, 0);
+-            this.tableLayoutPanel2.Controls.Add(this.textBoxMsg, 4, 0);
+-            this.tableLayoutPanel2.Controls.Add(this.checkBoxDebug, 8, 0);
++            this.tableLayoutPanel2.Controls.Add(this.buttonRightHide, 10, 0);
++            this.tableLayoutPanel2.Controls.Add(this.checkBoxDebug, 9, 0);
+             this.tableLayoutPanel2.Controls.Add(this.buttonOutTextImage, 2, 0);
+-            this.tableLayoutPanel2.Controls.Add(this.checkBoxShowUnScanNamelist, 7, 0);
+-            this.tableLayoutPanel2.Controls.Add(this.checkBoxReSingleScan, 6, 0);
+-            this.tableLayoutPanel2.Controls.Add(this.buttonPreDealImage, 5, 0);
++            this.tableLayoutPanel2.Controls.Add(this.checkBoxShowUnScanNamelist, 8, 0);
++            this.tableLayoutPanel2.Controls.Add(this.checkBoxReSingleScan, 7, 0);
+             this.tableLayoutPanel2.Controls.Add(this.buttonRorateAndCutImage, 3, 0);
++            this.tableLayoutPanel2.Controls.Add(this.textBoxMsg, 4, 0);
++            this.tableLayoutPanel2.Controls.Add(this.buttonPreDealImage, 5, 0);
++            this.tableLayoutPanel2.Controls.Add(this.checkBoxTable, 6, 0);
+             this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
+             this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 622);
+             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
+@@ -444,7 +447,7 @@
+             this.textBoxMsg.ForeColor = System.Drawing.Color.Red;
+             this.textBoxMsg.Location = new System.Drawing.Point(254, 3);
+             this.textBoxMsg.Name = "textBoxMsg";
+-            this.textBoxMsg.Size = new System.Drawing.Size(389, 21);
++            this.textBoxMsg.Size = new System.Drawing.Size(490, 21);
+             this.textBoxMsg.TabIndex = 4;
+             // 
+             // checkBoxDebug
+@@ -469,16 +472,6 @@
+             this.buttonOutTextImage.UseVisualStyleBackColor = true;
+             this.buttonOutTextImage.Click += new System.EventHandler(this.buttonOutTextImage_Click);
+             // 
+-            // buttonPreDealImage
+-            // 
+-            this.buttonPreDealImage.Location = new System.Drawing.Point(838, 3);
+-            this.buttonPreDealImage.Name = "buttonPreDealImage";
+-            this.buttonPreDealImage.Size = new System.Drawing.Size(64, 22);
+-            this.buttonPreDealImage.TabIndex = 10;
+-            this.buttonPreDealImage.Text = "重命名IMG";
+-            this.buttonPreDealImage.UseVisualStyleBackColor = true;
+-            this.buttonPreDealImage.Click += new System.EventHandler(this.buttonPreDealImage_Click);
+-            // 
+             // checkBoxShowUnScanNamelist
+             // 
+             this.checkBoxShowUnScanNamelist.AutoSize = true;
+@@ -503,6 +496,16 @@
+             this.checkBoxReSingleScan.Text = "ReSingleScan";
+             this.checkBoxReSingleScan.UseVisualStyleBackColor = true;
+             // 
++            // buttonPreDealImage
++            // 
++            this.buttonPreDealImage.Location = new System.Drawing.Point(755, 3);
++            this.buttonPreDealImage.Name = "buttonPreDealImage";
++            this.buttonPreDealImage.Size = new System.Drawing.Size(61, 22);
++            this.buttonPreDealImage.TabIndex = 10;
++            this.buttonPreDealImage.Text = "重命名IMG";
++            this.buttonPreDealImage.UseVisualStyleBackColor = true;
++            this.buttonPreDealImage.Click += new System.EventHandler(this.buttonPreDealImage_Click);
++            // 
+             // buttonRorateAndCutImage
+             // 
+             this.buttonRorateAndCutImage.Location = new System.Drawing.Point(154, 3);
+@@ -513,6 +516,18 @@
+             this.buttonRorateAndCutImage.UseVisualStyleBackColor = true;
+             this.buttonRorateAndCutImage.Click += new System.EventHandler(this.buttonRorateAndCutImage_Click);
+             // 
++            // checkBoxTable
++            // 
++            this.checkBoxTable.AutoSize = true;
++            this.checkBoxTable.BackColor = System.Drawing.SystemColors.ControlLightLight;
++            this.checkBoxTable.Location = new System.Drawing.Point(822, 3);
++            this.checkBoxTable.Name = "checkBoxTable";
++            this.checkBoxTable.Size = new System.Drawing.Size(72, 16);
++            this.checkBoxTable.TabIndex = 13;
++            this.checkBoxTable.Text = "表格模式";
++            this.checkBoxTable.UseVisualStyleBackColor = false;
++            this.checkBoxTable.CheckedChanged += new System.EventHandler(this.checkBoxTable_CheckedChanged);
++            // 
+             // FormM
+             // 
+             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
+@@ -577,6 +592,7 @@
+         private System.Windows.Forms.Button buttonPreDealImage;
+         private System.Windows.Forms.CheckBox checkBoxShowUnScanNamelist;
+         private System.Windows.Forms.CheckBox checkBoxReSingleScan;
+-        private System.Windows.Forms.Button buttonRorateAndCutImage;        
++        private System.Windows.Forms.Button buttonRorateAndCutImage;
++        private System.Windows.Forms.CheckBox checkBoxTable;        
+     }
+ }
+\ No newline at end of file
+diff --git a/Scant/ScanTemplate/FormM.cs b/Scant/ScanTemplate/FormM.cs
+index 02e1b62..a00b068 100644
+--- a/Scant/ScanTemplate/FormM.cs
++++ b/Scant/ScanTemplate/FormM.cs
+@@ -41,6 +41,8 @@ namespace ScanTemplate
+                 listBoxUnScanDir.Items.AddRange(_sc.Unscans.Unscans.ToArray());
+                 comboBoxTemplate.Items.AddRange(_sc.CommonTemplates.CommonTemplates.ToArray());
+                 listBoxScantData.Items.AddRange(_sc.Scandatas.Scandatas.ToArray());
++                checkBoxTable.Checked = true;
++              
+                 //foreach (ScanData sd in _sc.Scandatas.Scandatas)
+                 //{
+                 //    string path = sd.Fullpath;
+@@ -90,7 +92,7 @@ namespace ScanTemplate
+             {
+                 try
+                 {
+-                    _sc.Templateshow = new TemplateShow(dir.FullPath, dir.DirName, nameList[0]);
++                    _sc.Templateshow = new TemplateShow(dir.FullPath, dir.DirName, nameList[0],true);
+                 }catch(Exception ee)
+                 {
+                     MessageBox.Show("特征点检测失败，请预处理！"+ee.Message);
+@@ -357,7 +359,11 @@ namespace ScanTemplate
+         {
+             for (int i = 1; i < ls.Length; i++)
+             {
+-                string[] ss = ls[i].Split(',');
++                string msg = ls[i].Trim();
++                if (msg.EndsWith(","))
++                    msg = msg.Substring(0, msg.Length - 1);
++
++                string[] ss = msg.Split(',');
+                 DataRow dr = _rundt.NewRow();
+ 
+                 MsgToDr( ss, ref dr); 
+@@ -367,6 +373,9 @@ namespace ScanTemplate
+         }
+         public void ShowMsg(string  msg)
+         {
++            msg = msg.Trim();
++            if (msg.EndsWith(","))
++                msg = msg.Substring(0, msg.Length - 1);
+             string[] ss = msg.Trim().Split(',');
+             DataRow dr = _rundt.NewRow();
+             MsgToDr(ss, ref dr);
+@@ -490,7 +499,7 @@ namespace ScanTemplate
+             int cnt = _rundt.Rows.Count;
+             dgv.InvalidateRow(cnt - 1);
+             //dgv.FirstDisplayedScrollingRowIndex = cnt - 1;
+-            textBoxMsg.Text = "扫描第" + cnt + "号， 考号：" + _rundt.Rows[cnt - 1]["考号"] + " 姓名：" + _rundt.Rows[cnt - 1]["姓名"];
++            textBoxMsg.Text = "扫描第" + cnt + "号， 文件名：" + _rundt.Rows[cnt - 1]["文件名"];
+         }
+         private void buttonVerify_Click(object sender, EventArgs e)
+         {
+@@ -530,10 +539,17 @@ namespace ScanTemplate
+         private void checkBoxDebug_CheckedChanged(object sender, EventArgs e)
+         {
+             if(checkBoxDebug.Checked)
+-               global.Debug = true;
++                global.Debug = true;
+             else
+                 global.Debug = false;;
+         }
++        private void checkBoxTable_CheckedChanged(object sender, EventArgs e)
++        {
++            if (checkBoxTable.Checked)
++                global.TableMode = true;
++            else
++                global.TableMode = false;
++        }
+         private void VerifyName()
+         {
+             Template _artemplate = _scan.Template;
+@@ -980,5 +996,6 @@ namespace ScanTemplate
+             public string FileName { get; set; }
+             public int Length { get; set; }
+         }
++
+ 	}	
+ }
+diff --git a/Scant/ScanTemplate/FormYJ/FormFullScreenYJ.Designer.cs b/Scant/ScanTemplate/FormYJ/FormFullScreenYJ.Designer.cs
+index 0843c14..a645a49 100644
+--- a/Scant/ScanTemplate/FormYJ/FormFullScreenYJ.Designer.cs
++++ b/Scant/ScanTemplate/FormYJ/FormFullScreenYJ.Designer.cs
+@@ -49,6 +49,7 @@ namespace ScanTemplate.FormYJ
+             this.comboBox1 = new System.Windows.Forms.ComboBox();
+             this.textBoxShow = new System.Windows.Forms.TextBox();
+             this.buttonSubmitMulti = new System.Windows.Forms.Button();
++            this.buttonSortByPixes = new System.Windows.Forms.Button();
+             this.tableLayoutPanel1.SuspendLayout();
+             ((System.ComponentModel.ISupportInitialize)(this.dgvs)).BeginInit();
+             this.panel1.SuspendLayout();
+@@ -70,7 +71,7 @@ namespace ScanTemplate.FormYJ
+             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
+             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 27F));
+-            this.tableLayoutPanel1.Size = new System.Drawing.Size(762, 438);
++            this.tableLayoutPanel1.Size = new System.Drawing.Size(855, 438);
+             this.tableLayoutPanel1.TabIndex = 0;
+             // 
+             // dgvs
+@@ -84,13 +85,15 @@ namespace ScanTemplate.FormYJ
+             this.dgvs.Name = "dgvs";
+             this.dgvs.RowHeadersVisible = false;
+             this.dgvs.RowTemplate.Height = 23;
+-            this.dgvs.Size = new System.Drawing.Size(732, 375);
++            this.dgvs.Size = new System.Drawing.Size(825, 375);
+             this.dgvs.TabIndex = 1;
+             this.dgvs.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DgvsCellClick);
++            this.dgvs.CellMouseUp += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dgvs_CellMouseUp);
+             this.dgvs.CellPainting += new System.Windows.Forms.DataGridViewCellPaintingEventHandler(this.DgvsCellPainting);
+             // 
+             // panel1
+             // 
++            this.panel1.Controls.Add(this.buttonSortByPixes);
+             this.panel1.Controls.Add(this.checkBoxBack);
+             this.panel1.Controls.Add(this.buttonSubmitMulti2);
+             this.panel1.Controls.Add(this.checkBoxLoadSetMaxScore);
+@@ -103,7 +106,7 @@ namespace ScanTemplate.FormYJ
+             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
+             this.panel1.Location = new System.Drawing.Point(15, 3);
+             this.panel1.Name = "panel1";
+-            this.panel1.Size = new System.Drawing.Size(732, 24);
++            this.panel1.Size = new System.Drawing.Size(825, 24);
+             this.panel1.TabIndex = 13;
+             // 
+             // checkBoxBack
+@@ -190,7 +193,7 @@ namespace ScanTemplate.FormYJ
+             // textBoxShow
+             // 
+             this.textBoxShow.Dock = System.Windows.Forms.DockStyle.Right;
+-            this.textBoxShow.Location = new System.Drawing.Point(561, 0);
++            this.textBoxShow.Location = new System.Drawing.Point(654, 0);
+             this.textBoxShow.Name = "textBoxShow";
+             this.textBoxShow.Size = new System.Drawing.Size(171, 21);
+             this.textBoxShow.TabIndex = 12;
+@@ -200,17 +203,27 @@ namespace ScanTemplate.FormYJ
+             this.buttonSubmitMulti.Dock = System.Windows.Forms.DockStyle.Fill;
+             this.buttonSubmitMulti.Location = new System.Drawing.Point(15, 414);
+             this.buttonSubmitMulti.Name = "buttonSubmitMulti";
+-            this.buttonSubmitMulti.Size = new System.Drawing.Size(732, 21);
++            this.buttonSubmitMulti.Size = new System.Drawing.Size(825, 21);
+             this.buttonSubmitMulti.TabIndex = 15;
+             this.buttonSubmitMulti.Text = "提交";
+             this.buttonSubmitMulti.UseVisualStyleBackColor = true;
+             this.buttonSubmitMulti.Click += new System.EventHandler(this.ButtonSubmitMultiClick);
+             // 
++            // buttonSortByPixes
++            // 
++            this.buttonSortByPixes.Location = new System.Drawing.Point(571, 0);
++            this.buttonSortByPixes.Name = "buttonSortByPixes";
++            this.buttonSortByPixes.Size = new System.Drawing.Size(64, 24);
++            this.buttonSortByPixes.TabIndex = 18;
++            this.buttonSortByPixes.Text = "像素排序";
++            this.buttonSortByPixes.UseVisualStyleBackColor = true;
++            this.buttonSortByPixes.Click += new System.EventHandler(this.buttonSortByPixes_Click);
++            // 
+             // FormFullScreenYJ
+             // 
+             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
+             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+-            this.ClientSize = new System.Drawing.Size(762, 438);
++            this.ClientSize = new System.Drawing.Size(855, 438);
+             this.Controls.Add(this.tableLayoutPanel1);
+             this.Name = "FormFullScreenYJ";
+             this.Text = "FormFullScreenYJ";
+@@ -234,5 +247,6 @@ namespace ScanTemplate.FormYJ
+         private System.Windows.Forms.CheckBox checkBoxLoadSetZero;
+         private System.Windows.Forms.Button buttonSubmitMulti2;
+         private System.Windows.Forms.CheckBox checkBoxBack;
++        private System.Windows.Forms.Button buttonSortByPixes;
+ 	}
+ }
+diff --git a/Scant/ScanTemplate/FormYJ/FormFullScreenYJ.cs b/Scant/ScanTemplate/FormYJ/FormFullScreenYJ.cs
+index 320c68d..881405c 100644
+--- a/Scant/ScanTemplate/FormYJ/FormFullScreenYJ.cs
++++ b/Scant/ScanTemplate/FormYJ/FormFullScreenYJ.cs
+@@ -57,7 +57,33 @@ namespace ScanTemplate.FormYJ
+             InitDtshow(_cntx);
+             InitDgvUI();
+             YueJuan();
+-		}      
++		}
++        private void buttonSortByPixes_Click(object sender, EventArgs e)
++        {
++            if (_SR.ActiveSubject == null)
++                return;
++            _SR.LoadNextStudents(checkBoxBack.Checked);
++            _SR.Students.Sort(delegate(Student S1, Student S2)
++            {
++                Bitmap b1 = _SR.GetBitMap(S1);
++                Bitmap b2 = _SR.GetBitMap(S2);
++                int p1 =Tools.BitmapTools.CountRectBlackcnt(b1, new Rectangle(0,0,b1.Width,b1.Height));
++                int p2 = Tools.BitmapTools.CountRectBlackcnt(b2,new Rectangle(0,0,b2.Width,b2.Height));
++                return p1-p2;
++            });
++
++            if (_SR.Students.Count == 0 && checkBoxAutoLoadNext.Checked)
++            {
++                int selectindex = comboBox1.SelectedIndex;
++                if (selectindex != -1 && selectindex + 1 < comboBox1.Items.Count)
++                {
++                    comboBox1.SelectedIndex = selectindex + 1;
++                    return;
++                }
++            }
++            ShowItemsInDgv();
++            textBoxShow.Text = "本题未完成阅卷份数" + _SR.Students.Count + " 满分为" + _SR.ActiveSubject.Score + "分";
++        }
+ 		private void ButtonSubmitMultiClick(object sender, EventArgs e)
+ 		{
+             if (_SR.ActiveSubject == null)
+@@ -114,27 +140,56 @@ namespace ScanTemplate.FormYJ
+ 		private void YueJuan()
+         {
+ 			ShowItemsInDgv();
+-        }      
+-		private void DgvsCellClick(object sender, DataGridViewCellEventArgs e)
+-		{
+-			if ( e.ColumnIndex == -1) return;
+-			if (_ColState[e.ColumnIndex] > 0)
++        }
++        private void DgvsCellClick(object sender, DataGridViewCellEventArgs e)
++        {
++            if (e.ColumnIndex == -1) return;
++            if (_ColState[e.ColumnIndex] > 0)
+             {
+-				int score = _ColState[e.ColumnIndex] - 1;        
+-				int scoreindex = e.ColumnIndex - score -1;      
+-                if (e.RowIndex == -1)
+-                {
+-                    for(int i=0; i<dgvs.Rows.Count; i++)
+-                        dgvs.Rows[i].Cells[scoreindex].Value = score;
+-                    dgvs.Invalidate();
+-                }
+-                else
+-                {
+-                    dgvs.Rows[e.RowIndex].Cells[scoreindex].Value = score;
+-                    dgvs.InvalidateRow(e.RowIndex); 
+-                }
++                SetScores(e.ColumnIndex, e.RowIndex);
+             }
+-		}
++        }
++        private void SetScores(int ColumnIndex, int RowIndex)
++        {
++            int score = _ColState[ColumnIndex] - 1;
++            int scoreindex = ColumnIndex - score - 1;
++            if (RowIndex == -1)
++            {
++                for (int i = 0; i < dgvs.Rows.Count; i++)
++                    dgvs.Rows[i].Cells[scoreindex].Value = score;
++                dgvs.Invalidate();
++            }
++            else
++            {
++                dgvs.Rows[RowIndex].Cells[scoreindex].Value = score;
++                dgvs.InvalidateRow(RowIndex);
++            }
++        }
++        private void dgvs_CellMouseUp(object sender, DataGridViewCellMouseEventArgs ee)
++        {
++            string str = "count=" + dgvs.SelectedCells.Count + "  rows=" + dgvs.SelectedRows.Count +
++                " col=" + dgvs.SelectedColumns.Count;
++            //MessageBox.Show(""+str);
++            if (TestSelectedCells())
++            {
++                foreach (DataGridViewCell e in dgvs.SelectedCells)
++                    SetScores(e.ColumnIndex, e.RowIndex);
++            }
++        }
++        private bool TestSelectedCells()
++        {
++            List<int> rows = new List<int>();
++            List<int> cols = new List<int>();
++            foreach (DataGridViewCell dgc in dgvs.SelectedCells)
++            {
++                rows.Add(dgc.RowIndex);
++                cols.Add(dgc.ColumnIndex);
++            }
++            int colcnt = cols.Distinct().Count();
++            if (colcnt == 1 && _ColState[cols[0]] > 0)
++                return true;
++            return false;
++        }
+ 		private void DgvsCellPainting(object sender, DataGridViewCellPaintingEventArgs e)
+ 		{
+ 			if(e.ColumnIndex==-1 || e.RowIndex == -1) return;
+@@ -298,5 +353,9 @@ namespace ScanTemplate.FormYJ
+         private DataTable _dtshow;
+         private StudentsResult _SR;
+         public bool Modified { get; set; }
++
++       
++
++        
+     }   
+ }
+diff --git a/Scant/ScanTemplate/FormYJ/FormYJInit.cs b/Scant/ScanTemplate/FormYJ/FormYJInit.cs
+index 1e2e1bd..2907381 100644
+--- a/Scant/ScanTemplate/FormYJ/FormYJInit.cs
++++ b/Scant/ScanTemplate/FormYJ/FormYJInit.cs
+@@ -687,23 +687,33 @@ namespace ScanTemplate.FormYJ
+             str = dr["CorrectRect"].ToString();
+             _SrcCorrectRect = Tools.StringTools.StringToRectangle(str,'-');
+             this.Angle = Convert.ToDouble( dr["校验角度"].ToString());
+-            this.Name =  dr["姓名"].ToString();
+-            if (dr.Table.Columns.Contains("考号"))
++           
++            _src = null;
++            Sort = new StudentSort();
++            BackScore = -1;
++            if (global.TableMode)
+             {
+-                string skh = dr["考号"].ToString();
+-                if (skh.Contains("-"))
+-                    this.KH = 0;
+-                else
+-                    this.KH = Convert.ToInt32(dr["考号"].ToString());
++                this.Name = _id.ToString();
++                this.KH = _id;
++                this._XZT = new List<string>();
+             }
+-            this._XZT = new List<string>();
+-            for (int i = 1; i < XZTcount+1; i++)
++            else
+             {
+-                _XZT.Add(dr["x" + i].ToString());
++                this.Name = dr["姓名"].ToString();
++                if (dr.Table.Columns.Contains("考号"))
++                {
++                    string skh = dr["考号"].ToString();
++                    if (skh.Contains("-"))
++                        this.KH = 0;
++                    else
++                        this.KH = Convert.ToInt32(dr["考号"].ToString());
++                }
++                this._XZT = new List<string>();
++                for (int i = 1; i < XZTcount + 1; i++)
++                {
++                    _XZT.Add(dr["x" + i].ToString());
++                }
+             }
+-            _src = null;
+-            Sort = new StudentSort();
+-            BackScore = -1;
+         }
+         public Student()
+         {
+@@ -1314,22 +1324,26 @@ namespace ScanTemplate.FormYJ
+                         + string.Join(",", Students.Select(r => r.Sort.SortValue.ToString()));
+                     File.AppendAllText( "F:\\Sortdebug.txt",str );
+                 }
+-            if(back)
+-                Students.Sort(delegate(Student S1, Student S2)
+-                {
+-                    return S1.BackScore - S2.BackScore;
+-                });
+-            else
+-                Students.Sort(delegate(Student S1, Student S2)
+-                {
+-                    return S1.Sort.SortValue - S2.Sort.SortValue;
+-                });
+-            if(global.Debug || (global.tag & 4)>0)
+-                if( Students.Count>0){
+-                    string str = "\r\n\r\nsorted:ID姓名：," + string.Join(",", Students.Select(r => r.ID + r.Name)) + "\r\nSortValue"
+-                        + string.Join(",", Students.Select(r => r.Sort.SortValue.ToString()));
+-                    File.AppendAllText( "F:\\Sortdebug.txt",str );
+-                }
++        
++            {
++                if (back)
++                    Students.Sort(delegate(Student S1, Student S2)
++                    {
++                        return S1.BackScore - S2.BackScore;
++                    });
++                else
++                    Students.Sort(delegate(Student S1, Student S2)
++                    {
++                        return S1.Sort.SortValue - S2.Sort.SortValue;
++                    });
++                if (global.Debug || (global.tag & 4) > 0)
++                    if (Students.Count > 0)
++                    {
++                        string str = "\r\n\r\nsorted:ID姓名：," + string.Join(",", Students.Select(r => r.ID + r.Name)) + "\r\nSortValue"
++                            + string.Join(",", Students.Select(r => r.Sort.SortValue.ToString()));
++                        File.AppendAllText("F:\\Sortdebug.txt", str);
++                    }
++            }
+         }
+         public Imgsubjects GetImgsubjects()
+         {
+diff --git a/Scant/ScanTemplate/Program.cs b/Scant/ScanTemplate/Program.cs
+index 86ee931..cede394 100644
+--- a/Scant/ScanTemplate/Program.cs
++++ b/Scant/ScanTemplate/Program.cs
+@@ -21,6 +21,7 @@ namespace ScanTemplate
+     public class global
+     {
+         public static Boolean Debug = false;
++        public static Boolean TableMode = false;
+         public static int tag = 0;
+         public static int featuretype = 0;  // 0 左上下  1右上下
+         public static string msg = "说明";
+diff --git a/Scant/ScanTemplate/ScanConfig.cs b/Scant/ScanTemplate/ScanConfig.cs
+index 438215f..adc9802 100644
+--- a/Scant/ScanTemplate/ScanConfig.cs
++++ b/Scant/ScanTemplate/ScanConfig.cs
+@@ -278,6 +278,7 @@ namespace ScanTemplate
+         private string _fullpath;
+         private string _dirname;
+         private TemplateInfo ti;
++      
+     
+         public TemplateShow(string fullpath,string dirname, string imgfilename, TemplateInfo ti=null,bool savefilename=false)
+         {
+@@ -325,6 +326,49 @@ namespace ScanTemplate
+             fs = null;
+         }
+ 
++        public TemplateShow(string fullpath, string dirname, string imgfilename, bool dectectTable,bool savefilename=false)
++        {
++            if (!dectectTable)
++                return ;
++            this._fullpath = fullpath;
++            this._imgfilename = imgfilename;
++            this._dirname = dirname;
++         
++            this.OK = false;
++            //this._src = (Bitmap)Bitmap.FromFile(_imgfilename);
++            System.IO.FileStream fs = new System.IO.FileStream(imgfilename, System.IO.FileMode.Open, System.IO.FileAccess.Read);
++            Bitmap _src = (Bitmap)System.Drawing.Image.FromStream(fs);
++
++            Rectangle area = new Rectangle(10, 10, _src.Width - 10, _src.Height - 10);
++            Rectangle cr = new Rectangle();
++         
++            area.Inflate(-20, -20);//ti = null
++            
++            DetectData dd = DetectImageTools.DetectImg(_src, area, cr);
++            //dd = DetectImageTools.DetectImg(_src, dd.CorrectRect);
++            //if (ti == null)
++            //    dd = DetectImageTools.DetectCorrect.ReDetectCorrectImg(_src, dd);
++            if (dd.CorrectRect.Width > 0)
++            {
++                if (ti == null)
++                {
++                    _artemplate = new Template(dd.ListFeature, dd.CorrectRect);
++                }
++                else
++                {
++                    _artemplate = new Template(dd.ListFeature, dd.CorrectRect);
++                    Template t = Templates.GetTemplate(ti.TemplateFileName);
++                    _artemplate.Match(t);
++                    if (savefilename)
++                        _artemplate.FileName = ti.TemplateFileName;
++                }
++                this.OK = true;
++            }
++
++            fs.Close();
++            fs = null;
++        }
++
+         public Template Template { get { return _artemplate; } }
+         public string SrcFileName { get { return _imgfilename; } }
+         public bool OK { get; set; }
+@@ -399,7 +443,8 @@ namespace ScanTemplate
+             System.IO.FileStream fs = new System.IO.FileStream(s,System.IO.FileMode.Open, System.IO.FileAccess.Read);
+             Bitmap orgsrc = (Bitmap)System.Drawing.Image.FromStream(fs);
+             Rectangle area =new  Rectangle(15, 15, orgsrc.Width-15, orgsrc.Height-15);
+-            DetectData dd = DetectImageTools.DetectImg(orgsrc,area, this.Template.CorrectRect );         
++           
++            DetectData dd = DetectImageTools.DetectImg(orgsrc, area, new Rectangle());
+             if (dd.CorrectRect.Width > 0 ) //TODO: 进一步判断
+             {
+                 int offset =
+diff --git a/Scant/ScanTemplate/tools/DetectImgTools.cs b/Scant/ScanTemplate/tools/DetectImgTools.cs
+index 12053a5..5110b37 100644
+--- a/Scant/ScanTemplate/tools/DetectImgTools.cs
++++ b/Scant/ScanTemplate/tools/DetectImgTools.cs
+@@ -9,6 +9,10 @@ namespace  Tools
+ {
+     public class DetectImageTools
+     {
++        public static DetectData DetectImg2(Bitmap src, Rectangle area, Rectangle templateCorrectRect = new Rectangle())
++        {
++           return DetectCorrect.DetectCorrectImg(src, area, templateCorrectRect,true);
++        }
+         public static DetectData DetectImg(Bitmap src,Rectangle area, Rectangle templateCorrectRect = new Rectangle())
+         {
+             if(templateCorrectRect.Width==0)
+@@ -54,7 +58,7 @@ namespace  Tools
+                 }
+                 return ConstructDetectData(false, _CorrectRect, list);
+             }
+-            public static DetectData DetectCorrectImg(Bitmap src,Rectangle area,Rectangle correctrect = new Rectangle()) //
++            public static DetectData DetectCorrectImg(Bitmap src,Rectangle area,Rectangle correctrect = new Rectangle(),bool DectTable=false ) //
+             {
+                 bool HasCorrectRect = true;
+                 Rectangle _CorrectRect = correctrect;
+@@ -69,9 +73,17 @@ namespace  Tools
+                 int cnt = 0;
+                 foreach (Rectangle r in FourLtbRtbRect)
+                 {
+-                    r.Inflate(r.Size);
+-                    r.Intersect(area);
+-                    Rectangle nr2 = DetectCorrectFromImg(src, r, true, r.Width / 6);
++                    Rectangle nr2;
++                    if (!DectTable)
++                    {
++                        nr2 = r;//TODO: 确定交点
++                    }
++                    else
++                    {
++                        r.Inflate(r.Size);
++                        r.Intersect(area);
++                        nr2 = DetectCorrectFromImg(src, r, true, r.Width / 6);
++                    }
+                     list.Add(nr2);
+                     //src.Clone(nr2, src.PixelFormat).Save("F:\\debug\\"+cnt+"-"+nr2.ToString("_")+".tif");
+                     cnt++;

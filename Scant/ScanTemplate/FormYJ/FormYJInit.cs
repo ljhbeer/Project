@@ -319,6 +319,11 @@ namespace ScanTemplate.FormYJ
                         _dtsetxzt.Rows[i]["最大分值"] = f.Xzt()[i].Score;
                         O.Answer = f.Xzt()[i].OptionAnswer;
                         O.Score = f.Xzt()[i].Score;
+                        O.Type = f.Xzt()[i].Type;
+                        if (O.Type == "U") // S 单选, M 多选,U 不定项
+                        {
+                            O.HalfScore = f.Xzt()[i].HalfScore;
+                        }
                     }
                 }
             }
@@ -454,6 +459,9 @@ namespace ScanTemplate.FormYJ
         public string Name() { return "x" + ID; }
         public string OutName { get { return "选择题" + ID; } }
         public string Answer { get; set; }
+
+        public float HalfScore { get; set; }
+        public string Type { get; set; }
         [JsonProperty]
         private Rectangle _Rect;
 
@@ -465,6 +473,7 @@ namespace ScanTemplate.FormYJ
         public int Width { get { return Rect.Width; } }
         [JsonIgnore]
         private SingleChoiceArea U;
+
 
     }
     [JsonObject(MemberSerialization.OptIn)]

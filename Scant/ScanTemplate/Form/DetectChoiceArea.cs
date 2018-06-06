@@ -178,7 +178,7 @@ namespace ARTemplate
             //DrawToFile(xcnt);
             return false;
         }
-        public bool Detect()
+        public bool Detect(bool hengpai=true)
         {               
             List<int> xposlen,yposlen;
             Rectangle rt = new Rectangle(0, 0, _src.Size.Width, _src.Size.Height);
@@ -198,30 +198,69 @@ namespace ARTemplate
                 return false;
             MergeSection(yposlen);
             MergeSection(xposlen);
-            if (RemoveAndCheck(xposlen,4) && RemoveAndCheck(yposlen,choicecount))
+            int xcheck = 4;
+            int ycheck = choicecount;
+            if (!hengpai)
             {
-                m_choicepoint = new List<List<Point>>();
-                int sum = 0;
-                for (int i = 1; i < xposlen.Count; i += 2)
+                xcheck = ycheck;
+                ycheck = 4;
+            }
+
+            if (hengpai)
+            {
+                if (RemoveAndCheck(xposlen, xcheck) && RemoveAndCheck(yposlen, ycheck))
                 {
-                    sum += xposlen[i] * xposlen[i];
+                    m_choicepoint = new List<List<Point>>();
+                    int sum = 0;
+                    for (int i = 1; i < xposlen.Count; i += 2)
+                    {
+                        sum += xposlen[i] * xposlen[i];
+                    }
+                    choicesize.Width = (int)Math.Sqrt(sum * 2 / xposlen.Count);
+                    sum = 0;
+                    for (int i = 1; i < yposlen.Count; i += 2)
+                    {
+                        sum += yposlen[i] * yposlen[i];
+                    }
+                    choicesize.Height = (int)Math.Sqrt(sum * 2 / yposlen.Count);
+
+                    for (int i = 0; i < yposlen.Count; i += 2)
+                    {
+                        List<Point> c = new List<Point>();
+                        for (int j = 0; j < xposlen.Count; j += 2)
+                            c.Add(new Point(xposlen[j], yposlen[i]));
+                        m_choicepoint.Add(c);
+                    }
+                    return true;
                 }
-                choicesize.Width = (int)Math.Sqrt(sum * 2 / xposlen.Count);
-                sum = 0;
-                for (int i = 1; i < yposlen.Count; i += 2)
+            }
+            else//竖排
+            {
+                if (RemoveAndCheck(xposlen, xcheck) && RemoveAndCheck(yposlen, ycheck))
                 {
-                    sum += yposlen[i] * yposlen[i];
+                    m_choicepoint = new List<List<Point>>();
+                    int sum = 0;
+                    for (int i = 1; i < xposlen.Count; i += 2)
+                    {
+                        sum += xposlen[i] * xposlen[i];
+                    }
+                    choicesize.Width = (int)Math.Sqrt(sum * 2 / xposlen.Count);
+                    sum = 0;
+                    for (int i = 1; i < yposlen.Count; i += 2)
+                    {
+                        sum += yposlen[i] * yposlen[i];
+                    }
+                    choicesize.Height = (int)Math.Sqrt(sum * 2 / yposlen.Count);
+
+                    for (int j = 0; j < xposlen.Count; j += 2)
+                    {
+                        List<Point> c = new List<Point>();
+                        for (int i = 0; i < yposlen.Count; i += 2)
+                            c.Add(new Point(xposlen[j], yposlen[i]));
+                        m_choicepoint.Add(c);
+                    }
+                    return true;
                 }
-                choicesize.Height = (int)Math.Sqrt(sum * 2 / yposlen.Count);
-                
-                for (int i = 0; i < yposlen.Count; i+=2)
-                {
-                    List<Point> c = new List<Point>();
-                    for (int j = 0; j < xposlen.Count; j += 2) 
-                        c.Add(new Point(xposlen[j],yposlen[i]));
-                    m_choicepoint.Add(c);
-                }
-                return true;
             }
             //DrawToFile(xcnt);
             return false;

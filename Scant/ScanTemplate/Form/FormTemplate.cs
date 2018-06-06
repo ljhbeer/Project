@@ -98,6 +98,7 @@ namespace ARTemplate
                 switch (kh.Type) //数字means横向 涂卡
                 {
                     case "条形码": toolStripComboBoxKHFormat.SelectedIndex = 0; break;
+                    case "无": toolStripComboBoxKHFormat.SelectedIndex = 9; break;
                     case "3": toolStripComboBoxKHFormat.SelectedIndex = 1; break;
                     case "4": toolStripComboBoxKHFormat.SelectedIndex = 2; break;
                     case "5": toolStripComboBoxKHFormat.SelectedIndex = 3; break;
@@ -520,7 +521,7 @@ namespace ARTemplate
                     Rectangle m_Imgselection = zoombox.BoxToImgSelection(MT.Selection);
                     TreeNode t = new TreeNode();
                     t.Name = t.Text = keyname;
-                    if (type == "条形码")
+                    if (type == "条形码" || type == "无")
                     {
                         t.Tag = new KaoHaoChoiceArea(m_Imgselection, t.Name, type);
                         m_tn.Nodes[keyname].Nodes.Add(t);
@@ -597,6 +598,12 @@ namespace ARTemplate
         private void CompleteDeFineChoose()
         {
             String keyname = "选择题";
+            bool Hengpai = true;
+            if (toolStripComboBoxChooseType.SelectedIndex != -1)
+            {
+                if (toolStripComboBoxChooseType.SelectedItem.ToString() == "竖排")
+                    Hengpai = false;
+            }
             if (!ExistDeFineSelection(keyname))
             {
                 TreeNode t = new TreeNode();
@@ -610,8 +617,10 @@ namespace ARTemplate
                 {
                     return;
                 }
+                
+                Bitmap bitmap = GetDrawedbyBlackWhiteBitMap();
+                if (Hengpai)
                 {//TODO:仅支持 横向填涂
-                    Bitmap bitmap = GetDrawedbyBlackWhiteBitMap();
                     DetectChoiceArea dca = new DetectChoiceArea(bitmap, count);
                     if (dca.Detect())
                     {
@@ -620,8 +629,17 @@ namespace ARTemplate
                             t.Name, dca.Choicepoint, dca.Choicesize);
                         m_tn.Nodes[keyname].Nodes.Add(t);
                     }
-                    //else 
-                    //    bitmap.Save("f:\\" + choosename + ".jpg");
+                }
+                else
+                {
+                    DetectChoiceArea dca = new DetectChoiceArea(bitmap, count);
+                    if (dca.Detect(Hengpai))
+                    {
+                        t.Name = t.Text = choosename;
+                        t.Tag = new SingleChoiceArea(m_Imgselection,
+                            t.Name, dca.Choicepoint, dca.Choicesize);
+                        m_tn.Nodes[keyname].Nodes.Add(t);
+                    }
                 }
             }
         }

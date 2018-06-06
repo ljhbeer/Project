@@ -61,7 +61,7 @@ namespace ScanTemplate.FormYJ
         {
             _Optionanswer = _exam.OSubjects.Select(r => r.Answer).ToList();
             _OptionMaxscore = _exam.OSubjects.Select(r => r.Score).ToList();
-            if (!_Optionanswer.Exists(r => r.Length != 1 || !"ABCD".Contains(r))
+            if (!_Optionanswer.Exists(r => r.Length == 0 )//|| !"ABCD".Contains(r)  //有不定项选择
                 && !_OptionMaxscore.Exists(r => r <= 0))
                 ;
             else
@@ -135,6 +135,18 @@ namespace ScanTemplate.FormYJ
         private void ExportImages(string ImgPath,bool onlyoptions = false)
         {
             CheckFold(ImgPath);
+            List<Rectangle> drawrect = new List<Rectangle>();
+            foreach (Optionsubject O in _Optionsubjects.OptionSubjects)
+            {
+                List<int> listanswer = O.Answer.Select(rr => rr - 'A').ToList();
+                foreach (int index in listanswer)
+                {
+                    Rectangle RO = new Rectangle(O.List[index], O.Size);
+                    RO.Offset(O.Rect.Location );
+                    drawrect.Add(RO);
+                }
+            }
+
             foreach (Student S in _students.students)
             {
                 PaperResult pr = ConstructPaperResult(S,onlyoptions);
@@ -147,6 +159,18 @@ namespace ScanTemplate.FormYJ
                     {
                         string name = _sc.Studentbases.GetName(S.KH);
                         filename = ImgPath + "\\" + S.ID + "_" + name + ".jpg";
+                    }
+                }
+
+                using (Graphics g = Graphics.FromImage(bmp))
+                {
+                    Pen pen = Pens.Red;
+                    foreach (Rectangle rr in drawrect)
+                    {
+                        Rectangle r = rr;
+                        Point p = _angle.GetCorrectPoint(r.X, r.Y);
+                        r.Location = p;
+                        g.DrawRectangle(pen, r);
                     }
                 }
                 bmp.Save(filename);
@@ -162,8 +186,28 @@ namespace ScanTemplate.FormYJ
             foreach (Optionsubject O in _Optionsubjects.OptionSubjects)
             {
                 r = Rectangle.Union(r, O.Rect);
-                float score = S.CorrectXzt(O.Index, _Optionanswer[O.Index]) ? _OptionMaxscore[O.Index] : 0;
-                int listindex = _dicABCDToOption[_Optionanswer[O.Index]];
+                float score = 0;
+                if (O.Type == "S" || O.Type == "M")
+                    score = S.CorrectXzt(O.Index, _Optionanswer[O.Index]) ? _OptionMaxscore[O.Index] : 0;
+                else  if(O.Type == "U")
+                {
+                    List<int> listanswer = O.Answer.Select(rr => rr - 'A').ToList();
+                    List<int> paperanswer = S.OptionAnswer( O.Index).Select(rr => rr - 'A').ToList().ToList();
+                   
+                    if (paperanswer.Count==0 || paperanswer.Exists( rr=> !listanswer.Contains(rr)))
+                    {
+                        score = 0;
+                    }
+                    else 
+                    {
+                        if (listanswer.Exists(rr => !paperanswer.Contains(rr)))
+                            score = O.HalfScore;
+                        else
+                            score = O.Score;
+                    }
+                }
+                //TODO:  只适合单选
+                int listindex = _dicABCDToOption[_Optionanswer[O.Index].Substring(0,1)];
                 Rectangle RO = O.Rect;
                 if (O.List.Count > listindex)
                     RO.Offset(O.List[listindex]);
@@ -227,7 +271,8 @@ namespace ScanTemplate.FormYJ
             {
                 List<int> Iabcd = _ABCD.Select(r =>
                     _students.students.Where(rr => rr.SelectOption(r, O.Index)).Count()).ToList();
-                int okindex = _dicABCDToOption[_Optionanswer[O.Index]];
+                // TODO: 不定项没有统计
+                int okindex = _dicABCDToOption[_Optionanswer[O.Index].Substring(0,1)]; //存在不定项
                 int rightcnt = Iabcd[okindex];
                 int count = _students.students.Count;
                 Double rightrate = rightcnt * 1.0 / count;
@@ -339,7 +384,8 @@ namespace ScanTemplate.FormYJ
             foreach (Student S in _students.students)
             {
                 PaperResult pr = ConstructPaperResult(S);
-                sblistscore.AppendLine(S.Name + "," +pr.Xzt.Floatscore);
+                
+                sblistscore.AppendLine(S.Name=="-"?S.ID.ToString() : S.Name + "," +pr.Xzt.Floatscore);
             }
            
             Tools.TextBitmapTool tbl = new TextBitmapTool(

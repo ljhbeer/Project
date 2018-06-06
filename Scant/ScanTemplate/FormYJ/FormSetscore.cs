@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using System.Text.RegularExpressions;
 
 namespace ScanTemplate.FormYJ
 {
@@ -16,16 +17,16 @@ namespace ScanTemplate.FormYJ
             this._dtsetxzt = _dtsetxzt;
             InitializeComponent();
             buttonClearanswer.Visible = false;
-
+            
             InitXZTQuestion(_dtsetxzt);
             InitDgvAndCbx();
             ReFreshDgv();            
         }
         private void InitDgv(int questioncnt, DataGridView dgv) // used by settypeform
         {
-            string[] strxq = new string[] { "题型", "答案", "分值" };
+            string[] strxq = new string[] { "题型", "答案", "分值","半对分值" };
             dgv.RowCount = questioncnt > 0 ? questioncnt : 1;
-            dgv.ColumnCount = 3;
+            dgv.ColumnCount = 4;
             dgv.ReadOnly = true;
 
             dgv.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None;
@@ -58,9 +59,34 @@ namespace ScanTemplate.FormYJ
         }
         private void buttonSetScore_Click(object sender, EventArgs e)
         {
+            float score = ReadScore();
+            if (score < 0)
+                return;
+           
+            int begin = comboBoxBegin.SelectedIndex;
+            int end = comboBoxEnd.SelectedIndex + 1;
+            if (begin == -1 || end == -1 || begin > end)
+            {
+                MessageBox.Show("请正确地选择起始题和末尾题");
+                return ;
+            }
+            for (int i = begin; i < end; i++)
+            {
+                _xzt[i].Score = score;
+            }
+            ReFreshDgv();
+
+        }
+
+        private float ReadScore()
+        {
             string text = textBoxScore.Text;
             bool bdot = false;
-            if (text == "") return;
+            if (text == "")
+            {
+                MessageBox.Show("请输入数值，并在0.5-100之间");
+                return -1;
+            }
             foreach (char c in text)
             {
                 if (!Char.IsNumber(c))
@@ -73,7 +99,7 @@ namespace ScanTemplate.FormYJ
                     {
                         textBoxScore.Text = "";
                         MessageBox.Show("请输入数值，并在0.5-100之间");
-                        return;
+                        return -1;
                     }
                 }
             }
@@ -82,21 +108,9 @@ namespace ScanTemplate.FormYJ
             {
                 textBoxScore.Text = "";
                 MessageBox.Show("请输入数值，并在0.5-100之间");
-                return;
+                return -1;
             }
-            int begin = comboBoxBegin.SelectedIndex;
-            int end = comboBoxEnd.SelectedIndex + 1;
-            if (begin == -1 || end == -1 || begin > end)
-            {
-                MessageBox.Show("请正确地选择起始题和末尾题");
-                return;
-            }
-            for (int i = begin; i < end; i++)
-            {
-                _xzt[i].Score = score;
-            }
-            ReFreshDgv();
-
+            return score;
         }        
         private void buttonImportAnswer_Click(object sender, EventArgs e)
         {
@@ -129,6 +143,33 @@ namespace ScanTemplate.FormYJ
             InitDgvAndCbx();
             ReFreshDgv();
         }
+        private void buttonImportMultiAnswer_Click(object sender, EventArgs e)
+        {
+            List<int> la = new List<int>();
+            string str = textBoxAnswer.Text.ToUpper();
+
+            str = Regex.Replace(str, "[^A-Z ]", " ");
+            List<string> list = str.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries).ToList();
+
+            int begin = comboBoxBegin.SelectedIndex;
+            int end = comboBoxEnd.SelectedIndex + 1;
+            if (begin == -1 || end == -1 || begin > end)
+            {
+                MessageBox.Show("请正确地选择起始题和末尾题");
+                return;
+            }
+
+            int index = 0;
+            for (int i = begin; i < end  && index< list.Count; i++,index++)
+            {
+                if(_xzt[i].Type == "U" || _xzt[i].Type == "M" )
+                    _xzt[i].OptionAnswer = list[index];
+            }
+           
+            textBoxAnswer.Text = str;
+            InitDgvAndCbx();
+            ReFreshDgv();
+        }
         private void buttonOK_Click(object sender, EventArgs e)
         {
             this.DialogResult = System.Windows.Forms.DialogResult.OK;
@@ -155,10 +196,11 @@ namespace ScanTemplate.FormYJ
         private void ReFreshDgv()
         {
             for (int i = 0; i < _xzt.Count; i++)
-            {              
-                dataGridViewAnswer[0, i].Value = "单选题";               
-                dataGridViewAnswer[1, i].Value = _xzt[i].OptionAnswer;              
+            {
+                dataGridViewAnswer[0, i].Value = _xzt[i].TypeName();
+                dataGridViewAnswer[1, i].Value = _xzt[i].OptionAnswer;
                 dataGridViewAnswer[2, i].Value = _xzt[i].Score;
+                dataGridViewAnswer[3, i].Value = _xzt[i].HalfScore;
             }
         }
         private void InitDgvAndCbx()
@@ -200,6 +242,54 @@ namespace ScanTemplate.FormYJ
             }
             return true;
         }
+        private void buttonSetHalfScore_Click(object sender, EventArgs e)
+        {
+            float score = ReadScore();
+            if (score < 0)
+                return;
+
+            int begin = comboBoxBegin.SelectedIndex;
+            int end = comboBoxEnd.SelectedIndex + 1;
+            if (begin == -1 || end == -1 || begin > end)
+            {
+                MessageBox.Show("请正确地选择起始题和末尾题");
+                return;
+            }
+            for (int i = begin; i < end; i++)
+            {
+                if(_xzt[i].Type == "U")
+                    _xzt[i].HalfScore = score;
+            }
+            ReFreshDgv();
+        }
+        private void buttonSetOptionType_Click(object sender, EventArgs e)
+        {
+            int begin = comboBoxBegin.SelectedIndex;
+            int end = comboBoxEnd.SelectedIndex + 1;
+            if (begin == -1 || end == -1 || begin > end)
+            {
+                MessageBox.Show("请正确地选择起始题和末尾题");
+                return;
+            }
+            string Type = "S";
+            if (comboBoxType.SelectedIndex != -1)
+            {
+                if (comboBoxType.SelectedItem.ToString() == "多选")
+                    Type = "M";
+                else if (comboBoxType.SelectedItem.ToString() == "不定项")
+                    Type = "U";
+            }
+
+            for (int i = begin; i < end; i++)
+            {
+                _xzt[i].Type = Type;
+            }
+            ReFreshDgv();
+        }
+        private void FormSetscore_Load(object sender, EventArgs e)
+        {
+            comboBoxType.SelectedIndex = 0;
+        }
     }
     
     public class XztQuestion
@@ -207,5 +297,19 @@ namespace ScanTemplate.FormYJ
         public int ID{ get; set; }
         public string OptionAnswer { get; set; }
         public float Score { get; set; }
+        public string Type { get; set; }
+        public float HalfScore { get; set; }
+
+        public string TypeName()
+        {
+            if (Type == "S")
+                return "单选";
+            if (Type == "M")
+                return "多选";
+            if (Type == "U")
+                return "不定项";
+            Type = "S";
+            return "单选";
+        }
     }
 }

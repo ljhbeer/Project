@@ -292,7 +292,8 @@ namespace ScanTemplate
             System.IO.FileStream fs = new System.IO.FileStream(imgfilename, System.IO.FileMode.Open, System.IO.FileAccess.Read);
             Bitmap _src = (Bitmap)System.Drawing.Image.FromStream(fs);
 
-            Rectangle area = new Rectangle(10, 10, _src.Width-10, _src.Height-10);
+            Rectangle area = new Rectangle(10, 10, _src.Width-20, _src.Height-20);
+            area.Inflate(9, 9);
             Rectangle cr = new Rectangle();
             if (ti != null)
             {
@@ -300,7 +301,7 @@ namespace ScanTemplate
             }
             else
             {
-                area.Inflate(-20, -20);
+                area.Inflate(-9, -9);
             }
             DetectData dd = DetectImageTools.DetectImg(_src,area,cr);
             //dd = DetectImageTools.DetectImg(_src, dd.CorrectRect);
@@ -384,10 +385,32 @@ namespace ScanTemplate
             _angle = _template.Angle;
 			foreach (string s in _nameList)
 			{
-                Paper paper = DetectImg(s,ref msg);
-                sb.AppendLine(paper.ToJsonString()+",");
-                if(DgShowScanMsg!=null)
-                DgShowScanMsg(paper);//this.Invoke(new MyInvoke(ShowMsg));
+                bool redo = false;
+                try
+                {
+                    Paper paper = DetectImg(s, ref msg);
+                    sb.AppendLine(paper.ToJsonString() + ",");
+                    if (DgShowScanMsg != null)
+                        DgShowScanMsg(paper);//this.Invoke(new MyInvoke(ShowMsg));
+                }catch
+                {
+                    redo = true;
+                }
+               while (redo)
+                {
+                    try
+                    {
+                        Paper paper = DetectImg(s, ref msg);
+                        sb.AppendLine(paper.ToJsonString() + ",");
+                        if (DgShowScanMsg != null)
+                            DgShowScanMsg(paper);//this.Invoke(new MyInvoke(ShowMsg));
+                    }
+                    catch
+                    {
+                    }
+                    redo = false;
+                }
+
 				Thread.Sleep(10);
 			}
 			_exportdata = sb.ToString();
@@ -401,7 +424,8 @@ namespace ScanTemplate
             StringBuilder sb = new StringBuilder();
             System.IO.FileStream fs = new System.IO.FileStream(s,System.IO.FileMode.Open, System.IO.FileAccess.Read);
             Bitmap orgsrc = (Bitmap)System.Drawing.Image.FromStream(fs);
-            Rectangle area =new  Rectangle(15, 15, orgsrc.Width-15, orgsrc.Height-15);
+            //Rectangle area = new Rectangle(15, 15, orgsrc.Width - 15, orgsrc.Height - 15);
+            Rectangle area = new Rectangle(1, 1, orgsrc.Width - 2, orgsrc.Height - 2);
             DetectData dd = DetectImageTools.DetectImg(orgsrc,area, this.Template.CorrectRect );
             if (dd.CorrectRect.Width > 0 ) //TODO: 进一步判断
             {
@@ -442,6 +466,11 @@ namespace ScanTemplate
                             if ( _sc. Studentbases.HasStudentBase)
                                 paper.Name = _sc.Studentbases.GetName(paper.KH);
                         }
+                    }
+                    else if (kha.Type == "无")
+                    {
+                        paper.KH = -1;
+                        paper.Name = "-";
                     }
                     else if ("1023456789".Contains(kha.Type))
                     {

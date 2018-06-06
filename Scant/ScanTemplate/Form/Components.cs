@@ -181,7 +181,7 @@ namespace ARTemplate
         }
         public override bool HasImgSubArea()
         {
-            if (Type == "条形码")
+            if (Type == "条形码" || Type  == "无")
                 return false;
             return true;
         }

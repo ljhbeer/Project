@@ -13,7 +13,7 @@ namespace  Tools
         {
             if(templateCorrectRect.Width==0)
                 return DetectCorrect.DetectCorrectImg(src,area,templateCorrectRect);
-            Point p = DetectLT(src,area);
+            Point p = DetectLT(src,area,true);
             if (p.X < 0 || p.Y < 0)
                 return new DetectData(new Rectangle(),null);
             Rectangle correctrect = templateCorrectRect;
@@ -26,11 +26,12 @@ namespace  Tools
             int ymid = (listrect.Select(r => r.Y).Min() + listrect.Select(r => r.Y).Max()) / 2;
             return new Point(xmid, ymid);
         }
-        public static Point DetectLT(Bitmap src,Rectangle area)
+        public static Point DetectLT(Bitmap src,Rectangle area,bool debug = false)
         {
-            Rectangle r = new Rectangle(new Point(), new Size(src.Width / 3, src.Height / 3));
+            Rectangle r = new Rectangle(new Point(), new Size(src.Width / 6, src.Height / 6));
+            //Rectangle r = new Rectangle(new Point(), new Size(src.Width / 3, src.Height / 3));
             area.Intersect(r);
-            Rectangle cr = DetectCorrect.DetectCorrectFromImg(src,area,true,20);
+            Rectangle cr = DetectCorrect.DetectCorrectFromImg(src,area,true,10,debug);
             if (cr.Width == 0 || cr.Height == 0)
                 return new Point(-1, -1);
             //src.Clone(cr, src.PixelFormat).Save("F:\\debug\\LT.tif");
@@ -79,12 +80,12 @@ namespace  Tools
                 }
                 return ConstructDetectData(HasCorrectRect, _CorrectRect,list);
             }
-            public static Rectangle DetectCorrectFromImg(Bitmap src, Rectangle area, Boolean continnuity = true, int continuelength = -1)
+            public static Rectangle DetectCorrectFromImg(Bitmap src, Rectangle area, Boolean continnuity = true, int continuelength = -1,bool debug = false)
             {
                 Rectangle rect;
                 if (continnuity)
                 {
-                    rect = DetectCorrectFromImgArea(src, area,continnuity,continuelength);
+                    rect = DetectCorrectFromImgArea(src, area,continnuity,continuelength,debug);
                 }
                 else
                 {
@@ -145,7 +146,7 @@ namespace  Tools
                 //OutPixImage(xxcnt, yycnt);
                 return new Rectangle(xpos, ypos, xendpos - xpos, yendpos - ypos);
             }
-            private static Rectangle DetectCorrectFromImgArea(Bitmap src, Rectangle area, bool continnuity, int continuelength = -1) // 从30位算起
+            private static Rectangle DetectCorrectFromImgArea(Bitmap src, Rectangle area, bool continnuity, int continuelength = -1,bool debug = false) // 从30位算起
             {
                 //验证参数准确性
                 int[] xxcnt = BitmapTools.CountXPixsum(src, area);
@@ -164,7 +165,8 @@ namespace  Tools
 
                 //完全同上
                 //debugout
-                //OutPixImage(xxcnt, yycnt);
+                if(debug)
+                    OutPixImage(xxcnt, yycnt);
                 int xpos = xxcnt.ToList().FindIndex(r => r > 0);
                 int xendpos = xxcnt.Skip(xpos).ToList().FindIndex(r => r == 0) + xpos;
                 if (continnuity)

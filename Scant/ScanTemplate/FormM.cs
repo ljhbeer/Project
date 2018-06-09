@@ -90,23 +90,35 @@ namespace ScanTemplate
             List<string> nameList = dir.ImgList();
             if (nameList.Count > 0)
             {
-                try
+                if (checkBoxPreScanMode.Checked)
                 {
-                    _sc.Templateshow = new TemplateShow(dir.FullPath, dir.DirName, nameList[0]);
-                }catch(Exception ee)
-                {
-                    MessageBox.Show("特征点检测失败，请预处理！"+ee.Message);
-                    return;
+                    FormPreScan fps = new FormPreScan(dir);
+                    if (fps.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                    {
+                    }
+                    MessageBox.Show("预处理失败");
                 }
-                _sc.Templateshow.Template.FileName = _sc.Baseconfig.TemplatePath ;
-                if (_sc.Templateshow.OK)
+                else
                 {
-                    this.Hide();
-                    FormTemplate f = new FormTemplate(_sc.Templateshow);
-                    f.ShowDialog();
-                    f.Clear();
-                    f = null;
-                    this.Show();
+                    try
+                    {
+                        _sc.Templateshow = new TemplateShow(dir.FullPath, dir.DirName, nameList[0]);
+                    }
+                    catch (Exception ee)
+                    {
+                        MessageBox.Show("特征点检测失败，请预处理！" + ee.Message);
+                        return;
+                    }
+                    _sc.Templateshow.Template.FileName = _sc.Baseconfig.TemplatePath;
+                    if (_sc.Templateshow.OK)
+                    {
+                        this.Hide();
+                        FormTemplate f = new FormTemplate(_sc.Templateshow);
+                        f.ShowDialog();
+                        f.Clear();
+                        f = null;
+                        this.Show();
+                    }
                 }
             }
         }

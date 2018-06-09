@@ -55,6 +55,12 @@
   <ItemGroup>
     <Compile Include="AutoAngle.cs" />
     <Compile Include="AutoComputeXZT.cs" />
+    <Compile Include="Form\FormPreScan.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form\FormPreScan.Designer.cs">
+      <DependentUpon>FormPreScan.cs</DependentUpon>
+    </Compile>
     <Compile Include="Form\FormChooseResult.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -156,6 +162,9 @@
     <Compile Include="ScanConfig.cs" />
     <Compile Include="tools\BitmapTools.cs" />
     <Compile Include="tools\DataTableTools.cs" />
+    <EmbeddedResource Include="Form\FormPreScan.resx">
+      <DependentUpon>FormPreScan.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Form\FormChooseResult.resx">
       <DependentUpon>FormChooseResult.cs</DependentUpon>
     </EmbeddedResource>

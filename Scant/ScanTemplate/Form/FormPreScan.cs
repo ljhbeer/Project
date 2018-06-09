@@ -13,6 +13,9 @@ using System.IO;
 
 namespace ScanTemplate
 {
+    [Flags]
+    enum PreAct : short { None = 0, DefineDetectArea = 1, DefineFeaturePointDetectArea = 2, DefineScanLTDetectArea = 4, AutoDetect = 8, ShowImageMode = 16, NinthDetect, SixteenthDetect, PreDetect, NextImage, ZoomMouse };
+    
     public partial class FormPreScan : Form
     {
         public FormPreScan(UnScan dir)
@@ -21,7 +24,7 @@ namespace ScanTemplate
             _fullpath = dir.FullPath;
             _dirName = dir.DirName;
             _namelist = dir.ImgList();
-            _activeid = 0;
+            _PreActiveid = 0;
             _fs = null;
             Init(null);
             InitSrc();
@@ -35,7 +38,13 @@ namespace ScanTemplate
             }
             //_template = t;          
             m_Imgselection = new Rectangle(0, 0, 0, 0);
-            zoombox = new ZoomBox();
+            zoombox = new ZoomBox();            
+            
+            m_tn = new TreeNode();
+            if (t != null)
+                m_tn = t.GetTreeNode();           
+            treeView1.Nodes.Add(m_tn);
+            treeView1.ExpandAll();
             Reset();
         }
         private void Reset()
@@ -43,13 +52,15 @@ namespace ScanTemplate
             m_Imgselection = new Rectangle(0, 0, 0, 0);
             _OriginWith = pictureBox1.Width;
             zoombox.Reset();
-            m_act = Act.None;
+            m_PreAct = PreAct.None;
+            m_tn.Nodes.Clear();
+            treeView1.Nodes.Clear();
         }
         private void InitSrc( )
         {
-            if (File.Exists(ActiveFileName))
+            if (File.Exists(PreActiveFileName))
             {
-                Image orgsrc = GetActiveImage();
+                Image orgsrc = GetPreActiveImage();
                 _src =(Bitmap) orgsrc.Clone();
                 if (_src != null)
                     SetImage(_src);
@@ -73,61 +84,137 @@ namespace ScanTemplate
                 _dd = dd;
             }
         }
-        public string ActiveFileName
+        public string PreActiveFileName
         {
             get
             {
-                if (_activeid < 0 || _activeid > _namelist.Count)
-                    _activeid = 0;
-                return _namelist[_activeid];
+                if (_PreActiveid < 0 || _PreActiveid > _namelist.Count)
+                    _PreActiveid = 0;
+                return _namelist[_PreActiveid];
             }
         }
-        public Image GetActiveImage()
+        public Image GetPreActiveImage()
         {
             if (_fs != null)
             {
                 _fs.Close();
                 _fs = null;
             }
-            _fs = new System.IO.FileStream(ActiveFileName, System.IO.FileMode.Open, System.IO.FileAccess.Read);
+            _fs = new System.IO.FileStream(PreActiveFileName, System.IO.FileMode.Open, System.IO.FileAccess.Read);
             Image _orgsrc = (Bitmap)System.Drawing.Image.FromStream(_fs);
             return _orgsrc;
         }
 
-        private int _activeid;
-        private string _fullpath;
-        private string _dirName;
-        private List<string> _namelist;
-        private System.IO.FileStream _fs;
-        private DetectData _dd;
 
+        private void toolStripButtonZoomin_Click(object sender, EventArgs e)
+        {
+            if (!((ToolStripButton)sender).Checked)
+                ((ToolStripButton)sender).Checked = false;
+            Zoomrat(1.1, new Point(pictureBox1.Width / 2, pictureBox1.Height / 2));
+        }
+        private void toolStripButtonZoomMouse_Click(object sender, EventArgs e)
+        {
+            if (!((ToolStripButton)sender).Checked)
+                ((ToolStripButton)sender).Checked = false;
+            m_PreAct = PreAct.ZoomMouse;
+            toolStripButton_Click(sender, e);
+        }
+        private void toolStripButtonZoomout_Click(object sender, EventArgs e)
+        {
+            if (!((ToolStripButton)sender).Checked)
+                ((ToolStripButton)sender).Checked = false;
+            Zoomrat(0.9, new Point(pictureBox1.Width / 2, pictureBox1.Height / 2));
+        }
+        private void toolStripButton_Click(object sender, EventArgs e)
+        {
+            foreach (ToolStripButton b in toolStrip1.Items)
+                b.Checked = false;
+            ToolStripButton click = (ToolStripButton)sender;
+            if (click.Checked)
+                m_PreAct = PreAct.None;
+            ShowMessage("PreAct:" + m_PreAct);
+            click.Checked = !click.Checked;
+            //MT.ClearEvent();
+            if (m_PreAct == PreAct.DefineDetectArea || m_PreAct == PreAct.DefineFeaturePointDetectArea || 
+                m_PreAct == PreAct.DefineScanLTDetectArea || m_PreAct == PreAct.AutoDetect 
+               )
+            {
+                MT.StartDraw(true);
+                //MT.completevent += CompleteSelection;
+            }
+        }
+        private void toolStripButtonDefineDetectArea_Click(object sender, EventArgs e)
+        {
+            if (!((ToolStripButton)sender).Checked)
+                m_PreAct = PreAct.DefineDetectArea;
+            toolStripButton_Click(sender, e);
+        }
+        private void toolStripButtonDefineFeaturePointDetectArea_Click(object sender, EventArgs e)
+        {
+            if (!((ToolStripButton)sender).Checked)
+                m_PreAct = PreAct.DefineFeaturePointDetectArea;
+            toolStripButton_Click(sender, e);
+        }
+        private void toolStripButtonDefineScanLTDetectArea_Click(object sender, EventArgs e)
+        {
+            if (!((ToolStripButton)sender).Checked)
+                m_PreAct = PreAct.DefineScanLTDetectArea;
+            toolStripButton_Click(sender, e);
+        }
+        private void toolStripButtonAutDetect_Click(object sender, EventArgs e)
+        {
+            if (!((ToolStripButton)sender).Checked)
+                m_PreAct = PreAct.AutoDetect;
+            toolStripButton_Click(sender, e);
+        }
+        private void toolStripComboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (!((ToolStripButton)sender).Checked)
+                m_PreAct = PreAct.ShowImageMode;
+            toolStripButton_Click(sender, e);
+        }
+        private void NinthDetectToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!((ToolStripButton)sender).Checked)
+                m_PreAct = PreAct.NinthDetect;
+            toolStripButton_Click(sender, e);
+        }
+        private void SixteenthDetectToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!((ToolStripButton)sender).Checked)
+                m_PreAct = PreAct.SixteenthDetect;
+            toolStripButton_Click(sender, e);
+        }
+        private void toolStripButtonPreDetect_Click(object sender, EventArgs e)
+        {
+            if (!((ToolStripButton)sender).Checked)
+                m_PreAct = PreAct.PreDetect;
+            toolStripButton_Click(sender, e);
+        }
+        private void toolStripButtonNextImage_Click(object sender, EventArgs e)
+        {
+            if (!((ToolStripButton)sender).Checked)
+                m_PreAct = PreAct.NextImage;
+            toolStripButton_Click(sender, e);
+        }
         private void CompleteSelection(bool bcomplete)
         {
             if (bcomplete)
             {
-                ShowMessage("Complete: " + m_act);
+                ShowMessage("Complete: " + m_PreAct);
                 m_Imgselection = zoombox.BoxToImgSelection(MT.Selection);
-                if (_ActiveEditMode && _ActiveEditArea != null)
                 {
-                    //_TestR = Rectangle.Union(_ActiveEditArea.Rect, m_Imgselection);
-                    _ActiveEditArea.Rect = m_Imgselection;// Rectangle.Union(_ActiveEditArea.Rect, m_Imgselection);
-                    _ActiveEditArea.EditMode = false;
-                    _ActiveEditMode = false;
-                    _ActiveEditArea = null;
-                }
-                else
-                {
-                    switch (m_act)
+                    switch (m_PreAct)
                     {
-                        //case Act.DefinePoint: CompleteDeFinePoint(); break;
-                        //case Act.DefineChoose: CompleteDeFineChoose(); break;
-                        //case Act.DefineUnChoose: CompleteDeFineUnChoose(); break;
-                        //case Act.DefineId: CompleteDeFineId(); break;
-                        //case Act.SeclectionToWhite: CompleteSelectionToWhite(); break;
-                        //case Act.SeclectionToDark: CompleteSelectionToDark(); break;
-                        //case Act.DefineName: CompleteDeFineName(); break;
-                        //case Act.SelectionToGroup: CompleteSelectionGroup(); break;
-                        //case Act.DefineCustom: CompleteDefineCustom(); break;
+                        //case PreAct.DefinePoint: CompleteDeFinePoint(); break;
+                        //case PreAct.DefineChoose: CompleteDeFineChoose(); break;
+                        //case PreAct.DefineUnChoose: CompleteDeFineUnChoose(); break;
+                        //case PreAct.DefineId: CompleteDeFineId(); break;
+                        //case PreAct.SeclectionToWhite: CompleteSelectionToWhite(); break;
+                        //case PreAct.SeclectionToDark: CompleteSelectionToDark(); break;
+                        //case PreAct.DefineName: CompleteDeFineName(); break;
+                        //case PreAct.SelectionToGroup: CompleteSelectionGroup(); break;
+                        //case PreAct.DefineCustom: CompleteDefineCustom(); break;
                     }
                 }
             }
@@ -136,7 +223,7 @@ namespace ScanTemplate
 
         private void pictureBox1_MouseMove(object sender, MouseEventArgs e)
         {
-            //if (_ActiveEditMode && _ActiveEditArea != null)
+            //if (_PreActiveEditMode && _PreActiveEditArea != null)
             //{
             //    int index = 0;
             //    foreach (Rectangle r in _ControlRects)
@@ -164,7 +251,7 @@ namespace ScanTemplate
         }
         private void pictureBox1_MouseEnter(object sender, EventArgs e)
         {
-            if (m_act == Act.ZoomMouse)
+            if (m_PreAct == PreAct.ZoomMouse)
                 pictureBox1.Focus();
         }
         private void pictureBox1_MouseWheel(object sender, System.Windows.Forms.MouseEventArgs e)
@@ -203,16 +290,6 @@ namespace ScanTemplate
                     Rectangle r = _dd.CorrectRect;
                     DrawRect(e, _dd.CorrectRect);
                     DrawRects(e, _dd.ListFeature,_dd.CorrectRect.Location);
-                }
-
-                if (_ActiveEditMode && _ActiveEditArea != null)
-                {
-                    Pen pen1 = Pens.DarkBlue;
-                    Area I = _ActiveEditArea;
-                    Rectangle r = zoombox.ImgToBoxSelection(I.ImgArea);
-                    e.Graphics.DrawRectangle(pen1, r);
-                    _ControlRects = DetectImageTools.DetectCorrect.GetLrbRtb(r, 5, 5);
-                    e.Graphics.DrawRectangles(pen1, _ControlRects.ToArray());
                 }
                 if (_TestR.Width > 0 && _TestR.Height > 0)
                 {
@@ -273,13 +350,18 @@ namespace ScanTemplate
         private Rectangle m_Imgselection;
         private TreeNode m_tn;
         private MovetoTracker MT;
-        private Act m_act;
+        private PreAct m_PreAct;
         private Point crop_startpoint;
         private ZoomBox zoombox;
-        private Area _ActiveEditArea;
-        private bool _ActiveEditMode;
-        private List<Rectangle> _ControlRects;
         private Rectangle _TestR;
         private Bitmap _src;
+
+        ////////////
+        private int _PreActiveid;
+        private string _fullpath;
+        private string _dirName;
+        private List<string> _namelist;
+        private System.IO.FileStream _fs;
+        private DetectData _dd;
     }
 }

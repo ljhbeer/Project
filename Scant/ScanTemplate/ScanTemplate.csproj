@@ -55,34 +55,34 @@
   <ItemGroup>
     <Compile Include="AutoAngle.cs" />
     <Compile Include="AutoComputeXZT.cs" />
-    <Compile Include="FormChooseResult.cs">
+    <Compile Include="Form\FormChooseResult.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FormChooseResult.Designer.cs">
+    <Compile Include="Form\FormChooseResult.Designer.cs">
       <DependentUpon>FormChooseResult.cs</DependentUpon>
     </Compile>
-    <Compile Include="FormChoose.cs">
+    <Compile Include="Form\FormChoose.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FormChoose.Designer.cs">
+    <Compile Include="Form\FormChoose.Designer.cs">
       <DependentUpon>FormChoose.cs</DependentUpon>
     </Compile>
-    <Compile Include="FormOutTxtToImg.cs">
+    <Compile Include="Form\FormOutTxtToImg.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FormOutTxtToImg.Designer.cs">
+    <Compile Include="Form\FormOutTxtToImg.Designer.cs">
       <DependentUpon>FormOutTxtToImg.cs</DependentUpon>
     </Compile>
-    <Compile Include="FormPreDeal.cs">
+    <Compile Include="Form\FormPreDeal.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FormPreDeal.Designer.cs">
+    <Compile Include="Form\FormPreDeal.Designer.cs">
       <DependentUpon>FormPreDeal.cs</DependentUpon>
     </Compile>
-    <Compile Include="FormPreDealImage.cs">
+    <Compile Include="Form\FormPreDealImage.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FormPreDealImage.Designer.cs">
+    <Compile Include="Form\FormPreDealImage.Designer.cs">
       <DependentUpon>FormPreDealImage.cs</DependentUpon>
     </Compile>
     <Compile Include="FormYJ\ExportClassResult.cs" />
@@ -103,10 +103,10 @@
     <Compile Include="FormM.Designer.cs">
       <DependentUpon>FormM.cs</DependentUpon>
     </Compile>
-    <Compile Include="FormVerify.cs">
+    <Compile Include="Form\FormVerify.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FormVerify.Designer.cs">
+    <Compile Include="Form\FormVerify.Designer.cs">
       <DependentUpon>FormVerify.cs</DependentUpon>
     </Compile>
     <Compile Include="FormYJ\FormFullScreenYJ.cs">
@@ -156,19 +156,19 @@
     <Compile Include="ScanConfig.cs" />
     <Compile Include="tools\BitmapTools.cs" />
     <Compile Include="tools\DataTableTools.cs" />
-    <EmbeddedResource Include="FormChooseResult.resx">
+    <EmbeddedResource Include="Form\FormChooseResult.resx">
       <DependentUpon>FormChooseResult.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FormChoose.resx">
+    <EmbeddedResource Include="Form\FormChoose.resx">
       <DependentUpon>FormChoose.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FormOutTxtToImg.resx">
+    <EmbeddedResource Include="Form\FormOutTxtToImg.resx">
       <DependentUpon>FormOutTxtToImg.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FormPreDeal.resx">
+    <EmbeddedResource Include="Form\FormPreDeal.resx">
       <DependentUpon>FormPreDeal.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FormPreDealImage.resx">
+    <EmbeddedResource Include="Form\FormPreDealImage.resx">
       <DependentUpon>FormPreDealImage.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Form\FormInputComboBox.resx">
@@ -177,7 +177,7 @@
     <EmbeddedResource Include="FormM.resx">
       <DependentUpon>FormM.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FormVerify.resx">
+    <EmbeddedResource Include="Form\FormVerify.resx">
       <DependentUpon>FormVerify.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FormYJ\FormFullScreenYJ.resx">

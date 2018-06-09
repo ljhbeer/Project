@@ -40,11 +40,11 @@ namespace ScanTemplate
             m_Imgselection = new Rectangle(0, 0, 0, 0);
             zoombox = new ZoomBox();            
             
-            m_tn = new TreeNode();
-            if (t != null)
-                m_tn = t.GetTreeNode();           
-            treeView1.Nodes.Add(m_tn);
-            treeView1.ExpandAll();
+            //m_tn = new TreeNode();
+            //if (t != null)
+            //    m_tn = t.GetTreeNode();           
+            //treeView1.Nodes.Add(m_tn);
+            //treeView1.ExpandAll();
             Reset();
         }
         private void Reset()
@@ -53,8 +53,23 @@ namespace ScanTemplate
             _OriginWith = pictureBox1.Width;
             zoombox.Reset();
             m_PreAct = PreAct.None;
-            m_tn.Nodes.Clear();
+            //m_tn.Nodes.Clear();
             treeView1.Nodes.Clear();
+            m_tn = GetTreeNode();
+            treeView1.Nodes.Add(m_tn);
+            treeView1.ExpandAll();
+        }
+        public TreeNode GetTreeNode()
+        {
+            TreeNode root = new TreeNode();
+            foreach (string s in new string[] { "动态检测左上角区域", "特征点检测区域", "检测区域" })
+            {
+                TreeNode opt = new TreeNode();
+                opt.Name = opt.Text = s;
+                root.Nodes.Add(opt);
+            }
+            root.Text = "网上阅卷-预处理试卷";
+            return root;
         }
         private void InitSrc( )
         {
@@ -136,7 +151,7 @@ namespace ScanTemplate
             click.Checked = !click.Checked;
             //MT.ClearEvent();
             if (m_PreAct == PreAct.DefineDetectArea || m_PreAct == PreAct.DefineFeaturePointDetectArea || 
-                m_PreAct == PreAct.DefineScanLTDetectArea || m_PreAct == PreAct.AutoDetect 
+                m_PreAct == PreAct.DefineScanLTDetectArea 
                )
             {
                 MT.StartDraw(true);
@@ -206,19 +221,81 @@ namespace ScanTemplate
                 {
                     switch (m_PreAct)
                     {
-                        //case PreAct.DefinePoint: CompleteDeFinePoint(); break;
-                        //case PreAct.DefineChoose: CompleteDeFineChoose(); break;
-                        //case PreAct.DefineUnChoose: CompleteDeFineUnChoose(); break;
-                        //case PreAct.DefineId: CompleteDeFineId(); break;
-                        //case PreAct.SeclectionToWhite: CompleteSelectionToWhite(); break;
-                        //case PreAct.SeclectionToDark: CompleteSelectionToDark(); break;
-                        //case PreAct.DefineName: CompleteDeFineName(); break;
-                        //case PreAct.SelectionToGroup: CompleteSelectionGroup(); break;
-                        //case PreAct.DefineCustom: CompleteDefineCustom(); break;
+                        case PreAct.DefineDetectArea: CompleteDeFineDetectArea(); break;
+                        case PreAct.DefineFeaturePointDetectArea: CompleteDefineFeaturePointDetectArea(); break;
+                        case PreAct.DefineScanLTDetectArea: CompleteDefineScanLTDetectArea(); break;
                     }
                 }
             }
             pictureBox1.Invalidate();
+        }
+
+        private void CompleteDefineScanLTDetectArea()
+        {
+            Rectangle m_Imgselection = zoombox.BoxToImgSelection(MT.Selection);
+            String keyname = "动态检测左上角区域";
+            //if (!ExistDeFineSelection(keyname))
+            {
+                int cnt = m_tn.Nodes[keyname].GetNodeCount(false) + 1;
+                string nodename = "左上角-" + m_Imgselection.ToString("-"); ;
+                if (cnt == 1)
+                {
+                    TreeNode t = new TreeNode();
+                    String name = nodename;
+                    t.Name = nodename;
+                    t.Text = nodename ;
+                    t.Tag = m_Imgselection;
+                    m_tn.Nodes[keyname].Nodes.Add(t);                    
+                }
+                else
+                {
+                    TreeNode t = m_tn.Nodes[keyname].Nodes[0];
+                    t.Tag = m_Imgselection;
+                }
+            }
+        }
+
+        private void CompleteDefineFeaturePointDetectArea()
+        {
+            Rectangle m_Imgselection = zoombox.BoxToImgSelection(MT.Selection);
+            String keyname = "特征点检测区域";
+            //if (!ExistDeFineSelection(keyname))
+            {
+                TreeNode t = new TreeNode();
+                int cnt = m_tn.Nodes[keyname].GetNodeCount(false) + 1;
+                string nodename = "特征点-" + cnt+"|"+ m_Imgselection.ToString("-");;
+               
+                String name = nodename;
+                t.Name = nodename;
+                t.Text = nodename;
+                t.Tag = m_Imgselection;
+                m_tn.Nodes[keyname].Nodes.Add(t);
+            }
+        }
+
+        private void CompleteDeFineDetectArea()
+        {
+            Rectangle m_Imgselection = zoombox.BoxToImgSelection(MT.Selection);
+            String keyname = "检测区域";
+            //if (!ExistDeFineSelection(keyname))
+            {
+                int cnt = m_tn.Nodes[keyname].GetNodeCount(false) + 1;
+                string nodename = "检测区域-" + m_Imgselection.ToString("-");
+                if (cnt == 1)
+                {
+                    TreeNode t = new TreeNode();
+                    String name = nodename;
+                    t.Name = nodename;
+                    t.Text = nodename;
+                    t.Tag = m_Imgselection;
+                    m_tn.Nodes[keyname].Nodes.Add(t);
+                }
+                else
+                {
+                    TreeNode t = m_tn.Nodes[keyname].Nodes[0];
+                    t.Tag = m_Imgselection;
+                }
+            }
         }
 
         private void pictureBox1_MouseMove(object sender, MouseEventArgs e)
@@ -285,6 +362,19 @@ namespace ScanTemplate
                 Brush white = Brushes.White;
                 Brush Red = Brushes.Red;
                 Font font = DefaultFont;
+                if (m_tn.Nodes.Count != 0)
+                {
+                   
+                    foreach (TreeNode tt in m_tn.Nodes)
+                        foreach (TreeNode t in tt.Nodes)
+                        {
+                            if (t.Tag != null)
+                            {
+                                Rectangle r = (Rectangle)(t.Tag);
+                                e.Graphics.DrawRectangle(Pens.Red, zoombox.ImgToBoxSelection(r));
+                            }
+                        }
+                }
                 if (_dd != null)
                 {
                     Rectangle r = _dd.CorrectRect;

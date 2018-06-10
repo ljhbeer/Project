@@ -10,6 +10,7 @@ using Tools;
 using MovetoCTL;
 using ARTemplate;
 using System.IO;
+using Newtonsoft.Json;
 
 namespace ScanTemplate
 {
@@ -28,6 +29,7 @@ namespace ScanTemplate
             _dirName = dir.DirName;
             _namelist = dir.ImgList();
             _PreActiveid = 0;
+            _pp = new PrePapers();
             _fs = null;
             Init(null);
             InitSrc();
@@ -86,6 +88,41 @@ namespace ScanTemplate
             MT = new MovetoCTL.MovetoTracker(pictureBox1);
             MT.MouseUp += new MouseEventHandler(pictureBox1_MouseUp);
             MT.StartDraw(true);
+        }
+        public PrePapers PreScan()
+        {
+            _pp.Clear();
+            foreach (string s in _namelist)
+            {
+                if (File.Exists(s))
+                    _pp.AddPrePaper(PreScan(s));
+            }
+            return _pp;
+        }
+        private PrePaper PreScan(string s)
+        {
+            PrePaper pp = new PrePaper(s);
+            using (FileStream fs = new System.IO.FileStream(PreActiveFileName, System.IO.FileMode.Open, System.IO.FileAccess.Read))
+            {
+                Bitmap src = (Bitmap)System.Drawing.Image.FromStream(_fs);
+                Rectangle area = new Rectangle(new Point(), src.Size);
+                List<int> inflaterate = new List<int>() { 30, _src.Width / 5};
+                int index = 0;
+                int circlecount = inflaterate.Count;
+                for (int i = 0; i < circlecount; i++)
+                {
+                    area.Inflate(-_src.Width / inflaterate[index], -_src.Height / inflaterate[index]);
+                    DetectData dd = DetectImageTools.DetectImg(_src, area, new Rectangle());
+                    if (dd.Detected)
+                    {
+                        pp.Detectdata = dd;
+                        break;
+                    }
+                    index++;
+                    index %= circlecount;
+                }
+            }
+            return pp;
         }
         private void FormPreScan_Load(object sender, EventArgs e)
         {
@@ -181,6 +218,7 @@ namespace ScanTemplate
         private void toolStripButtonAutDetect_Click(object sender, EventArgs e)
         {
             if (!((ToolStripButton)sender).Checked)
+                ((ToolStripButton)sender).Checked = false;
                 m_PreAct = PreAct.AutoDetect;
             toolStripButton_Click(sender, e);
         }
@@ -197,24 +235,28 @@ namespace ScanTemplate
         private void NinthDetectToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (!((ToolStripButton)sender).Checked)
+                ((ToolStripButton)sender).Checked = false;
                 m_PreAct = PreAct.NinthDetect;
             toolStripButton_Click(sender, e);
         }
         private void SixteenthDetectToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (!((ToolStripButton)sender).Checked)
+                ((ToolStripButton)sender).Checked = false;
                 m_PreAct = PreAct.SixteenthDetect;
             toolStripButton_Click(sender, e);
         }
         private void toolStripButtonPreDetect_Click(object sender, EventArgs e)
         {
             if (!((ToolStripButton)sender).Checked)
+                ((ToolStripButton)sender).Checked = false;
                 m_PreAct = PreAct.PreDetect;
             toolStripButton_Click(sender, e);
         }
         private void toolStripButtonNextImage_Click(object sender, EventArgs e)
         {
             if (!((ToolStripButton)sender).Checked)
+                ((ToolStripButton)sender).Checked = false;
                 m_PreAct = PreAct.NextImage;
             toolStripButton_Click(sender, e);
         }
@@ -400,7 +442,7 @@ namespace ScanTemplate
                     //_dd = DetectImageTools.DetectCorrect.ConstructDetectData(_ListFeature);
                     Bitmap rgb = orgsrc.Clone(ListFeature[0], orgsrc.PixelFormat);
                     //ss =  "\\img" + s;
-                    rgb.Save(ss);
+                    //rgb.Save(ss);
                     fs.Close();
                 }
 
@@ -435,8 +477,7 @@ namespace ScanTemplate
             //_autororate.DoScan();
             //_bScan = false;
         }
-
-
+        
         private Rectangle ReadDetectArea(String keyname = "检测范围")
         {
             int cnt = m_tn.Nodes[keyname].GetNodeCount(false);
@@ -460,12 +501,15 @@ namespace ScanTemplate
                 return new List<Rectangle>();
             }
             List<Rectangle> areas = new List<Rectangle>();
-            foreach (TreeNode tn in treeView1.SelectedNode.Nodes)
+            foreach (TreeNode tn in m_tn.Nodes[keyname].Nodes)
             {
-                Rectangle  DetectArea = (Rectangle)tn.Tag;
-                if (DetectArea.Height == 0)
-                    DetectArea.Width = 0;
-                areas.Add(DetectArea);
+                if (tn.Tag != null)
+                {
+                    Rectangle DetectArea = (Rectangle)tn.Tag;
+                    if (DetectArea.Height == 0)
+                        DetectArea.Width = 0;
+                    areas.Add(DetectArea);
+                }
             }
             TreeNode t = m_tn.Nodes[keyname].Nodes[0];
             return areas;
@@ -715,7 +759,6 @@ namespace ScanTemplate
         private Point crop_startpoint;
         private ZoomBox zoombox;
         private Bitmap _src;
-
         ////////////
         private int _PreActiveid;
         private string _fullpath;
@@ -723,14 +766,13 @@ namespace ScanTemplate
         private List<string> _namelist;
         private System.IO.FileStream _fs;
         private DetectData _dd;
-
         ////////
         private ShowImageMode _sim;
         private DetectMode _dtm;
         private DetectMode _dtm2;
         ////////
-        private AutoAngle _angle;
         private List<Rectangle> _ListFeature;
+        private PrePapers _pp;
         private void InitListFeature(DetectData dd)
         {
             _ListFeature = dd.ListFeature.Select(r => { r.Offset(dd.CorrectRect.Location); return r; }).ToList();
@@ -814,9 +856,99 @@ namespace ScanTemplate
                 pictureBox1.Invalidate();
             }
         }
-
-
-
     }
-
+    public class PrePapers
+    {
+        public PrePapers()
+        {
+            _PrePapers = new List<PrePaper>();
+        }
+        public PrePapers(List<PrePaper> PrePapers)
+        {
+            _PrePapers = new List<PrePaper>();
+            foreach (PrePaper p in PrePapers)
+                AddPrePaper(p);
+        }
+        public void AddPrePaper(PrePaper p)
+        {
+            _PrePapers.Add(p);
+        }
+        public void SavePrePapers(string Datafilename)
+        {
+            string str = Tools.JsonFormatTool.ConvertJsonString(
+                Newtonsoft.Json.JsonConvert.SerializeObject(_PrePapers));
+            File.WriteAllText(Datafilename, str);
+        }
+        public void LoadPrePapers(string Datafilename)
+        {
+            Clear();
+            _PrePapers = 
+            Newtonsoft.Json.JsonConvert.DeserializeObject<List<PrePaper>>(File.ReadAllText(Datafilename)); 
+        }
+        public void Clear()
+        {
+            _PrePapers.Clear();
+        }
+        public bool AllDetected()
+        {
+            return !_PrePapers.Exists(r => !r.Detected());
+        }
+        [JsonProperty]
+        private List<PrePaper> _PrePapers;
+        public List<PrePaper> PrePaperList { get { return _PrePapers; } }
+    }
+    [JsonObject(MemberSerialization.OptOut)]
+    public class PrePaper
+    {
+        public PrePaper(string filename)
+        {
+            this._imgfilename = filename;
+            Detectdata = null;
+        }
+        public void SetNewFileName(string imgfilename)
+        {
+            _imgfilename = imgfilename;
+        }
+        public string ToJsonString()
+        {
+            return Tools.JsonFormatTool.ConvertJsonString(Newtonsoft.Json.JsonConvert.SerializeObject(this));
+        }
+        public bool Detected()
+        {
+            if (Detectdata == null)
+                return false;
+            return  Detectdata.Detected;
+        }
+        [JsonIgnore]
+        public string ImgFilename { get { return _imgfilename; } }
+        [JsonIgnore]
+        public Bitmap Src
+        {
+            get
+            {
+                if (_src == null)
+                {
+                    if (System.IO.File.Exists(_imgfilename))
+                        _src = (Bitmap)Bitmap.FromFile(_imgfilename);
+                }
+                return _src;
+            }
+        }
+        [JsonIgnore]
+        public List<Rectangle> listFeatures
+        {
+            get
+            {
+                if (Detectdata == null)
+                    return new List<Rectangle>();
+                return Detectdata.ListFeature;
+            }
+        }
+        [JsonProperty]
+        public DetectData Detectdata { get; set; }
+        [JsonProperty]
+        private string _imgfilename;
+        [JsonIgnore]
+        private Bitmap _src;
+    }
 }

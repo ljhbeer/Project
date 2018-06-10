@@ -90,6 +90,56 @@ namespace ScanTemplate
             List<string> nameList = dir.ImgList();
             if (nameList.Count > 0)
             {
+                bool ExistOKScanJson = false;
+                FormPreScan fps = new FormPreScan(dir);
+                PrePapers prepapers = new PrePapers();
+                if (File.Exists(dir.FullPath + ".prescanpapers.json"))
+                {
+                    prepapers.LoadPrePapers(dir.FullPath + ".prescanpapers.json");
+                    ExistOKScanJson = ValidPreScanData(nameList, prepapers);
+                    if (!ExistOKScanJson)
+                        File.Delete(dir.FullPath + ".prescanpapers.json");
+                }
+                if (!ExistOKScanJson)
+                {
+                    prepapers = fps.PreScan();
+                    if (prepapers.AllDetected()) // 已成功预扫描
+                    {
+                        prepapers.SavePrePapers(dir.FullPath + ".prescanpapers.json");
+                        ExistOKScanJson = true;
+                    }
+                }
+                if (ExistOKScanJson) // 已成功预扫描
+                {
+                    _sc.Templateshow = new TemplateShow(dir.FullPath, dir.DirName, nameList[0], prepapers.PrePaperList[0].Detectdata);
+                    _sc.Templateshow.Template.FileName = _sc.Baseconfig.TemplatePath;
+                    if (_sc.Templateshow.OK)
+                    {
+                        this.Hide();
+                        FormTemplate f = new FormTemplate(_sc.Templateshow);
+                        f.ShowDialog();
+                        f.Clear();
+                        f = null;
+                        this.Show();
+                    }
+                }
+                else
+                {
+                    this.Hide();
+                    if (fps.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                    {
+                    }
+                    else
+                    {
+                        MessageBox.Show("预处理失败");
+                    }
+                    this.Show();
+                }
+            }
+            return;
+            //
+            if (nameList.Count > 0)
+            {
                 if (checkBoxPreScanMode.Checked)
                 {
                     this.Hide();
@@ -126,6 +176,12 @@ namespace ScanTemplate
                     }
                 }
             }
+        }
+
+        private static bool ValidPreScanData(List<string> nameList, PrePapers prepapers)
+        {
+            bool ValidPreScan = prepapers.PrePaperList.Exists(r => !nameList.Contains(r.ImgFilename));
+            return !ValidPreScan;
         }
         private void buttonMatchTemplate_Click(object sender, EventArgs e)
         {

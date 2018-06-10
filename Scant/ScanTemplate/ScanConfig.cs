@@ -275,12 +275,20 @@ namespace ScanTemplate
     public class TemplateShow
     {
         private string _imgfilename;
-        //private MyDetectFeatureRectAngle _dr;
         private Template _artemplate;
         private string _fullpath;
         private string _dirname;
         private TemplateInfo ti;
-    
+
+        public TemplateShow(string fullpath, string dirname, string imgfilename, DetectData dd )
+        {
+            this._fullpath = fullpath;
+            this._imgfilename = imgfilename;
+            this._dirname = dirname;
+            this.OK = true;
+            _artemplate = new Template(dd.ListFeature, dd.CorrectRect);
+        }
+
         public TemplateShow(string fullpath,string dirname, string imgfilename, TemplateInfo ti=null,bool savefilename=false)
         {
             this._fullpath = fullpath;

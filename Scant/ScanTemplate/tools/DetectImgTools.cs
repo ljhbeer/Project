@@ -274,5 +274,24 @@ namespace  Tools
         }
         public Rectangle CorrectRect { get; set; }
         public List<Rectangle> ListFeature { get; set; }
+        public bool Detected
+        {
+            get
+            {
+                if (CorrectRect != null && ListFeature != null)
+                {
+                    if (CorrectRect.Width > 0 && CorrectRect.Height > 0)
+                    {
+                        foreach (Rectangle r in ListFeature)
+                        {
+                            if (r.Width == 0 || r.Height == 0)
+                                return false;
+                        }
+                        return true;
+                    }
+                }
+                return false;
+            }
+        }
     }    
 }

@@ -55,7 +55,8 @@
             this.toolStripDropDownButtonAutoDetect = new System.Windows.Forms.ToolStripDropDownButton();
             this.NinthDetectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.SixteenthDetectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripComboBox1 = new System.Windows.Forms.ToolStripComboBox();
+            this.toolStripComboBoxImageMode = new System.Windows.Forms.ToolStripComboBox();
+            this.toolStripComboBoxShowLineMode = new System.Windows.Forms.ToolStripComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainerA)).BeginInit();
             this.splitContainerA.Panel1.SuspendLayout();
             this.splitContainerA.Panel2.SuspendLayout();
@@ -111,7 +112,7 @@
             // 
             this.splitContainerL.Panel2.Controls.Add(this.panelLB);
             this.splitContainerL.Size = new System.Drawing.Size(197, 636);
-            this.splitContainerL.SplitterDistance = 516;
+            this.splitContainerL.SplitterDistance = 515;
             this.splitContainerL.TabIndex = 0;
             // 
             // panelLT
@@ -120,7 +121,7 @@
             this.panelLT.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelLT.Location = new System.Drawing.Point(0, 0);
             this.panelLT.Name = "panelLT";
-            this.panelLT.Size = new System.Drawing.Size(197, 516);
+            this.panelLT.Size = new System.Drawing.Size(197, 515);
             this.panelLT.TabIndex = 0;
             // 
             // tableLayoutPanel1
@@ -135,7 +136,7 @@
             this.tableLayoutPanel1.RowCount = 2;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(197, 516);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(197, 515);
             this.tableLayoutPanel1.TabIndex = 1;
             // 
             // treeView1
@@ -143,8 +144,9 @@
             this.treeView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.treeView1.Location = new System.Drawing.Point(3, 28);
             this.treeView1.Name = "treeView1";
-            this.treeView1.Size = new System.Drawing.Size(191, 485);
+            this.treeView1.Size = new System.Drawing.Size(191, 484);
             this.treeView1.TabIndex = 10;
+            this.treeView1.KeyUp += new System.Windows.Forms.KeyEventHandler(this.treeView1_KeyUp);
             // 
             // textBoxMessage
             // 
@@ -161,7 +163,7 @@
             this.panelLB.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelLB.Location = new System.Drawing.Point(0, 0);
             this.panelLB.Name = "panelLB";
-            this.panelLB.Size = new System.Drawing.Size(197, 116);
+            this.panelLB.Size = new System.Drawing.Size(197, 117);
             this.panelLB.TabIndex = 0;
             // 
             // splitContainerR
@@ -179,7 +181,7 @@
             // 
             this.splitContainerR.Panel2.Controls.Add(this.panelRB);
             this.splitContainerR.Size = new System.Drawing.Size(751, 636);
-            this.splitContainerR.SplitterDistance = 572;
+            this.splitContainerR.SplitterDistance = 571;
             this.splitContainerR.TabIndex = 0;
             // 
             // panelRT
@@ -189,7 +191,7 @@
             this.panelRT.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelRT.Location = new System.Drawing.Point(0, 0);
             this.panelRT.Name = "panelRT";
-            this.panelRT.Size = new System.Drawing.Size(751, 572);
+            this.panelRT.Size = new System.Drawing.Size(751, 571);
             this.panelRT.TabIndex = 0;
             // 
             // pictureBox1
@@ -212,7 +214,7 @@
             this.panelRB.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelRB.Location = new System.Drawing.Point(0, 0);
             this.panelRB.Name = "panelRB";
-            this.panelRB.Size = new System.Drawing.Size(751, 60);
+            this.panelRB.Size = new System.Drawing.Size(751, 61);
             this.panelRB.TabIndex = 0;
             // 
             // toolStrip1
@@ -230,7 +232,7 @@
             this.toolStripButtonNextImage});
             this.toolStrip1.Location = new System.Drawing.Point(3, 25);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(629, 25);
+            this.toolStrip1.Size = new System.Drawing.Size(658, 25);
             this.toolStrip1.TabIndex = 3;
             this.toolStrip1.Text = "toolStrip1";
             // 
@@ -240,7 +242,7 @@
             this.toolStripButtonDefineDetectArea.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonDefineDetectArea.Image")));
             this.toolStripButtonDefineDetectArea.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButtonDefineDetectArea.Name = "toolStripButtonDefineDetectArea";
-            this.toolStripButtonDefineDetectArea.Size = new System.Drawing.Size(81, 22);
+            this.toolStripButtonDefineDetectArea.Size = new System.Drawing.Size(84, 22);
             this.toolStripButtonDefineDetectArea.Text = "定义检测范围";
             this.toolStripButtonDefineDetectArea.Click += new System.EventHandler(this.toolStripButtonDefineDetectArea_Click);
             // 
@@ -250,7 +252,7 @@
             this.toolStripButtonDefineFeaturePointDetectArea.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonDefineFeaturePointDetectArea.Image")));
             this.toolStripButtonDefineFeaturePointDetectArea.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButtonDefineFeaturePointDetectArea.Name = "toolStripButtonDefineFeaturePointDetectArea";
-            this.toolStripButtonDefineFeaturePointDetectArea.Size = new System.Drawing.Size(117, 22);
+            this.toolStripButtonDefineFeaturePointDetectArea.Size = new System.Drawing.Size(120, 22);
             this.toolStripButtonDefineFeaturePointDetectArea.Text = "定义特征点检测范围";
             this.toolStripButtonDefineFeaturePointDetectArea.Click += new System.EventHandler(this.toolStripButtonDefineFeaturePointDetectArea_Click);
             // 
@@ -260,7 +262,7 @@
             this.toolStripButtonScanLTDetectArea.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonScanLTDetectArea.Image")));
             this.toolStripButtonScanLTDetectArea.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButtonScanLTDetectArea.Name = "toolStripButtonScanLTDetectArea";
-            this.toolStripButtonScanLTDetectArea.Size = new System.Drawing.Size(141, 22);
+            this.toolStripButtonScanLTDetectArea.Size = new System.Drawing.Size(144, 22);
             this.toolStripButtonScanLTDetectArea.Text = "定义动态检测左上角范围";
             this.toolStripButtonScanLTDetectArea.Click += new System.EventHandler(this.toolStripButtonDefineScanLTDetectArea_Click);
             // 
@@ -270,7 +272,7 @@
             this.toolStripButtonZoomout.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonZoomout.Image")));
             this.toolStripButtonZoomout.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButtonZoomout.Name = "toolStripButtonZoomout";
-            this.toolStripButtonZoomout.Size = new System.Drawing.Size(27, 22);
+            this.toolStripButtonZoomout.Size = new System.Drawing.Size(25, 22);
             this.toolStripButtonZoomout.Text = " - ";
             this.toolStripButtonZoomout.Click += new System.EventHandler(this.toolStripButtonZoomout_Click);
             // 
@@ -291,7 +293,7 @@
             this.toolStripButtonZoomMouse.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonZoomMouse.Image")));
             this.toolStripButtonZoomMouse.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButtonZoomMouse.Name = "toolStripButtonZoomMouse";
-            this.toolStripButtonZoomMouse.Size = new System.Drawing.Size(33, 22);
+            this.toolStripButtonZoomMouse.Size = new System.Drawing.Size(46, 22);
             this.toolStripButtonZoomMouse.Tag = "zoommouse";
             this.toolStripButtonZoomMouse.Text = "Zoom";
             this.toolStripButtonZoomMouse.Click += new System.EventHandler(this.toolStripButtonZoomMouse_Click);
@@ -302,7 +304,7 @@
             this.toolStripButtonAutDetect.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonAutDetect.Image")));
             this.toolStripButtonAutDetect.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButtonAutDetect.Name = "toolStripButtonAutDetect";
-            this.toolStripButtonAutDetect.Size = new System.Drawing.Size(57, 22);
+            this.toolStripButtonAutDetect.Size = new System.Drawing.Size(60, 22);
             this.toolStripButtonAutDetect.Text = "自动检测";
             this.toolStripButtonAutDetect.Click += new System.EventHandler(this.toolStripButtonAutDetect_Click);
             // 
@@ -312,7 +314,7 @@
             this.toolStripButtonPreDetect.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonPreDetect.Image")));
             this.toolStripButtonPreDetect.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButtonPreDetect.Name = "toolStripButtonPreDetect";
-            this.toolStripButtonPreDetect.Size = new System.Drawing.Size(45, 22);
+            this.toolStripButtonPreDetect.Size = new System.Drawing.Size(48, 22);
             this.toolStripButtonPreDetect.Text = "预检测";
             this.toolStripButtonPreDetect.Click += new System.EventHandler(this.toolStripButtonPreDetect_Click);
             // 
@@ -322,7 +324,7 @@
             this.toolStripButtonNextImage.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonNextImage.Image")));
             this.toolStripButtonNextImage.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButtonNextImage.Name = "toolStripButtonNextImage";
-            this.toolStripButtonNextImage.Size = new System.Drawing.Size(93, 22);
+            this.toolStripButtonNextImage.Size = new System.Drawing.Size(96, 22);
             this.toolStripButtonNextImage.Text = "下一张图为模版";
             this.toolStripButtonNextImage.Click += new System.EventHandler(this.toolStripButtonNextImage_Click);
             // 
@@ -350,10 +352,11 @@
             this.toolStrip2.Dock = System.Windows.Forms.DockStyle.None;
             this.toolStrip2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripDropDownButtonAutoDetect,
-            this.toolStripComboBox1});
+            this.toolStripComboBoxImageMode,
+            this.toolStripComboBoxShowLineMode});
             this.toolStrip2.Location = new System.Drawing.Point(3, 0);
             this.toolStrip2.Name = "toolStrip2";
-            this.toolStrip2.Size = new System.Drawing.Size(201, 25);
+            this.toolStrip2.Size = new System.Drawing.Size(327, 25);
             this.toolStrip2.TabIndex = 4;
             // 
             // toolStripDropDownButtonAutoDetect
@@ -365,29 +368,40 @@
             this.toolStripDropDownButtonAutoDetect.Image = ((System.Drawing.Image)(resources.GetObject("toolStripDropDownButtonAutoDetect.Image")));
             this.toolStripDropDownButtonAutoDetect.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripDropDownButtonAutoDetect.Name = "toolStripDropDownButtonAutoDetect";
-            this.toolStripDropDownButtonAutoDetect.Size = new System.Drawing.Size(66, 22);
+            this.toolStripDropDownButtonAutoDetect.Size = new System.Drawing.Size(69, 22);
             this.toolStripDropDownButtonAutoDetect.Text = "动态检测";
             // 
             // NinthDetectToolStripMenuItem
             // 
             this.NinthDetectToolStripMenuItem.Name = "NinthDetectToolStripMenuItem";
-            this.NinthDetectToolStripMenuItem.Size = new System.Drawing.Size(118, 22);
+            this.NinthDetectToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
             this.NinthDetectToolStripMenuItem.Text = "九分法";
             // 
             // SixteenthDetectToolStripMenuItem
             // 
             this.SixteenthDetectToolStripMenuItem.Name = "SixteenthDetectToolStripMenuItem";
-            this.SixteenthDetectToolStripMenuItem.Size = new System.Drawing.Size(118, 22);
+            this.SixteenthDetectToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
             this.SixteenthDetectToolStripMenuItem.Text = "十六分法";
             // 
-            // toolStripComboBox1
+            // toolStripComboBoxImageMode
             // 
-            this.toolStripComboBox1.Items.AddRange(new object[] {
+            this.toolStripComboBoxImageMode.Items.AddRange(new object[] {
             "显示全图模式",
             "显示Correct图"});
-            this.toolStripComboBox1.Name = "toolStripComboBox1";
-            this.toolStripComboBox1.Size = new System.Drawing.Size(121, 25);
-            this.toolStripComboBox1.Text = "图片显示模式";
+            this.toolStripComboBoxImageMode.Name = "toolStripComboBoxImageMode";
+            this.toolStripComboBoxImageMode.Size = new System.Drawing.Size(121, 25);
+            this.toolStripComboBoxImageMode.Text = "图片显示模式";
+            // 
+            // toolStripComboBoxShowLineMode
+            // 
+            this.toolStripComboBoxShowLineMode.Items.AddRange(new object[] {
+            "全部",
+            "检测范围",
+            "特征点范围",
+            "左上角范围"});
+            this.toolStripComboBoxShowLineMode.Name = "toolStripComboBoxShowLineMode";
+            this.toolStripComboBoxShowLineMode.Size = new System.Drawing.Size(121, 25);
+            this.toolStripComboBoxShowLineMode.Text = "检测模式";
             // 
             // FormPreScan
             // 
@@ -453,9 +467,10 @@
         private System.Windows.Forms.ToolStripButton toolStripButtonZoomin;
         private System.Windows.Forms.ToolStripButton toolStripButtonZoomMouse;
         private System.Windows.Forms.ToolStrip toolStrip2;
-        private System.Windows.Forms.ToolStripComboBox toolStripComboBox1;
+        private System.Windows.Forms.ToolStripComboBox toolStripComboBoxImageMode;
         private System.Windows.Forms.ToolStripDropDownButton toolStripDropDownButtonAutoDetect;
         private System.Windows.Forms.ToolStripMenuItem NinthDetectToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem SixteenthDetectToolStripMenuItem;
+        private System.Windows.Forms.ToolStripComboBox toolStripComboBoxShowLineMode;
     }
 }

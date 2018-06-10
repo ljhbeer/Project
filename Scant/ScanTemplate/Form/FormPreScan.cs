@@ -15,7 +15,7 @@ namespace ScanTemplate
 {
     [Flags]
     enum PreAct : short { None = 0, DefineDetectArea = 1, DefineFeaturePointDetectArea = 2, DefineScanLTDetectArea = 4, AutoDetect = 8, ShowImageMode = 16, NinthDetect, SixteenthDetect, PreDetect, NextImage, ZoomMouse };
-    
+    enum ShowImageMode : short { ShowFullImageMode, ShowCorrectImageMode }
     public partial class FormPreScan : Form
     {
         public FormPreScan(UnScan dir)
@@ -91,13 +91,16 @@ namespace ScanTemplate
         }
         private void FormPreScan_Load(object sender, EventArgs e)
         {
-            Rectangle area = new Rectangle(new Point(), _src.Size);          
+            Rectangle area = new Rectangle(new Point(), _src.Size);
             Rectangle cr = new Rectangle();
+            area.Inflate(-_src.Width / 30, -_src.Height / 30);
             DetectData dd = DetectImageTools.DetectImg(_src, area, cr);
             if (dd.CorrectRect.Width > 0)
             {
                 _dd = dd;
             }
+            toolStripComboBoxShowLineMode.SelectedIndex = 0;
+            toolStripComboBoxImageMode.SelectedIndex = 0;
         }
         public string PreActiveFileName
         {
@@ -119,7 +122,6 @@ namespace ScanTemplate
             Image _orgsrc = (Bitmap)System.Drawing.Image.FromStream(_fs);
             return _orgsrc;
         }
-
 
         private void toolStripButtonZoomin_Click(object sender, EventArgs e)
         {
@@ -149,13 +151,15 @@ namespace ScanTemplate
                 m_PreAct = PreAct.None;
             ShowMessage("PreAct:" + m_PreAct);
             click.Checked = !click.Checked;
-            //MT.ClearEvent();
-            if (m_PreAct == PreAct.DefineDetectArea || m_PreAct == PreAct.DefineFeaturePointDetectArea || 
-                m_PreAct == PreAct.DefineScanLTDetectArea 
+            if (m_PreAct == PreAct.DefineDetectArea || m_PreAct == PreAct.DefineFeaturePointDetectArea ||
+                m_PreAct == PreAct.DefineScanLTDetectArea
                )
             {
                 MT.StartDraw(true);
-                //MT.completevent += CompleteSelection;
+            }
+            else
+            {
+                CompleteSelection(true);
             }
         }
         private void toolStripButtonDefineDetectArea_Click(object sender, EventArgs e)
@@ -212,6 +216,7 @@ namespace ScanTemplate
                 m_PreAct = PreAct.NextImage;
             toolStripButton_Click(sender, e);
         }
+
         private void CompleteSelection(bool bcomplete)
         {
             if (bcomplete)
@@ -224,12 +229,17 @@ namespace ScanTemplate
                         case PreAct.DefineDetectArea: CompleteDeFineDetectArea(); break;
                         case PreAct.DefineFeaturePointDetectArea: CompleteDefineFeaturePointDetectArea(); break;
                         case PreAct.DefineScanLTDetectArea: CompleteDefineScanLTDetectArea(); break;
+                        case PreAct.AutoDetect: CompleteAutoDetect(); break;
+                        case PreAct.ShowImageMode: CompleteShowImageMode(); break;
+                        case PreAct.NinthDetect: CompleteNinthDetect(); break;
+                        case PreAct.SixteenthDetect: CompleteSixteenthDetect(); break;
+                        case PreAct.NextImage: CompleteNextImage(); break;
+                        case PreAct.PreDetect: CompletePreDetect(); break;
                     }
                 }
             }
             pictureBox1.Invalidate();
         }
-
         private void CompleteDefineScanLTDetectArea()
         {
             Rectangle m_Imgselection = zoombox.BoxToImgSelection(MT.Selection);
@@ -254,7 +264,6 @@ namespace ScanTemplate
                 }
             }
         }
-
         private void CompleteDefineFeaturePointDetectArea()
         {
             Rectangle m_Imgselection = zoombox.BoxToImgSelection(MT.Selection);
@@ -272,7 +281,6 @@ namespace ScanTemplate
                 m_tn.Nodes[keyname].Nodes.Add(t);
             }
         }
-
         private void CompleteDeFineDetectArea()
         {
             Rectangle m_Imgselection = zoombox.BoxToImgSelection(MT.Selection);
@@ -297,7 +305,187 @@ namespace ScanTemplate
                 }
             }
         }
+        private void CompletePreDetect()
+        {
+            // 检测所有文件
 
+            //if (list.Count == 0) return;
+            //Bitmap _src = (Bitmap)pictureBox1.Image;
+            ////_src = _src.Clone(m_Imgselection,_src.PixelFormat);
+            //DetectData dd;
+            //try
+            //{
+            //    dd = DetectImageTools.DetectImg(_src, m_Imgselection);
+            //    dd = DetectImageTools.DetectCorrect.ReDetectCorrectImg(_src, dd);
+            //    double _dangle = AutoAngle.ComputeAngle(dd.ListFeature[0].Location, dd.ListFeature[1].Location);
+            //    double angle = -_dangle * 180 / Math.PI;
+            //    //Rorate
+            //    Bitmap _src1 = Tools.BitmapRotateTools.Rotate(_src, (float)angle);
+            //    _src1 = ConvertFormat.Convert(_src1, PixelFormat.Format1bppIndexed, false);
+
+            //    Rectangle Rect = dd.CorrectRect;
+            //    Rect.Inflate(40, 40);
+            //    Rect.Intersect(m_Imgselection);
+            //    dd = DetectImageTools.DetectImg(_src, Rect);
+            //    //dd = DetectImageTools.DetectCorrect.ReDetectCorrectImg(_src, dd);
+            //}
+            //catch
+            //{
+            //    return;
+            //}
+            //if (dd.CorrectRect.Width == 0) return;
+
+            //_autororate = new AutoRorate(dd.CorrectRect, list, _ActivePath, checkBoxVertical.Checked);
+            //_autororate.DgShowMsg = new DelegateShowMsg(ThreadShowMsg);
+            //_autororate.DoScan();
+            //_bScan = false;
+        }
+        private void CompleteNextImage()
+        {
+            _PreActiveid++;
+            InitSrc();
+            //Reset();
+        }
+        private void CompleteSixteenthDetect()
+        {
+            //TODO: sixteenth 
+            Rectangle DetectArea = ReadDetectArea("动态检测左上角区域");
+            if (DetectArea.Width > 0)
+            {
+                List<Rectangle> listLT = GetNNthDetectAreas(DetectArea, 4);
+                foreach (Rectangle r in listLT)
+                {
+                    //if(Detect r .OK  break;
+                }
+            }
+        }
+        private void CompleteNinthDetect()
+        {
+            //TODO: Ninth 
+            Rectangle DetectArea = ReadDetectArea("动态检测左上角区域");
+            if (DetectArea.Width > 0)
+            {
+                List<Rectangle> listLT = GetNNthDetectAreas(DetectArea, 3);
+                foreach (Rectangle r in listLT)
+                {
+                    //if(Detect r .OK  break;
+                }
+            }
+        }
+
+        private void CompleteShowImageMode()
+        {
+            //TODO: CompleteShowImageMode
+             if(toolStripComboBoxImageMode.SelectedText == "")
+             {
+                 _sim = ShowImageMode.ShowFullImageMode;
+             }else if(toolStripComboBoxImageMode.SelectedText == ""){
+                 //加上其他条件
+                 _sim = ShowImageMode.ShowCorrectImageMode;
+             }
+        }
+        private void CompleteAutoDetect()
+        {
+            if (pictureBox1.Image == null ) return;
+            Rectangle DetectArea = ReadDetectArea();
+            if(DetectArea.Width>0)
+            try
+            {
+                DetectData dd = DetectImageTools.DetectImg(_src, DetectArea);
+                dd = DetectImageTools.DetectCorrect.ReDetectCorrectImg(_src, dd);
+                if (dd.CorrectRect.Width > 0)
+                {
+                    _dd = dd;
+                    InitListFeature(dd);
+                    List<Point> list = ListFeatureToPoints(dd);
+                    _angle = new AutoAngle(list);                    
+                    double angle = -_angle.Angle1 * 180 / Math.PI;
+                    //if (checkBoxVertical.Checked)
+                    //    angle = _angle.SPAngle1 * 180 / Math.PI;
+                    pictureBox1.Refresh();
+                }
+            }
+            catch (Exception ee)
+            {
+                MessageBox.Show("检测失败" + ee.Message);
+            }
+        }
+        private Rectangle ReadDetectArea(String keyname = "检测区域")
+        {
+            int cnt = m_tn.Nodes[keyname].GetNodeCount(false);
+            if (cnt == 0)
+            {
+                MessageBox.Show("没有"+keyname);
+                return new Rectangle();
+            }
+            TreeNode t = m_tn.Nodes[keyname].Nodes[0];
+            Rectangle  DetectArea = (Rectangle)t.Tag;
+            if (DetectArea.Height == 0)
+                DetectArea.Width = 0;
+            return DetectArea;
+        }
+        private List<Rectangle> ReadDetectAreas(String keyname = "特征点检测区域")
+        {
+            int cnt = m_tn.Nodes[keyname].GetNodeCount(false);
+            if (cnt == 0)
+            {
+                MessageBox.Show("没有"+keyname);
+                return new List<Rectangle>();
+            }
+            List<Rectangle> areas = new List<Rectangle>();
+            foreach (TreeNode tn in treeView1.SelectedNode.Nodes)
+            {
+                Rectangle  DetectArea = (Rectangle)tn.Tag;
+                if (DetectArea.Height == 0)
+                    DetectArea.Width = 0;
+                areas.Add(DetectArea);
+            }
+            TreeNode t = m_tn.Nodes[keyname].Nodes[0];
+            return areas;
+        }
+
+        private void SetDetectAreas(List<Rectangle> list)
+        {
+            String keyname = "特征点检测区域";
+            TreeNode tn = m_tn.Nodes[keyname];
+            tn.Nodes.Clear();
+
+            List<String> names = new List<String>() {"LT","LB","RT","RB" };
+            for (int index = 0; index < list.Count; index++)
+            {
+                TreeNode t = new TreeNode();
+                t.Tag = list[index];
+                t.Text = t.Name = "特征点-" + names[index] + "|" + list[index].ToString("-");
+                tn.Nodes.Add(t);
+            }
+        }
+        private List<Rectangle> GetNNthDetectAreas(Rectangle  Area, int n)
+        {
+            List<Rectangle> list = new List<Rectangle>(); 
+            double W = Area.Width*1.0/n;
+            double H = Area.Height * 1.0/n;
+            Size size = new Size((int)(W * 2),(int)( H * 2));
+            for(int x=0; x<n-1; x++)
+                for (int y = 0; y < n - 1; y++)
+                {
+                    list.Add( new Rectangle( (int)( Area.X + x*W), (int)(Area.Y + y*H),size.Width,size.Height));
+                }
+                return list;
+        }
+        private List<Rectangle> GetNNthLines(Rectangle Area, int n)
+        {
+            List<Rectangle> list = new List<Rectangle>();
+            double W = Area.Width * 1.0 / n;
+            double H = Area.Height * 1.0 / n;
+            Size size = new Size((int)(W * 2), (int)(H * 2));
+            for (int x = 0; x < n + 1; x++)
+                list.Add(new Rectangle((int)(Area.X + x * W),  Area.Y, 1, size.Height));
+            for (int y = 0; y < n - 1; y++)
+            {
+                list.Add(new Rectangle( Area.X , (int)(Area.Y + y * H), size.Width, 1));
+            }
+            return list;
+        }
         private void pictureBox1_MouseMove(object sender, MouseEventArgs e)
         {
             //if (_PreActiveEditMode && _PreActiveEditArea != null)
@@ -371,35 +559,30 @@ namespace ScanTemplate
                             if (t.Tag != null)
                             {
                                 Rectangle r = (Rectangle)(t.Tag);
-                                e.Graphics.DrawRectangle(Pens.Red, zoombox.ImgToBoxSelection(r));
+                                e.Graphics.DrawRectangle(Pens.YellowGreen, zoombox.ImgToBoxSelection(r));
                             }
                         }
                 }
-                if (_dd != null)
+                if (_dd != null && _dd.Detected)
                 {
                     Rectangle r = _dd.CorrectRect;
-                    DrawRect(e, _dd.CorrectRect);
-                    DrawRects(e, _dd.ListFeature,_dd.CorrectRect.Location);
-                }
-                if (_TestR.Width > 0 && _TestR.Height > 0)
-                {
-                    Rectangle r = zoombox.ImgToBoxSelection(_TestR);
-                    e.Graphics.DrawRectangle(Pens.Yellow, r);
+                    DrawRect(e, _dd.CorrectRect,Pens.Red);
+                    DrawRects(e, _dd.ListFeature,_dd.CorrectRect.Location,Pens.Red);
                 }
             }
         }
 
-        private void DrawRects(PaintEventArgs e, List<Rectangle> list, Point offset)
+        private void DrawRects(PaintEventArgs e, List<Rectangle> list, Point offset,Pen pen)
         {
             foreach (Rectangle r in list)
             {
                 r.Offset(offset);
-                e.Graphics.DrawRectangle(Pens.Red, zoombox.ImgToBoxSelection(r));
+                DrawRect(e, r,pen);
             }
         }
-        private void DrawRect(PaintEventArgs e, Rectangle r)
+        private void DrawRect(PaintEventArgs e, Rectangle r,Pen pen)
         {
-            e.Graphics.DrawRectangle(Pens.Red, zoombox.ImgToBoxSelection(r));
+            e.Graphics.DrawRectangle(pen, zoombox.ImgToBoxSelection(r));
         }
         private void Zoomrat(double rat, Point e)
         {
@@ -443,7 +626,6 @@ namespace ScanTemplate
         private PreAct m_PreAct;
         private Point crop_startpoint;
         private ZoomBox zoombox;
-        private Rectangle _TestR;
         private Bitmap _src;
 
         ////////////
@@ -453,5 +635,95 @@ namespace ScanTemplate
         private List<string> _namelist;
         private System.IO.FileStream _fs;
         private DetectData _dd;
+
+        ////////
+        private ShowImageMode _sim;
+        ////////
+        private AutoAngle _angle;
+        private List<Rectangle> _ListFeature;
+        private void InitListFeature(DetectData dd)
+        {
+            _ListFeature = dd.ListFeature.Select(r => { r.Offset(dd.CorrectRect.Location); return r; }).ToList();
+            _ListFeature.Add(dd.CorrectRect);
+        }
+        private List<Point> ListFeatureToPoints(DetectData dd)
+        {
+            List<Point> list = dd.ListFeature.Select(r => new Point(r.X + m_Imgselection.X, r.Y + m_Imgselection.Y)).ToList();
+            return list;
+        }
+        private Rectangle GetUnion(List<Rectangle> ListRect)
+        {
+            Rectangle UnionR = new Rectangle();
+            if (ListRect.Count > 0)
+            {
+                UnionR = ListRect[0];
+                foreach (Rectangle r in ListRect)
+                    UnionR = Rectangle.Union(UnionR, r);
+            }
+            return UnionR;
+        }
+        private void treeView1_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (treeView1.SelectedNode == null || treeView1.SelectedNode.Parent == null) return;
+            if (e.KeyCode == Keys.Delete)
+            {
+                if (treeView1.SelectedNode.Parent.Text != "网上阅卷-预处理试卷")
+                {
+                    if (treeView1.SelectedNode.Parent != null)
+                    {
+                        Area I = (Area)treeView1.SelectedNode.Parent.Tag;
+                        Area sI = (Area)treeView1.SelectedNode.Tag;
+                        if (I != null && I.HasSubAreas() && sI != null)
+                        {
+                            if (I.SubAreas.Contains(sI))
+                                I.SubAreas.Remove(sI);
+                        }
+                    }
+                    TreeNode t = treeView1.SelectedNode.NextNode;
+                    if (t == null)
+                        t = treeView1.SelectedNode.PrevNode;
+                    treeView1.SelectedNode.Remove();
+                    treeView1.SelectedNode = t;
+                }
+                pictureBox1.Invalidate();
+            }
+            else if (e.KeyCode == Keys.R)
+            {
+                List<Rectangle> areas = ReadDetectAreas();
+                Rectangle ur = GetUnion(areas);
+                Point center = ur.Location;
+                center.Offset(ur.Width / 2, ur.Height / 2);
+                List<Rectangle> LTRB = new List<Rectangle>( ); // LT,LB,RT,RB
+                for (int i = 0; i < 4; i++)
+                    LTRB.Add(new Rectangle());
+
+                foreach (Rectangle r in areas)
+                {
+                    Point c = r.Location;
+                    c.Offset(r.Width / 2, r.Height / 2);
+                    if (c.X > center.X)
+                    {
+                        if (c.Y > center.Y)
+                            LTRB[3] = r;
+                        else
+                            LTRB[2] = r;
+                    }
+                    else
+                    {
+                        if (c.Y > center.Y)
+                            LTRB[1] = r;
+                        else
+                            LTRB [0]= r;
+                    }
+                }
+                if (LTRB[0].Width!=0 && LTRB[1].Width!=0 && LTRB[2].Width!=0 && LTRB[3].Width!=0   )
+                {
+                    SetDetectAreas(LTRB);
+                }
+
+                pictureBox1.Invalidate();
+            }
+        }
     }
+
 }

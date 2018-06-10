@@ -14,10 +14,13 @@ using System.IO;
 namespace ScanTemplate
 {
     [Flags]
-    enum PreAct : short { None = 0, DefineDetectArea = 1, DefineFeaturePointDetectArea = 2, DefineScanLTDetectArea = 4, AutoDetect = 8, ShowImageMode = 16, NinthDetect, SixteenthDetect, PreDetect, NextImage, ZoomMouse };
+    enum PreAct : short { None = 0, DefineDetectArea = 1, DefineFeaturePointDetectArea = 2, DefineScanLTDetectArea = 4, AutoDetect = 8, ShowImageMode = 16, NinthDetect, SixteenthDetect, PreDetect, NextImage, ZoomMouse, DetectMode };
     enum ShowImageMode : short { ShowFullImageMode, ShowCorrectImageMode }
+    enum DetectMode : short { Whole = 0, DetectArea =1,  DetectFeaturesArea=2, DetectLT=3, DetectLTninth, DetectLTSixteenth };
+
     public partial class FormPreScan : Form
     {
+        public List<string> dms = new List<string>() {"全部", "检测范围","特征点范围","左上角范围"};
         public FormPreScan(UnScan dir)
         {
             InitializeComponent();
@@ -36,15 +39,8 @@ namespace ScanTemplate
                 _fs = null;
                 _src = null;
             }
-            //_template = t;          
             m_Imgselection = new Rectangle(0, 0, 0, 0);
-            zoombox = new ZoomBox();            
-            
-            //m_tn = new TreeNode();
-            //if (t != null)
-            //    m_tn = t.GetTreeNode();           
-            //treeView1.Nodes.Add(m_tn);
-            //treeView1.ExpandAll();
+            zoombox = new ZoomBox();
             Reset();
         }
         private void Reset()
@@ -53,6 +49,8 @@ namespace ScanTemplate
             _OriginWith = pictureBox1.Width;
             zoombox.Reset();
             m_PreAct = PreAct.None;
+            _sim = ShowImageMode.ShowFullImageMode;
+            _dtm = DetectMode.Whole;
             //m_tn.Nodes.Clear();
             treeView1.Nodes.Clear();
             m_tn = GetTreeNode();
@@ -62,7 +60,7 @@ namespace ScanTemplate
         public TreeNode GetTreeNode()
         {
             TreeNode root = new TreeNode();
-            foreach (string s in new string[] { "动态检测左上角区域", "特征点检测区域", "检测区域" })
+            foreach (string s in new string[] { "左上角范围", "特征点范围", "检测范围" })
             {
                 TreeNode opt = new TreeNode();
                 opt.Name = opt.Text = s;
@@ -99,14 +97,14 @@ namespace ScanTemplate
             {
                 _dd = dd;
             }
-            toolStripComboBoxShowLineMode.SelectedIndex = 0;
+            toolStripComboBoxDetectMode.SelectedIndex = 0;
             toolStripComboBoxImageMode.SelectedIndex = 0;
         }
         public string PreActiveFileName
         {
             get
             {
-                if (_PreActiveid < 0 || _PreActiveid > _namelist.Count)
+                if (_PreActiveid < 0 || _PreActiveid >= _namelist.Count)
                     _PreActiveid = 0;
                 return _namelist[_PreActiveid];
             }
@@ -188,9 +186,13 @@ namespace ScanTemplate
         }
         private void toolStripComboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (!((ToolStripButton)sender).Checked)
-                m_PreAct = PreAct.ShowImageMode;
-            toolStripButton_Click(sender, e);
+            m_PreAct = PreAct.ShowImageMode;
+            CompleteSelection(true);
+        }
+        private void toolStripComboBoxDetectMode_SelectedIndexChanged(object sender, EventArgs e)
+        {          
+            m_PreAct = PreAct.DetectMode;
+            CompleteSelection(true);
         }
         private void NinthDetectToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -231,6 +233,7 @@ namespace ScanTemplate
                         case PreAct.DefineScanLTDetectArea: CompleteDefineScanLTDetectArea(); break;
                         case PreAct.AutoDetect: CompleteAutoDetect(); break;
                         case PreAct.ShowImageMode: CompleteShowImageMode(); break;
+                        case PreAct.DetectMode: CompleteDetectMode(); break;
                         case PreAct.NinthDetect: CompleteNinthDetect(); break;
                         case PreAct.SixteenthDetect: CompleteSixteenthDetect(); break;
                         case PreAct.NextImage: CompleteNextImage(); break;
@@ -243,7 +246,7 @@ namespace ScanTemplate
         private void CompleteDefineScanLTDetectArea()
         {
             Rectangle m_Imgselection = zoombox.BoxToImgSelection(MT.Selection);
-            String keyname = "动态检测左上角区域";
+            String keyname = "左上角范围";
             //if (!ExistDeFineSelection(keyname))
             {
                 int cnt = m_tn.Nodes[keyname].GetNodeCount(false) + 1;
@@ -267,7 +270,7 @@ namespace ScanTemplate
         private void CompleteDefineFeaturePointDetectArea()
         {
             Rectangle m_Imgselection = zoombox.BoxToImgSelection(MT.Selection);
-            String keyname = "特征点检测区域";
+            String keyname = "特征点范围";
             //if (!ExistDeFineSelection(keyname))
             {
                 TreeNode t = new TreeNode();
@@ -284,11 +287,11 @@ namespace ScanTemplate
         private void CompleteDeFineDetectArea()
         {
             Rectangle m_Imgselection = zoombox.BoxToImgSelection(MT.Selection);
-            String keyname = "检测区域";
+            String keyname = "检测范围";
             //if (!ExistDeFineSelection(keyname))
             {
                 int cnt = m_tn.Nodes[keyname].GetNodeCount(false) + 1;
-                string nodename = "检测区域-" + m_Imgselection.ToString("-");
+                string nodename = "检测范围-" + m_Imgselection.ToString("-");
                 if (cnt == 1)
                 {
                     TreeNode t = new TreeNode();
@@ -305,9 +308,101 @@ namespace ScanTemplate
                 }
             }
         }
+        private void CompleteNextImage()
+        {
+            _PreActiveid++;
+            InitSrc();
+        }
+        private void CompleteSixteenthDetect()
+        {
+            //TODO: sixteenth 
+            Rectangle DetectArea = ReadDetectArea("左上角范围");
+            if (DetectArea.Width > 0)
+            {
+                List<Rectangle> listLT = GetNNthDetectAreas(DetectArea, 4);
+                foreach (Rectangle r in listLT)
+                {
+                    //if(Detect r .OK  break;
+                }
+            }
+        }
+        private void CompleteNinthDetect()
+        {
+            //TODO: Ninth 
+            Rectangle DetectArea = ReadDetectArea("左上角范围");
+            if (DetectArea.Width > 0)
+            {
+                List<Rectangle> listLT = GetNNthDetectAreas(DetectArea, 3);
+                foreach (Rectangle r in listLT)
+                {
+                    //if(Detect r .OK  break;
+                }
+            }
+        }
+        private void CompleteShowImageMode()
+        {
+            //TODO: CompleteShowImageMode
+             if(toolStripComboBoxImageMode.SelectedText == "")
+             {
+                 _sim = ShowImageMode.ShowFullImageMode;
+             }else if(toolStripComboBoxImageMode.SelectedText == ""){
+                 //加上其他条件
+                 _sim = ShowImageMode.ShowCorrectImageMode;
+             }
+        }
+        private void CompleteDetectMode()
+        {
+            string str = toolStripComboBoxDetectMode.SelectedItem.ToString();
+            if (str == "全部")
+            {
+                _dtm = DetectMode.Whole;
+            }
+            else if (str == "检测范围")
+            {
+                _dtm = DetectMode.DetectArea;
+            }
+            else if (str == "特征点范围")
+            {
+                _dtm = DetectMode.DetectFeaturesArea;
+            }
+            else if (str == "左上角范围")
+            {
+                _dtm = DetectMode.DetectLT;
+                //九分 十六分 暂未实现
+            }
+            pictureBox1.Invalidate();
+        }
+        private void CompleteAutoDetect()
+        {
+            if (pictureBox1.Image == null ) return;
+            switch (_dtm)
+            {
+                case DetectMode.Whole:
+                case DetectMode.DetectArea: AutoDetectByDetectArea(); break;
+                case DetectMode.DetectFeaturesArea: AutoDetectByFeaturesArea(); break;
+                case DetectMode.DetectLT:           AutoDetectByLT(1); break;
+                case DetectMode.DetectLTninth:      AutoDetectByLT(3); break;
+                case DetectMode.DetectLTSixteenth:  AutoDetectByLT(4); break;
+            }
+        }        
         private void CompletePreDetect()
         {
+            //TODO: PreDetectAllFiles
             // 检测所有文件
+            List<Rectangle> areas = ReadDetectAreas();
+            if (areas.Count > 0)
+                foreach (string s in _namelist)
+                {
+                    string ss =  s;
+                    System.IO.FileStream fs = new System.IO.FileStream(ss, System.IO.FileMode.Open, System.IO.FileAccess.Read);
+                    Bitmap orgsrc = (Bitmap)System.Drawing.Image.FromStream(fs);
+                    List<Rectangle> ListFeature = GetListFeature(areas, orgsrc);
+                    //_dd = DetectImageTools.DetectCorrect.ConstructDetectData(_ListFeature);
+                    Bitmap rgb = orgsrc.Clone(ListFeature[0], orgsrc.PixelFormat);
+                    //ss =  "\\img" + s;
+                    rgb.Save(ss);
+                    fs.Close();
+                }
 
             //if (list.Count == 0) return;
             //Bitmap _src = (Bitmap)pictureBox1.Image;
@@ -340,77 +435,9 @@ namespace ScanTemplate
             //_autororate.DoScan();
             //_bScan = false;
         }
-        private void CompleteNextImage()
-        {
-            _PreActiveid++;
-            InitSrc();
-            //Reset();
-        }
-        private void CompleteSixteenthDetect()
-        {
-            //TODO: sixteenth 
-            Rectangle DetectArea = ReadDetectArea("动态检测左上角区域");
-            if (DetectArea.Width > 0)
-            {
-                List<Rectangle> listLT = GetNNthDetectAreas(DetectArea, 4);
-                foreach (Rectangle r in listLT)
-                {
-                    //if(Detect r .OK  break;
-                }
-            }
-        }
-        private void CompleteNinthDetect()
-        {
-            //TODO: Ninth 
-            Rectangle DetectArea = ReadDetectArea("动态检测左上角区域");
-            if (DetectArea.Width > 0)
-            {
-                List<Rectangle> listLT = GetNNthDetectAreas(DetectArea, 3);
-                foreach (Rectangle r in listLT)
-                {
-                    //if(Detect r .OK  break;
-                }
-            }
-        }
 
-        private void CompleteShowImageMode()
-        {
-            //TODO: CompleteShowImageMode
-             if(toolStripComboBoxImageMode.SelectedText == "")
-             {
-                 _sim = ShowImageMode.ShowFullImageMode;
-             }else if(toolStripComboBoxImageMode.SelectedText == ""){
-                 //加上其他条件
-                 _sim = ShowImageMode.ShowCorrectImageMode;
-             }
-        }
-        private void CompleteAutoDetect()
-        {
-            if (pictureBox1.Image == null ) return;
-            Rectangle DetectArea = ReadDetectArea();
-            if(DetectArea.Width>0)
-            try
-            {
-                DetectData dd = DetectImageTools.DetectImg(_src, DetectArea);
-                dd = DetectImageTools.DetectCorrect.ReDetectCorrectImg(_src, dd);
-                if (dd.CorrectRect.Width > 0)
-                {
-                    _dd = dd;
-                    InitListFeature(dd);
-                    List<Point> list = ListFeatureToPoints(dd);
-                    _angle = new AutoAngle(list);                    
-                    double angle = -_angle.Angle1 * 180 / Math.PI;
-                    //if (checkBoxVertical.Checked)
-                    //    angle = _angle.SPAngle1 * 180 / Math.PI;
-                    pictureBox1.Refresh();
-                }
-            }
-            catch (Exception ee)
-            {
-                MessageBox.Show("检测失败" + ee.Message);
-            }
-        }
-        private Rectangle ReadDetectArea(String keyname = "检测区域")
+
+        private Rectangle ReadDetectArea(String keyname = "检测范围")
         {
             int cnt = m_tn.Nodes[keyname].GetNodeCount(false);
             if (cnt == 0)
@@ -424,7 +451,7 @@ namespace ScanTemplate
                 DetectArea.Width = 0;
             return DetectArea;
         }
-        private List<Rectangle> ReadDetectAreas(String keyname = "特征点检测区域")
+        private List<Rectangle> ReadDetectAreas(String keyname = "特征点范围")
         {
             int cnt = m_tn.Nodes[keyname].GetNodeCount(false);
             if (cnt == 0)
@@ -443,10 +470,58 @@ namespace ScanTemplate
             TreeNode t = m_tn.Nodes[keyname].Nodes[0];
             return areas;
         }
+        private void AutoDetectByDetectArea()
+        {
+            Rectangle DetectArea = ReadDetectArea();
+            if (DetectArea.Width > 0)
+                try
+                {
+                    DetectData dd = DetectImageTools.DetectImg(_src, DetectArea);
+                    dd = DetectImageTools.DetectCorrect.ReDetectCorrectImg(_src, dd);
+                    if (dd.CorrectRect.Width > 0)
+                    {
+                        _dd = dd;
+                        pictureBox1.Invalidate();
+                        //InitListFeature(dd);
+                    }
+                }
+                catch (Exception ee)
+                {
+                    MessageBox.Show("检测失败" + ee.Message);
+                }
+        }
+        private void AutoDetectByLT(int n)
+        {
+            Rectangle DetectArea = ReadDetectArea("左上角");
+            List<Rectangle> areas = GetNNthDetectAreas(DetectArea, n);
+            bool ok = false;
+            foreach (Rectangle r in areas)
+            {
+                // if( DetectLT (r) && DetectOther3Point())  { ok = true; break;}
+                
+            }
+            if (!ok)
+                MessageBox.Show("检测失败");
+        }
+        private void AutoDetectByFeaturesArea()
+        {
+            List<Rectangle> areas = ReadDetectAreas();
+            _ListFeature = GetListFeature(areas, _src);
+            _dd =  DetectImageTools.DetectCorrect.ConstructDetectData(_ListFeature);
+
+            //foreach (Rectangle r in areas)
+            //{
+            //    Rectangle nr2 = Tools.DetectImageTools.DetectCorrect.DetectCorrectFromImg(_src, r, true, r.Width / 9);
+            //}
+            //Rectangle r = (Rectangle)listBoxDetectareas.SelectedItem;
+            //Bitmap src = (Bitmap)pictureBox1.Image;
+            //Rectangle nr2 = Tools.DetectImageTools.DetectCorrect.DetectCorrectFromImg(_src, r, true, r.Width / 9);
+           ///////////////
+        }
 
         private void SetDetectAreas(List<Rectangle> list)
         {
-            String keyname = "特征点检测区域";
+            String keyname = "特征点范围";
             TreeNode tn = m_tn.Nodes[keyname];
             tn.Nodes.Clear();
 
@@ -461,7 +536,15 @@ namespace ScanTemplate
         }
         private List<Rectangle> GetNNthDetectAreas(Rectangle  Area, int n)
         {
-            List<Rectangle> list = new List<Rectangle>(); 
+            List<Rectangle> list = new List<Rectangle>();
+            if (n <= 0)
+                return list;
+            if (n == 1 || n==2)
+            {
+                list.Add(Area);
+                return list;
+            }
+            //三以上
             double W = Area.Width*1.0/n;
             double H = Area.Height * 1.0/n;
             Size size = new Size((int)(W * 2),(int)( H * 2));
@@ -552,8 +635,12 @@ namespace ScanTemplate
                 Font font = DefaultFont;
                 if (m_tn.Nodes.Count != 0)
                 {
-                   
+
                     foreach (TreeNode tt in m_tn.Nodes)
+                    {
+                        int index =(int) _dtm;
+                        string keyname = dms[index];
+                        if(keyname == "全部" || tt.Text == keyname)
                         foreach (TreeNode t in tt.Nodes)
                         {
                             if (t.Tag != null)
@@ -562,6 +649,7 @@ namespace ScanTemplate
                                 e.Graphics.DrawRectangle(Pens.YellowGreen, zoombox.ImgToBoxSelection(r));
                             }
                         }
+                    }
                 }
                 if (_dd != null && _dd.Detected)
                 {
@@ -638,6 +726,8 @@ namespace ScanTemplate
 
         ////////
         private ShowImageMode _sim;
+        private DetectMode _dtm;
+        private DetectMode _dtm2;
         ////////
         private AutoAngle _angle;
         private List<Rectangle> _ListFeature;
@@ -650,6 +740,16 @@ namespace ScanTemplate
         {
             List<Point> list = dd.ListFeature.Select(r => new Point(r.X + m_Imgselection.X, r.Y + m_Imgselection.Y)).ToList();
             return list;
+        }
+        private static List<Rectangle> GetListFeature(List<Rectangle> areas, Bitmap src)
+        {
+            List<Rectangle> ListFeature = new List<Rectangle>();
+            foreach (Rectangle r in areas)
+            {
+                Rectangle nr2 = Tools.DetectImageTools.DetectCorrect.DetectCorrectFromImg(src, r, true, r.Width / 9);
+                ListFeature.Add(nr2);
+            }
+            return ListFeature;
         }
         private Rectangle GetUnion(List<Rectangle> ListRect)
         {
@@ -665,20 +765,10 @@ namespace ScanTemplate
         private void treeView1_KeyUp(object sender, KeyEventArgs e)
         {
             if (treeView1.SelectedNode == null || treeView1.SelectedNode.Parent == null) return;
-            if (e.KeyCode == Keys.Delete)
+            if (e.KeyCode == Keys.Delete || e.KeyCode == Keys.D)
             {
                 if (treeView1.SelectedNode.Parent.Text != "网上阅卷-预处理试卷")
                 {
-                    if (treeView1.SelectedNode.Parent != null)
-                    {
-                        Area I = (Area)treeView1.SelectedNode.Parent.Tag;
-                        Area sI = (Area)treeView1.SelectedNode.Tag;
-                        if (I != null && I.HasSubAreas() && sI != null)
-                        {
-                            if (I.SubAreas.Contains(sI))
-                                I.SubAreas.Remove(sI);
-                        }
-                    }
                     TreeNode t = treeView1.SelectedNode.NextNode;
                     if (t == null)
                         t = treeView1.SelectedNode.PrevNode;
@@ -687,7 +777,7 @@ namespace ScanTemplate
                 }
                 pictureBox1.Invalidate();
             }
-            else if (e.KeyCode == Keys.R)
+            else if (e.KeyCode == Keys.R &&   treeView1.SelectedNode.Text == "特征点范围")
             {
                 List<Rectangle> areas = ReadDetectAreas();
                 Rectangle ur = GetUnion(areas);
@@ -724,6 +814,9 @@ namespace ScanTemplate
                 pictureBox1.Invalidate();
             }
         }
+
+
+
     }
 
 }

@@ -92,11 +92,16 @@ namespace ScanTemplate
             {
                 if (checkBoxPreScanMode.Checked)
                 {
+                    this.Hide();
                     FormPreScan fps = new FormPreScan(dir);
                     if (fps.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                     {
                     }
-                    MessageBox.Show("预处理失败");
+                    else
+                    {
+                        MessageBox.Show("预处理失败");
+                    }
+                    this.Show();
                 }
                 else
                 {

@@ -94,7 +94,10 @@ namespace  Tools
                 rect.Offset(area.Location);
                 return rect;
             }
-         
+            public static DetectData ConstructDetectData(List<Rectangle> list)
+            {
+                return ConstructDetectData(false, new Rectangle(), list);
+            }
             private static DetectData ConstructDetectData(bool HasCorrectRect, Rectangle _CorrectRect,  List<Rectangle> list)
             {
                 if (list.Count > 0)

@@ -56,7 +56,7 @@
             this.NinthDetectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.SixteenthDetectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripComboBoxImageMode = new System.Windows.Forms.ToolStripComboBox();
-            this.toolStripComboBoxShowLineMode = new System.Windows.Forms.ToolStripComboBox();
+            this.toolStripComboBoxDetectMode = new System.Windows.Forms.ToolStripComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainerA)).BeginInit();
             this.splitContainerA.Panel1.SuspendLayout();
             this.splitContainerA.Panel2.SuspendLayout();
@@ -93,8 +93,8 @@
             // splitContainerA.Panel2
             // 
             this.splitContainerA.Panel2.Controls.Add(this.splitContainerR);
-            this.splitContainerA.Size = new System.Drawing.Size(952, 636);
-            this.splitContainerA.SplitterDistance = 197;
+            this.splitContainerA.Size = new System.Drawing.Size(996, 636);
+            this.splitContainerA.SplitterDistance = 206;
             this.splitContainerA.TabIndex = 0;
             // 
             // splitContainerL
@@ -111,8 +111,8 @@
             // splitContainerL.Panel2
             // 
             this.splitContainerL.Panel2.Controls.Add(this.panelLB);
-            this.splitContainerL.Size = new System.Drawing.Size(197, 636);
-            this.splitContainerL.SplitterDistance = 515;
+            this.splitContainerL.Size = new System.Drawing.Size(206, 636);
+            this.splitContainerL.SplitterDistance = 514;
             this.splitContainerL.TabIndex = 0;
             // 
             // panelLT
@@ -121,7 +121,7 @@
             this.panelLT.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelLT.Location = new System.Drawing.Point(0, 0);
             this.panelLT.Name = "panelLT";
-            this.panelLT.Size = new System.Drawing.Size(197, 515);
+            this.panelLT.Size = new System.Drawing.Size(206, 514);
             this.panelLT.TabIndex = 0;
             // 
             // tableLayoutPanel1
@@ -136,7 +136,7 @@
             this.tableLayoutPanel1.RowCount = 2;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(197, 515);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(206, 514);
             this.tableLayoutPanel1.TabIndex = 1;
             // 
             // treeView1
@@ -144,7 +144,7 @@
             this.treeView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.treeView1.Location = new System.Drawing.Point(3, 28);
             this.treeView1.Name = "treeView1";
-            this.treeView1.Size = new System.Drawing.Size(191, 484);
+            this.treeView1.Size = new System.Drawing.Size(200, 483);
             this.treeView1.TabIndex = 10;
             this.treeView1.KeyUp += new System.Windows.Forms.KeyEventHandler(this.treeView1_KeyUp);
             // 
@@ -155,7 +155,7 @@
             this.textBoxMessage.Location = new System.Drawing.Point(3, 3);
             this.textBoxMessage.Name = "textBoxMessage";
             this.textBoxMessage.ReadOnly = true;
-            this.textBoxMessage.Size = new System.Drawing.Size(191, 21);
+            this.textBoxMessage.Size = new System.Drawing.Size(200, 21);
             this.textBoxMessage.TabIndex = 9;
             // 
             // panelLB
@@ -163,7 +163,7 @@
             this.panelLB.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelLB.Location = new System.Drawing.Point(0, 0);
             this.panelLB.Name = "panelLB";
-            this.panelLB.Size = new System.Drawing.Size(197, 117);
+            this.panelLB.Size = new System.Drawing.Size(206, 118);
             this.panelLB.TabIndex = 0;
             // 
             // splitContainerR
@@ -180,8 +180,8 @@
             // splitContainerR.Panel2
             // 
             this.splitContainerR.Panel2.Controls.Add(this.panelRB);
-            this.splitContainerR.Size = new System.Drawing.Size(751, 636);
-            this.splitContainerR.SplitterDistance = 571;
+            this.splitContainerR.Size = new System.Drawing.Size(786, 636);
+            this.splitContainerR.SplitterDistance = 570;
             this.splitContainerR.TabIndex = 0;
             // 
             // panelRT
@@ -191,7 +191,7 @@
             this.panelRT.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelRT.Location = new System.Drawing.Point(0, 0);
             this.panelRT.Name = "panelRT";
-            this.panelRT.Size = new System.Drawing.Size(751, 571);
+            this.panelRT.Size = new System.Drawing.Size(786, 570);
             this.panelRT.TabIndex = 0;
             // 
             // pictureBox1
@@ -214,7 +214,7 @@
             this.panelRB.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelRB.Location = new System.Drawing.Point(0, 0);
             this.panelRB.Name = "panelRB";
-            this.panelRB.Size = new System.Drawing.Size(751, 61);
+            this.panelRB.Size = new System.Drawing.Size(786, 62);
             this.panelRB.TabIndex = 0;
             // 
             // toolStrip1
@@ -334,11 +334,11 @@
             // toolStripContainer1.ContentPanel
             // 
             this.toolStripContainer1.ContentPanel.Controls.Add(this.splitContainerA);
-            this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(952, 636);
+            this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(996, 636);
             this.toolStripContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.toolStripContainer1.Location = new System.Drawing.Point(0, 0);
             this.toolStripContainer1.Name = "toolStripContainer1";
-            this.toolStripContainer1.Size = new System.Drawing.Size(952, 686);
+            this.toolStripContainer1.Size = new System.Drawing.Size(996, 686);
             this.toolStripContainer1.TabIndex = 1;
             this.toolStripContainer1.Text = "toolStripContainer1";
             // 
@@ -353,10 +353,10 @@
             this.toolStrip2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripDropDownButtonAutoDetect,
             this.toolStripComboBoxImageMode,
-            this.toolStripComboBoxShowLineMode});
+            this.toolStripComboBoxDetectMode});
             this.toolStrip2.Location = new System.Drawing.Point(3, 0);
             this.toolStrip2.Name = "toolStrip2";
-            this.toolStrip2.Size = new System.Drawing.Size(327, 25);
+            this.toolStrip2.Size = new System.Drawing.Size(360, 25);
             this.toolStrip2.TabIndex = 4;
             // 
             // toolStripDropDownButtonAutoDetect
@@ -392,22 +392,23 @@
             this.toolStripComboBoxImageMode.Size = new System.Drawing.Size(121, 25);
             this.toolStripComboBoxImageMode.Text = "图片显示模式";
             // 
-            // toolStripComboBoxShowLineMode
+            // toolStripComboBoxDetectMode
             // 
-            this.toolStripComboBoxShowLineMode.Items.AddRange(new object[] {
+            this.toolStripComboBoxDetectMode.Items.AddRange(new object[] {
             "全部",
             "检测范围",
             "特征点范围",
             "左上角范围"});
-            this.toolStripComboBoxShowLineMode.Name = "toolStripComboBoxShowLineMode";
-            this.toolStripComboBoxShowLineMode.Size = new System.Drawing.Size(121, 25);
-            this.toolStripComboBoxShowLineMode.Text = "检测模式";
+            this.toolStripComboBoxDetectMode.Name = "toolStripComboBoxDetectMode";
+            this.toolStripComboBoxDetectMode.Size = new System.Drawing.Size(121, 25);
+            this.toolStripComboBoxDetectMode.Text = "检测模式";
+            this.toolStripComboBoxDetectMode.SelectedIndexChanged += new System.EventHandler(this.toolStripComboBoxDetectMode_SelectedIndexChanged);
             // 
             // FormPreScan
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(952, 686);
+            this.ClientSize = new System.Drawing.Size(996, 686);
             this.Controls.Add(this.toolStripContainer1);
             this.Name = "FormPreScan";
             this.Text = "FormPreScan";
@@ -471,6 +472,6 @@
         private System.Windows.Forms.ToolStripDropDownButton toolStripDropDownButtonAutoDetect;
         private System.Windows.Forms.ToolStripMenuItem NinthDetectToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem SixteenthDetectToolStripMenuItem;
-        private System.Windows.Forms.ToolStripComboBox toolStripComboBoxShowLineMode;
+        private System.Windows.Forms.ToolStripComboBox toolStripComboBoxDetectMode;
     }
 }

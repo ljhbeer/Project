@@ -87,101 +87,35 @@ namespace ScanTemplate
         {
             if (listBoxUnScanDir.SelectedIndex == -1) return;
             UnScan dir = (UnScan)listBoxUnScanDir.SelectedItem;
-            List<string> nameList = dir.ImgList();
-            if (nameList.Count > 0)
+            if (dir.ImgList().Count == 0) return;
+            FormPreScan fps = new FormPreScan(dir);
+            bool ExistOKScanJson =fps.PreCheckJsonFile(dir);
+            if (ExistOKScanJson) // 已成功预扫描
             {
-                bool ExistOKScanJson = false;
-                FormPreScan fps = new FormPreScan(dir);
-                PrePapers prepapers = new PrePapers();
-                if (File.Exists(dir.FullPath + ".prescanpapers.json"))
-                {
-                    prepapers.LoadPrePapers(dir.FullPath + ".prescanpapers.json");
-                    ExistOKScanJson = ValidPreScanData(nameList, prepapers);
-                    if (!ExistOKScanJson)
-                        File.Delete(dir.FullPath + ".prescanpapers.json");
-                }
-                if (!ExistOKScanJson)
-                {
-                    prepapers = fps.PreScan();
-                    if (prepapers.AllDetected()) // 已成功预扫描
-                    {
-                        prepapers.SavePrePapers(dir.FullPath + ".prescanpapers.json");
-                        ExistOKScanJson = true;
-                    }
-                }
-                if (ExistOKScanJson) // 已成功预扫描
-                {
-                    _sc.Templateshow = new TemplateShow(dir.FullPath, dir.DirName, nameList[0], prepapers.PrePaperList[0].Detectdata);
-                    _sc.Templateshow.Template.FileName = _sc.Baseconfig.TemplatePath;
-                    if (_sc.Templateshow.OK)
-                    {
-                        this.Hide();
-                        FormTemplate f = new FormTemplate(_sc.Templateshow);
-                        f.ShowDialog();
-                        f.Clear();
-                        f = null;
-                        this.Show();
-                    }
-                }
-                else
+                _sc.Templateshow = new TemplateShow(dir.FullPath, dir.DirName,dir.ImgList()[0],fps.Prepapers.PrePaperList[0].Detectdata);
+                _sc.Templateshow.Template.FileName = _sc.Baseconfig.TemplatePath;
+                if (_sc.Templateshow.OK)
                 {
                     this.Hide();
-                    if (fps.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-                    {
-                    }
-                    else
-                    {
-                        MessageBox.Show("预处理失败");
-                    }
+                    FormTemplate f = new FormTemplate(_sc.Templateshow);
+                    f.ShowDialog();
+                    f.Clear();
+                    f = null;
                     this.Show();
                 }
             }
-            return;
-            //
-            if (nameList.Count > 0)
+            else
             {
-                if (checkBoxPreScanMode.Checked)
+                this.Hide();
+                if (fps.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
-                    this.Hide();
-                    FormPreScan fps = new FormPreScan(dir);
-                    if (fps.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-                    {
-                    }
-                    else
-                    {
-                        MessageBox.Show("预处理失败");
-                    }
-                    this.Show();
                 }
                 else
                 {
-                    try
-                    {
-                        _sc.Templateshow = new TemplateShow(dir.FullPath, dir.DirName, nameList[0]);
-                    }
-                    catch (Exception ee)
-                    {
-                        MessageBox.Show("特征点检测失败，请预处理！" + ee.Message);
-                        return;
-                    }
-                    _sc.Templateshow.Template.FileName = _sc.Baseconfig.TemplatePath;
-                    if (_sc.Templateshow.OK)
-                    {
-                        this.Hide();
-                        FormTemplate f = new FormTemplate(_sc.Templateshow);
-                        f.ShowDialog();
-                        f.Clear();
-                        f = null;
-                        this.Show();
-                    }
+                    MessageBox.Show("预处理失败");
                 }
+                this.Show();
             }
-        }
-
-        private static bool ValidPreScanData(List<string> nameList, PrePapers prepapers)
-        {
-            bool ValidPreScan = prepapers.PrePaperList.Exists(r => !nameList.Contains(r.ImgFilename));
-            return !ValidPreScan;
         }
         private void buttonMatchTemplate_Click(object sender, EventArgs e)
         {
@@ -191,21 +125,55 @@ namespace ScanTemplate
                 return;
             }
             TemplateInfo ti = (TemplateInfo)comboBoxTemplate.SelectedItem;
-            UnScan dir = (UnScan)listBoxUnScanDir.SelectedItem;
-            List<string> nameList = dir.ImgList();
-            if (nameList.Count > 0)
+            UnScan dir = (UnScan)listBoxUnScanDir.SelectedItem;            
+            if (dir.ImgList().Count == 0) return;
+            FormPreScan fps = new FormPreScan(dir);
+            bool ExistOKScanJson = fps.PreCheckJsonFile(dir);
+            if (ExistOKScanJson) // 已成功预扫描
             {
-                _sc.Templateshow = new TemplateShow(dir.FullPath, dir.DirName, nameList[0], ti,true);
+                //比较 两个Correct
+                if (!CheckMatched(ti, fps))
+                {
+                    MessageBox.Show("当前模板无法匹配，请重新选择模板，或者创建新模板");
+                    return;
+                }
+
+                _sc.Templateshow = new TemplateShow(dir.FullPath, dir.DirName, dir.ImgList()[0],fps.Prepapers.PrePaperList[0].Detectdata, ti,true);
+                //_sc.Templateshow = new TemplateShow(dir.FullPath, dir.DirName, dir.ImgList()[0], fps.Prepapers.PrePaperList[0].Detectdata);
+                _sc.Templateshow.Template.FileName = _sc.Baseconfig.TemplatePath;
                 if (_sc.Templateshow.OK)
                 {
                     this.Hide();
-                    FormTemplate f =new FormTemplate(_sc.Templateshow);
+                    FormTemplate f = new FormTemplate(_sc.Templateshow);
                     f.ShowDialog();
                     f.Clear();
                     f = null;
                     this.Show();
                 }
             }
+            else
+            {
+                this.Hide();
+                if (fps.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                {
+                }
+                else
+                {
+                    MessageBox.Show("预处理失败");
+                }
+                this.Show();
+            }
+        }
+
+        private bool CheckMatched(TemplateInfo ti, FormPreScan fps)
+        {
+            Size size = fps.Prepapers.PrePaperList[0].Detectdata.CorrectRect.Size;
+            Size oldsize = Templates.GetTemplate(ti.TemplateFileName).CorrectRect.Size;
+            double wrate = size.Width * 1.0 / oldsize.Width;
+            double hrate = size.Height * 1.0 / oldsize.Height;
+            if (wrate > 1.08 || wrate < 0.92 || hrate > 1.08 || hrate < 0.92)
+                return false;
+            return true;
         }
 		private void ButtonScanClick(object sender, EventArgs e)
 		{
@@ -508,6 +476,18 @@ namespace ScanTemplate
                     Directory.Move(_scan.SourcePath, NewImgsPath);
                     File.Copy(_scan.TemplateName, NewTemplatename, true);
                     File.WriteAllText(_scan.ScanDataPath + "\\" + examname + ".exam", examname);
+
+                    File.Move(_scan.SourcePath + ".prescanpapers.json", _scan.ScanDataPath + "\\img.prescanpapers.json");
+                    string str = File.ReadAllText(_scan.ScanDataPath + "\\img.prescanpapers.json");
+                    str = str.Replace(_scan.SourcePath.Replace("\\", "\\\\"), _scan.ScanDataPath.Replace("\\", "\\\\") + "\\\\img");
+                    File.WriteAllText(_scan.ScanDataPath + "\\img.prescanpapers.json", str);
+
+
+                    //string srcpath = dir.FullPath.Replace("\\LJH", "").Replace("\\img", "");
+                    //string str = File.ReadAllText(dir.FullPath + ".prescanpapers.json");
+                    //str = str.Replace(srcpath.Replace("\\", "\\\\"), dir.FullPath.Replace("\\", "\\\\"));
+                    //File.WriteAllText(dir.FullPath + ".prescanpapers.json", str);
+                
 
                     foreach(Paper p in _papers.PaperList)
                         p.SetNewFileName( p.ImgFilename.Replace(_scan.SourcePath, _scan.ScanDataPath + "\\img") );
@@ -1103,22 +1083,35 @@ namespace ScanTemplate
             if (e.KeyCode == Keys.M)
             {
                 if (listBoxScantData.SelectedIndex == -1) return;
-                ScanData sd = (ScanData)listBoxScantData.SelectedItem;               
-                if (File.Exists(sd.DataFullName) || File.Exists(sd.DataFullName+".json"))
+                ScanData sd = (ScanData)listBoxScantData.SelectedItem;
+                if (File.Exists(sd.DataFullName) || File.Exists(sd.DataFullName + ".json"))
                 {
-                    Scan  _scan = new Scan(_sc, sd.TemplateFileName, sd.ImgList, sd.Fullpath, false);
+                    Scan _scan = new Scan(_sc, sd.TemplateFileName, sd.ImgList, sd.Fullpath, false);
                     FileInfo fi = new FileInfo(sd.TemplateFileName);
-                    string path= fi.FullName.Substring(0, fi.FullName.Length - fi.Name.Length-1);
-                    TemplateInfo ti = new TemplateInfo(fi.FullName ,path);
-                    _sc.Templateshow = new TemplateShow("", "", sd.ImgList[0], ti,true);
-                    if (_sc.Templateshow.OK)
+                    string path = fi.FullName.Substring(0, fi.FullName.Length - fi.Name.Length - 1);
+                    TemplateInfo ti = new TemplateInfo(fi.FullName, path);
+                    UnScan dir  = new UnScan("img",path);
+
+                    FormPreScan fps = new FormPreScan(dir);
+                    bool ExistOKScanJson = fps.PreCheckJsonFile(dir);
+                    if (ExistOKScanJson) // 已成功预扫描
                     {
-                        this.Hide();
-                        FormTemplate f = new FormTemplate(_sc.Templateshow);
-                        f.ShowDialog();
-                        f.Clear();
-                        f = null;
-                        this.Show();
+                        if (!CheckMatched(ti, fps))
+                        {
+                            MessageBox.Show("当前模板无法匹配，请重新选择模板，或者创建新模板");
+                            return;
+                        }
+                        _sc.Templateshow = new TemplateShow(dir.FullPath, dir.DirName, dir.ImgList()[0], fps.Prepapers.PrePaperList[0].Detectdata, ti, true);
+                        _sc.Templateshow.Template.FileName = _sc.Baseconfig.TemplatePath;
+                        if (_sc.Templateshow.OK)
+                        {
+                            this.Hide();
+                            FormTemplate f = new FormTemplate(_sc.Templateshow);
+                            f.ShowDialog();
+                            f.Clear();
+                            f = null;
+                            this.Show();
+                        }
                     }
                 }
             }

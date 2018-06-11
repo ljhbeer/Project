@@ -92,27 +92,27 @@ namespace ScanTemplate
         public PrePapers PreScan()
         {
             _pp.Clear();
+            int index = 0;
             foreach (string s in _namelist)
             {
                 if (File.Exists(s))
-                    _pp.AddPrePaper(PreScan(s));
+                    _pp.AddPrePaper(PreScan(s,ref index));
             }
             return _pp;
         }
-        private PrePaper PreScan(string s)
+        private static PrePaper PreScan(string s,ref int index)
         {
             PrePaper pp = new PrePaper(s);
-            using (FileStream fs = new System.IO.FileStream(PreActiveFileName, System.IO.FileMode.Open, System.IO.FileAccess.Read))
+            using (FileStream fs = new System.IO.FileStream(s, System.IO.FileMode.Open, System.IO.FileAccess.Read))
             {
-                Bitmap src = (Bitmap)System.Drawing.Image.FromStream(_fs);
+                Bitmap src = (Bitmap)System.Drawing.Image.FromStream(fs);
                 Rectangle area = new Rectangle(new Point(), src.Size);
-                List<int> inflaterate = new List<int>() { 30, _src.Width / 5};
-                int index = 0;
+                List<int> inflaterate = new List<int>() { 30, src.Width / 5};
                 int circlecount = inflaterate.Count;
                 for (int i = 0; i < circlecount; i++)
                 {
-                    area.Inflate(-_src.Width / inflaterate[index], -_src.Height / inflaterate[index]);
-                    DetectData dd = DetectImageTools.DetectImg(_src, area, new Rectangle());
+                    area.Inflate(-src.Width / inflaterate[index], -src.Height / inflaterate[index]);
+                    DetectData dd = DetectImageTools.DetectImg(src, area, new Rectangle());
                     if (dd.Detected)
                     {
                         pp.Detectdata = dd;
@@ -773,6 +773,11 @@ namespace ScanTemplate
         ////////
         private List<Rectangle> _ListFeature;
         private PrePapers _pp;
+        private PrePapers _prepapers;
+        public PrePapers Prepapers
+        {
+            get { return _prepapers; }
+        }
         private void InitListFeature(DetectData dd)
         {
             _ListFeature = dd.ListFeature.Select(r => { r.Offset(dd.CorrectRect.Location); return r; }).ToList();
@@ -856,6 +861,43 @@ namespace ScanTemplate
                 pictureBox1.Invalidate();
             }
         }
+         
+        public bool PreCheckJsonFile(UnScan dir)
+        {
+            Boolean ExistOKScanJson = false;
+            _prepapers = new PrePapers();
+            if (!File.Exists(dir.Path + "data.txt.json"))
+            {
+                if (File.Exists(dir.FullPath + ".prescanpapers.json"))
+                {
+                    _prepapers.LoadPrePapers(dir.FullPath + ".prescanpapers.json");
+                    ExistOKScanJson = ValidPreScanData(dir.ImgList(), _prepapers);
+                    if (!ExistOKScanJson)
+                        File.Delete(dir.FullPath + ".prescanpapers.json");
+                }
+                if (!ExistOKScanJson)
+                {
+                    _prepapers = PreScan();
+                    if (_prepapers.AllDetected()) // 已成功预扫描
+                    {
+                        _prepapers.SavePrePapers(dir.FullPath + ".prescanpapers.json");
+                        ExistOKScanJson = true;
+                    }
+                }
+            }
+            else //扫描数据
+            {
+                ScanTemplate.FormYJ.Papers papers = new FormYJ.Papers();
+                //////////////
+            }
+            return ExistOKScanJson;
+        }
+        private static bool ValidPreScanData(List<string> nameList, PrePapers prepapers)
+        {
+            bool ValidPreScan = prepapers.PrePaperList.Exists(r => !nameList.Contains(r.ImgFilename));
+            return !ValidPreScan;
+        }
+
     }
     public class PrePapers
     {

@@ -162,6 +162,8 @@ namespace ScanTemplate
         {
             return Tools.FileTools.NameListFromDir(FullPath);
         }
+
+        public string Path { get { return path; } }
     }
     public class ScanDatas
     {
@@ -280,62 +282,22 @@ namespace ScanTemplate
         private string _dirname;
         private TemplateInfo ti;
 
-        public TemplateShow(string fullpath, string dirname, string imgfilename, DetectData dd )
-        {
-            this._fullpath = fullpath;
-            this._imgfilename = imgfilename;
-            this._dirname = dirname;
-            this.OK = true;
-            _artemplate = new Template(dd.ListFeature, dd.CorrectRect);
-        }
-
-        public TemplateShow(string fullpath,string dirname, string imgfilename, TemplateInfo ti=null,bool savefilename=false)
+        public TemplateShow(string fullpath,string dirname, string imgfilename, DetectData dd, TemplateInfo ti=null,bool savefilename=false)
         {
             this._fullpath = fullpath;
             this._imgfilename = imgfilename;
             this._dirname = dirname;
             this.ti = ti;
-            this.OK = false;
-            //this._src = (Bitmap)Bitmap.FromFile(_imgfilename);
-            System.IO.FileStream fs = new System.IO.FileStream(imgfilename, System.IO.FileMode.Open, System.IO.FileAccess.Read);
-            Bitmap _src = (Bitmap)System.Drawing.Image.FromStream(fs);
-
-            Rectangle area = new Rectangle(10, 10, _src.Width-20, _src.Height-20);
-            area.Inflate(9, 9);
-            Rectangle cr = new Rectangle();
+            this.OK = true; ;
+            _artemplate = new Template(dd.ListFeature, dd.CorrectRect);
             if (ti != null)
             {
-                cr = Templates.GetTemplateCorrect(ti.TemplateFileName);
-            }
-            else
-            {
-                area.Inflate(-9, -9);
-            }
-            DetectData dd = DetectImageTools.DetectImg(_src,area,cr);
-            //dd = DetectImageTools.DetectImg(_src, dd.CorrectRect);
-            if(ti==null)
-            dd = DetectImageTools.DetectCorrect.ReDetectCorrectImg(_src, dd);
-            if (dd.CorrectRect.Width > 0)
-            {
-                 if (ti == null)
-                 {
-                     _artemplate = new Template(dd.ListFeature,dd.CorrectRect);
-                 }
-                 else
-                 {
-                     _artemplate = new Template(dd.ListFeature,dd.CorrectRect);
-                     Template t = Templates.GetTemplate(ti.TemplateFileName);
-                     _artemplate.Match(t);
-                     if (savefilename)
-                         _artemplate.FileName = ti.TemplateFileName;                    
-                 }
-                 this.OK = true;
-            }
-           
-            fs.Close();
-            fs = null;
+                Template t = Templates.GetTemplate(ti.TemplateFileName);
+                _artemplate.Match(t);
+                if (savefilename)
+                    _artemplate.FileName = ti.TemplateFileName;
+            }           
         }
-
         public Template Template { get { return _artemplate; } }
         public string SrcFileName { get { return _imgfilename; } }
         public bool OK { get; set; }

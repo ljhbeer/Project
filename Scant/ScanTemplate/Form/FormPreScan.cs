@@ -32,7 +32,6 @@ namespace ScanTemplate
             _pp = new PrePapers();
             _fs = null;
             Init(null);
-            InitSrc();
         }
         private void Init(Template t)
         {
@@ -92,15 +91,69 @@ namespace ScanTemplate
         public PrePapers PreScan()
         {
             _pp.Clear();
-            int index = 0;
-            foreach (string s in _namelist)
+            if (_namelist.Count > 0)
             {
-                if (File.Exists(s))
-                    _pp.AddPrePaper(PreScan(s,ref index));
+                PrePaper p = PreScan(_namelist[0]);
+                if (p.Detected())
+                {
+                    List<Rectangle> lrtb = new List<Rectangle>();
+                    foreach (Rectangle r in p.listFeatures)
+                    {
+                        r.Inflate(r.Width / 2, r.Height / 2);
+                        r.Offset(p.Detectdata.CorrectRect.Location);
+                        lrtb.Add(r);
+                    }
+                    foreach (string s in _namelist)
+                    {
+                        if (File.Exists(s))
+                            _pp.AddPrePaper(PreScan(s,lrtb));
+                    }
+                }
             }
             return _pp;
         }
-        private static PrePaper PreScan(string s,ref int index)
+
+        private static PrePaper PreScan(string s, List<Rectangle> lrtb) //根据模板，设置四个点，分别检测
+        {
+            Rectangle LT = lrtb[0]; //LT
+            Point Center = new Point(LT.X + LT.Width / 2, LT.Y + LT.Height / 2);
+            LT.Inflate(LT.Width/3,LT.Height/3);
+             
+            PrePaper pp = new PrePaper(s);
+            using (FileStream fs = new System.IO.FileStream(s, System.IO.FileMode.Open, System.IO.FileAccess.Read))
+            {
+                Bitmap src = (Bitmap)System.Drawing.Image.FromStream(fs);
+                Rectangle area = new Rectangle(new Point(), src.Size);
+
+                List<Rectangle> ListFeature = new List<Rectangle>();
+                LT.Intersect(area);
+                Rectangle nrLT = Tools.DetectImageTools.DetectCorrect.DetectCorrectFromImg(src, LT, true, LT.Width / 5);
+                if (nrLT.Width > 0 && nrLT.Height > 0)
+                {
+                    ListFeature.Add(nrLT);
+                    Point DetectCenter = new Point(nrLT.X + nrLT.Width / 2, nrLT.Y + nrLT.Height / 2);
+                    Point offset = DetectCenter;
+                    offset.Offset(- Center.X, - Center.Y);
+
+                    for (int i = 1; i < lrtb.Count; i++)
+                    {
+                        Rectangle r = lrtb[i];
+                        r.Offset(offset);
+                        r.Intersect(area);
+                        ListFeature.Add(
+                            Tools.DetectImageTools.DetectCorrect.DetectCorrectFromImg(src, r, true, r.Width / 9)
+                            );
+                    }
+                }
+                DetectData dd = DetectImageTools.DetectCorrect.ConstructDetectData(ListFeature);
+                if (dd.Detected)
+                {
+                    pp.Detectdata = dd;
+                }
+            }
+            return pp;
+        }
+        private static PrePaper PreScan(string s)
         {
             PrePaper pp = new PrePaper(s);
             using (FileStream fs = new System.IO.FileStream(s, System.IO.FileMode.Open, System.IO.FileAccess.Read))
@@ -109,6 +162,7 @@ namespace ScanTemplate
                 Rectangle area = new Rectangle(new Point(), src.Size);
                 List<int> inflaterate = new List<int>() { 30, src.Width / 5};
                 int circlecount = inflaterate.Count;
+                int index = 0;
                 for (int i = 0; i < circlecount; i++)
                 {
                     area.Inflate(-src.Width / inflaterate[index], -src.Height / inflaterate[index]);
@@ -126,6 +180,7 @@ namespace ScanTemplate
         }
         private void FormPreScan_Load(object sender, EventArgs e)
         {
+            InitSrc();
             Rectangle area = new Rectangle(new Point(), _src.Size);
             Rectangle cr = new Rectangle();
             area.Inflate(-_src.Width / 30, -_src.Height / 30);
@@ -904,12 +959,14 @@ namespace ScanTemplate
         public PrePapers()
         {
             _PrePapers = new List<PrePaper>();
+            _dic = null;
         }
         public PrePapers(List<PrePaper> PrePapers)
         {
             _PrePapers = new List<PrePaper>();
             foreach (PrePaper p in PrePapers)
                 AddPrePaper(p);
+            _dic = null;
         }
         public void AddPrePaper(PrePaper p)
         {
@@ -930,6 +987,11 @@ namespace ScanTemplate
         public void Clear()
         {
             _PrePapers.Clear();
+            if (_dic != null)
+            {
+                _dic.Clear();
+                _dic = null;
+            }
         }
         public bool AllDetected()
         {
@@ -938,6 +1000,20 @@ namespace ScanTemplate
         [JsonProperty]
         private List<PrePaper> _PrePapers;
         public List<PrePaper> PrePaperList { get { return _PrePapers; } }
+
+        private Dictionary<string, PrePaper> _dic;
+        public PrePaper GetPrepaper(string s)
+        {
+            if (_dic == null)
+            {
+                _dic = new Dictionary<string, PrePaper>();
+                foreach (PrePaper p in _PrePapers)
+                    _dic[p.ImgFilename] = p;
+            }
+            if (_dic.ContainsKey(s))
+                return _dic[s];
+            return null;
+        }
     }
     [JsonObject(MemberSerialization.OptOut)]
     public class PrePaper

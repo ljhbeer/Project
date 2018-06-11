@@ -353,12 +353,18 @@ namespace ScanTemplate
             StringBuilder msg = new StringBuilder();
             StringBuilder sb = new StringBuilder();
             _angle = _template.Angle;
+         
 			foreach (string s in _nameList)
 			{
+                PrePaper p = Prepapers.GetPrepaper(s);
                 bool redo = false;
                 try
                 {
-                    Paper paper = DetectImg(s, ref msg);
+                    Paper paper;
+                    if(p ==null)
+                        paper= DetectImg(s, ref msg);
+                    else
+                        paper = DetectImg(p, ref msg);
                     sb.AppendLine(paper.ToJsonString() + ",");
                     if (DgShowScanMsg != null)
                         DgShowScanMsg(paper);//this.Invoke(new MyInvoke(ShowMsg));
@@ -366,11 +372,15 @@ namespace ScanTemplate
                 {
                     redo = true;
                 }
-               while (redo)
+               while (redo && global.Debug)
                 {
                     try
                     {
-                        Paper paper = DetectImg(s, ref msg);
+                        Paper paper;
+                        if (p == null)
+                            paper = DetectImg(s, ref msg);
+                        else
+                            paper = DetectImg(p, ref msg);                        
                         sb.AppendLine(paper.ToJsonString() + ",");
                         if (DgShowScanMsg != null)
                             DgShowScanMsg(paper);//this.Invoke(new MyInvoke(ShowMsg));
@@ -387,6 +397,95 @@ namespace ScanTemplate
             Msg = msg.ToString();
             if (DgSaveScanData != null)//this.Invoke(new MyInvoke(ExportData));
                 DgSaveScanData(_exportdata);
+        }
+        private Paper DetectImg(PrePaper prepaper, ref StringBuilder msg)
+        {
+            Paper paper = null;
+            string s = prepaper.ImgFilename;
+            StringBuilder sb = new StringBuilder();
+            System.IO.FileStream fs = new System.IO.FileStream(prepaper.ImgFilename, System.IO.FileMode.Open, System.IO.FileAccess.Read);
+            Bitmap orgsrc = (Bitmap)System.Drawing.Image.FromStream(fs);
+
+            if (prepaper.Detected())            
+            {
+                DetectData dd = prepaper.Detectdata;
+                paper = new Paper(s, dd.CorrectRect, dd.ListFeature);
+
+                int offset =_template.Manageareas.FeaturePoints.list[2].Rect.Height -
+                        dd.ListFeature[2].Height;
+                if (Math.Abs(offset) > 1)
+                {
+                    Rectangle r = dd.ListFeature[2];
+                    r.Offset(0, -offset);
+                    r.Height += 2;
+                    dd.ListFeature[2] = r;
+                }
+                _angle.DxyModel = true;
+                _angle.SetPaper(dd.ListFeature);
+
+                Bitmap src = (Bitmap)orgsrc.Clone(dd.CorrectRect, orgsrc.PixelFormat);
+                src.Save(CorrectPath + s.Substring(s.LastIndexOf("\\")));
+                AutoComputeXZTKH acx = new AutoComputeXZTKH(_template, src);
+                if (_template.Manageareas.KaohaoChoiceAreas.HasItems())
+                {
+                    KaoHaoChoiceArea kha = (KaoHaoChoiceArea)(_template.Dic["考号"][0]);
+                    if (kha.Type == "条形码")
+                    {
+                        Rectangle Ir = kha.ImgArea;
+                        Bitmap barmap = (Bitmap)src.Clone(kha.ImgArea, src.PixelFormat);
+                        //barmap.Save("f:\\aa.tif");
+                        //Ir.Offset(CorrectRect.Location);
+                        ZXing.Result rs = _sc.BR.Decode(barmap);
+                        if (rs != null) //kh必须是数字
+                        {
+                            paper.KH = Convert.ToInt32(rs.Text);
+                            if (_sc.Studentbases.HasStudentBase)
+                                paper.Name = _sc.Studentbases.GetName(paper.KH);
+                        }
+                    }
+                    else if (kha.Type == "无")
+                    {
+                        paper.KH = -1;
+                        paper.Name = "-";
+                    }
+                    else if ("1023456789".Contains(kha.Type))
+                    {
+                        paper.KH = -1;
+                        string kh = acx.ComputeKH(kha, _angle);
+                        if (!kh.Contains("-"))
+                        {
+                            paper.KH = Convert.ToInt32(kh);
+                            if (_sc.Studentbases.HasStudentBase)
+                                paper.Name = _sc.Studentbases.GetName(paper.KH);
+                        }
+                    }
+                }
+                string str = s.Substring(s.Length - 7, 3);
+                paper.AddXZT(acx.ComputeXZT(str, _angle));
+                //计算座位号
+                if (_template.Manageareas.Customareas.HasItems())
+                {
+                    StringBuilder tsb = new StringBuilder();
+                    foreach (CustomArea ca in _template.Manageareas.Customareas.list)
+                    {
+                        if ("1023456789".Contains(ca.Type))
+                        {
+                            AutoComputeXZTKH acxzdy = new AutoComputeXZTKH(_template, src);
+                            //sb.Append("," + acx.ComputeCustomDF(ca, _angle, nbmp));
+                            tsb.Append(acx.ComputeCustomDF(ca, _angle) + "|");
+                        }
+                    }
+                    paper.Custom = tsb.ToString();
+                }
+            }
+            else
+            {
+                msg.AppendLine(s);
+                //检测失败
+            }
+            fs.Close();
+            return paper;
+
         }
         private Paper DetectImg(string s,ref StringBuilder  msg)
         {
@@ -527,6 +626,8 @@ namespace ScanTemplate
         public string TemplateName { get { return _templatename; } }
         public AutoAngle Angle { get { return _angle; } }
         public Template Template { get { return _template; } }
+
+        public PrePapers Prepapers { get; set; }
     }
     public class ValueTag
     {

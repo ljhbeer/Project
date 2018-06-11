@@ -188,58 +188,87 @@ namespace ScanTemplate
         {
             TemplateInfo ti = (TemplateInfo)comboBoxTemplate.SelectedItem;
             UnScan dir = (UnScan)listBoxUnScanDir.SelectedItem;
-            List<string> nameList = dir.ImgList();
-            if (nameList.Count > 0)
+            FormPreScan fps = new FormPreScan(dir);
+            bool ExistOKScanJson = fps.PreCheckJsonFile(dir);
+            if (ExistOKScanJson) // 已成功预扫描
             {
-                //TODO: add Detect
-                _bReScan = false;
-                _bSingleTestScan = false;
-                if(filename!="" && File.Exists(filename)){
-                    nameList.Clear();
-                    nameList.Add(filename);
-                    _bSingleTestScan = true;
+                //比较 两个Correct
+                if (!CheckMatched(ti, fps))
+                {
+                    MessageBox.Show("当前模板无法匹配，请重新选择模板，或者创建新模板");
+                    return;
                 }
-                _scan = new Scan(_sc, ti.TemplateFileName, nameList, dir.FullPath);
-                _rundt = Tools.DataTableTools.ConstructDataTable(_scan.ColNames.ToArray());
-                dgv.DataSource = _rundt;
-                InitDgvUI();
-                _papers.PaperList.Clear();
-                _scan.DgSaveScanData = new DelegateSaveScanData(ExportData);
-                _scan.DgShowScanMsg = new DelegateShowScanMsg(ShowMsg);
-                _scan.DoScan();
+                //匹配
+                List<string> nameList = dir.ImgList();
+                if (nameList.Count > 0)
+                {
+                    //TODO: add Detect
+                    _bReScan = false;
+                    _bSingleTestScan = false;
+                    if (filename != "" && File.Exists(filename))
+                    {
+                        nameList.Clear();
+                        nameList.Add(filename);
+                        _bSingleTestScan = true;
+                    }
+                    _scan = new Scan(_sc, ti.TemplateFileName, nameList, dir.FullPath);
+                    _scan.Prepapers  =fps.Prepapers;
+                    _rundt = Tools.DataTableTools.ConstructDataTable(_scan.ColNames.ToArray());
+                    dgv.DataSource = _rundt;
+                    InitDgvUI();
+                    _papers.PaperList.Clear();
+                    _scan.DgSaveScanData = new DelegateSaveScanData(ExportData);
+                    _scan.DgShowScanMsg = new DelegateShowScanMsg(ShowMsg);                    
+                    _scan.DoScan();
+                }
             }
         }
         private void buttonReScan_Click(object sender, EventArgs e)
         {
-            /////// ReScan
-            if (_scan == null || _rundt == null || _rundt.Rows.Count == 0 || listBoxScantData.SelectedIndex == -1)
+            if (_scan == null || _rundt == null  || listBoxScantData.SelectedIndex == -1)
                 return;
             InitReDoScan();
         }
         private void InitReDoScan(string filename = "")
-        {
+        {            
+            //TemplateInfo ti = (TemplateInfo)comboBoxTemplate.SelectedItem;
             ScanData sd = (ScanData)listBoxScantData.SelectedItem;
             TemplateInfo ti = new TemplateInfo(sd.TemplateFileName, sd.Fullpath);
-            List<string> nameList = sd.ImgList;
-            if (nameList.Count > 0)
-            {//TODO: add Detect
-                _bReScan =true;
-                _bSingleTestScan = false;
-                if (filename != "" && File.Exists(filename))
+            //UnScan dir = (UnScan)listBoxUnScanDir.SelectedItem;
+            UnScan dir = new UnScan("img", sd.Fullpath);
+            FormPreScan fps = new FormPreScan(dir);
+            bool ExistOKScanJson = fps.PreCheckJsonFile(dir);
+            if (ExistOKScanJson) // 已成功预扫描
+            {
+                //比较 两个Correct
+                if (!CheckMatched(ti, fps))
                 {
-                    nameList.Clear();
-                    nameList.Add(filename);
-                    _bSingleTestScan = true;
+                    MessageBox.Show("当前模板无法匹配，请重新选择模板，或者创建新模板");
+                    return;
                 }
-
-                _scan = new Scan(_sc, ti.TemplateFileName, nameList, sd.Fullpath);
-                _rundt = Tools.DataTableTools.ConstructDataTable(_scan.ColNames.ToArray());
-                dgv.DataSource = _rundt;
-                InitDgvUI();
-                _papers.PaperList.Clear();
-                _scan.DgSaveScanData = new DelegateSaveScanData(ExportData);
-                _scan.DgShowScanMsg = new DelegateShowScanMsg(ShowMsg);
-                _scan.DoScan();
+                //匹配
+                List<string> nameList = dir.ImgList();
+                if (nameList.Count > 0)
+                {
+                    //TODO: add Detect
+                    _bReScan = false;
+                    _bSingleTestScan = false;
+                    if (filename != "" && File.Exists(filename))
+                    {
+                        nameList.Clear();
+                        nameList.Add(filename);
+                        _bSingleTestScan = true;
+                    }
+                    _scan = new Scan(_sc, ti.TemplateFileName, nameList, dir.FullPath);
+                    _scan.Prepapers = fps.Prepapers;
+                    _rundt = Tools.DataTableTools.ConstructDataTable(_scan.ColNames.ToArray());
+                    dgv.DataSource = _rundt;
+                    InitDgvUI();
+                    _papers.PaperList.Clear();
+                    _scan.DgSaveScanData = new DelegateSaveScanData(ExportData);
+                    _scan.DgShowScanMsg = new DelegateShowScanMsg(ShowMsg);
+                    _scan.DoScan();
+                }
             }
         }
         private void buttonOutTextImage_Click(object sender, EventArgs e)

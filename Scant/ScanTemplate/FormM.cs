@@ -181,7 +181,7 @@ namespace ScanTemplate
             {
 				MessageBox.Show("未选择目录或者模板");
                 return;
-            }
+            }           
             InitDoScan();
 		}
         private void InitDoScan(string filename = "")
@@ -230,7 +230,7 @@ namespace ScanTemplate
             InitReDoScan();
         }
         private void InitReDoScan(string filename = "")
-        {            
+        {
             //TemplateInfo ti = (TemplateInfo)comboBoxTemplate.SelectedItem;
             ScanData sd = (ScanData)listBoxScantData.SelectedItem;
             TemplateInfo ti = new TemplateInfo(sd.TemplateFileName, sd.Fullpath);
@@ -250,8 +250,8 @@ namespace ScanTemplate
                 List<string> nameList = dir.ImgList();
                 if (nameList.Count > 0)
                 {
-                    //TODO: add Detect
-                    _bReScan = false;
+                    /////////////  SetRescan
+                    _bReScan = true;
                     _bSingleTestScan = false;
                     if (filename != "" && File.Exists(filename))
                     {
@@ -267,7 +267,7 @@ namespace ScanTemplate
                     _papers.PaperList.Clear();
                     _scan.DgSaveScanData = new DelegateSaveScanData(ExportData);
                     _scan.DgShowScanMsg = new DelegateShowScanMsg(ShowMsg);
-                    _scan.DoScan();
+                    _scan.DoScan(true);
                 }
             }
         }
@@ -509,14 +509,8 @@ namespace ScanTemplate
                     File.Move(_scan.SourcePath + ".prescanpapers.json", _scan.ScanDataPath + "\\img.prescanpapers.json");
                     string str = File.ReadAllText(_scan.ScanDataPath + "\\img.prescanpapers.json");
                     str = str.Replace(_scan.SourcePath.Replace("\\", "\\\\"), _scan.ScanDataPath.Replace("\\", "\\\\") + "\\\\img");
+                    //str = str.Replace("\\\\", "\\").Replace(_scan.SourcePath, _scan.ScanDataPath + "\\img");
                     File.WriteAllText(_scan.ScanDataPath + "\\img.prescanpapers.json", str);
-
-
-                    //string srcpath = dir.FullPath.Replace("\\LJH", "").Replace("\\img", "");
-                    //string str = File.ReadAllText(dir.FullPath + ".prescanpapers.json");
-                    //str = str.Replace(srcpath.Replace("\\", "\\\\"), dir.FullPath.Replace("\\", "\\\\"));
-                    //File.WriteAllText(dir.FullPath + ".prescanpapers.json", str);
-                
 
                     foreach(Paper p in _papers.PaperList)
                         p.SetNewFileName( p.ImgFilename.Replace(_scan.SourcePath, _scan.ScanDataPath + "\\img") );
@@ -824,7 +818,7 @@ namespace ScanTemplate
                     kh = Convert.ToInt32(skh);
                 if ( kh<0 || !_sc.Studentbases.ContainsKey(kh) || name.Contains("-") || name.Trim()==""  )
                 {
-                    string fn = dr["文件名"].ToString().Replace("LJH\\", "LJH\\Correct\\").Replace("\\img","");
+                    string fn = dr["文件名"].ToString().Replace("\\\\","\\").Replace("LJH\\", "LJH\\Correct\\").Replace("\\img","");
                     if (File.Exists(fn))
                     {
                         double angle = (double)(dr["校验角度"]);

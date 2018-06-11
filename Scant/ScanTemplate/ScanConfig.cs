@@ -319,6 +319,7 @@ namespace ScanTemplate
         public DelegateSaveScanData DgSaveScanData;
         private string _srcpath;
         private bool _forscan;
+        private bool Rescan;
         public Scan(ScanConfig sc,string templatename, List<string> nameList,string fulldirpath,bool forscan=true)
         {
             this._forscan = forscan;
@@ -342,8 +343,9 @@ namespace ScanTemplate
         {
             //TODO: ClearScanData
         }
-        public void DoScan()
+        public void DoScan(bool rescan = false)
         {
+            this.Rescan = rescan;
             Thread thread = new Thread(new ThreadStart(RunScan));
             thread.Start();
         }
@@ -579,7 +581,15 @@ namespace ScanTemplate
             fs.Close();
             return paper;
         }
-        public string CorrectPath { get { return _sc.Baseconfig.CorrectImgPath + "\\" + _dirname; } }
+        public string CorrectPath { get {
+            //if (Rescan){
+            //    string dirname = SourcePath.Substring( 0,SourcePath.LastIndexOf("\\"));
+            //    dirname = dirname.Substring(dirname.LastIndexOf("\\"));          
+            //    return _sc.Baseconfig.CorrectImgPath+ dirname;
+            //}else
+                //return _sc.Baseconfig.CorrectImgPath + "\\" + _dirname; 
+            return _sc.Baseconfig.CorrectImgPath + "\\" + DirName; 
+        } }
         public List<string> ExportTitles { get { return _template.GetTitles(); } }
         public List<string> ColNames
         {
@@ -620,8 +630,20 @@ namespace ScanTemplate
         public string Msg { get; set; }
         public Dictionary<string, int> Titlepos { get { return _titlepos; } }
         public int Xztpos { get { return _xztpos; } }
-        public string ScanDataPath { get { return _sc.Baseconfig.ScanDataPath + "\\"+ _dirname; } }
-        public string DirName { get { return _dirname; } }
+        public string ScanDataPath { get { return _sc.Baseconfig.ScanDataPath + "\\"+ DirName; } }
+        public string DirName
+        {
+            get
+            {
+                if (Rescan)
+                {
+                    string dirname = SourcePath.Substring(0, SourcePath.LastIndexOf("\\"));
+                    dirname = dirname.Substring(dirname.LastIndexOf("\\"));
+                    return dirname;
+                }
+                return _dirname;
+            }
+        }
         public string SourcePath { get { return _srcpath; } }
         public string TemplateName { get { return _templatename; } }
         public AutoAngle Angle { get { return _angle; } }

@@ -17,20 +17,34 @@ namespace ScanTemplate
     [Flags]
     enum PreAct : short { None = 0, DefineDetectArea = 1, DefineFeaturePointDetectArea = 2, DefineScanLTDetectArea = 4, AutoDetect = 8, ShowImageMode = 16, NinthDetect, SixteenthDetect, PreDetect, NextImage, ZoomMouse, DetectMode };
     enum ShowImageMode : short { ShowFullImageMode, ShowCorrectImageMode }
-    enum DetectMode : short { Whole = 0, DetectArea =1,  DetectFeaturesArea=2, DetectLT=3, DetectLTninth, DetectLTSixteenth };
+    enum DetectMode : short { Whole = 0, DetectArea = 1, DetectFeaturesArea = 2, DetectLT = 3, DetectLTninth, DetectLTSixteenth, DetectCorrectArea };
 
     public partial class FormPreScan : Form
     {
-        public List<string> dms = new List<string>() {"全部", "检测范围","特征点范围","左上角范围"};
+        public List<string> dms = new List<string>() {"全部", "检测范围","特征点范围","左上角范围","Correct范围"};
         public FormPreScan(UnScan dir)
         {
             InitializeComponent();
+            _dir = dir;
             _fullpath = dir.FullPath;
             _dirName = dir.DirName;
             _namelist = dir.ImgList();
             _PreActiveid = 0;
             _pp = new PrePapers();
             _fs = null;
+            Init(null);
+        }
+        ~FormPreScan()
+        {
+            if(_src!=null)
+            {
+                _src = null;
+            }
+            if (_fs != null)
+            {
+                _fs.Close();
+                _fs = null;
+            }
             Init(null);
         }
         private void Init(Template t)
@@ -73,7 +87,7 @@ namespace ScanTemplate
         private void InitSrc( )
         {
             if (File.Exists(PreActiveFileName))
-            {
+            {                
                 Image orgsrc = GetPreActiveImage();
                 _src =(Bitmap) orgsrc.Clone();
                 if (_src != null)
@@ -93,26 +107,68 @@ namespace ScanTemplate
             _pp.Clear();
             if (_namelist.Count > 0)
             {
-                PrePaper p = PreScan(_namelist[0]);
-                if (p.Detected())
+                if (_dtm == DetectMode.DetectFeaturesArea)
                 {
-                    List<Rectangle> lrtb = new List<Rectangle>();
-                    foreach (Rectangle r in p.listFeatures)
-                    {
-                        r.Inflate(r.Width / 2, r.Height / 2);
-                        r.Offset(p.Detectdata.CorrectRect.Location);
-                        lrtb.Add(r);
-                    }
+                    List<Rectangle> areas = ReadDetectAreas();
                     foreach (string s in _namelist)
                     {
+                        _ListFeature = GetListFeature(areas, _src);
+                        _dd = DetectImageTools.DetectCorrect.ConstructDetectData(_ListFeature);
+                        PrePaper pp = new PrePaper(s);
+                        pp.Detectdata = _dd;                       
                         if (File.Exists(s))
-                            _pp.AddPrePaper(PreScan(s,lrtb,p.Detectdata.CorrectRect.Size));
+                            _pp.AddPrePaper( pp );
+                    }
+                }
+                else
+                {
+                    // TODO: DetectCorrectArea
+                    //_dtm == DetectMode.DetectCorrectArea
+                    PrePaper p = PreScanSelect(_namelist[0]);
+                    if (p.Detected())
+                    {
+                        List<Rectangle> lrtb = new List<Rectangle>();
+                        foreach (Rectangle r in p.listFeatures)
+                        {
+                            r.Inflate(r.Width / 2, r.Height / 2);
+                            r.Offset(p.Detectdata.CorrectRect.Location);
+                            lrtb.Add(r);
+                        }
+                        foreach (string s in _namelist)
+                        {
+                            if (File.Exists(s))
+                                _pp.AddPrePaper(PreScan(s, lrtb, p.listFeatures[0].Size));
+                        }
                     }
                 }
             }
             return _pp;
         }
-        private static PrePaper PreScan(string s, List<Rectangle> lrtb,Size correctsize) //根据模板，设置四个点，分别检测
+
+        private PrePaper PreScanSelect(string s)
+        {
+            if(_dtm == DetectMode.Whole )
+                return PreScan(s);
+            if (_dtm == DetectMode.DetectArea)
+            {
+                Rectangle DetectArea = ReadDetectArea();
+                if (DetectArea.Width > 0)
+                {
+                    return PreScan(s, DetectArea);
+                }
+            }
+            if (_dtm == DetectMode.DetectFeaturesArea || _dtm == DetectMode.DetectCorrectArea) //可以直接检测 
+            {
+                List<Rectangle> areas = ReadDetectAreas();
+                _ListFeature = GetListFeature(areas, _src);
+                _dd = DetectImageTools.DetectCorrect.ConstructDetectData(_ListFeature);
+                PrePaper pp = new PrePaper(s);
+                pp.Detectdata = _dd;
+                return pp;
+            }
+            return PreScan(s);
+        }
+        private static PrePaper PreScan(string s, List<Rectangle> lrtb,Size blocksize) //根据模板，设置四个点，分别检测
         {
             Rectangle LT = lrtb[0]; //LT
             Point Center = new Point(LT.X + LT.Width / 2, LT.Y + LT.Height / 2);
@@ -123,7 +179,7 @@ namespace ScanTemplate
                 Bitmap src = (Bitmap)System.Drawing.Image.FromStream(fs);
                 Rectangle area = new Rectangle(new Point(), src.Size);
 
-                Rectangle nrLT = DetectLTPoint(LT, src, correctsize );
+                Rectangle nrLT = DetectLTPoint(LT, src, blocksize );
                 //已检测到左上角
                 List<Rectangle> ListFeature = new List<Rectangle>();
                 if (nrLT.Width > 0 && nrLT.Height > 0)
@@ -152,10 +208,9 @@ namespace ScanTemplate
             }
             return pp;
         }
-
-        private static Rectangle DetectLTPoint(Rectangle LT, Bitmap src, Size correctsize)
+        private static Rectangle DetectLTPoint(Rectangle LT, Bitmap src, Size blocksize)
         {
-            Size blocksize = new Size(LT.Width/2,LT.Height/2);
+            //Size blocksize = new Size(LT.Width/2,LT.Height/2);
             Rectangle nrLT = new Rectangle();
             Rectangle area = new Rectangle(new Point(), src.Size);
             Rectangle detectarea = LT;
@@ -184,16 +239,17 @@ namespace ScanTemplate
         }
         private static PrePaper PreScan(string s)
         {
+            
             PrePaper pp = new PrePaper(s);
             using (FileStream fs = new System.IO.FileStream(s, System.IO.FileMode.Open, System.IO.FileAccess.Read))
             {
                 Bitmap src = (Bitmap)System.Drawing.Image.FromStream(fs);
-                Rectangle area = new Rectangle(new Point(), src.Size);
                 List<int> inflaterate = new List<int>() { 30, src.Width / 5};
                 int circlecount = inflaterate.Count;
                 int index = 0;
                 for (int i = 0; i < circlecount; i++)
                 {
+                    Rectangle area = new Rectangle(new Point(), src.Size);
                     area.Inflate(-src.Width / inflaterate[index], -src.Height / inflaterate[index]);
                     DetectData dd = DetectImageTools.DetectImg(src, area, new Rectangle());
                     if (dd.Detected)
@@ -203,6 +259,24 @@ namespace ScanTemplate
                     }
                     index++;
                     index %= circlecount;
+                }
+            }
+            return pp;
+        }
+        private static PrePaper PreScan(string s,Rectangle darea)
+        {
+            PrePaper pp = new PrePaper(s);
+            using (FileStream fs = new System.IO.FileStream(s, System.IO.FileMode.Open, System.IO.FileAccess.Read))
+            {
+                Bitmap src = (Bitmap)System.Drawing.Image.FromStream(fs);               
+                {
+                    Rectangle area = new Rectangle(new Point(), src.Size);
+                    darea.Intersect(area);
+                    DetectData dd = DetectImageTools.DetectImg(src,darea, new Rectangle());
+                    if (dd.Detected)
+                    {
+                        pp.Detectdata = dd;
+                    }
                 }
             }
             return pp;
@@ -491,6 +565,10 @@ namespace ScanTemplate
             {
                 _dtm = DetectMode.DetectFeaturesArea;
             }
+            else if (str == "Correct反应")
+            {
+                _dtm = DetectMode.DetectCorrectArea;
+            }
             else if (str == "左上角范围")
             {
                 _dtm = DetectMode.DetectLT;
@@ -513,53 +591,11 @@ namespace ScanTemplate
         }        
         private void CompletePreDetect()
         {
-            //TODO: PreDetectAllFiles
-            // 检测所有文件
-            List<Rectangle> areas = ReadDetectAreas();
-            if (areas.Count > 0)
-                foreach (string s in _namelist)
-                {
-                    string ss =  s;
-                    System.IO.FileStream fs = new System.IO.FileStream(ss, System.IO.FileMode.Open, System.IO.FileAccess.Read);
-                    Bitmap orgsrc = (Bitmap)System.Drawing.Image.FromStream(fs);
-                    List<Rectangle> ListFeature = GetListFeature(areas, orgsrc);
-                    //_dd = DetectImageTools.DetectCorrect.ConstructDetectData(_ListFeature);
-                    Bitmap rgb = orgsrc.Clone(ListFeature[0], orgsrc.PixelFormat);
-                    //ss =  "\\img" + s;
-                    //rgb.Save(ss);
-                    fs.Close();
-                }
+            UnScan dir = _dir;
+            if (dir.ImgList().Count == 0) return;
+            bool ExistOKScanJson = PreCheckJsonFile(dir);
 
-            //if (list.Count == 0) return;
-            //Bitmap _src = (Bitmap)pictureBox1.Image;
-            ////_src = _src.Clone(m_Imgselection,_src.PixelFormat);
-            //DetectData dd;
-            //try
-            //{
-            //    dd = DetectImageTools.DetectImg(_src, m_Imgselection);
-            //    dd = DetectImageTools.DetectCorrect.ReDetectCorrectImg(_src, dd);
-            //    double _dangle = AutoAngle.ComputeAngle(dd.ListFeature[0].Location, dd.ListFeature[1].Location);
-            //    double angle = -_dangle * 180 / Math.PI;
-            //    //Rorate
-            //    Bitmap _src1 = Tools.BitmapRotateTools.Rotate(_src, (float)angle);
-            //    _src1 = ConvertFormat.Convert(_src1, PixelFormat.Format1bppIndexed, false);
-
-            //    Rectangle Rect = dd.CorrectRect;
-            //    Rect.Inflate(40, 40);
-            //    Rect.Intersect(m_Imgselection);
-            //    dd = DetectImageTools.DetectImg(_src, Rect);
-            //    //dd = DetectImageTools.DetectCorrect.ReDetectCorrectImg(_src, dd);
-            //}
-            //catch
-            //{
-            //    return;
-            //}
-            //if (dd.CorrectRect.Width == 0) return;
-
-            //_autororate = new AutoRorate(dd.CorrectRect, list, _ActivePath, checkBoxVertical.Checked);
-            //_autororate.DgShowMsg = new DelegateShowMsg(ThreadShowMsg);
-            //_autororate.DoScan();
-            //_bScan = false;
+           
         }
         
         private Rectangle ReadDetectArea(String keyname = "检测范围")
@@ -636,15 +672,6 @@ namespace ScanTemplate
             List<Rectangle> areas = ReadDetectAreas();
             _ListFeature = GetListFeature(areas, _src);
             _dd =  DetectImageTools.DetectCorrect.ConstructDetectData(_ListFeature);
-
-            //foreach (Rectangle r in areas)
-            //{
-            //    Rectangle nr2 = Tools.DetectImageTools.DetectCorrect.DetectCorrectFromImg(_src, r, true, r.Width / 9);
-            //}
-            //Rectangle r = (Rectangle)listBoxDetectareas.SelectedItem;
-            //Bitmap src = (Bitmap)pictureBox1.Image;
-            //Rectangle nr2 = Tools.DetectImageTools.DetectCorrect.DetectCorrectFromImg(_src, r, true, r.Width / 9);
-           ///////////////
         }
 
         private void SetDetectAreas(List<Rectangle> list)
@@ -858,6 +885,7 @@ namespace ScanTemplate
         private List<Rectangle> _ListFeature;
         private PrePapers _pp;
         private PrePapers _prepapers;
+        private UnScan _dir;
         public PrePapers Prepapers
         {
             get { return _prepapers; }
@@ -1026,7 +1054,7 @@ namespace ScanTemplate
         }
         public bool AllDetected()
         {
-            return !_PrePapers.Exists(r => !r.Detected());
+            return !_PrePapers.Exists(r => !r.Detected()) && _PrePapers.Count>0;
         }
         [JsonProperty]
         private List<PrePaper> _PrePapers;

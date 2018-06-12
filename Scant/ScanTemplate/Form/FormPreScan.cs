@@ -979,7 +979,10 @@ namespace ScanTemplate
         private static bool ValidPreScanData(List<string> nameList, PrePapers prepapers)
         {
             bool ValidPreScan = prepapers.PrePaperList.Exists(r => !nameList.Contains(r.ImgFilename));
-            return !ValidPreScan;
+            List<string> namelist2 = prepapers.PrePaperList.Select( r => r.ImgFilename).ToList();
+            bool ValidPreScan2 = nameList.Exists( r => !namelist2.Contains(r));
+          
+            return !ValidPreScan && !ValidPreScan2 ;
         }
     }
     public class PrePapers

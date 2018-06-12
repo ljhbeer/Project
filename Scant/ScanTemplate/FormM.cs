@@ -1080,6 +1080,44 @@ namespace ScanTemplate
                     }
                 }
             }
+            else if (e.KeyCode == Keys.Delete)
+            { //删除已扫描数据
+                if (listBoxScantData.SelectedIndex == -1) return;
+                ScanData sd = (ScanData)listBoxScantData.SelectedItem;              
+                FormInput f = new FormInput("删除确认");
+                f.ShowDialog();
+                if (f.StrValue == null || f.StrValue != "Delete" + sd.ExamName)
+                    return;
+                if (Directory.Exists(sd.Fullpath))
+                    Directory.Delete(sd.Fullpath, true);               
+                //某些清理工作
+                buttonRefresh.PerformClick();
+            }
+        }
+        private void listBoxUnScanDir_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.O)
+            {
+                if (listBoxUnScanDir.SelectedIndex == -1) return;
+                UnScan dir = (UnScan)listBoxUnScanDir.SelectedItem;
+                if (Directory.Exists(dir.FullPath))
+                    System.Diagnostics.Process.Start(dir.FullPath);  
+            }
+            else if (e.KeyCode == Keys.Delete)
+            { //删除未扫描数据
+                if (listBoxUnScanDir.SelectedIndex == -1) return;
+                UnScan dir = (UnScan)listBoxUnScanDir.SelectedItem;
+                FormInput f = new FormInput("删除确认");
+                f.ShowDialog();
+                if (f.StrValue == null || f.StrValue != "Delete" + dir.DirName)
+                    return;
+                if (dir.DirName == "")
+                    return;
+                if (Directory.Exists(dir.FullPath))
+                    Directory.Delete(dir.FullPath, true);
+                //某些清理工作
+                buttonRefresh.PerformClick();
+            }
         }
         private void listBoxUnScanDir_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -1101,8 +1139,13 @@ namespace ScanTemplate
                 }
             }
         }
-
-
+        private void buttonReadme_Click(object sender, EventArgs e)
+        {
+            FormReadme f = new FormReadme();
+            f.SetText("已扫描列表\r\n1、按键 M  打开模板\r\n2、按键 Delete 删除\r\n\r\n未扫描目录\r\n"+
+                "1、按键O 打开当前目录\r\n2、按键Delete 删除\r\n");
+            f.ShowDialog();
+        }
         private class nameobj
         {
             public nameobj(string s)

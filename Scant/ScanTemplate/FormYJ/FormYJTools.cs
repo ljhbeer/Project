@@ -82,12 +82,12 @@ namespace ScanTemplate.FormYJ
             else if (e.KeyCode == Keys.Delete)
             { //删除考试数据
                 if (listBox1.SelectedIndex == -1) return;
+                ExamInfo ei = (ExamInfo)listBox1.SelectedItem;  
                 FormInput f = new FormInput("删除确认");
                 f.ShowDialog();
-               
-                ExamInfo ei = (ExamInfo)listBox1.SelectedItem;  
                 if (f.StrValue==null || f.StrValue != "Delete"+ei.Name)
-                    return;             
+                    return;  
+           
                 File.Delete(g.ExamPath + "\\" + ei.Name + ".json");
                 if (Directory.Exists(ei.Path))
                     Directory.Delete(ei.Path, true);                

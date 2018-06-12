@@ -64,6 +64,7 @@
             this.checkBoxShowUnScanNamelist = new System.Windows.Forms.CheckBox();
             this.checkBoxReSingleScan = new System.Windows.Forms.CheckBox();
             this.checkBoxPreScanMode = new System.Windows.Forms.CheckBox();
+            this.buttonReadme = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -323,6 +324,7 @@
             this.listBoxUnScanDir.Size = new System.Drawing.Size(224, 112);
             this.listBoxUnScanDir.TabIndex = 5;
             this.listBoxUnScanDir.SelectedIndexChanged += new System.EventHandler(this.listBoxUnScanDir_SelectedIndexChanged);
+            this.listBoxUnScanDir.KeyUp += new System.Windows.Forms.KeyEventHandler(this.listBoxUnScanDir_KeyUp);
             // 
             // label1
             // 
@@ -398,6 +400,7 @@
             this.tableLayoutPanel2.Controls.Add(this.checkBoxShowUnScanNamelist, 8, 0);
             this.tableLayoutPanel2.Controls.Add(this.checkBoxReSingleScan, 7, 0);
             this.tableLayoutPanel2.Controls.Add(this.checkBoxPreScanMode, 6, 0);
+            this.tableLayoutPanel2.Controls.Add(this.buttonReadme, 3, 0);
             this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 622);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
@@ -503,6 +506,16 @@
             this.checkBoxPreScanMode.Text = "预扫描模式";
             this.checkBoxPreScanMode.UseVisualStyleBackColor = true;
             // 
+            // buttonReadme
+            // 
+            this.buttonReadme.Location = new System.Drawing.Point(154, 3);
+            this.buttonReadme.Name = "buttonReadme";
+            this.buttonReadme.Size = new System.Drawing.Size(49, 22);
+            this.buttonReadme.TabIndex = 14;
+            this.buttonReadme.Text = "说明";
+            this.buttonReadme.UseVisualStyleBackColor = true;
+            this.buttonReadme.Click += new System.EventHandler(this.buttonReadme_Click);
+            // 
             // FormM
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -566,6 +579,7 @@
         private System.Windows.Forms.Button buttonOutTextImage;
         private System.Windows.Forms.CheckBox checkBoxShowUnScanNamelist;
         private System.Windows.Forms.CheckBox checkBoxReSingleScan;
-        private System.Windows.Forms.CheckBox checkBoxPreScanMode;        
+        private System.Windows.Forms.CheckBox checkBoxPreScanMode;
+        private System.Windows.Forms.Button buttonReadme;        
     }
 }

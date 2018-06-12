@@ -343,7 +343,7 @@ namespace ScanTemplate
         {
             //TODO: ClearScanData
         }
-        public void DoScan(bool rescan = false)
+        public void DoScan(bool rescan)
         {
             this.Rescan = rescan;
             Thread thread = new Thread(new ThreadStart(RunScan));

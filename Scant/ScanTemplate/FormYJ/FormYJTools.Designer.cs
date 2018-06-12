@@ -32,10 +32,10 @@
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.buttonRefresh = new System.Windows.Forms.Button();
             this.listBox1 = new System.Windows.Forms.ListBox();
-            this.buttonBeginYJ = new System.Windows.Forms.Button();
             this.textBoxWorkPath = new System.Windows.Forms.TextBox();
-            this.panel1 = new System.Windows.Forms.Panel();
+            this.buttonBeginYJ = new System.Windows.Forms.Button();
             this.buttonExportResult = new System.Windows.Forms.Button();
+            this.buttonReadMe = new System.Windows.Forms.Button();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.dgv = new System.Windows.Forms.DataGridView();
@@ -50,7 +50,6 @@
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
-            this.panel1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv)).BeginInit();
@@ -77,14 +76,17 @@
             // 
             // tableLayoutPanel1
             // 
-            this.tableLayoutPanel1.ColumnCount = 2;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 47.20812F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 52.79188F));
+            this.tableLayoutPanel1.ColumnCount = 4;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25.00062F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25.00063F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25.00062F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 24.99813F));
             this.tableLayoutPanel1.Controls.Add(this.buttonRefresh, 1, 0);
             this.tableLayoutPanel1.Controls.Add(this.listBox1, 0, 1);
-            this.tableLayoutPanel1.Controls.Add(this.buttonBeginYJ, 1, 2);
             this.tableLayoutPanel1.Controls.Add(this.textBoxWorkPath, 0, 0);
-            this.tableLayoutPanel1.Controls.Add(this.panel1, 0, 2);
+            this.tableLayoutPanel1.Controls.Add(this.buttonBeginYJ, 2, 2);
+            this.tableLayoutPanel1.Controls.Add(this.buttonExportResult, 0, 2);
+            this.tableLayoutPanel1.Controls.Add(this.buttonReadMe, 3, 0);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -98,9 +100,9 @@
             // buttonRefresh
             // 
             this.buttonRefresh.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.buttonRefresh.Location = new System.Drawing.Point(95, 3);
+            this.buttonRefresh.Location = new System.Drawing.Point(101, 3);
             this.buttonRefresh.Name = "buttonRefresh";
-            this.buttonRefresh.Size = new System.Drawing.Size(99, 24);
+            this.buttonRefresh.Size = new System.Drawing.Size(43, 24);
             this.buttonRefresh.TabIndex = 13;
             this.buttonRefresh.Text = "刷新";
             this.buttonRefresh.UseVisualStyleBackColor = true;
@@ -108,7 +110,7 @@
             // 
             // listBox1
             // 
-            this.tableLayoutPanel1.SetColumnSpan(this.listBox1, 2);
+            this.tableLayoutPanel1.SetColumnSpan(this.listBox1, 4);
             this.listBox1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.listBox1.FormattingEnabled = true;
             this.listBox1.ItemHeight = 12;
@@ -119,44 +121,50 @@
             this.listBox1.SelectedIndexChanged += new System.EventHandler(this.listBox1_SelectedIndexChanged);
             this.listBox1.KeyUp += new System.Windows.Forms.KeyEventHandler(this.listBox1_KeyUp);
             // 
+            // textBoxWorkPath
+            // 
+            this.tableLayoutPanel1.SetColumnSpan(this.textBoxWorkPath, 2);
+            this.textBoxWorkPath.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textBoxWorkPath.Location = new System.Drawing.Point(3, 3);
+            this.textBoxWorkPath.Name = "textBoxWorkPath";
+            this.textBoxWorkPath.ReadOnly = true;
+            this.textBoxWorkPath.Size = new System.Drawing.Size(92, 21);
+            this.textBoxWorkPath.TabIndex = 3;
+            this.textBoxWorkPath.Text = "E:\\Scan\\s1025";
+            // 
             // buttonBeginYJ
             // 
+            this.tableLayoutPanel1.SetColumnSpan(this.buttonBeginYJ, 2);
             this.buttonBeginYJ.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.buttonBeginYJ.Location = new System.Drawing.Point(95, 367);
+            this.buttonBeginYJ.Location = new System.Drawing.Point(101, 367);
             this.buttonBeginYJ.Name = "buttonBeginYJ";
-            this.buttonBeginYJ.Size = new System.Drawing.Size(99, 36);
+            this.buttonBeginYJ.Size = new System.Drawing.Size(93, 36);
             this.buttonBeginYJ.TabIndex = 7;
             this.buttonBeginYJ.Text = "开始阅卷";
             this.buttonBeginYJ.UseVisualStyleBackColor = true;
             this.buttonBeginYJ.Click += new System.EventHandler(this.buttonBeginYJ_Click);
             // 
-            // textBoxWorkPath
-            // 
-            this.textBoxWorkPath.Location = new System.Drawing.Point(3, 3);
-            this.textBoxWorkPath.Name = "textBoxWorkPath";
-            this.textBoxWorkPath.ReadOnly = true;
-            this.textBoxWorkPath.Size = new System.Drawing.Size(86, 21);
-            this.textBoxWorkPath.TabIndex = 3;
-            this.textBoxWorkPath.Text = "E:\\Scan\\s1025";
-            // 
-            // panel1
-            // 
-            this.panel1.Controls.Add(this.buttonExportResult);
-            this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel1.Location = new System.Drawing.Point(3, 367);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(86, 36);
-            this.panel1.TabIndex = 14;
-            // 
             // buttonExportResult
             // 
-            this.buttonExportResult.Location = new System.Drawing.Point(0, 0);
+            this.tableLayoutPanel1.SetColumnSpan(this.buttonExportResult, 2);
+            this.buttonExportResult.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.buttonExportResult.Location = new System.Drawing.Point(3, 367);
             this.buttonExportResult.Name = "buttonExportResult";
-            this.buttonExportResult.Size = new System.Drawing.Size(84, 33);
+            this.buttonExportResult.Size = new System.Drawing.Size(92, 36);
             this.buttonExportResult.TabIndex = 8;
             this.buttonExportResult.Text = "导出";
             this.buttonExportResult.UseVisualStyleBackColor = true;
             this.buttonExportResult.Click += new System.EventHandler(this.buttonExportResult_Click);
+            // 
+            // buttonReadMe
+            // 
+            this.buttonReadMe.Location = new System.Drawing.Point(150, 3);
+            this.buttonReadMe.Name = "buttonReadMe";
+            this.buttonReadMe.Size = new System.Drawing.Size(44, 23);
+            this.buttonReadMe.TabIndex = 14;
+            this.buttonReadMe.Text = "说明";
+            this.buttonReadMe.UseVisualStyleBackColor = true;
+            this.buttonReadMe.Click += new System.EventHandler(this.buttonReadMe_Click);
             // 
             // tableLayoutPanel2
             // 
@@ -291,7 +299,6 @@
             this.splitContainer1.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
-            this.panel1.ResumeLayout(false);
             this.tableLayoutPanel2.ResumeLayout(false);
             this.tableLayoutPanel3.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgv)).EndInit();
@@ -308,7 +315,6 @@
         private System.Windows.Forms.ListBox listBox1;
         private System.Windows.Forms.Button buttonBeginYJ;
         private System.Windows.Forms.TextBox textBoxWorkPath;
-        private System.Windows.Forms.Button buttonRefresh;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
         private System.Windows.Forms.DataGridView dgv;
@@ -318,7 +324,8 @@
         private System.Windows.Forms.Panel panel3;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Button buttonShowStudents;
-        private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Button buttonExportResult;
+        private System.Windows.Forms.Button buttonRefresh;
+        private System.Windows.Forms.Button buttonReadMe;
     }
 }

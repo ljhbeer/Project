@@ -61,9 +61,7 @@
     <Compile Include="Form\FormPreScan.Designer.cs">
       <DependentUpon>FormPreScan.cs</DependentUpon>
     </Compile>
-    <Compile Include="Form\FormChooseResult.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="Form\FormChooseResult.cs" />
     <Compile Include="Form\FormChooseResult.Designer.cs">
       <DependentUpon>FormChooseResult.cs</DependentUpon>
     </Compile>
@@ -73,14 +71,18 @@
     <Compile Include="Form\FormChoose.Designer.cs">
       <DependentUpon>FormChoose.cs</DependentUpon>
     </Compile>
-    <Compile Include="Form\FormOutTxtToImg.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="Form\FormOutTxtToImg.cs" />
     <Compile Include="Form\FormOutTxtToImg.Designer.cs">
       <DependentUpon>FormOutTxtToImg.cs</DependentUpon>
     </Compile>
     <Compile Include="FormYJ\ExportClassResult.cs" />
     <Compile Include="FormYJ\ResultObj.cs" />
+    <Compile Include="Form\FormReadme.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form\FormReadme.Designer.cs">
+      <DependentUpon>FormReadme.cs</DependentUpon>
+    </Compile>
     <Compile Include="tools\CnPYTool.cs" />
     <Compile Include="tools\DetectImgTools.cs" />
     <Compile Include="tools\PYTool.cs" />
@@ -167,6 +169,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FormM.resx">
       <DependentUpon>FormM.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Form\FormReadme.resx">
+      <DependentUpon>FormReadme.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Form\FormVerify.resx">
       <DependentUpon>FormVerify.cs</DependentUpon>

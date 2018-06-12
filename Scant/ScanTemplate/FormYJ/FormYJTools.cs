@@ -79,6 +79,30 @@ namespace ScanTemplate.FormYJ
                 File.WriteAllText(g.ExamPath + "\\" + ei.Name + ".json", str);
                 MessageBox.Show("已更新Exam文件");
             }
+            else if (e.KeyCode == Keys.Delete)
+            { //删除考试数据
+                if (listBox1.SelectedIndex == -1) return;
+                FormInput f = new FormInput("删除确认");
+                f.ShowDialog();
+               
+                ExamInfo ei = (ExamInfo)listBox1.SelectedItem;  
+                if (f.StrValue==null || f.StrValue != "Delete"+ei.Name)
+                    return;             
+                File.Delete(g.ExamPath + "\\" + ei.Name + ".json");
+                if (Directory.Exists(ei.Path))
+                    Directory.Delete(ei.Path, true);                
+                foreach (ExamInfo exin in g._examinfo)
+                {
+                    if (exin.Path == ei.Path)
+                    {
+                        g._examinfo.Remove(exin);
+                        break;
+                    }
+                }
+                g.SaveConfig( );
+                //某些清理工作
+                buttonRefresh.PerformClick();
+            }
         }
         private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -316,6 +340,12 @@ namespace ScanTemplate.FormYJ
                 _AvgUnImgWith /= _exam.Subjects.Count;
             }
         }
+        private void buttonReadMe_Click(object sender, EventArgs e)
+        {
+            FormReadme f = new FormReadme();
+            f.SetText("1、列表按键C  题组为空时，重构题组 \r\n   2、列表按键Delete  删除当前考试数据 ");
+            f.ShowDialog();
+        }
         private void AddStudentsdtset(ref DataTable dtset )
         {
             dtset = Tools.DataTableTools.ConstructDataTable(new string[] { "OID", "姓名", "考号"});           
@@ -392,6 +422,7 @@ namespace ScanTemplate.FormYJ
         private object _activeitem;
         private Examdata _examdata;
         private bool _bexamdatamodified;
+
     }
     public class Examdata
     {

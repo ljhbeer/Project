@@ -106,18 +106,16 @@ namespace ScanTemplate
                     foreach (string s in _namelist)
                     {
                         if (File.Exists(s))
-                            _pp.AddPrePaper(PreScan(s,lrtb));
+                            _pp.AddPrePaper(PreScan(s,lrtb,p.Detectdata.CorrectRect.Size));
                     }
                 }
             }
             return _pp;
         }
-
-        private static PrePaper PreScan(string s, List<Rectangle> lrtb) //根据模板，设置四个点，分别检测
+        private static PrePaper PreScan(string s, List<Rectangle> lrtb,Size correctsize) //根据模板，设置四个点，分别检测
         {
             Rectangle LT = lrtb[0]; //LT
             Point Center = new Point(LT.X + LT.Width / 2, LT.Y + LT.Height / 2);
-            LT.Inflate(LT.Width/3,LT.Height/3);
              
             PrePaper pp = new PrePaper(s);
             using (FileStream fs = new System.IO.FileStream(s, System.IO.FileMode.Open, System.IO.FileAccess.Read))
@@ -125,17 +123,17 @@ namespace ScanTemplate
                 Bitmap src = (Bitmap)System.Drawing.Image.FromStream(fs);
                 Rectangle area = new Rectangle(new Point(), src.Size);
 
+                Rectangle nrLT = DetectLTPoint(LT, src, correctsize );
+                //已检测到左上角
                 List<Rectangle> ListFeature = new List<Rectangle>();
-                LT.Intersect(area);
-                Rectangle nrLT = Tools.DetectImageTools.DetectCorrect.DetectCorrectFromImg(src, LT, true, LT.Width / 5);
                 if (nrLT.Width > 0 && nrLT.Height > 0)
                 {
-                    ListFeature.Add(nrLT);
+                    //ListFeature.Add(nrLT);
                     Point DetectCenter = new Point(nrLT.X + nrLT.Width / 2, nrLT.Y + nrLT.Height / 2);
                     Point offset = DetectCenter;
-                    offset.Offset(- Center.X, - Center.Y);
+                    offset.Offset(-Center.X, -Center.Y);
 
-                    for (int i = 1; i < lrtb.Count; i++)
+                    for (int i = 0; i < lrtb.Count; i++)
                     {
                         Rectangle r = lrtb[i];
                         r.Offset(offset);
@@ -144,14 +142,44 @@ namespace ScanTemplate
                             Tools.DetectImageTools.DetectCorrect.DetectCorrectFromImg(src, r, true, r.Width / 9)
                             );
                     }
-                }
-                DetectData dd = DetectImageTools.DetectCorrect.ConstructDetectData(ListFeature);
-                if (dd.Detected)
-                {
-                    pp.Detectdata = dd;
+
+                    DetectData dd = DetectImageTools.DetectCorrect.ConstructDetectData(ListFeature);
+                    if (dd.Detected)
+                    {
+                        pp.Detectdata = dd;
+                    }
                 }
             }
             return pp;
+        }
+
+        private static Rectangle DetectLTPoint(Rectangle LT, Bitmap src, Size correctsize)
+        {
+            Size blocksize = new Size(LT.Width/2,LT.Height/2);
+            Rectangle nrLT = new Rectangle();
+            Rectangle area = new Rectangle(new Point(), src.Size);
+            Rectangle detectarea = LT;
+            
+            detectarea.Inflate(detectarea.Width / 3, detectarea.Height / 3);
+            detectarea.Intersect(area);
+            nrLT = Tools.DetectImageTools.DetectCorrect.DetectCorrectFromImg(src, detectarea, true, detectarea.Width / 5);
+
+            //重新设置范围检测
+            if (nrLT.Width == 0 || nrLT.Height == 0)
+            {
+            }
+            if (nrLT.Width > 0 || nrLT.Height > 0)
+            {
+                double wrate = nrLT.Width * 1.0 / blocksize.Width;
+                double hrate = nrLT.Height * 1.0 / blocksize.Height;
+                if (wrate > 1.2 || wrate < 0.8 || hrate > 1.2 || hrate < 0.8)
+                {
+                    detectarea = new Rectangle(nrLT.Location, new Size());
+                    detectarea.Inflate(blocksize);
+                    nrLT = Tools.DetectImageTools.DetectCorrect.DetectCorrectFromImg(src, detectarea, true, detectarea.Width / 5);
+                }
+            }
+            return nrLT;
         }
         private static PrePaper PreScan(string s)
         {
@@ -952,7 +980,6 @@ namespace ScanTemplate
             bool ValidPreScan = prepapers.PrePaperList.Exists(r => !nameList.Contains(r.ImgFilename));
             return !ValidPreScan;
         }
-
     }
     public class PrePapers
     {

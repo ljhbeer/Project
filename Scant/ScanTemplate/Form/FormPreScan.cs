@@ -824,7 +824,7 @@ namespace ScanTemplate
         ////////
         private ShowImageMode _sim;
         private DetectMode _dtm;
-        private DetectMode _dtm2;
+        //private DetectMode _dtm2;
         ////////
         private List<Rectangle> _ListFeature;
         private PrePapers _pp;

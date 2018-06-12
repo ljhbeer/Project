@@ -61,10 +61,8 @@ namespace ScanTemplate.FormYJ
         {
             _Optionanswer = _exam.OSubjects.Select(r => r.Answer).ToList();
             _OptionMaxscore = _exam.OSubjects.Select(r => r.Score).ToList();
-            if (!_Optionanswer.Exists(r => r.Length == 0 )//|| !"ABCD".Contains(r)  //有不定项选择
-                && !_OptionMaxscore.Exists(r => r <= 0))
-                ;
-            else
+            if(! (!_Optionanswer.Exists(r => r.Length == 0 )//|| !"ABCD".Contains(r)  //有不定项选择
+                && !_OptionMaxscore.Exists(r => r <= 0)))
                 return false;
             _ABCD = new List<string>() { "A", "B", "C", "D" };
             _dicABCDToOption = _ABCD.ToDictionary(r => r, r => r[0] - 'A');
@@ -438,7 +436,7 @@ namespace ScanTemplate.FormYJ
         private Exam _exam;
         private Imgsubjects _Imgsubjects;
         private Optionsubjects _Optionsubjects;
-        private TzAreas _TzAreas;
+        //private TzAreas _TzAreas;
         private Tzsubjects _Tzsubjects;
         private AutoAngle _angle;
     }

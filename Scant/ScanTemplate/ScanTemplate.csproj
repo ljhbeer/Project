@@ -79,18 +79,6 @@
     <Compile Include="Form\FormOutTxtToImg.Designer.cs">
       <DependentUpon>FormOutTxtToImg.cs</DependentUpon>
     </Compile>
-    <Compile Include="Form\FormPreDeal.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Form\FormPreDeal.Designer.cs">
-      <DependentUpon>FormPreDeal.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Form\FormPreDealImage.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Form\FormPreDealImage.Designer.cs">
-      <DependentUpon>FormPreDealImage.cs</DependentUpon>
-    </Compile>
     <Compile Include="FormYJ\ExportClassResult.cs" />
     <Compile Include="FormYJ\ResultObj.cs" />
     <Compile Include="tools\CnPYTool.cs" />
@@ -173,12 +161,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Form\FormOutTxtToImg.resx">
       <DependentUpon>FormOutTxtToImg.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Form\FormPreDeal.resx">
-      <DependentUpon>FormPreDeal.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Form\FormPreDealImage.resx">
-      <DependentUpon>FormPreDealImage.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Form\FormInputComboBox.resx">
       <DependentUpon>FormInputComboBox.cs</DependentUpon>

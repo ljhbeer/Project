@@ -63,8 +63,6 @@
             this.buttonOutTextImage = new System.Windows.Forms.Button();
             this.checkBoxShowUnScanNamelist = new System.Windows.Forms.CheckBox();
             this.checkBoxReSingleScan = new System.Windows.Forms.CheckBox();
-            this.buttonPreDealImage = new System.Windows.Forms.Button();
-            this.buttonRorateAndCutImage = new System.Windows.Forms.Button();
             this.checkBoxPreScanMode = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -399,8 +397,6 @@
             this.tableLayoutPanel2.Controls.Add(this.buttonOutTextImage, 2, 0);
             this.tableLayoutPanel2.Controls.Add(this.checkBoxShowUnScanNamelist, 8, 0);
             this.tableLayoutPanel2.Controls.Add(this.checkBoxReSingleScan, 7, 0);
-            this.tableLayoutPanel2.Controls.Add(this.buttonPreDealImage, 5, 0);
-            this.tableLayoutPanel2.Controls.Add(this.buttonRorateAndCutImage, 3, 0);
             this.tableLayoutPanel2.Controls.Add(this.checkBoxPreScanMode, 6, 0);
             this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 622);
@@ -447,7 +443,7 @@
             this.textBoxMsg.ForeColor = System.Drawing.Color.Red;
             this.textBoxMsg.Location = new System.Drawing.Point(254, 3);
             this.textBoxMsg.Name = "textBoxMsg";
-            this.textBoxMsg.Size = new System.Drawing.Size(389, 21);
+            this.textBoxMsg.Size = new System.Drawing.Size(486, 21);
             this.textBoxMsg.TabIndex = 4;
             // 
             // checkBoxDebug
@@ -495,26 +491,6 @@
             this.checkBoxReSingleScan.TabIndex = 12;
             this.checkBoxReSingleScan.Text = "ReSingleScan";
             this.checkBoxReSingleScan.UseVisualStyleBackColor = true;
-            // 
-            // buttonPreDealImage
-            // 
-            this.buttonPreDealImage.Location = new System.Drawing.Point(746, 3);
-            this.buttonPreDealImage.Name = "buttonPreDealImage";
-            this.buttonPreDealImage.Size = new System.Drawing.Size(64, 22);
-            this.buttonPreDealImage.TabIndex = 10;
-            this.buttonPreDealImage.Text = "重命名IMG";
-            this.buttonPreDealImage.UseVisualStyleBackColor = true;
-            this.buttonPreDealImage.Click += new System.EventHandler(this.buttonPreDealImage_Click);
-            // 
-            // buttonRorateAndCutImage
-            // 
-            this.buttonRorateAndCutImage.Location = new System.Drawing.Point(154, 3);
-            this.buttonRorateAndCutImage.Name = "buttonRorateAndCutImage";
-            this.buttonRorateAndCutImage.Size = new System.Drawing.Size(83, 22);
-            this.buttonRorateAndCutImage.TabIndex = 10;
-            this.buttonRorateAndCutImage.Text = "旋转剪切IMG";
-            this.buttonRorateAndCutImage.UseVisualStyleBackColor = true;
-            this.buttonRorateAndCutImage.Click += new System.EventHandler(this.buttonRorateAndCutImage_Click);
             // 
             // checkBoxPreScanMode
             // 
@@ -588,10 +564,8 @@
         private System.Windows.Forms.CheckBox checkBoxDebug;
         private System.Windows.Forms.Button buttonUnScanNameList;
         private System.Windows.Forms.Button buttonOutTextImage;
-        private System.Windows.Forms.Button buttonPreDealImage;
         private System.Windows.Forms.CheckBox checkBoxShowUnScanNamelist;
         private System.Windows.Forms.CheckBox checkBoxReSingleScan;
-        private System.Windows.Forms.Button buttonRorateAndCutImage;
         private System.Windows.Forms.CheckBox checkBoxPreScanMode;        
     }
 }

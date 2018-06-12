@@ -49,6 +49,7 @@
             this.comboBoxType = new System.Windows.Forms.ComboBox();
             this.buttonSetHalfScore = new System.Windows.Forms.Button();
             this.buttonImportMultiAnswer = new System.Windows.Forms.Button();
+            this.buttonExportAnswer = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewAnswer)).BeginInit();
             this.SuspendLayout();
             // 
@@ -187,7 +188,7 @@
             // 
             // buttonOK
             // 
-            this.buttonOK.Location = new System.Drawing.Point(355, 250);
+            this.buttonOK.Location = new System.Drawing.Point(355, 222);
             this.buttonOK.Name = "buttonOK";
             this.buttonOK.Size = new System.Drawing.Size(97, 28);
             this.buttonOK.TabIndex = 51;
@@ -246,11 +247,22 @@
             this.buttonImportMultiAnswer.UseVisualStyleBackColor = true;
             this.buttonImportMultiAnswer.Click += new System.EventHandler(this.buttonImportMultiAnswer_Click);
             // 
+            // buttonExportAnswer
+            // 
+            this.buttonExportAnswer.Location = new System.Drawing.Point(360, 481);
+            this.buttonExportAnswer.Name = "buttonExportAnswer";
+            this.buttonExportAnswer.Size = new System.Drawing.Size(137, 31);
+            this.buttonExportAnswer.TabIndex = 59;
+            this.buttonExportAnswer.Text = "导出选择题答案";
+            this.buttonExportAnswer.UseVisualStyleBackColor = true;
+            this.buttonExportAnswer.Click += new System.EventHandler(this.buttonExportAnswer_Click);
+            // 
             // FormSetscore
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(509, 516);
+            this.Controls.Add(this.buttonExportAnswer);
             this.Controls.Add(this.buttonImportMultiAnswer);
             this.Controls.Add(this.buttonSetHalfScore);
             this.Controls.Add(this.comboBoxType);
@@ -304,5 +316,6 @@
         private System.Windows.Forms.ComboBox comboBoxType;
         private System.Windows.Forms.Button buttonSetHalfScore;
         private System.Windows.Forms.Button buttonImportMultiAnswer;
+        private System.Windows.Forms.Button buttonExportAnswer;
     }
 }

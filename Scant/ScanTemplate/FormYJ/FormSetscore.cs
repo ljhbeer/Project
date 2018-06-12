@@ -175,6 +175,35 @@ namespace ScanTemplate.FormYJ
             this.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.Close();
         }
+        private void buttonExportAnswer_Click(object sender, EventArgs e)
+        {
+            string strscores = "1-";
+            string str = "1-";
+            string answer = "";
+            string score = "";
+            for (int i = 0; i < _xzt.Count; i++)
+            {
+                answer += _xzt[i].OptionAnswer + " ";
+                score += _xzt[i].Score + " ";
+                if ((i+1) % 5 == 0 || i== _xzt.Count-1)
+                {
+                    str +=  (i+1) + " " + answer;
+                    strscores+=(i+1) + " " +score;
+                    if (i < _xzt.Count - 1)
+                    {
+                        str += "\r\n" + (i + 2) + "-";
+                        strscores +="\r\n" + (i + 2) + "-";
+                    }
+                    answer = "";
+                    score = "";
+                }
+            }
+            textBoxAnswer.Text = str+"\r\n分值设置\r\n"+strscores;
+            InitDgvAndCbx();
+            ReFreshDgv();
+            textBoxAnswer.Focus();
+            textBoxAnswer.SelectAll();
+        }
         private void comboBoxBegin_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (comboBoxBegin.SelectedIndex != -1 )//&& comboBoxBegin.SelectedIndex < comboBoxEnd.SelectedIndex)
@@ -290,6 +319,7 @@ namespace ScanTemplate.FormYJ
         {
             comboBoxType.SelectedIndex = 0;
         }
+
     }
     
     public class XztQuestion

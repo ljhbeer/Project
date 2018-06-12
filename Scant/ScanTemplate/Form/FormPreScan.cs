@@ -168,6 +168,7 @@ namespace ScanTemplate
             if (nrLT.Width == 0 || nrLT.Height == 0)
             {
             }
+
             if (nrLT.Width > 0 || nrLT.Height > 0)
             {
                 double wrate = nrLT.Width * 1.0 / blocksize.Width;

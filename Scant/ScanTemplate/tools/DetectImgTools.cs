@@ -298,5 +298,77 @@ namespace  Tools
                 return false;
             }
         }
-    }    
+    }
+    public class LTBRTBTools
+    {
+        public static void CheckSetListLTBRTB(ref List<Point> list)
+        {
+            if (list.Count == 4)
+            {
+                List<int> Pos = GetLTBRTBPos(list);
+                if (!(Pos[0] == 0 && Pos[1] == 1 && Pos[2] == 2 && Pos[3] == 3))
+                {
+                    //改变序列
+                    Point[] tp = new Point[4];
+                    for (int i = 0; i < list.Count; i++)
+                    {
+                        //list[i] = tp[Pos[i]];
+                        tp[i] = list[Pos[i]];
+                    }
+                    list.Clear();
+                    list.AddRange(tp);
+                }
+            }
+        }
+        public static void CheckSetListLTBRTB(ref List<Rectangle> list)
+        {
+            if (list.Count == 4)
+            {
+                List<Point> list1 = list.Select(r => r.Location).ToList();
+                List<int> Pos = GetLTBRTBPos(list1);
+                if (!(Pos[0] == 0 && Pos[1] == 1 && Pos[2] == 2 && Pos[3] == 3)
+                   && Pos.Distinct().Count() == 4 && Pos.Sum() == 6)
+                {
+                    //改变序列
+                    Rectangle[] tp = new Rectangle[4];
+                    for (int i = 0; i < list.Count; i++)
+                    {
+                        //list[i] = tp[Pos[i]];
+                        tp[i] = list[Pos[i]];
+                    }
+                    list.Clear();
+                    list.AddRange(tp);
+                }
+            }
+        }
+        public static List<int> GetLTBRTBPos(List<Point> list)
+        {
+            Rectangle U = new Rectangle(list[0], new Size(1, 1));
+            for (int i = 1; i < list.Count; i++)
+                U = Rectangle.Union(U, new Rectangle(list[i], new Size(1, 1)));
+            Point Center = new Point(U.X + U.Width / 2, U.Y + U.Height / 2);
+
+            List<int> Pos = new List<int>();
+            for (int i = 0; i < list.Count; i++)
+            {
+                int pos = -1;
+                if (list[i].X < Center.X)
+                {
+                    if (list[i].Y < Center.Y)
+                        pos = 0;
+                    else
+                        pos = 1;
+                }
+                else
+                {
+                    if (list[i].Y < Center.Y)
+                        pos = 2;
+                    else
+                        pos = 3;
+                }
+                Pos.Add(pos);
+            }
+            return Pos;
+        }
+    }
 }

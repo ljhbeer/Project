@@ -252,18 +252,25 @@ namespace ScanTemplate
             using (FileStream fs = new System.IO.FileStream(s, System.IO.FileMode.Open, System.IO.FileAccess.Read))
             {
                 Bitmap src = (Bitmap)System.Drawing.Image.FromStream(fs);
+                Rectangle srcarea = new Rectangle(new Point(), src.Size);
                 List<int> inflaterate = new List<int>() { 30, src.Width / 5};
                 int circlecount = inflaterate.Count;
                 int index = 0;
                 for (int i = 0; i < circlecount; i++)
                 {
-                    Rectangle area = new Rectangle(new Point(), src.Size);
+                    Rectangle area = srcarea;
                     area.Inflate(-src.Width / inflaterate[index], -src.Height / inflaterate[index]);
                     DetectData dd = DetectImageTools.DetectImg(src, area, new Rectangle());
-                    if (dd.Detected)
+                   
+                    if (dd.Detected  )
                     {
-                        pp.Detectdata = dd;
-                        break;
+                        Rectangle LT = dd.ListFeature[0];
+                        LT.Offset(dd.CorrectRect.Location);
+                        if (DetectImageTools.CheckWholeDetectBlock(src, srcarea, LT))
+                        {
+                            pp.Detectdata = dd;
+                            break; 
+                        }
                     }
                     index++;
                     index %= circlecount;
@@ -271,6 +278,8 @@ namespace ScanTemplate
             }
             return pp;
         }
+
+        
         private static PrePaper PreScan(string s,Rectangle darea)
         {
             PrePaper pp = new PrePaper(s);

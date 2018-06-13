@@ -37,6 +37,23 @@ namespace  Tools
             //src.Clone(cr, src.PixelFormat).Save("F:\\debug\\LT.tif");
             return cr.Location;
         }
+        public static bool CheckWholeDetectBlock(Bitmap src, Rectangle area, Rectangle LT)
+        {
+            List<Rectangle> yuji = LTBRTBTools.GetYanShen(LT, 4);
+            foreach (Rectangle r in yuji)
+            {
+                r.Intersect(area);
+                if (r.Width >= 2 && r.Height > 2)
+                {
+                    int pixs = BitmapTools.CountRectBlackcnt(src, r);
+                    if (pixs > r.Width * r.Height * .6)
+                    {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
         public class DetectCorrect
         {
             public static DetectData ReDetectCorrectImg(Bitmap src, DetectData dd)
@@ -267,7 +284,7 @@ namespace  Tools
                         Rectangle _paper = new Rectangle(new Point(), _Src.Size);
                         g.FillRectangle(Brushes.White, _paper);
                     }
-            }
+            }            
         }
     }
     public class DetectData
@@ -369,6 +386,40 @@ namespace  Tools
                 Pos.Add(pos);
             }
             return Pos;
+        }
+        public static List<Rectangle> GetYuji(Rectangle A, Rectangle B)
+        {
+            List<Rectangle> lst = new List<Rectangle>();
+            Rectangle Bi = B;
+            Bi.Intersect(A);
+            if (Bi.Width == 0 || Bi.Height == 0)
+                lst.Add(A);
+            else
+            {
+                //T
+                if (A.Top < Bi.Top)
+                    lst.Add(new Rectangle(A.X, A.Y, A.Width, Bi.Top - A.Top));
+                //B
+                if (A.Bottom > Bi.Bottom)
+                    lst.Add(new Rectangle(A.X, Bi.Bottom, A.Width, A.Bottom - Bi.Bottom));
+                //L
+                if (Bi.X > A.X)
+                    lst.Add(new Rectangle(A.X, Bi.Top, Bi.X - A.X + 1, Bi.Height));
+                //R
+                if (A.Right > Bi.Right)
+                    lst.Add(new Rectangle(B.Right, B.Top, A.Right - Bi.Right, Bi.Height));
+            }
+            return lst;
+        }
+
+        public static List<Rectangle> GetYanShen(Rectangle LT, int len)
+        {
+            List<Rectangle> lst = new List<Rectangle>();
+            lst.Add(new Rectangle(LT.X - len, LT.Y, 4, LT.Height));
+            lst.Add(new Rectangle(LT.X, LT.Y - len, LT.Width, 4));
+            lst.Add(new Rectangle(LT.Right +1, LT.Y, 4, LT.Height));
+            lst.Add(new Rectangle(LT.X, LT.Bottom+1, LT.Width, 4));
+            return lst;
         }
     }
 }

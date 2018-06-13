@@ -639,7 +639,11 @@ namespace ScanTemplate
                     areas.Add(DetectArea);
                 }
             }
-            TreeNode t = m_tn.Nodes[keyname].Nodes[0];
+            //TreeNode t = m_tn.Nodes[keyname].Nodes[0];
+            if (keyname == "特征点范围" && areas.Count  == 4)
+            {
+                LTBRTBTools.CheckSetListLTBRTB(ref areas);
+            }
             return areas;
         }
         private void AutoDetectByDetectArea()

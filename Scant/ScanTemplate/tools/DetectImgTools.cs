@@ -158,9 +158,11 @@ namespace  Tools
                 yycnt = yycnt.Select(r => xxcnt.Length - r).ToArray();
                 int xxavg = (int)xxcnt.Average() / 3;
                 int yyavg = (int)yycnt.Average() / 3;
-                if (continnuity)
+                if (continnuity && xxavg>0 && yyavg >0)
                 {
-                    xxavg = (int)(xxcnt.Where(r => r > xxavg).Average() / 2);
+                    if(xxcnt.Any(r => r>xxavg))
+                        xxavg = (int)(xxcnt.Where(r => r > xxavg).Average() / 2);
+                    if(yycnt.Any(r => r>yyavg))
                     yyavg = (int)(yycnt.Where(r => r > yyavg).Average() / 2);
                 }
                 xxcnt = xxcnt.Select(r => r > xxavg ? 100 : 0).ToArray();

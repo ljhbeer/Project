@@ -61,7 +61,9 @@
     <Compile Include="Form\FormPreScan.Designer.cs">
       <DependentUpon>FormPreScan.cs</DependentUpon>
     </Compile>
-    <Compile Include="Form\FormChooseResult.cs" />
+    <Compile Include="Form\FormChooseResult.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Form\FormChooseResult.Designer.cs">
       <DependentUpon>FormChooseResult.cs</DependentUpon>
     </Compile>
@@ -71,7 +73,9 @@
     <Compile Include="Form\FormChoose.Designer.cs">
       <DependentUpon>FormChoose.cs</DependentUpon>
     </Compile>
-    <Compile Include="Form\FormOutTxtToImg.cs" />
+    <Compile Include="Form\FormOutTxtToImg.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Form\FormOutTxtToImg.Designer.cs">
       <DependentUpon>FormOutTxtToImg.cs</DependentUpon>
     </Compile>

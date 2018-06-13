@@ -93,7 +93,7 @@
             // splitContainerA.Panel2
             // 
             this.splitContainerA.Panel2.Controls.Add(this.splitContainerR);
-            this.splitContainerA.Size = new System.Drawing.Size(996, 657);
+            this.splitContainerA.Size = new System.Drawing.Size(996, 636);
             this.splitContainerA.SplitterDistance = 206;
             this.splitContainerA.TabIndex = 0;
             // 
@@ -111,8 +111,8 @@
             // splitContainerL.Panel2
             // 
             this.splitContainerL.Panel2.Controls.Add(this.panelLB);
-            this.splitContainerL.Size = new System.Drawing.Size(206, 657);
-            this.splitContainerL.SplitterDistance = 528;
+            this.splitContainerL.Size = new System.Drawing.Size(206, 636);
+            this.splitContainerL.SplitterDistance = 510;
             this.splitContainerL.TabIndex = 0;
             // 
             // panelLT
@@ -121,7 +121,7 @@
             this.panelLT.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelLT.Location = new System.Drawing.Point(0, 0);
             this.panelLT.Name = "panelLT";
-            this.panelLT.Size = new System.Drawing.Size(206, 528);
+            this.panelLT.Size = new System.Drawing.Size(206, 510);
             this.panelLT.TabIndex = 0;
             // 
             // tableLayoutPanel1
@@ -136,7 +136,7 @@
             this.tableLayoutPanel1.RowCount = 2;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(206, 528);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(206, 510);
             this.tableLayoutPanel1.TabIndex = 1;
             // 
             // treeView1
@@ -144,7 +144,7 @@
             this.treeView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.treeView1.Location = new System.Drawing.Point(3, 28);
             this.treeView1.Name = "treeView1";
-            this.treeView1.Size = new System.Drawing.Size(200, 497);
+            this.treeView1.Size = new System.Drawing.Size(200, 479);
             this.treeView1.TabIndex = 10;
             this.treeView1.KeyUp += new System.Windows.Forms.KeyEventHandler(this.treeView1_KeyUp);
             // 
@@ -163,7 +163,7 @@
             this.panelLB.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelLB.Location = new System.Drawing.Point(0, 0);
             this.panelLB.Name = "panelLB";
-            this.panelLB.Size = new System.Drawing.Size(206, 125);
+            this.panelLB.Size = new System.Drawing.Size(206, 122);
             this.panelLB.TabIndex = 0;
             // 
             // splitContainerR
@@ -180,8 +180,8 @@
             // splitContainerR.Panel2
             // 
             this.splitContainerR.Panel2.Controls.Add(this.panelRB);
-            this.splitContainerR.Size = new System.Drawing.Size(786, 657);
-            this.splitContainerR.SplitterDistance = 586;
+            this.splitContainerR.Size = new System.Drawing.Size(786, 636);
+            this.splitContainerR.SplitterDistance = 566;
             this.splitContainerR.TabIndex = 0;
             // 
             // panelRT
@@ -191,7 +191,7 @@
             this.panelRT.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelRT.Location = new System.Drawing.Point(0, 0);
             this.panelRT.Name = "panelRT";
-            this.panelRT.Size = new System.Drawing.Size(786, 586);
+            this.panelRT.Size = new System.Drawing.Size(786, 566);
             this.panelRT.TabIndex = 0;
             // 
             // pictureBox1
@@ -214,7 +214,7 @@
             this.panelRB.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelRB.Location = new System.Drawing.Point(0, 0);
             this.panelRB.Name = "panelRB";
-            this.panelRB.Size = new System.Drawing.Size(786, 67);
+            this.panelRB.Size = new System.Drawing.Size(786, 66);
             this.panelRB.TabIndex = 0;
             // 
             // toolStrip1
@@ -230,7 +230,7 @@
             this.toolStripButtonAutDetect,
             this.toolStripButtonPreDetect,
             this.toolStripButtonNextImage});
-            this.toolStrip1.Location = new System.Drawing.Point(3, 0);
+            this.toolStrip1.Location = new System.Drawing.Point(3, 25);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(658, 25);
             this.toolStrip1.TabIndex = 3;
@@ -334,7 +334,7 @@
             // toolStripContainer1.ContentPanel
             // 
             this.toolStripContainer1.ContentPanel.Controls.Add(this.splitContainerA);
-            this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(996, 657);
+            this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(996, 636);
             this.toolStripContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.toolStripContainer1.Location = new System.Drawing.Point(0, 0);
             this.toolStripContainer1.Name = "toolStripContainer1";
@@ -344,8 +344,8 @@
             // 
             // toolStripContainer1.TopToolStripPanel
             // 
-            this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.toolStrip2);
             this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.toolStrip1);
+            this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.toolStrip2);
             // 
             // toolStrip2
             // 
@@ -354,9 +354,9 @@
             this.toolStripDropDownButtonAutoDetect,
             this.toolStripComboBoxImageMode,
             this.toolStripComboBoxDetectMode});
-            this.toolStrip2.Location = new System.Drawing.Point(661, 0);
+            this.toolStrip2.Location = new System.Drawing.Point(3, 0);
             this.toolStrip2.Name = "toolStrip2";
-            this.toolStrip2.Size = new System.Drawing.Size(335, 29);
+            this.toolStrip2.Size = new System.Drawing.Size(327, 25);
             this.toolStrip2.TabIndex = 4;
             // 
             // toolStripDropDownButtonAutoDetect
@@ -368,7 +368,7 @@
             this.toolStripDropDownButtonAutoDetect.Image = ((System.Drawing.Image)(resources.GetObject("toolStripDropDownButtonAutoDetect.Image")));
             this.toolStripDropDownButtonAutoDetect.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripDropDownButtonAutoDetect.Name = "toolStripDropDownButtonAutoDetect";
-            this.toolStripDropDownButtonAutoDetect.Size = new System.Drawing.Size(69, 26);
+            this.toolStripDropDownButtonAutoDetect.Size = new System.Drawing.Size(69, 22);
             this.toolStripDropDownButtonAutoDetect.Text = "动态检测";
             // 
             // NinthDetectToolStripMenuItem
@@ -389,7 +389,7 @@
             "显示全图模式",
             "显示Correct图"});
             this.toolStripComboBoxImageMode.Name = "toolStripComboBoxImageMode";
-            this.toolStripComboBoxImageMode.Size = new System.Drawing.Size(121, 29);
+            this.toolStripComboBoxImageMode.Size = new System.Drawing.Size(121, 25);
             this.toolStripComboBoxImageMode.Text = "图片显示模式";
             // 
             // toolStripComboBoxDetectMode

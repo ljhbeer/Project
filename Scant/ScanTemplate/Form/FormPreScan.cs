@@ -136,8 +136,15 @@ namespace ScanTemplate
                         }
                         foreach (string s in _namelist)
                         {
-                            if (File.Exists(s))
-                                _pp.AddPrePaper(PreScan(s, lrtb, p.listFeatures[0].Size));
+                                    _pp.AddPrePaper(PreScan(s, lrtb, p.listFeatures[0].Size));
+                            //try
+                            //{
+                            //    if (File.Exists(s))
+                            //}
+                            //catch
+                            //{
+                            //    break;
+                            //}
                         }
                     }
                 }
@@ -232,6 +239,7 @@ namespace ScanTemplate
                 {
                     detectarea = new Rectangle(nrLT.Location, new Size());
                     detectarea.Inflate(blocksize);
+                    detectarea.Intersect(area);
                     nrLT = Tools.DetectImageTools.DetectCorrect.DetectCorrectFromImg(src, detectarea, true, detectarea.Width / 5);
                 }
             }

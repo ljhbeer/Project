@@ -9,8 +9,9 @@ namespace Tools
 {
      public class AutoAngle
     {
-        public AutoAngle(List<Point> list)
+        public AutoAngle(List<Point> list) // LTB,RTB
         {
+            CheckListLTBRTB(ref list);
             if(list.Count == 4 && global.featuretype ==0)
                this._T = list;
             else if (list.Count == 4 && global.featuretype == 1)
@@ -24,9 +25,11 @@ namespace Tools
             _P = null;
             _Angle1 = Arcsin(_T[0], _T[1]);
         }
-        public void SetPaper(List<Rectangle> list)// 1 Bottom  2 right
+
+        public void SetPaper(List<Rectangle> list)// 1 Bottom  2 right  LTBRTB
         {//
-            if ((list.Count == 4 || list.Count == 3) && global.featuretype == 0)
+            CheckListLTBRTB(ref list);
+            if ((list.Count == 4 || list.Count == 3) && global.featuretype == 0) 
             {
                 SetPaper(list[0].Location, list[1].Location, list[2].Location);
                 _P = new List<Point>();
@@ -50,6 +53,59 @@ namespace Tools
             {
                 SetPaper(list[0].Location, list[1].Location, list[2].Location);
             }
+        }
+
+        private void CheckListLTBRTB(ref List<Point> list)
+        {
+            if (list.Count == 4)
+            {
+                List<int> Pos = GetLTBRTBPos(list);
+                if (!(Pos[0] == 0 && Pos[1] == 1 && Pos[2] == 2 && Pos[3] == 3))
+                {
+                    //改变序列
+                }
+            }
+        }
+        private void CheckListLTBRTB(ref List<Rectangle> list)
+        {
+            if (list.Count == 4)
+            {
+                List<Point> list1 = list.Select(r => r.Location).ToList();
+                List<int> Pos = GetLTBRTBPos(list1);
+                if (!(Pos[0] == 0 && Pos[1] == 1 && Pos[2] == 2 && Pos[3] == 3))
+                {
+                    //改变序列
+                }
+            }
+        }
+        private static List<int> GetLTBRTBPos(List<Point> list)
+        {
+            Rectangle U = new Rectangle(list[0], new Size(1, 1));
+            for (int i = 1; i < list.Count; i++)
+                U = Rectangle.Union(U, new Rectangle(list[i], new Size(1, 1)));
+            Point Center = new Point(U.X + U.Width / 2, U.Y + U.Height / 2);
+
+            List<int> Pos = new List<int>();
+            for (int i = 0; i < list.Count; i++)
+            {
+                int pos = -1;
+                if (list[i].X < Center.X)
+                {
+                    if (list[i].Y < Center.Y)
+                        pos = 0;
+                    else
+                        pos = 1;
+                }
+                else
+                {
+                    if (list[i].Y < Center.Y)
+                        pos = 2;
+                    else
+                        pos = 3;
+                }
+                Pos.Add(pos);
+            }
+            return Pos;
         }
         public void SetPaper(double angle)
         {

@@ -268,12 +268,16 @@ namespace ScanTemplate
                     Rectangle area = srcarea;
                     area.Inflate(-src.Width / inflaterate[index], -src.Height / inflaterate[index]);
                     DetectData dd = DetectImageTools.DetectImg(src, area, new Rectangle());
-                   
                     if (dd.Detected  )
+                    if(dd.CheckListFeature(src))
                     {
                         Rectangle LT = dd.ListFeature[0];
                         LT.Offset(dd.CorrectRect.Location);
+                        Rectangle RB = dd.ListFeature[3];
+                        RB.Offset(dd.CorrectRect.Location);
+
                         if (DetectImageTools.CheckWholeDetectBlock(src, srcarea, LT))
+                        if( DetectImageTools.CheckWholeDetectBlock(src, srcarea, RB))
                         {
                             pp.Detectdata = dd;
                             break; 

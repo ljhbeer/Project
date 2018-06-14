@@ -315,6 +315,21 @@ namespace  Tools
                 return false;
             }
         }
+
+        public  bool CheckListFeature(Bitmap src)
+        {
+            Rectangle area = new Rectangle(new Point(), src.Size);
+            foreach (Rectangle r in ListFeature)
+            {
+                r.Offset( CorrectRect.Location);
+                if (!area.Contains(r))
+                    return false;
+                int pixsum = BitmapTools.CountRectBlackcnt(src, r);
+                if (pixsum < r.Width * r.Height * 0.8)
+                    return false;
+            }
+            return true;
+        }
     }
     public class LTBRTBTools
     {

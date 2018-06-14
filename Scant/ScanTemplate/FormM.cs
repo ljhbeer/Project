@@ -110,13 +110,16 @@ namespace ScanTemplate
             else
             {
                 this.Hide();
-                if (fps.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-                {
-                }
-                else
-                {
-                    MessageBox.Show("预处理失败");
-                }
+                fps.ShowDialog();
+                fps.Clear();
+                fps = null;
+                //if (fps.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                //{
+                //}
+                //else
+                //{
+                //    MessageBox.Show("预处理失败");
+                //}
                 this.Show();
             }
         }
@@ -157,13 +160,16 @@ namespace ScanTemplate
             else
             {
                 this.Hide();
-                if (fps.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-                {
-                }
-                else
-                {
-                    MessageBox.Show("预处理失败");
-                }
+                fps.ShowDialog();
+                fps.Clear();
+                fps = null;
+                //if (fps.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                //{
+                //}
+                //else
+                //{
+                //    MessageBox.Show("预处理失败");
+                //}
                 this.Show();
             }
         }

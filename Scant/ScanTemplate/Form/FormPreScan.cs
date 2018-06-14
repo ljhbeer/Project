@@ -36,7 +36,13 @@ namespace ScanTemplate
         }
         ~FormPreScan()
         {
-            if(_src!=null)
+            Clear();
+            Init(null);
+        }
+
+        public void Clear()
+        {
+            if (_src != null)
             {
                 _src = null;
             }
@@ -45,7 +51,6 @@ namespace ScanTemplate
                 _fs.Close();
                 _fs = null;
             }
-            Init(null);
         }
         private void Init(Template t)
         {

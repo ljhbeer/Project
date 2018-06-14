@@ -6,6 +6,7 @@ using ARTemplate;
 using System.Drawing.Imaging;
 using System.Drawing;
 using Tools;
+using System.IO;
 namespace ScanTemplate
 {
     class AutoComputeXZTKH
@@ -18,6 +19,13 @@ namespace ScanTemplate
             this._artemplate = _artemplate;
             //this._angle = _angle;
             this._src = bmp;
+            if (global.Debug && (global.tag & 16) > 0)
+            {
+                if (Directory.Exists("F:\\img"))
+                {
+                    Directory.CreateDirectory("F:\\img");
+                }
+            }
         }
         public string ComputeXZT(string num1, AutoAngle _angle)
         {
@@ -28,11 +36,11 @@ namespace ScanTemplate
                 Rectangle r = sca.Rect;
                 Point nL = _angle.GetCorrectPoint(r.X, r.Y);
 
-                if (global.Debug || (global.tag & 16) > 0)
+                if (global.Debug && (global.tag & 16) > 0)
                     ((Bitmap)_src.Clone(r, _src.PixelFormat)).Save("f:\\img\\" + (num++) + "_beforeoffset.jpg");
                 r.Location = nL;
 
-                if (global.Debug || (global.tag & 16) > 0)
+                if (global.Debug && (global.tag & 16) > 0)
                      ((Bitmap)_src.Clone(r, _src.PixelFormat)).Save("f:\\img\\" + num + "_offset2.jpg");            	
                 Bitmap bmp = (Bitmap)_src.Clone(r, _src.PixelFormat);
                 ComputeSelectedOption(sb, sca, bmp);

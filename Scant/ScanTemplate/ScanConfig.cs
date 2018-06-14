@@ -157,10 +157,10 @@ namespace ScanTemplate
             return dirname;
         }
         public string DirName { get { return dirname; } }
-        public string FullPath { get { return path + "\\" + dirname; } }
+        public string Fullpath { get { return path + "\\" + dirname; } }
         public List<string> ImgList()
         {
-            return Tools.FileTools.NameListFromDir(FullPath);
+            return Tools.FileTools.NameListFromDir(Fullpath);
         }
 
         public string Path { get { return path; } }
@@ -338,6 +338,7 @@ namespace ScanTemplate
             if (!Directory.Exists(CorrectPath))
                 Directory.CreateDirectory(CorrectPath);
             _template = t;
+            Msg = "";
         }
         public void Clear()
         {
@@ -370,9 +371,10 @@ namespace ScanTemplate
                     sb.AppendLine(paper.ToJsonString() + ",");
                     if (DgShowScanMsg != null)
                         DgShowScanMsg(paper);//this.Invoke(new MyInvoke(ShowMsg));
-                }catch
+                }catch(Exception e)
                 {
                     redo = true;
+                    File.AppendAllText( _sc.Baseconfig.Workpath + "\\log\\Error.log",System.DateTime.Now + "\t" + s + "\t" + e.Message+ "\r\n");
                 }
                while (redo && global.Debug)
                 {

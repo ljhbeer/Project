@@ -31,6 +31,12 @@ namespace ARTemplate
                 label1.Text = "请输入Delete 和 本次考试名称";
                 textBox1.Text = "";
             }
+            else if (keyname == "删除模板确认")
+            {
+                this.Text = keyname;
+                label1.Text = "请输入需要删除的模板前3个字母";
+                textBox1.Text = "";
+            }
             else if (keyname == "校对")
             {
                 label1.Visible = textBox1.Visible = false;
@@ -60,7 +66,7 @@ namespace ARTemplate
         }
         private void buttonOK_Click(object sender, EventArgs e)
         {
-            if (keyname == "考试名称" || keyname == "删除确认")
+            if (keyname == "考试名称" || keyname == "删除确认" || keyname == "删除模板确认")
             {
                 StrValue =  textBox1.Text;
             }

@@ -26,7 +26,7 @@ namespace ScanTemplate
         {
             InitializeComponent();
             _dir = dir;
-            _fullpath = dir.FullPath;
+            _fullpath = dir.Fullpath;
             _dirName = dir.DirName;
             _namelist = dir.ImgList();
             _PreActiveid = 0;
@@ -201,6 +201,8 @@ namespace ScanTemplate
                         Rectangle r = lrtb[i];
                         r.Offset(offset);
                         r.Intersect(area);
+                        if (r.Width < 5 || r.Height < 5)
+                            break;
                         ListFeature.Add(
                             Tools.DetectImageTools.DetectCorrect.DetectCorrectFromImg(src, r, true, r.Width / 9)
                             );
@@ -611,8 +613,14 @@ namespace ScanTemplate
             UnScan dir = _dir;
             if (dir.ImgList().Count == 0) return;
             bool ExistOKScanJson = PreCheckJsonFile(dir);
-
-           
+            if (ExistOKScanJson)
+            {
+                MessageBox.Show("已生成或校验全部预检测数据，且全部正确");
+            }
+            else
+            {
+                MessageBox.Show(" 预检测数据无法完整生成，请检查扫描图片是否全部正确");
+            }
         }
         
         private Rectangle ReadDetectArea(String keyname = "检测范围")
@@ -1001,19 +1009,19 @@ namespace ScanTemplate
             _prepapers = new PrePapers();
             if (!File.Exists(dir.Path + "data.txt.json"))
             {
-                if (File.Exists(dir.FullPath + ".prescanpapers.json"))
+                if (File.Exists(dir.Fullpath + ".prescanpapers.json"))
                 {
-                    _prepapers.LoadPrePapers(dir.FullPath + ".prescanpapers.json");
+                    _prepapers.LoadPrePapers(dir.Fullpath + ".prescanpapers.json");
                     ExistOKScanJson = ValidPreScanData(dir.ImgList(), _prepapers);
                     if (!ExistOKScanJson)
-                        File.Delete(dir.FullPath + ".prescanpapers.json");
+                        File.Delete(dir.Fullpath + ".prescanpapers.json");
                 }
                 if (!ExistOKScanJson)
                 {
                     _prepapers = PreScan();
                     if (_prepapers.AllDetected()) // 已成功预扫描
                     {
-                        _prepapers.SavePrePapers(dir.FullPath + ".prescanpapers.json");
+                        _prepapers.SavePrePapers(dir.Fullpath + ".prescanpapers.json");
                         ExistOKScanJson = true;
                     }
                 }

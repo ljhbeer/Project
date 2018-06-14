@@ -65,6 +65,7 @@
             this.checkBoxReSingleScan = new System.Windows.Forms.CheckBox();
             this.checkBoxPreScanMode = new System.Windows.Forms.CheckBox();
             this.buttonReadme = new System.Windows.Forms.Button();
+            this.ButtonDeleteTemplate = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -155,6 +156,7 @@
             // 
             this.panel1.AutoScroll = true;
             this.panel1.BackColor = System.Drawing.SystemColors.Control;
+            this.panel1.Controls.Add(this.ButtonDeleteTemplate);
             this.panel1.Controls.Add(this.label4);
             this.panel1.Controls.Add(this.label3);
             this.panel1.Controls.Add(this.buttonCreateYJData);
@@ -240,7 +242,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(14, 195);
+            this.label2.Location = new System.Drawing.Point(9, 195);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(29, 12);
             this.label2.TabIndex = 14;
@@ -249,9 +251,9 @@
             // comboBoxTemplate
             // 
             this.comboBoxTemplate.FormattingEnabled = true;
-            this.comboBoxTemplate.Location = new System.Drawing.Point(52, 191);
+            this.comboBoxTemplate.Location = new System.Drawing.Point(38, 191);
             this.comboBoxTemplate.Name = "comboBoxTemplate";
-            this.comboBoxTemplate.Size = new System.Drawing.Size(184, 20);
+            this.comboBoxTemplate.Size = new System.Drawing.Size(148, 20);
             this.comboBoxTemplate.TabIndex = 13;
             // 
             // buttonRefresh
@@ -516,6 +518,16 @@
             this.buttonReadme.UseVisualStyleBackColor = true;
             this.buttonReadme.Click += new System.EventHandler(this.buttonReadme_Click);
             // 
+            // ButtonDeleteTemplate
+            // 
+            this.ButtonDeleteTemplate.Location = new System.Drawing.Point(191, 190);
+            this.ButtonDeleteTemplate.Name = "ButtonDeleteTemplate";
+            this.ButtonDeleteTemplate.Size = new System.Drawing.Size(43, 27);
+            this.ButtonDeleteTemplate.TabIndex = 16;
+            this.ButtonDeleteTemplate.Text = "删除";
+            this.ButtonDeleteTemplate.UseVisualStyleBackColor = true;
+            this.ButtonDeleteTemplate.Click += new System.EventHandler(this.ButtonDeleteTemplate_Click);
+            // 
             // FormM
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -580,6 +592,7 @@
         private System.Windows.Forms.CheckBox checkBoxShowUnScanNamelist;
         private System.Windows.Forms.CheckBox checkBoxReSingleScan;
         private System.Windows.Forms.CheckBox checkBoxPreScanMode;
-        private System.Windows.Forms.Button buttonReadme;        
+        private System.Windows.Forms.Button buttonReadme;
+        private System.Windows.Forms.Button ButtonDeleteTemplate;        
     }
 }

@@ -1548,7 +1548,7 @@ namespace ScanTemplate.FormYJ
             }
             else
                 Students = _Result[_activesubject.Index].Where(r => r < 0).Select(r => _Students.students[-r - 1]).ToList();
-            if(global.Debug || (global.tag & 2)>0)
+            if(global.Debug && (global.tag & 2)>0)
                 if( Students.Count>0){
                     string str = "\r\n\r\nbefore:ID姓名：,"+ string.Join(",", Students.Select(r => r.ID + r.Name)) + "\r\nSortValue"
                         + string.Join(",", Students.Select(r => r.Sort.SortValue.ToString()));
@@ -1564,7 +1564,7 @@ namespace ScanTemplate.FormYJ
                 {
                     return S1.Sort.SortValue - S2.Sort.SortValue;
                 });
-            if(global.Debug || (global.tag & 4)>0)
+            if(global.Debug && (global.tag & 4)>0)
                 if( Students.Count>0){
                     string str = "\r\n\r\nsorted:ID姓名：," + string.Join(",", Students.Select(r => r.ID + r.Name)) + "\r\nSortValue"
                         + string.Join(",", Students.Select(r => r.Sort.SortValue.ToString()));

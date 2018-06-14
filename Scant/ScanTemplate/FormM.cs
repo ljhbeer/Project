@@ -25,12 +25,15 @@ namespace ScanTemplate
         private bool _bReScan;
         private bool _bSingleTestScan;
         private Papers _papers;
+        private bool _ActiveRescan;
+        private int _SelectIndex;
 		public FormM()
 		{
 			InitializeComponent();
             _bReScan = false;
             _papers = new Papers();
             _rundt = null;
+            _ActiveRescan = false;
 		}
 		private void FormM_Load(object sender, EventArgs e)
 		{            
@@ -92,7 +95,7 @@ namespace ScanTemplate
             bool ExistOKScanJson =fps.PreCheckJsonFile(dir);
             if (ExistOKScanJson) // 已成功预扫描
             {
-                _sc.Templateshow = new TemplateShow(dir.FullPath, dir.DirName,dir.ImgList()[0],fps.Prepapers.PrePaperList[0].Detectdata);
+                _sc.Templateshow = new TemplateShow(dir.Fullpath, dir.DirName,dir.ImgList()[0],fps.Prepapers.PrePaperList[0].Detectdata);
                 _sc.Templateshow.Template.FileName = _sc.Baseconfig.TemplatePath;
                 if (_sc.Templateshow.OK)
                 {
@@ -138,7 +141,7 @@ namespace ScanTemplate
                     return;
                 }
 
-                _sc.Templateshow = new TemplateShow(dir.FullPath, dir.DirName, dir.ImgList()[0],fps.Prepapers.PrePaperList[0].Detectdata, ti,true);
+                _sc.Templateshow = new TemplateShow(dir.Fullpath, dir.DirName, dir.ImgList()[0],fps.Prepapers.PrePaperList[0].Detectdata, ti,true);
                 //_sc.Templateshow = new TemplateShow(dir.FullPath, dir.DirName, dir.ImgList()[0], fps.Prepapers.PrePaperList[0].Detectdata);
                 _sc.Templateshow.Template.FileName = _sc.Baseconfig.TemplatePath;
                 if (_sc.Templateshow.OK)
@@ -162,6 +165,29 @@ namespace ScanTemplate
                     MessageBox.Show("预处理失败");
                 }
                 this.Show();
+            }
+        }
+        private void ButtonDeleteTemplate_Click(object sender, EventArgs e)
+        {
+            if (comboBoxTemplate.SelectedIndex == -1)
+            {
+                MessageBox.Show("未选择模板");
+            }
+            else
+            {
+                FormInput f = new FormInput("删除模板确认");
+                f.ShowDialog();
+                TemplateInfo ti = (TemplateInfo)comboBoxTemplate.SelectedItem;
+                string txt = ti.ToString().Trim().Substring(0, 3);
+                if (f.StrValue == null || f.StrValue != txt )
+                    return;
+                if (txt == "")
+                    return;
+                if (File.Exists(ti.TemplateFileName))
+                {
+                    File.Delete(ti.TemplateFileName);
+                    comboBoxTemplate.Items.RemoveAt(comboBoxTemplate.SelectedIndex);
+                }
             }
         }
 
@@ -196,11 +222,15 @@ namespace ScanTemplate
             //FirstScan
             TemplateInfo ti = (TemplateInfo)comboBoxTemplate.SelectedItem;
             UnScan dir = (UnScan)listBoxUnScanDir.SelectedItem;
+
+            _ActiveRescan = rescan;
+            _SelectIndex = listBoxUnScanDir.SelectedIndex;
             if (rescan) //ReScan
             {
                 ScanData sd = (ScanData)listBoxScantData.SelectedItem;
                 ti = new TemplateInfo(sd.TemplateFileName, sd.Fullpath); 
                 dir = new UnScan("img", sd.Fullpath);
+                _SelectIndex = listBoxScantData.SelectedIndex;
             }
             FormPreScan fps = new FormPreScan(dir);
             bool ExistOKScanJson = fps.PreCheckJsonFile(dir);
@@ -223,7 +253,7 @@ namespace ScanTemplate
                         nameList.Add(filename);
                         _bSingleTestScan = true;
                     }
-                    _scan = new Scan(_sc, ti.TemplateFileName, nameList, dir.FullPath);
+                    _scan = new Scan(_sc, ti.TemplateFileName, nameList, dir.Fullpath);
                     _scan.Prepapers = fps.Prepapers;
                     _rundt = Tools.DataTableTools.ConstructDataTable(_scan.ColNames.ToArray());
                     dgv.DataSource = _rundt;
@@ -537,6 +567,21 @@ namespace ScanTemplate
         public void MyRefreshDgvAll()
         {
             dgv.Invalidate();
+            if (_SelectIndex != -1)
+            {
+                if (_ActiveRescan)
+                {
+                    listBoxScantData.Focus();
+                    listBoxScantData.SelectedIndex = _SelectIndex;
+                }
+                else
+                {
+                    listBoxUnScanDir.Focus();
+                    listBoxUnScanDir.SelectedIndex = _SelectIndex;
+                }
+                _SelectIndex = -1;
+                _ActiveRescan = false;
+            }
         }
         public void MyRefreshDgv()
         {
@@ -646,7 +691,7 @@ namespace ScanTemplate
             if (dt.Rows.Count > 0)
             {
                 //MessageBox.Show("暂未实现，待修改");
-                FormVerify f = new FormVerify(_sc,dt, "核对姓名");
+                FormVerify f = new FormVerify(_sc, dt, "核对姓名");
                 if (f.ShowDialog() != System.Windows.Forms.DialogResult.OK)
                 {
                     MessageBox.Show("未校验");
@@ -666,7 +711,7 @@ namespace ScanTemplate
                                     Paper p = (Paper)vt.Tag;
                                     try
                                     {
-                                        p.KH = Convert.ToInt32( dr1["考号"]);
+                                        p.KH = Convert.ToInt32(dr1["考号"]);
                                         p.Name = dr1["姓名"].ToString();
                                     }
                                     catch
@@ -714,6 +759,10 @@ namespace ScanTemplate
                 }
                 //修改之后
                 dt.Rows.Clear();
+            }
+            else
+            {
+                MessageBox.Show("没有姓名信息需要核对");
             }
         }
         private void VerifyKaoHao()
@@ -820,13 +869,13 @@ namespace ScanTemplate
                             {
                                 if (dr.RowState == DataRowState.Modified)
                                 {
-                                    ValueTag vt =(ValueTag ) dr["序号"];
-                                    Paper p =(Paper ) vt.Tag;
+                                    ValueTag vt = (ValueTag)dr["序号"];
+                                    Paper p = (Paper)vt.Tag;
                                     string skh = dr["考号"].ToString();
                                     string name = dr["姓名"].ToString();
                                     int kh = -1;
                                     if (!skh.Contains("-"))
-                                        kh = Convert.ToInt32(skh);                                   
+                                        kh = Convert.ToInt32(skh);
                                     if (p.KH < 0 || !_sc.Studentbases.ContainsKey(p.KH) || p.Name.Contains("-") || p.Name.Trim() == "")
                                     {
                                         p.Name = name;
@@ -839,7 +888,7 @@ namespace ScanTemplate
                         }
                         else
                         {
-                            
+
                             string[] ss = File.ReadAllLines(sd.DataFullName);// sd.ImgList.ToArray();
                             //TODO: 应避免出现空行
                             try
@@ -876,6 +925,10 @@ namespace ScanTemplate
                 //修改之后
                 dt.Rows.Clear();
             }
+            else
+            {
+                MessageBox.Show("考号-姓名信息完整，无需校验");
+            }
         }
         private void VerifyXzt()
         {
@@ -895,6 +948,7 @@ namespace ScanTemplate
 			                                                       });
             int xztcnt = _artemplate.Manageareas.SinglechoiceAreas.Count;
             int runcnt = 0;
+            bool bcheckchange = false;
             foreach (DataRow dr in _rundt.Rows)
             {
                 runcnt++;
@@ -907,9 +961,11 @@ namespace ScanTemplate
                         b = true;
                         break;
                     }
-                }
+                }                
                 if (b)
                 {
+                    if (!bcheckchange)
+                        bcheckchange = true;
                     string fn = dr["文件名"].ToString().Replace("LJH\\", "LJH\\Correct\\").Replace("\\img", ""); ;
                     if (File.Exists(fn))
                     {
@@ -1003,6 +1059,8 @@ namespace ScanTemplate
                     }
                 }
             }
+            if (!bcheckchange)
+                MessageBox.Show("选择题格式完整，无需校验");
         }
 
         private void buttonUnScanNameList_Click(object sender, EventArgs e)
@@ -1026,8 +1084,11 @@ namespace ScanTemplate
              List<int> Lclassid =
              studentbases.Select(r => r.Classid ).Distinct().ToList();
              Lclassid.Remove(0);
-             if (Lclassid.Count > 1)
+             if (Lclassid.Count != 1)
+             {
+                 MessageBox.Show("没有班级信息，或者班级数量>1");
                  return;
+             }
              int cid = Lclassid[0];
              string str = string.Join("\r\n",
              _sc.Studentbases.GetClassStudent(cid).Where(r => ! studentbases.Exists(rr => rr.KH == r.KH))
@@ -1045,9 +1106,9 @@ namespace ScanTemplate
         }
         private void listBoxScantData_KeyUp(object sender, KeyEventArgs e)
         {
+            if (listBoxScantData.SelectedIndex == -1) return;
             if (e.KeyCode == Keys.M)
             {
-                if (listBoxScantData.SelectedIndex == -1) return;
                 ScanData sd = (ScanData)listBoxScantData.SelectedItem;
                 if (File.Exists(sd.DataFullName) || File.Exists(sd.DataFullName + ".json"))
                 {
@@ -1066,7 +1127,7 @@ namespace ScanTemplate
                             MessageBox.Show("当前模板无法匹配，请重新选择模板，或者创建新模板");
                             return;
                         }
-                        _sc.Templateshow = new TemplateShow(dir.FullPath, dir.DirName, dir.ImgList()[0], fps.Prepapers.PrePaperList[0].Detectdata, ti, true);
+                        _sc.Templateshow = new TemplateShow(dir.Fullpath, dir.DirName, dir.ImgList()[0], fps.Prepapers.PrePaperList[0].Detectdata, ti, true);
                         _sc.Templateshow.Template.FileName = _sc.Baseconfig.TemplatePath;
                         if (_sc.Templateshow.OK)
                         {
@@ -1082,7 +1143,6 @@ namespace ScanTemplate
             }
             else if (e.KeyCode == Keys.Delete)
             { //删除已扫描数据
-                if (listBoxScantData.SelectedIndex == -1) return;
                 ScanData sd = (ScanData)listBoxScantData.SelectedItem;              
                 FormInput f = new FormInput("删除确认");
                 f.ShowDialog();
@@ -1093,6 +1153,12 @@ namespace ScanTemplate
                 //某些清理工作
                 buttonRefresh.PerformClick();
             }
+            else if (e.KeyCode == Keys.O)
+            {
+                ScanData sd = (ScanData)listBoxScantData.SelectedItem;     
+                if (Directory.Exists(sd.Fullpath))
+                    System.Diagnostics.Process.Start(sd.Fullpath);  
+            }
         }
         private void listBoxUnScanDir_KeyUp(object sender, KeyEventArgs e)
         {
@@ -1100,8 +1166,8 @@ namespace ScanTemplate
             {
                 if (listBoxUnScanDir.SelectedIndex == -1) return;
                 UnScan dir = (UnScan)listBoxUnScanDir.SelectedItem;
-                if (Directory.Exists(dir.FullPath))
-                    System.Diagnostics.Process.Start(dir.FullPath);  
+                if (Directory.Exists(dir.Fullpath))
+                    System.Diagnostics.Process.Start(dir.Fullpath);  
             }
             else if (e.KeyCode == Keys.Delete)
             { //删除未扫描数据
@@ -1113,8 +1179,8 @@ namespace ScanTemplate
                     return;
                 if (dir.DirName == "")
                     return;
-                if (Directory.Exists(dir.FullPath))
-                    Directory.Delete(dir.FullPath, true);
+                if (Directory.Exists(dir.Fullpath))
+                    Directory.Delete(dir.Fullpath, true);
                 //某些清理工作
                 buttonRefresh.PerformClick();
             }

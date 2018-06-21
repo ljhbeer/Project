@@ -56,7 +56,10 @@ namespace ScanTemplate.FormYJ
             }
             InitDtshow(_cntx);
             InitDgvUI();
-            YueJuan();
+            if (checkBoxPixelSort.Checked)
+                buttonSortByPixes.PerformClick();
+            else
+                YueJuan();
 		}
         private void buttonSortByPixes_Click(object sender, EventArgs e)
         {
@@ -114,19 +117,26 @@ namespace ScanTemplate.FormYJ
                     }
                     if (bbreak) break;
                 } //MessageBox.Show("已更新" + sum + "条数据");
-                _SR.LoadNextStudents(checkBoxBack.Checked);
-
-                if(_SR.Students.Count==0  && checkBoxAutoLoadNext.Checked)
+                if (checkBoxPixelSort.Checked)
                 {
-                    int selectindex = comboBox1.SelectedIndex;
-                    if (selectindex != -1 && selectindex+1<comboBox1.Items.Count)
-                    {
-                        comboBox1.SelectedIndex = selectindex+1;
-                        return;
-                    }
+                    buttonSortByPixes.PerformClick();
                 }
-                ShowItemsInDgv();
-                textBoxShow.Text = "本题未完成阅卷份数" + _SR.Students.Count + " 满分为" +_SR.ActiveSubject.Score + "分";        
+                else
+                {
+                    _SR.LoadNextStudents(checkBoxBack.Checked);
+
+                    if (_SR.Students.Count == 0 && checkBoxAutoLoadNext.Checked)
+                    {
+                        int selectindex = comboBox1.SelectedIndex;
+                        if (selectindex != -1 && selectindex + 1 < comboBox1.Items.Count)
+                        {
+                            comboBox1.SelectedIndex = selectindex + 1;
+                            return;
+                        }
+                    }
+                    ShowItemsInDgv();
+                    textBoxShow.Text = "本题未完成阅卷份数" + _SR.Students.Count + " 满分为" + _SR.ActiveSubject.Score + "分";
+                }
             }
             else
             {

@@ -692,6 +692,19 @@ namespace ARTemplate
             return new Rectangle();
         }
         private List<Rectangle> _singlerectlist;
+
+        public double TotalScore()
+        {
+            //return  _list.Sum(  r => r.SubAreas.Sum( rr => rr.Score );
+            return Count;
+        }
+
+        public string AnswerScoreInfomation()
+        {
+            return "共"+Count+"小题";
+
+
+        }
     }
     public class UnChooseAreas : Areas
     {
@@ -797,6 +810,28 @@ namespace ARTemplate
                 }
                 return _list;
             }
+        }
+
+        public  double  TotalScore()
+        {
+            if(list!=null)
+            return list.Sum(r => r.SubAreas.Sum(rr => ((UnChoose)rr).Scores));
+            return 0;
+        }
+
+        internal string ScoreInfomation()
+        {
+            if(list!=null)
+            return string.Join("\r\n",
+                list.Select(r =>
+                {
+                    string str  = "";
+                   str =  r.Title + "\t"+ r.SubAreas.Sum(rr => ((UnChoose)rr).Scores)+"分\t"+ 
+                       string.Join(" ",r.SubAreas.Select( rr => ((UnChoose)rr).Scores + "分"));
+                    return str;
+                }).ToList()
+                );
+            return "";
         }
     }
     public class CustomAreas : Areas

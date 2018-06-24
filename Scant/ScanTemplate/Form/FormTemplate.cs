@@ -137,7 +137,7 @@ namespace ARTemplate
         {
             if (_template == null) return;
             UpdateTemplate();
-
+            if (!CheckTemplate()) return;
             string filename =  _template.GetTemplateName() + ".json";
             if (_template.FileName != "")
             {
@@ -166,6 +166,26 @@ namespace ARTemplate
                     MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
+        }
+
+        private bool CheckTemplate()
+        {
+            if(_template.Manageareas.Unchooseareas!=null)
+                if (_template.Manageareas.Unchooseareas.Count!=null && _template.Manageareas.Unchooseareas.Count!= "0")
+                {
+                    MessageBox.Show("还有非选择题，没有纳入题组");
+                    return false;
+                }
+                else
+                {
+                    double totalscore = _template.Manageareas.SinglechoiceAreas.TotalScore() +
+                        _template.Manageareas.Tzareas.TotalScore();
+                    string Msg = "总分值" + totalscore + "\r\n"+
+                        _template.Manageareas.SinglechoiceAreas.AnswerScoreInfomation() +"\r\n"+
+                        _template.Manageareas.Tzareas.ScoreInfomation();
+                    MessageBox.Show(Msg);
+                }
+            return true;
         }
         private void toolStripButtonImportTemplate_Click(object sender, EventArgs e)
         {
@@ -803,22 +823,40 @@ namespace ARTemplate
             if (e.KeyCode == Keys.Delete)
             {
                 if (treeView1.SelectedNode.Parent.Text != "网上阅卷")
-                {
-                    if (treeView1.SelectedNode.Parent != null)
+                { 
+                    Area I = (Area)treeView1.SelectedNode.Parent.Tag;
+                    Area sI = (Area)treeView1.SelectedNode.Tag;
+                    if (sI.TypeName == "题组" && sI.HasSubAreas() &&
+                        (Control.ModifierKeys & Keys.Shift) != Keys.Shift)
                     {
-                        Area I = (Area)treeView1.SelectedNode.Parent.Tag;
-                        Area sI = (Area)treeView1.SelectedNode.Tag;
-                        if (I != null && I.HasSubAreas() && sI!=null)
+                        String keyname = "非选择题";
+                        List<TreeNode> list = new List<TreeNode>();
+                        foreach (TreeNode tn in treeView1.SelectedNode.Nodes)
+                        {
+                            list.Add(tn);
+                        }
+                        treeView1.SelectedNode.Nodes.Clear();
+                        m_tn.Nodes[keyname].Nodes.AddRange(list.ToArray());
+                       
+                        TreeNode t = treeView1.SelectedNode.NextNode;
+                        if (t == null)
+                            t = treeView1.SelectedNode.PrevNode;
+                        treeView1.SelectedNode.Remove();
+                        treeView1.SelectedNode = t;
+                    }
+                    else
+                    {
+                        if (I != null && I.HasSubAreas() && sI != null)
                         {
                             if (I.SubAreas.Contains(sI))
                                 I.SubAreas.Remove(sI);
                         }
+                        TreeNode t = treeView1.SelectedNode.NextNode;
+                        if (t == null)
+                            t = treeView1.SelectedNode.PrevNode;
+                        treeView1.SelectedNode.Remove();
+                        treeView1.SelectedNode = t;
                     }
-                    TreeNode t = treeView1.SelectedNode.NextNode;
-                    if (t == null)
-                        t = treeView1.SelectedNode.PrevNode;
-                    treeView1.SelectedNode.Remove();
-                    treeView1.SelectedNode = t;
                 }
                 pictureBox1.Invalidate();
             } else if (e.KeyCode == Keys.R)
@@ -837,6 +875,7 @@ namespace ARTemplate
             else if (e.KeyCode == Keys.E)
             {
                  if (treeView1.SelectedNode.Parent.Text == "非选择题" ||
+                     (treeView1.SelectedNode.Parent.Text == "题组") ||
                         (treeView1.SelectedNode.Parent.Parent != null && treeView1.SelectedNode.Parent.Parent.Text == "题组"))
                 {
                     Area I = (Area)treeView1.SelectedNode.Tag;
@@ -845,13 +884,6 @@ namespace ARTemplate
                         _ActiveEditArea.EditMode = false;
                     _ActiveEditArea = I;
                     _ActiveEditMode = true;
-                }
-                else if(treeView1.SelectedNode.Text == "非选择题" || treeView1.SelectedNode.Text == "题组" ) //clear EditMode
-                {
-                    if (_ActiveEditArea != null)
-                        _ActiveEditArea.EditMode = false;
-                    _ActiveEditArea = null;
-                    _ActiveEditMode = false;
                 }
                 pictureBox1.Invalidate();
             }

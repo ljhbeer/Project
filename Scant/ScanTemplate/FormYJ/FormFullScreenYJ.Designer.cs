@@ -39,6 +39,7 @@ namespace ScanTemplate.FormYJ
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.dgvs = new System.Windows.Forms.DataGridView();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.buttonSortByPixes = new System.Windows.Forms.Button();
             this.checkBoxBack = new System.Windows.Forms.CheckBox();
             this.buttonSubmitMulti2 = new System.Windows.Forms.Button();
             this.checkBoxLoadSetMaxScore = new System.Windows.Forms.CheckBox();
@@ -49,7 +50,7 @@ namespace ScanTemplate.FormYJ
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.textBoxShow = new System.Windows.Forms.TextBox();
             this.buttonSubmitMulti = new System.Windows.Forms.Button();
-            this.buttonSortByPixes = new System.Windows.Forms.Button();
+            this.checkBoxPixelSort = new System.Windows.Forms.CheckBox();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvs)).BeginInit();
             this.panel1.SuspendLayout();
@@ -93,6 +94,7 @@ namespace ScanTemplate.FormYJ
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.checkBoxPixelSort);
             this.panel1.Controls.Add(this.buttonSortByPixes);
             this.panel1.Controls.Add(this.checkBoxBack);
             this.panel1.Controls.Add(this.buttonSubmitMulti2);
@@ -108,6 +110,16 @@ namespace ScanTemplate.FormYJ
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(825, 24);
             this.panel1.TabIndex = 13;
+            // 
+            // buttonSortByPixes
+            // 
+            this.buttonSortByPixes.Location = new System.Drawing.Point(636, -1);
+            this.buttonSortByPixes.Name = "buttonSortByPixes";
+            this.buttonSortByPixes.Size = new System.Drawing.Size(64, 24);
+            this.buttonSortByPixes.TabIndex = 18;
+            this.buttonSortByPixes.Text = "像素排序";
+            this.buttonSortByPixes.UseVisualStyleBackColor = true;
+            this.buttonSortByPixes.Click += new System.EventHandler(this.buttonSortByPixes_Click);
             // 
             // checkBoxBack
             // 
@@ -193,9 +205,9 @@ namespace ScanTemplate.FormYJ
             // textBoxShow
             // 
             this.textBoxShow.Dock = System.Windows.Forms.DockStyle.Right;
-            this.textBoxShow.Location = new System.Drawing.Point(654, 0);
+            this.textBoxShow.Location = new System.Drawing.Point(727, 0);
             this.textBoxShow.Name = "textBoxShow";
-            this.textBoxShow.Size = new System.Drawing.Size(171, 21);
+            this.textBoxShow.Size = new System.Drawing.Size(98, 21);
             this.textBoxShow.TabIndex = 12;
             // 
             // buttonSubmitMulti
@@ -209,15 +221,15 @@ namespace ScanTemplate.FormYJ
             this.buttonSubmitMulti.UseVisualStyleBackColor = true;
             this.buttonSubmitMulti.Click += new System.EventHandler(this.ButtonSubmitMultiClick);
             // 
-            // buttonSortByPixes
+            // checkBoxPixelSort
             // 
-            this.buttonSortByPixes.Location = new System.Drawing.Point(571, 0);
-            this.buttonSortByPixes.Name = "buttonSortByPixes";
-            this.buttonSortByPixes.Size = new System.Drawing.Size(64, 24);
-            this.buttonSortByPixes.TabIndex = 18;
-            this.buttonSortByPixes.Text = "像素排序";
-            this.buttonSortByPixes.UseVisualStyleBackColor = true;
-            this.buttonSortByPixes.Click += new System.EventHandler(this.buttonSortByPixes_Click);
+            this.checkBoxPixelSort.AutoSize = true;
+            this.checkBoxPixelSort.Location = new System.Drawing.Point(559, 5);
+            this.checkBoxPixelSort.Name = "checkBoxPixelSort";
+            this.checkBoxPixelSort.Size = new System.Drawing.Size(72, 16);
+            this.checkBoxPixelSort.TabIndex = 19;
+            this.checkBoxPixelSort.Text = "像素排序";
+            this.checkBoxPixelSort.UseVisualStyleBackColor = true;
             // 
             // FormFullScreenYJ
             // 
@@ -248,5 +260,6 @@ namespace ScanTemplate.FormYJ
         private System.Windows.Forms.Button buttonSubmitMulti2;
         private System.Windows.Forms.CheckBox checkBoxBack;
         private System.Windows.Forms.Button buttonSortByPixes;
+        private System.Windows.Forms.CheckBox checkBoxPixelSort;
 	}
 }

@@ -255,6 +255,12 @@ namespace ARTemplate
         public SingleChoiceArea()
         {
             list = new List<List<Point>>();
+            Listanswerscore = new List<OptionAnswerScore>();
+        }
+        public void InitAnswerScore()
+        {
+            if ( Listanswerscore.Count == 0 && list.Count > 0)
+                InitListAnswerScore();
         }
         public SingleChoiceArea(Rectangle rect, string name)
         {
@@ -262,6 +268,9 @@ namespace ARTemplate
             this.Rect = rect;
             this._name = name;
             ShowTitle = true;
+            //
+            list = new List<List<Point>>();
+            Listanswerscore = new List<OptionAnswerScore>();
         }
         public SingleChoiceArea(Rectangle rect, string name, List<List<Point>> list, Size size)
         {
@@ -270,6 +279,28 @@ namespace ARTemplate
             this._name = name;
             this.list = list;
             this.Size = size;
+            list = new List<List<Point>>(); 
+            InitListAnswerScore();
+        }
+
+        private void InitListAnswerScore()
+        {
+            Listanswerscore = new List<OptionAnswerScore>();
+            int index = 0;
+            int count = 0;
+            foreach (List<Point> l in list)
+                count += l.Count;
+            if (count == 0) return;
+
+            int pos = 0;
+            foreach (List<Point> l in list)
+            {
+                Listanswerscore.Add(
+                new OptionAnswerScore(this, index, index)
+                );
+                pos++;
+                index++;
+            }
         }
         public override bool HasImgSubArea() { return true; }
         public override Rectangle[] ImgSubArea()
@@ -320,12 +351,76 @@ namespace ARTemplate
             _name = name;
         }
         public string Name { get { return _name; } }
+        public override float GetTotalScore()
+        {
+            if (Listanswerscore == null && list.Count > 0)
+                InitListAnswerScore();               
+            if(Listanswerscore == null || Listanswerscore.Count == 0)
+                return 0;
+            return Listanswerscore.Sum(r => r.Score);
+        }
         //[JsonProperty]
         //public List<List<Point>> list;
+        [JsonIgnore]
+        public List<OptionAnswerScore> Listanswerscore;
         [JsonProperty]
         public Size Size;
         [JsonProperty]
         private string _name;
+
+    }
+    [JsonObject(MemberSerialization.OptIn)]
+    public class OptionAnswerScore   
+    {
+        public OptionAnswerScore()
+        {
+        }
+        public OptionAnswerScore(SingleChoiceArea U, int index, int pos)
+        {
+            this.U = U;
+            this.ID = index + 1;
+            this.Index = index;
+            this.Score = 1;
+            this._Rect = U.ImgArea;
+            this.Size = U.Size;
+            this.List = new List<Point>();
+            List = U.list[pos];
+        }
+        public void InitDeserialize()
+        {
+
+        }
+        public override string ToString()
+        {
+            return Name();
+        }
+
+        [JsonProperty]
+        public float Score { get; set; }
+        [JsonProperty]
+        public int Index { get; set; }
+        [JsonProperty]
+        public string Answer { get; set; }
+        [JsonProperty]
+        public float HalfScore { get; set; }
+        [JsonProperty]
+        public string Type { get; set; }
+
+        public int ID { get; set; }
+        public List<Point> List { get; set; }
+        public Size Size { get; set; }
+        public string Name() { return "x" + ID; }
+        public string OutName { get { return "选择题" + ID; } }
+        private Rectangle _Rect;
+
+        [JsonIgnore]
+        public Rectangle Rect { get { return _Rect; } }
+        [JsonIgnore]
+        public int Height { get { return Rect.Height; } }
+        [JsonIgnore]
+        public int Width { get { return Rect.Width; } }
+        [JsonIgnore]
+        private SingleChoiceArea U;
     }
     [JsonObject(MemberSerialization.OptIn)]
     public class UnChoose : Area

@@ -167,7 +167,6 @@ namespace ARTemplate
                 }
             }
         }
-
         private bool CheckTemplate()
         {
             if(_template.Manageareas.Unchooseareas!=null)
@@ -327,62 +326,9 @@ namespace ARTemplate
         }
         private void ToolStripMenuItemSetScore_Click(object sender, EventArgs e)
         {
-            DataTable dtxzt = ChooseTodtset();
-            ScanTemplate.FormYJ.FormYJInit.ImportOptionAnswerScore(dtxzt);
-            DataToXzt();
-        }
-        private void DataToXzt()
-        {
-            //throw new NotImplementedException();
+            FormSetTemplateScore f = new FormSetTemplateScore(m_tn);
+            f.ShowDialog();
         }       
-        private DataTable ChooseTodtset( )
-        {
-            ScanTemplate.FormYJ.Optionsubjects _Optionsubjects = Template.ConstructOptionSubject(_template);
-            DataTable dtset = Tools.DataTableTools.ConstructDataTable(new string[] { "OID", "题组名称", "最大分值", "正确答案" });
-            foreach (ScanTemplate.FormYJ.Optionsubject S in _Optionsubjects.OptionSubjects)
-            {
-                DataRow dr = dtset.NewRow();
-                dr["OID"] = new ValueTag(S.ID.ToString(), S);
-                dr["题组名称"] = S.Name();
-                dr["最大分值"] = S.Score;
-                dr["正确答案"] = "";
-                dtset.Rows.Add(dr);
-            }
-            dtset.AcceptChanges();
-            return dtset;
-        }
-        private void AddUnChooseTodtset(ref DataTable dtset)
-        {
-            //dtset = Tools.DataTableTools.ConstructDataTable(new string[] { "OID", "题组名称", "最大分值", "图片" });
-            //_AvgUnImgWith = 0;
-            //_AvgUnImgHeight = 0;
-
-            //foreach (Imgsubject S in _Imgsubjects.Subjects)
-            //{
-            //    try
-            //    {
-            //        DataRow dr = dtset.NewRow();
-            //        dr["OID"] = new ValueTag(S.ID.ToString(), S);
-            //        dr["题组名称"] = S.Name;
-            //        dr["最大分值"] = S.Score;
-            //        _AvgUnImgHeight += S.Height;
-            //        _AvgUnImgWith += S.Width;
-            //        if (_src != null)
-            //            dr["图片"] = _src.Clone(S.Rect, _src.PixelFormat);
-            //        dtset.Rows.Add(dr);
-            //    }
-            //    catch
-            //    {
-            //        ;
-            //    }
-            //}
-            //dtset.AcceptChanges();
-            //if (_Imgsubjects.Subjects.Count > 0)
-            //{
-            //    _AvgUnImgHeight /= _Imgsubjects.Subjects.Count;
-            //    _AvgUnImgWith /= _Imgsubjects.Subjects.Count;
-            //}
-        }
         private void CompleteSelection(bool bcomplete)
         {
             if (bcomplete)
@@ -507,7 +453,7 @@ namespace ARTemplate
                     float totalscore = 0;
                     Font font1 = new Font(font.FontFamily, 14,FontStyle.Bold);
                     Font font2 = new Font(font.FontFamily, 28,FontStyle.Bold);
-                    foreach (string s in new string[] { "选择题", "非选择题","题组"})
+                    foreach (string s in new string[] { "选择题", "非选择题","题组"})//
                     {
                         if (m_tn.Nodes.ContainsKey(s))
                             foreach (TreeNode t in m_tn.Nodes[s].Nodes)
@@ -528,7 +474,7 @@ namespace ARTemplate
                                         }
                                 }
                             }
-                    }
+                    }                  
                     Rectangle totalScorerect = new Rectangle(0, 0, _src.Width, _src.Height);
                     //求总分的位置
                     if (m_tn.Nodes.ContainsKey("考号") && m_tn.Nodes["考号"].GetNodeCount(true) == 1)
@@ -1139,8 +1085,5 @@ namespace ARTemplate
         private List<Rectangle> _ControlRects;
         private Rectangle _TestR;
         private bool _bShowScore;
-
-
-
     }
 }

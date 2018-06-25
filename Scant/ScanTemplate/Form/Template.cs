@@ -596,7 +596,10 @@ namespace ARTemplate
                         break;
                     case "选择题": dic[item.Key] = new List<Area>();
                         foreach (SingleChoiceArea A in MyArea<SingleChoiceArea>.ConvertTo(item.Value))
+                        {
                             dic[item.Key].Add(A);
+                            A.InitAnswerScore();
+                        }
                         break;
                     case "非选择题": dic[item.Key] = new List<Area>();
                         foreach (UnChoose A in MyArea<UnChoose>.ConvertTo(item.Value))

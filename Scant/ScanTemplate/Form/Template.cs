@@ -257,6 +257,66 @@ namespace ARTemplate
                     }
                 }
         }
+
+        public static Optionsubjects ConstructOptionSubject(Template  template)
+        {
+            Optionsubjects t_Optionsubjects = new Optionsubjects();
+            int index = 0;
+            foreach (Area I in template.Dic["选择题"])
+            {
+                SingleChoiceArea U = (SingleChoiceArea)I;
+                if (I.HasImgSubArea())
+                {
+                    int pos = 0;
+                    foreach (List<Point> lp in ((SingleChoiceArea)I).list)
+                    {
+                        Rectangle r = I.ImgArea;
+                        Optionsubject S = new Optionsubject(U, index, pos);
+                        t_Optionsubjects.Add(S);
+                        pos++;
+                        index++;
+                    }
+                }
+            }
+            return t_Optionsubjects;
+        }
+        public static Imgsubjects ConstructImgsubjects(Template template)
+        {
+            Imgsubjects t_Imgsubjects = new Imgsubjects();
+            int index = 0;
+            foreach (Area I in template.Dic["非选择题"])
+            {
+                UnChoose U = (UnChoose)I;
+                Imgsubject S = new Imgsubject(U, index);
+                if (t_Imgsubjects.Add(S))
+                    index++;
+            }
+            return t_Imgsubjects;
+        }
+        public static Tzsubjects ConstructTzsubjects(Template template, Imgsubjects t_Imgsubjects)
+        {
+            Tzsubjects t_Tzsubjects = new Tzsubjects();
+            //= ConstructImgsubjects(template);
+            int index = t_Imgsubjects.Subjects.Count;
+            foreach (Area I in  template.Manageareas.Tzareas.list)
+            {
+                Tzsubject tzs = new Tzsubject();
+                tzs.Name = I.Title;
+                tzs.Rect = I.Rect;
+                t_Tzsubjects.Add(tzs);
+                if (I.HasSubAreas())
+                    foreach (Area sI in I.SubAreas)
+                    {
+                        Imgsubject S = new Imgsubject((UnChoose)sI, index);
+                        if (t_Imgsubjects.Add(S))
+                        {
+                            tzs.Add(S);
+                            index++;
+                        }
+                    }
+            }
+            return t_Tzsubjects;
+        }
     }
     public class ConvertTemplateData
     {

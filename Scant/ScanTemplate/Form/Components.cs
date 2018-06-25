@@ -94,6 +94,14 @@ namespace ARTemplate
         {
             ;
         }
+        public virtual float GetTotalScore()
+        {
+            return 0;
+        }
+        public virtual String GetScoreInfomation()
+        {
+            return  GetTotalScore()  + "分";
+        }
         public override string ToString()
         {
             return TypeName;
@@ -347,6 +355,10 @@ namespace ARTemplate
         {
             _name = name;
         }
+        public override float GetTotalScore()
+        {
+            return score;
+        }
         [JsonProperty]
         private float score;
         [JsonProperty]
@@ -463,6 +475,12 @@ namespace ARTemplate
         {
             return true;
         }
+        public override float GetTotalScore()
+        {
+            if(_subareas.Count==0)
+            return base.GetTotalScore();
+            return _subareas.Sum(r => r.GetTotalScore());
+        }
         [JsonIgnore]
         public override List<Area> SubAreas
         {
@@ -563,6 +581,10 @@ namespace ARTemplate
             if (baselist == null || baselist.Count == 0)
                 return false;
             return true;
+        }
+        public virtual string GetScoreInfomation()
+        {
+            return "";
         }
     }
     public class FeaturePoints : Areas
@@ -698,7 +720,13 @@ namespace ARTemplate
             //return  _list.Sum(  r => r.SubAreas.Sum( rr => rr.Score );
             return Count;
         }
-
+        public override string GetScoreInfomation()
+        {
+            if (list == null)
+                return base.GetScoreInfomation();
+            float totalscore = _list.Sum(r => r.GetTotalScore());
+            return "小题总分：" + totalscore;
+        }
         public string AnswerScoreInfomation()
         {
             return "共"+Count+"小题";
@@ -731,7 +759,13 @@ namespace ARTemplate
                 return _list;
             }
         }
-
+        public override string GetScoreInfomation()
+        {
+            if(list==null)
+            return base.GetScoreInfomation();
+            float totalscore = _list.Sum(r => r.GetTotalScore());
+            return "小题总分：" + totalscore;
+        }
         public string Count { get; set; }
     }
     public class NameAreas : Areas

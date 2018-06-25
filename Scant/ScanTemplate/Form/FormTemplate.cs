@@ -318,6 +318,71 @@ namespace ARTemplate
                 m_act = Act.DefineCustom;
             toolStripButton_Click(sender, e);
         }
+        private void ToolStripMenuItemShowScore_Click(object sender, EventArgs e)
+        {
+            _bShowScore = !_bShowScore;
+            ToolStripMenuItemShowScore.Checked = _bShowScore;
+            pictureBox1.Invalidate();
+            //MessageBox.Show(_bShowScore.ToString());
+        }
+        private void ToolStripMenuItemSetScore_Click(object sender, EventArgs e)
+        {
+            DataTable dtxzt = ChooseTodtset();
+            ScanTemplate.FormYJ.FormYJInit.ImportOptionAnswerScore(dtxzt);
+            DataToXzt();
+        }
+        private void DataToXzt()
+        {
+            //throw new NotImplementedException();
+        }       
+        private DataTable ChooseTodtset( )
+        {
+            ScanTemplate.FormYJ.Optionsubjects _Optionsubjects = Template.ConstructOptionSubject(_template);
+            DataTable dtset = Tools.DataTableTools.ConstructDataTable(new string[] { "OID", "题组名称", "最大分值", "正确答案" });
+            foreach (ScanTemplate.FormYJ.Optionsubject S in _Optionsubjects.OptionSubjects)
+            {
+                DataRow dr = dtset.NewRow();
+                dr["OID"] = new ValueTag(S.ID.ToString(), S);
+                dr["题组名称"] = S.Name();
+                dr["最大分值"] = S.Score;
+                dr["正确答案"] = "";
+                dtset.Rows.Add(dr);
+            }
+            dtset.AcceptChanges();
+            return dtset;
+        }
+        private void AddUnChooseTodtset(ref DataTable dtset)
+        {
+            //dtset = Tools.DataTableTools.ConstructDataTable(new string[] { "OID", "题组名称", "最大分值", "图片" });
+            //_AvgUnImgWith = 0;
+            //_AvgUnImgHeight = 0;
+
+            //foreach (Imgsubject S in _Imgsubjects.Subjects)
+            //{
+            //    try
+            //    {
+            //        DataRow dr = dtset.NewRow();
+            //        dr["OID"] = new ValueTag(S.ID.ToString(), S);
+            //        dr["题组名称"] = S.Name;
+            //        dr["最大分值"] = S.Score;
+            //        _AvgUnImgHeight += S.Height;
+            //        _AvgUnImgWith += S.Width;
+            //        if (_src != null)
+            //            dr["图片"] = _src.Clone(S.Rect, _src.PixelFormat);
+            //        dtset.Rows.Add(dr);
+            //    }
+            //    catch
+            //    {
+            //        ;
+            //    }
+            //}
+            //dtset.AcceptChanges();
+            //if (_Imgsubjects.Subjects.Count > 0)
+            //{
+            //    _AvgUnImgHeight /= _Imgsubjects.Subjects.Count;
+            //    _AvgUnImgWith /= _Imgsubjects.Subjects.Count;
+            //}
+        }
         private void CompleteSelection(bool bcomplete)
         {
             if (bcomplete)
@@ -437,6 +502,50 @@ namespace ARTemplate
                     }
                 }
 
+                if (_bShowScore)
+                {
+                    float totalscore = 0;
+                    Font font1 = new Font(font.FontFamily, 14,FontStyle.Bold);
+                    Font font2 = new Font(font.FontFamily, 28,FontStyle.Bold);
+                    foreach (string s in new string[] { "选择题", "非选择题","题组"})
+                    {
+                        if (m_tn.Nodes.ContainsKey(s))
+                            foreach (TreeNode t in m_tn.Nodes[s].Nodes)
+                            {
+                                if (t.Tag != null)
+                                {
+                                    Area I = (Area)(t.Tag);
+                                    //if (I.EditMode)
+                                    //    continue;
+                                    totalscore += I.GetTotalScore();
+                                    DrawAreaScore(e, font1, I ,s);
+                                    if (I.HasSubAreas())
+                                        foreach (Area sI in I.SubAreas)
+                                        {
+                                            if (sI.EditMode)
+                                                continue;
+                                            DrawAreaScore(e, font1, sI);
+                                        }
+                                }
+                            }
+                    }
+                    Rectangle totalScorerect = new Rectangle(0, 0, _src.Width, _src.Height);
+                    //求总分的位置
+                    if (m_tn.Nodes.ContainsKey("考号") && m_tn.Nodes["考号"].GetNodeCount(true) == 1)
+                    {
+                        TreeNode t = m_tn.Nodes["考号"].Nodes[0];
+                        Area I = (Area)(t.Tag);
+                        Rectangle r = I.ImgArea;
+                        r.Offset(-I.ImgArea.Width / 2, I.ImgArea.Height / 5);
+                        totalScorerect.Intersect(r);
+                    }
+                    else
+                    {
+                        totalScorerect.Offset(_src.Width * 35 / 100, _src.Height * 15 / 100);
+                    }
+                    DrawAreaScore(e, font2, "总分" + totalscore, totalScorerect);
+                    
+                }
                 //return;
                 if (_ActiveEditMode && _ActiveEditArea != null)
                 {
@@ -476,6 +585,26 @@ namespace ARTemplate
                 e.Graphics.DrawString(I.Title, font, Brushes.Red, zoombox.ImgToBoxSelection(I.ImgArea).Location);
             }
         }
+        private void DrawAreaScore(PaintEventArgs e, Font font, Area I,string keyname="")
+        { 
+            string str = I.GetScoreInfomation();
+            SizeF s =e.Graphics.MeasureString(str, font);
+            Point point = zoombox.ImgToBoxSelection(I.ImgArea).Location;
+            if (keyname == "题组")
+            {
+                point.X = point.X - 20 > 2 ? point.X - 20 : 2;
+            }
+            e.Graphics.FillRectangle(new SolidBrush(Color.LightGray),point.X,point.Y ,(int)s.Width, (int)s.Height);
+            e.Graphics.DrawString(str, font, Brushes.Red, point );
+        }
+        private void DrawAreaScore(PaintEventArgs e, Font font, string str, Rectangle rect)
+        {
+            SizeF s = e.Graphics.MeasureString(str, font);
+            Point point = zoombox.ImgToBoxSelection(rect).Location;            
+            e.Graphics.FillRectangle(new SolidBrush(Color.LightGray), point.X, point.Y, (int)s.Width, (int)s.Height);
+            e.Graphics.DrawString(str, font, Brushes.Red, point);
+        }
+
         private void buttonzoomout_Click(object sender, EventArgs e)
         {
             if (pictureBox1.Image == null) return;
@@ -1009,6 +1138,9 @@ namespace ARTemplate
         private bool _ActiveEditMode;
         private List<Rectangle> _ControlRects;
         private Rectangle _TestR;
+        private bool _bShowScore;
+
+
 
     }
 }

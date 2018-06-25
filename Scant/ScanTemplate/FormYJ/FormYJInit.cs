@@ -47,53 +47,10 @@ namespace ScanTemplate.FormYJ
             }
         }
         private void InitOptionImgSubjects()
-        {
-            _Imgsubjects = new Imgsubjects();
-            _Tzsubjects = new Tzsubjects();
-            int index = 0;
-            foreach (Area I in _artemplate.Dic["非选择题"])
-            {
-                UnChoose U = (UnChoose)I;
-                Imgsubject S = new Imgsubject(U,index);
-                if( _Imgsubjects.Add(S) )
-                index++;
-            }
-            foreach (Area I in _artemplate.Manageareas.Tzareas.list)
-            {
-                Tzsubject tzs = new Tzsubject();
-                tzs.Name = I.Title;
-                tzs.Rect = I.Rect;
-                _Tzsubjects.Add(tzs);
-                if(I.HasSubAreas())
-                foreach (Area sI in I.SubAreas)
-                {
-                    Imgsubject S = new Imgsubject((UnChoose)sI, index);
-                    if (_Imgsubjects.Add(S))
-                    {
-                        tzs.Add(S);
-                        index++;
-                    }
-                }
-            }
-            _Optionsubjects = new Optionsubjects();
-            index = 0;
-            foreach (Area I in _artemplate.Dic["选择题"])
-            {
-                SingleChoiceArea U = (SingleChoiceArea)I;
-                if (I.HasImgSubArea())
-                {
-                    int pos = 0;
-                    foreach (List<Point> lp in ((SingleChoiceArea)I).list)
-                    {
-                        Rectangle r = I.ImgArea;
-                        Optionsubject S = new Optionsubject(U, index, pos);
-                        _Optionsubjects.Add(S);
-                        pos++;
-                        index++;
-                    }
-                }
-            }
-
+        { 
+            _Imgsubjects = Template.ConstructImgsubjects(_artemplate);
+            _Tzsubjects = Template.ConstructTzsubjects(_artemplate,_Imgsubjects);
+            _Optionsubjects = Template.ConstructOptionSubject(_artemplate);
         }
         private void InitStudents()
         {

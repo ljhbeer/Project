@@ -70,6 +70,7 @@ namespace ARTemplate
                 _dic = td._dic;
                 CorrectRect = td.Correctrect;
                 _manageareas = null;
+                LoadFileName = jsonname;
                 return true;
             }
             return false;
@@ -317,6 +318,8 @@ namespace ARTemplate
             }
             return t_Tzsubjects;
         }
+
+        public string LoadFileName { get; set; }
     }
     public class ConvertTemplateData
     {

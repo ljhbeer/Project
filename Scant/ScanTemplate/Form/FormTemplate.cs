@@ -137,19 +137,31 @@ namespace ARTemplate
         private void toolStripButtonSaveTemplate_Click(object sender, EventArgs e)
         {
             if (_template == null) return;
+            SaveTemplate();
+        }
+        private void SaveTemplate(bool btotemplate = true)
+        {
             UpdateTemplate();
             if (!CheckTemplate(_template)) return;
-            string filename =  _template.GetTemplateName() + ".json";
-            if (_template.FileName != "")
+            string filename = _template.GetTemplateName() + ".json";
+            if (btotemplate)
             {
-                if (File.Exists(_template.FileName))
+                if (_template.FileName != "")
                 {
-                    filename = _template.FileName;
+                    if (File.Exists(_template.FileName))
+                    {
+                        filename = _template.FileName;
+                    }
+                    else if (Directory.Exists(_template.FileName))
+                    {
+                        filename = _template.FileName + "\\" + filename;
+                    }
                 }
-                else if(Directory.Exists(_template.FileName))
-                {
-                    filename = _template.FileName +"\\"+ filename;
-                }
+            }
+            else
+            {
+                if (_template.LoadFileName != null && _template.LoadFileName != "")
+                filename = _template.LoadFileName;
             }
             SaveFileDialog saveFileDialog2 = new SaveFileDialog();
             saveFileDialog2.FileName = filename;
@@ -160,7 +172,7 @@ namespace ARTemplate
                 try
                 {
                     _template.Save(saveFileDialog2.FileName);
-                   
+
                 }
                 catch (Exception ex)
                 {
@@ -312,8 +324,9 @@ namespace ARTemplate
         }
         private void toolStripButtonCloseAndOutImages_Click(object sender, EventArgs e)
         {
-        	UpdateTemplate();
-            this.Close();
+            if (_template == null) return;
+            SaveTemplate(false);
+            //this.Close();
         }
         private void toolStripButtonSetGroup_Click(object sender, EventArgs e)
         {

@@ -25,6 +25,12 @@ namespace ARTemplate
                 label1.Text = "请输入本次考试名称";
                 textBox1.Text = "";
             }
+            else if (keyname == "多个班级确认")
+            {
+                this.Text = keyname;
+                label1.Text = "存在多个班级，我已知晓\r\n，请输入 OK 继续";
+                textBox1.Text = "";
+            }
             else if (keyname == "删除确认")
             {
                 this.Text = keyname;

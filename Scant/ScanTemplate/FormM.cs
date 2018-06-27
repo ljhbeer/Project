@@ -620,14 +620,52 @@ namespace ScanTemplate
                 return;
             if (!FormTemplate.CheckTemplate(_scan.Template,true))
                 return;
+            Students _Students = new Students(_rundt);
+            ScanData sd = (ScanData)listBoxScantData.SelectedItem;
+            if (!CheckClassInformation(_Students))
+                return;
             this.Hide();
             _sc.Examconfig = new ExamConfig();
             _sc.Examconfig.SetWorkPath(_sc.Baseconfig.ExamPath);
-            ScanData sd = (ScanData)listBoxScantData.SelectedItem;
             FormYJ.FormYJInit f = new FormYJ.FormYJInit(_sc.Examconfig, _scan.Template, _rundt,_sc.Baseconfig.ScanDataPath,sd.ExamName,sd.Fullpath);
             f.ShowDialog();
             this.Show();
         }
+
+        private bool CheckClassInformation(Students _students)
+        {
+            List<int> cids = _students.StudentsClassid(_sc);
+            if (cids.Count == 1)
+            {
+                int Count = _students.students.Count( r =>  (_sc.Studentbases.GetClass(r.KH) == 0)   ) ;
+                if (Count>0 )
+                {
+                   if( MessageBox.Show("还有"+Count+"人没有班级信息，是否继续","确认班级信息",MessageBoxButtons.OKCancel) 
+                       == System.Windows.Forms.DialogResult.Cancel)
+                       return false;
+                }
+                return true;
+            }
+            else
+            {
+                string Msg = "存在多个班级\r\n" + 
+                string.Join("\r\n", cids.Select(r => r + "班：" +
+                    _students.students.Count(rr => _sc.Studentbases.GetClass(rr.KH) == r)
+                      + "人").ToList() )
+                    + "\r\n建议检查班级信息";
+                if (MessageBox.Show(Msg, "确认班级信息", MessageBoxButtons.OKCancel)
+                    == System.Windows.Forms.DialogResult.OK)
+                {
+                    FormInput f = new FormInput("多个班级确认");
+                    f.ShowDialog();
+                    if (f.StrValue != null && f.StrValue.ToUpper() != "OK")
+                        return true;
+                }
+                return false;
+            }
+            return true;
+        }
+
         private void buttonOpenTemplate_Click(object sender, EventArgs e)
         {
             this.Hide();
@@ -1137,6 +1175,7 @@ namespace ScanTemplate
                         }
                         _sc.Templateshow = new TemplateShow(dir.Fullpath, dir.DirName, dir.ImgList()[0], fps.Prepapers.PrePaperList[0].Detectdata, ti, true);
                         _sc.Templateshow.Template.FileName = _sc.Baseconfig.TemplatePath;
+                        _sc.Templateshow.Template.LoadFileName = sd.TemplateFileName;
                         if (_sc.Templateshow.OK)
                         {
                             this.Hide();

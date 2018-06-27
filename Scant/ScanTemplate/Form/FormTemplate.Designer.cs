@@ -61,8 +61,8 @@
             this.toolStripComboBoxChooseType = new System.Windows.Forms.ToolStripComboBox();
             this.toolStripDropDownButton1 = new System.Windows.Forms.ToolStripDropDownButton();
             this.ToolStripMenuItemShowScore = new System.Windows.Forms.ToolStripMenuItem();
-            this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.ToolStripMenuItemSetScore = new System.Windows.Forms.ToolStripMenuItem();
+            this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.toolStrip1.SuspendLayout();
             this.toolStripContainer1.ContentPanel.SuspendLayout();
             this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
@@ -333,7 +333,7 @@
             this.toolStripDropDownButton1});
             this.toolStrip2.Location = new System.Drawing.Point(3, 0);
             this.toolStrip2.Name = "toolStrip2";
-            this.toolStrip2.Size = new System.Drawing.Size(454, 25);
+            this.toolStrip2.Size = new System.Drawing.Size(423, 25);
             this.toolStrip2.TabIndex = 2;
             // 
             // toolStripButtonCloseAndOutImages
@@ -397,14 +397,14 @@
             // ToolStripMenuItemShowScore
             // 
             this.ToolStripMenuItemShowScore.Name = "ToolStripMenuItemShowScore";
-            this.ToolStripMenuItemShowScore.Size = new System.Drawing.Size(152, 22);
+            this.ToolStripMenuItemShowScore.Size = new System.Drawing.Size(124, 22);
             this.ToolStripMenuItemShowScore.Text = "显示分值";
             this.ToolStripMenuItemShowScore.Click += new System.EventHandler(this.ToolStripMenuItemShowScore_Click);
             // 
             // ToolStripMenuItemSetScore
             // 
             this.ToolStripMenuItemSetScore.Name = "ToolStripMenuItemSetScore";
-            this.ToolStripMenuItemSetScore.Size = new System.Drawing.Size(152, 22);
+            this.ToolStripMenuItemSetScore.Size = new System.Drawing.Size(124, 22);
             this.ToolStripMenuItemSetScore.Text = "设置分值";
             this.ToolStripMenuItemSetScore.Click += new System.EventHandler(this.ToolStripMenuItemSetScore_Click);
             // 

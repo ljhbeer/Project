@@ -259,8 +259,14 @@ namespace ARTemplate
         }
         public void InitAnswerScore()
         {
-            if ( Listanswerscore.Count == 0 && list.Count > 0)
+            if (Listanswerscore.Count == 0 && list.Count > 0)
                 InitListAnswerScore();
+            else
+            {
+                int pos = 0;
+                foreach (OptionAnswerScore O in Listanswerscore)
+                    O.InitDeserialize(this,pos++);
+            }
         }
         public SingleChoiceArea(Rectangle rect, string name)
         {
@@ -272,7 +278,7 @@ namespace ARTemplate
             list = new List<List<Point>>();
             Listanswerscore = new List<OptionAnswerScore>();
         }
-        public SingleChoiceArea(Rectangle rect, string name, List<List<Point>> list, Size size)
+        public SingleChoiceArea(Rectangle rect, string name, List<List<Point>> list, Size size,int BeginID=-1)
         {
             this.TypeName = "选择题";
             this.Rect = rect;
@@ -281,8 +287,16 @@ namespace ARTemplate
             this.Size = size;
             list = new List<List<Point>>(); 
             InitListAnswerScore();
+            SetBeginID(BeginID);
         }
-
+        public void SetBeginID(int _NextChooseID)
+        {
+            foreach(OptionAnswerScore o in Listanswerscore){
+                o.Index = _NextChooseID;
+                _NextChooseID++;
+                o.ID = _NextChooseID ;
+            }
+        }
         private void InitListAnswerScore()
         {
             Listanswerscore = new List<OptionAnswerScore>();
@@ -296,7 +310,7 @@ namespace ARTemplate
             foreach (List<Point> l in list)
             {
                 Listanswerscore.Add(
-                new OptionAnswerScore(this, index, index)
+                new OptionAnswerScore(this, index, pos)
                 );
                 pos++;
                 index++;
@@ -361,13 +375,12 @@ namespace ARTemplate
         }
         //[JsonProperty]
         //public List<List<Point>> list;
-        [JsonIgnore]
+        [JsonProperty]
         public List<OptionAnswerScore> Listanswerscore;
         [JsonProperty]
         public Size Size;
         [JsonProperty]
         private string _name;
-
     }
     [JsonObject(MemberSerialization.OptIn)]
     public class OptionAnswerScore   
@@ -377,18 +390,20 @@ namespace ARTemplate
         }
         public OptionAnswerScore(SingleChoiceArea U, int index, int pos)
         {
-            this.U = U;
-            this.ID = index + 1;
             this.Index = index;
             this.Score = 1;
+            this.Answer = "";
+            this.Type = "单选";
+            InitDeserialize(U, pos);
+        }
+        public void InitDeserialize(SingleChoiceArea U, int pos)
+        {
+            this.ID =this.Index + 1;
+            this.U = U;
             this._Rect = U.ImgArea;
             this.Size = U.Size;
             this.List = new List<Point>();
             List = U.list[pos];
-        }
-        public void InitDeserialize()
-        {
-
         }
         public override string ToString()
         {
@@ -434,6 +449,10 @@ namespace ARTemplate
             ShowTitle = true;
         }
         public int Scores { get { return (int)score; } }
+        public void SetScore(float Score)
+        {
+            this.score = Score;
+        }
         public override string Title
         {
             get
@@ -575,6 +594,10 @@ namespace ARTemplate
             if(_subareas.Count==0)
             return base.GetTotalScore();
             return _subareas.Sum(r => r.GetTotalScore());
+        }
+        public override string GetScoreInfomation()
+        {
+            return _name + ": " + GetTotalScore() + "分";
         }
         [JsonIgnore]
         public override List<Area> SubAreas
@@ -812,15 +835,14 @@ namespace ARTemplate
 
         public double TotalScore()
         {
-            //return  _list.Sum(  r => r.SubAreas.Sum( rr => rr.Score );
-            return Count;
+            return  list.Sum(  r => r.Listanswerscore.Sum( rr => rr.Score ));
         }
         public override string GetScoreInfomation()
         {
             if (list == null)
                 return base.GetScoreInfomation();
             float totalscore = _list.Sum(r => r.GetTotalScore());
-            return "小题总分：" + totalscore;
+            return "选择题：共"+Count+"题 总分：" + totalscore;
         }
         public string AnswerScoreInfomation()
         {
@@ -859,7 +881,7 @@ namespace ARTemplate
             if(list==null)
             return base.GetScoreInfomation();
             float totalscore = _list.Sum(r => r.GetTotalScore());
-            return "小题总分：" + totalscore;
+            return "选择题：共"+Count+"题 总分:" + totalscore;
         }
         public string Count { get; set; }
     }
@@ -947,20 +969,24 @@ namespace ARTemplate
             return list.Sum(r => r.SubAreas.Sum(rr => ((UnChoose)rr).Scores));
             return 0;
         }
-
-        internal string ScoreInfomation()
+        public  string ScoreInfomation()
         {
             if(list!=null)
-            return string.Join("\r\n",
-                list.Select(r =>
-                {
-                    string str  = "";
-                   str =  r.Title + "\t"+ r.SubAreas.Sum(rr => ((UnChoose)rr).Scores)+"分\t"+ 
-                       string.Join(" ",r.SubAreas.Select( rr => ((UnChoose)rr).Scores + "分"));
-                    return str;
-                }).ToList()
-                );
-            return "";
+            //return string.Join("\r\n",
+            //    list.Select(r =>
+            //    {
+            //        string str  = "";
+            //       str =  r.Title + "\t"+ r.SubAreas.Sum(rr => ((UnChoose)rr).Scores)+"分\t"+ 
+            //           string.Join(" ",r.SubAreas.Select( rr => ((UnChoose)rr).Scores + "分"));
+            //        return str;
+            //    }).ToList()
+            //    );
+            if (list == null)
+                return base.GetScoreInfomation();
+            float totalscore = list.Sum(r => r.GetTotalScore());
+            return "选择题：共" +list.Count + "大题 总分:" + totalscore+"\r\n"+
+                 string.Join("\r\n", list.Select( r => r.GetScoreInfomation())) ;
+
         }
     }
     public class CustomAreas : Areas

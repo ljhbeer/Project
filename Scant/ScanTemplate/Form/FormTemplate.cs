@@ -34,6 +34,7 @@ namespace ARTemplate
             _ActiveEditMode = false;
             _ControlRects = null;
             _TestR = new Rectangle();
+            _NextChooseID = 1;
         }
         ~FormTemplate()
         {
@@ -180,9 +181,10 @@ namespace ARTemplate
                     double totalscore = _template.Manageareas.SinglechoiceAreas.TotalScore() +
                         _template.Manageareas.Tzareas.TotalScore();
                     string Msg = "总分值" + totalscore + "\r\n"+
-                        _template.Manageareas.SinglechoiceAreas.AnswerScoreInfomation() +"\r\n"+
+                        _template.Manageareas.SinglechoiceAreas.GetScoreInfomation() +"\r\n"+
                         _template.Manageareas.Tzareas.ScoreInfomation();
-                    MessageBox.Show(Msg);
+                    if (MessageBox.Show(Msg, "模板成绩信息确认，是否继续保存", MessageBoxButtons.OKCancel) == System.Windows.Forms.DialogResult.Cancel)
+                        return false;
                 }
             return true;
         }
@@ -326,8 +328,9 @@ namespace ARTemplate
         }
         private void ToolStripMenuItemSetScore_Click(object sender, EventArgs e)
         {
-            FormSetTemplateScore f = new FormSetTemplateScore(m_tn);
+            FormSetTemplateScore f = new FormSetTemplateScore(m_tn,this);            
             f.ShowDialog();
+            //pictureBox1.Invalidate();
         }       
         private void CompleteSelection(bool bcomplete)
         {
@@ -704,7 +707,7 @@ namespace ARTemplate
                 TreeNode t = new TreeNode();
                 int cnt = m_tn.Nodes[keyname].GetNodeCount(false) + 1;
                 //t.Name = t.Text = ;
-                string choosename = keyname + cnt;
+                string choosename = keyname;
                 int count = 0;
                 if (InputBox.Input("选择题"))
                     count = InputBox.IntValue;
@@ -712,16 +715,16 @@ namespace ARTemplate
                 {
                     return;
                 }
-                
+                _NextChooseID = GetNextChooseID();
                 Bitmap bitmap = GetDrawedbyBlackWhiteBitMap();
                 if (Hengpai)
                 {//TODO:仅支持 横向填涂
                     DetectChoiceArea dca = new DetectChoiceArea(bitmap, count);
                     if (dca.Detect())
                     {
-                        t.Name = t.Text = choosename;
+                        t.Name = t.Text = choosename+"["+ (_NextChooseID+1)+"-"+(_NextChooseID+count)+"]";
                         t.Tag = new SingleChoiceArea(m_Imgselection,
-                            t.Name, dca.Choicepoint, dca.Choicesize);
+                            t.Name, dca.Choicepoint, dca.Choicesize,_NextChooseID);
                         m_tn.Nodes[keyname].Nodes.Add(t);
                     }
                 }
@@ -730,13 +733,28 @@ namespace ARTemplate
                     DetectChoiceArea dca = new DetectChoiceArea(bitmap, count);
                     if (dca.Detect(Hengpai))
                     {
-                        t.Name = t.Text = choosename;
+                        t.Name = t.Text = choosename + "[" + (_NextChooseID + 1) + "-" + (_NextChooseID + count) + "]";
                         t.Tag = new SingleChoiceArea(m_Imgselection,
-                            t.Name, dca.Choicepoint, dca.Choicesize);
+                            t.Name, dca.Choicepoint, dca.Choicesize,_NextChooseID);
                         m_tn.Nodes[keyname].Nodes.Add(t);
                     }
                 }
             }
+        }
+
+        private int GetNextChooseID()
+        {
+            int ID = 0;
+            String keyname = "选择题";
+            if (m_tn.Nodes.ContainsKey("选择题") && m_tn.Nodes["选择题"].GetNodeCount(true) > 0)
+            {
+                foreach (TreeNode t in m_tn.Nodes["选择题"].Nodes)
+                {
+                    SingleChoiceArea I = (SingleChoiceArea)t.Tag;
+                    ID += I.Count;
+                }
+            }
+            return ID;
         }
         private Bitmap GetDrawedbyBlackWhiteBitMap()
         {
@@ -944,6 +962,10 @@ namespace ARTemplate
                     ReNameAreaByIncreace("选区变黑");
                     ReNameAreaByIncreace("选区变白");
                     UpdateTemplate();
+                }else if(treeView1.SelectedNode.Text == "选择题")
+                {                   
+                    ReNameChooseNameID();
+                    UpdateTemplate();
                 }
                 pictureBox1.Invalidate();
             }
@@ -961,6 +983,20 @@ namespace ARTemplate
                     _ActiveEditMode = true;
                 }
                 pictureBox1.Invalidate();
+            }
+        }
+
+        private void ReNameChooseNameID()
+        {
+            _NextChooseID = 0;
+            for (int i = 0; i < m_tn.Nodes["选择题"].Nodes.Count; i++)
+            {
+                TreeNode t = m_tn.Nodes["选择题"].Nodes[i];
+                SingleChoiceArea I = (SingleChoiceArea)t.Tag;
+                I.SetBeginID(_NextChooseID);
+                int count = I.Count;
+                t.Name=t.Text = "选择题" + "[" + (_NextChooseID + 1) + "-" + (_NextChooseID + count) + "]";
+                _NextChooseID += count;
             }
         }
         private void AddUnChooseToTzArea()
@@ -1068,6 +1104,10 @@ namespace ARTemplate
         {
             textBoxMessage.Text = message;
         }
+        public void RefreshPicture()
+        {
+            pictureBox1.Invalidate();
+        }
 
         private Rectangle m_Imgselection;
         private TreeNode m_tn;
@@ -1085,5 +1125,7 @@ namespace ARTemplate
         private List<Rectangle> _ControlRects;
         private Rectangle _TestR;
         private bool _bShowScore;
+        private int _NextChooseID; // 
+
     }
 }

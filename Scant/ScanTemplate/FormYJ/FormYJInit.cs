@@ -112,7 +112,7 @@ namespace ScanTemplate.FormYJ
                 dr["OID"] = new ValueTag(S.ID.ToString(), S);
                 dr["题组名称"] = S.Name();
                 dr["最大分值"] = S.Score;
-                dr["正确答案"] = "";
+                dr["正确答案"] = S.Answer;
                 dtset.Rows.Add(dr);
             }
             dtset.AcceptChanges();
@@ -389,19 +389,21 @@ namespace ScanTemplate.FormYJ
         }
         public Optionsubject(SingleChoiceArea U, int index, int pos)
         {
-            this.U = U;
-            this.ID = index+1;
-            this.Index = index;
-            this.Score = 1;
+            OptionAnswerScore O = U.Listanswerscore[pos];
+            this.Index = O.Index;
+            this.ID = O.ID;
+            this.Score = O.Score;
+            this.Answer = O.Answer;
+            this.Type = O.Type;
+            InitDeserialize(U, pos);
+
+        }
+        private void InitDeserialize(SingleChoiceArea U, int pos)
+        {
             this._Rect = U.ImgArea;
             this.Size = U.Size;
             this.List = new List<Point>();
-
             List = U.list[pos];
-        }
-        public void InitDeserialize()
-        {
-          
         }
         public override string ToString()
         {

@@ -115,6 +115,11 @@ namespace ScanTemplate.FormYJ
                         ExportResult(FileName);
                         MessageBox.Show("已输出成绩");
                         break;
+                    case "exresultxt":
+                        FileName = _sc.Baseconfig.ExportResultPath + "\\" + _exam.Name;
+                        ExportResult(FileName,"onlyxiaoti");
+                        MessageBox.Show("已输出成绩");
+                        break;
                     case "eximage": 
                         string ImagePath = _sc.Baseconfig.ExportImageRootPath + "\\" + _exam.Name;
                         ExportImages(ImagePath);
@@ -334,7 +339,7 @@ namespace ScanTemplate.FormYJ
             }
             return sb;
         }
-        private void ExportResult(string FileName)
+        private void ExportResult(string FileName,string key = "")
         {//导出成绩
             string Tztitle = "";
             foreach(Tzsubject T in _Tzsubjects.Tzs)
@@ -351,6 +356,7 @@ namespace ScanTemplate.FormYJ
                 sblisttizu.AppendLine(S.Name + "," + pr.TotalTz());
                 sbdetail .AppendLine(S.Name + "," + pr.Detail());
             }
+            if (key != "onlyxiaoti")
             File.WriteAllText(FileName+"小题分.txt", sbdetail.ToString());
             Tools.TextBitmapTool tbl = new TextBitmapTool(
                 new Rectangle(0, 0, 960, 720), new Rectangle(40, 90, 880, 600));
@@ -369,9 +375,12 @@ namespace ScanTemplate.FormYJ
             {
                 MessageBox.Show("存在多个班级");
             }
-            File.WriteAllText(FileName + "_总分.大题分.txt",
-                string.Join("\r\n", list) +"\r\n\r\n"+ string.Join("\r\n", list1));
-            tbl.DrawListInPaper(list,true).Save(FileName + "总分成绩单.jpg");
+            if (key != "onlyxiaoti")
+            {
+                File.WriteAllText(FileName + "_总分.大题分.txt",
+                    string.Join("\r\n", list) + "\r\n\r\n" + string.Join("\r\n", list1));
+                tbl.DrawListInPaper(list, true).Save(FileName + "总分成绩单.jpg");
+            }
             tbl.DrawListInPaper(list1,true).Save(FileName + "_小题成绩单.jpg");
         }
         private void ExportOptionsResult(string FileName)

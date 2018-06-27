@@ -618,6 +618,8 @@ namespace ScanTemplate
         {
             if (_scan == null || _rundt == null || _rundt.Rows.Count == 0 || listBoxScantData.SelectedIndex==-1)
                 return;
+            if (!FormTemplate.CheckTemplate(_scan.Template,true))
+                return;
             this.Hide();
             _sc.Examconfig = new ExamConfig();
             _sc.Examconfig.SetWorkPath(_sc.Baseconfig.ExamPath);

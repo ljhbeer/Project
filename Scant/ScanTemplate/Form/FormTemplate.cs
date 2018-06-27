@@ -138,7 +138,7 @@ namespace ARTemplate
         {
             if (_template == null) return;
             UpdateTemplate();
-            if (!CheckTemplate()) return;
+            if (!CheckTemplate(_template)) return;
             string filename =  _template.GetTemplateName() + ".json";
             if (_template.FileName != "")
             {
@@ -168,7 +168,7 @@ namespace ARTemplate
                 }
             }
         }
-        private bool CheckTemplate()
+        public static bool CheckTemplate(Template _template,bool CheckAnswer = false)
         {
             if(_template.Manageareas.Unchooseareas!=null)
                 if (_template.Manageareas.Unchooseareas.Count!=null && _template.Manageareas.Unchooseareas.Count!= "0")
@@ -183,6 +183,14 @@ namespace ARTemplate
                     string Msg = "总分值" + totalscore + "\r\n"+
                         _template.Manageareas.SinglechoiceAreas.GetScoreInfomation() +"\r\n"+
                         _template.Manageareas.Tzareas.ScoreInfomation();
+                    if (CheckAnswer)
+                    {
+                        if (_template.Manageareas.SinglechoiceAreas.CheckAllAnswerFixed())
+                            Msg += "\r\n选择题已全部设好答案，是否需要重新检查确认是否正确";
+                        else
+                            Msg += "\r\n还有选择题没有设定答案，是否需要重新设定答案";
+
+                    }
                     if (MessageBox.Show(Msg, "模板成绩信息确认，是否继续保存", MessageBoxButtons.OKCancel) == System.Windows.Forms.DialogResult.Cancel)
                         return false;
                 }

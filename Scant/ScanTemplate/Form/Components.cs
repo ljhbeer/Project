@@ -850,6 +850,10 @@ namespace ARTemplate
 
 
         }
+        public bool CheckAllAnswerFixed()
+        {
+           return  !list.Exists(r => r.Listanswerscore.Exists(rr => rr.Answer == ""));
+        }
     }
     public class UnChooseAreas : Areas
     {

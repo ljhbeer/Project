@@ -23,6 +23,12 @@ namespace ScanTemplate
             _result = "exresult";
             this.Close();
         }
+        private void button7_Click(object sender, EventArgs e)
+        {
+            _result = "exresultxt";
+            this.Close();
+
+        }
         private void button2_Click(object sender, EventArgs e)
         {
             _result = "eximage";
@@ -49,6 +55,7 @@ namespace ScanTemplate
             this.Close();
         }
         public string Result { get { return _result; } }
+
 
     }
 }

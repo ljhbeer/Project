@@ -622,17 +622,17 @@ namespace ScanTemplate
                 return;
             Students _Students = new Students(_rundt);
             ScanData sd = (ScanData)listBoxScantData.SelectedItem;
-            if (!CheckClassInformation(_Students))
+            if (!CheckClassInformation(_Students,_sc))
                 return;
             this.Hide();
             _sc.Examconfig = new ExamConfig();
             _sc.Examconfig.SetWorkPath(_sc.Baseconfig.ExamPath);
-            FormYJ.FormYJInit f = new FormYJ.FormYJInit(_sc.Examconfig, _scan.Template, _rundt,_sc.Baseconfig.ScanDataPath,sd.ExamName,sd.Fullpath);
+            FormYJ.FormYJInit f = new FormYJ.FormYJInit(_sc, _scan.Template, _rundt,_sc.Baseconfig.ScanDataPath,sd.ExamName,sd.Fullpath);
             f.ShowDialog();
             this.Show();
         }
 
-        private bool CheckClassInformation(Students _students)
+        public static bool CheckClassInformation(Students _students, ScanConfig _sc)
         {
             List<int> cids = _students.StudentsClassid(_sc);
             if (cids.Count == 1)
@@ -658,7 +658,7 @@ namespace ScanTemplate
                 {
                     FormInput f = new FormInput("多个班级确认");
                     f.ShowDialog();
-                    if (f.StrValue != null && f.StrValue.ToUpper() != "OK")
+                    if (f.StrValue != null && f.StrValue.ToUpper() == "OK")
                         return true;
                 }
                 return false;

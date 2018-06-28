@@ -15,64 +15,73 @@ namespace ARTemplate
         public string StrValue { get; set; }
         public int IntValue { get; set; }
 
-        public FormInput(string keyname)
+        public FormInput(string keyname,string LableName = "")
         {
             this.keyname = keyname;
             InitializeComponent();
             label2.Visible = textBox2.Visible = false;
-            if (keyname == "考试名称")
+            if (LableName == "")
             {
-                label1.Text = "请输入本次考试名称";
+                if (keyname == "考试名称")
+                {
+                    label1.Text = "请输入本次考试名称";
+                    textBox1.Text = "";
+                }
+                else if (keyname == "多个班级确认")
+                {
+                    this.Text = keyname;
+                    label1.Text = "存在多个班级，我已知晓\r\n，请输入 OK 继续";
+                    textBox1.Text = "";
+                }
+                else if (keyname == "删除确认")
+                {
+                    this.Text = keyname;
+                    label1.Text = "请输入Delete 和 本次考试名称";
+                    textBox1.Text = "";
+                }
+                else if (keyname == "删除模板确认")
+                {
+                    this.Text = keyname;
+                    label1.Text = "请输入需要删除的模板前3个字母";
+                    textBox1.Text = "";
+                }
+                else if (keyname == "校对")
+                {
+                    label1.Visible = textBox1.Visible = false;
+                    comboBox1.Visible = true;
+                    comboBox1.Location = textBox1.Location;
+                    if (comboBox1.Items.Count > 0)
+                        comboBox1.SelectedIndex = 0;
+                }
+                else if (keyname == "选择题")
+                {
+                    label1.Text = "请输入选择题的个数";
+                    textBox1.Text = "5";
+                }
+                else if (keyname == "非选择题")
+                {
+                    label1.Text = "请输入每个空的分值，必须大于0,也可以以后统一输入";
+                    textBox1.Text = "2";
+                }
+                else if (keyname == "自定义")
+                {
+                    label1.Text = "请输入自定义名称";
+                    textBox1.Text = "座位号";
+                    label2.Text = "输入选项数";
+                    textBox2.Text = "10";
+                    label2.Visible = textBox2.Visible = true; ;
+                }
+            }
+            else
+            {
+                label1.Text = LableName;
                 textBox1.Text = "";
-            }
-            else if (keyname == "多个班级确认")
-            {
-                this.Text = keyname;
-                label1.Text = "存在多个班级，我已知晓\r\n，请输入 OK 继续";
-                textBox1.Text = "";
-            }
-            else if (keyname == "删除确认")
-            {
-                this.Text = keyname;
-                label1.Text = "请输入Delete 和 本次考试名称";
-                textBox1.Text = "";
-            }
-            else if (keyname == "删除模板确认")
-            {
-                this.Text = keyname;
-                label1.Text = "请输入需要删除的模板前3个字母";
-                textBox1.Text = "";
-            }
-            else if (keyname == "校对")
-            {
-                label1.Visible = textBox1.Visible = false;
-                comboBox1.Visible = true;
-                comboBox1.Location = textBox1.Location;
-                if (comboBox1.Items.Count > 0)
-                    comboBox1.SelectedIndex = 0;
-            }
-            else if (keyname == "选择题")
-            {
-                label1.Text = "请输入选择题的个数";
-                textBox1.Text = "5";
-            }
-            else if (keyname == "非选择题")
-            {
-                label1.Text = "请输入每个空的分值，必须大于0,也可以以后统一输入";
-                textBox1.Text = "2";
-            }
-            else if (keyname == "自定义")
-            {
-                label1.Text = "请输入自定义名称";
-                textBox1.Text = "座位号";
-                label2.Text = "输入选项数";
-                textBox2.Text = "10";
-                label2.Visible = textBox2.Visible = true; ;
             }
         }
         private void buttonOK_Click(object sender, EventArgs e)
         {
-            if (keyname == "考试名称" || keyname == "删除确认" || keyname == "删除模板确认")
+            if (keyname == "考试名称"  || keyname == "删除模板确认"
+                || keyname == "多个班级确认"  || keyname.Contains("删除确认"))//|| keyname == "删除确认"
             {
                 StrValue =  textBox1.Text;
             }

@@ -102,6 +102,29 @@ namespace ScanTemplate
             }
             return false;
         }
+        public bool GetExistExamInfo(ExamInfo ei)
+        {
+            if (_examinfo.Exists(r => r.Name == ei.Name))
+            {
+                ExamInfo ei2 = _examinfo.Find( r => r.Name == ei.Name);
+                ei.Number = ei2.Number;
+                ei.Path = ei2.Path;
+                return true;
+            }
+            return false;
+        }
+        public bool SetExistExamInfo(ExamInfo ei)
+        {
+            if (_examinfo.Exists(r => r.Name == ei.Name))
+            {
+                ExamInfo ei2 = _examinfo.Find(r => r.Name == ei.Name);
+                ei2.Number = ei.Number;
+                ei2.Path = ei.Path;
+                ei2.TemplateFileName = ei.TemplateFileName;
+                return true;
+            }
+            return false;
+        }
         public void AddExamInfo(ExamInfo ei)
         {
             _examinfo.Add(ei);
@@ -127,6 +150,7 @@ namespace ScanTemplate
         public List<ExamInfo> _examinfo;
         private string _filename;
         private string _workpath;
+
     }
     public class UnScans
     {

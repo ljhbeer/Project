@@ -11,21 +11,26 @@ using System.IO;
 using System.Drawing.Imaging;
 using Newtonsoft.Json;
 using Tools;
+using System.Text.RegularExpressions;
 
 namespace ScanTemplate.FormYJ
 {
     public partial class FormYJInit : Form
     {
-        public FormYJInit(ExamConfig g, Template _artemplate, DataTable _rundt, string _workpath,string ExamName,string Datafullpath)
+        private  bool _InitDgv;
+        //public FormYJInit(ExamConfig g, Template _artemplate, DataTable _rundt, string _workpath,string ExamName,string Datafullpath) 
+        public FormYJInit(ScanConfig _sc, Template _artemplate, DataTable _rundt, string _workpath, string ExamName, string Datafullpath)
         {
             InitSrc(_artemplate, _rundt);
-            this.g = g;
+            this._sc = _sc;
+            this.g = _sc.Examconfig;
             this._examname = ExamName;
             this._DataFullPath = Datafullpath;
             this._artemplate = _artemplate;
             this._rundt = _rundt;
             this._angle = _artemplate.Angle;
             this._workpath = _workpath;
+            _InitDgv = false;
             InitializeComponent();
             InitStudents();
             InitOptionImgSubjects();
@@ -159,15 +164,30 @@ namespace ScanTemplate.FormYJ
         }
         private void buttonCreateYJData_Click(object sender, EventArgs e)
         {
-            //if (!File.Exists(_artemplate.FileName))
-            //{
-            //    MessageBox.Show("模板文件名不在无法导出数据，请先保存模板再创建阅卷数据");
-            //    return;
-            //}
+           
+            //if (!FormTemplate.CheckTemplate(_artemplate, true))
+                //return;           
+            if (!CheckScore())
+                return;
+            if (!FormM.CheckClassInformation(_Students,_sc))
+                return;
+
+            Boolean bOverLap = false;
             ExamInfo ei = new ExamInfo();
             ei.Name = _examname;
             ei.TemplateFileName = _DataFullPath + "\\template.json";  
-            if (g.CheckExamInfoName(ei))
+            if (!g.CheckExamInfoName(ei)){
+                //MessageBox.Show("考试名称存在重复，请重新设置");
+                if (MessageBox.Show("考试名称存在重复，是否覆盖请点\"  确定  \" \r\n,一旦覆盖,该考试的所有已阅数据将被删除,\r\n否则请退回上一步更改考试名称","考试名称重复", MessageBoxButtons.OKCancel) == System.Windows.Forms.DialogResult.Cancel)
+                    return ;
+                FormInput f = new FormInput("考试名称重复删除确认","请输入 Delete 以确认覆盖本次考试的原有数据");
+                f.ShowDialog();                
+                if (f.StrValue == null || f.StrValue != "Delete")
+                    return;
+                if(! g.GetExistExamInfo(ei) )
+                    return ;
+                bOverLap = true;
+            }
             {
                 AcceptXztDataTableModified();
                 Exam exam = new Exam(_Students, _Imgsubjects,_Optionsubjects,_Tzsubjects, ei.Path);
@@ -177,43 +197,92 @@ namespace ScanTemplate.FormYJ
                 ImgbinManagesubjects ims = new ImgbinManagesubjects(_Students, _Imgsubjects);
                 ims.SaveBitmapFixedDataToData(ei.Path);
                 //UTODO: 实现 exam.checkindex
-                g.AddExamInfo(ei);
+                if (bOverLap)
+                    g.SetExistExamInfo(ei);
+                else
+                    g.AddExamInfo(ei);
                 g.SaveConfig("config.json");
 
                 exam.TzSubjects.InitIds();
                 string str = Tools.JsonFormatTool.ConvertJsonString(Newtonsoft.Json.JsonConvert.SerializeObject(exam));
                 File.WriteAllText(g.ExamPath + "\\"+ei.Name+".json", str);
                 File.WriteAllText(_DataFullPath + "\\已生成阅卷数据.txt", "");
-            }
-            else
+            }           
+        }
+
+        private bool CheckScore(bool CheckAnswer = true)
+        {
+            string Msg = ResultInfomation();
+            if (CheckAnswer)
             {
-                MessageBox.Show("考试名称存在重复，请重新设置");
+                if (CheckAllOptionAnswerFixed())
+                    Msg += "\r\n选择题已全部设好答案，是否需要重新检查确认是否正确";
+                else
+                    Msg += "\r\n还有选择题没有设定答案，是否需要重新设定答案";
+
             }
+            if (MessageBox.Show(Msg, "模板成绩信息确认，是否继续保存", MessageBoxButtons.OKCancel) == System.Windows.Forms.DialogResult.Cancel)
+                return false;
+            return true;
+        }
+        private bool CheckAllOptionAnswerFixed()
+        {
+            return !this._Optionsubjects.OptionSubjects.Exists(r => r.Answer == "");
         }
         private void buttonShowScore_Click(object sender, EventArgs e)
         {
-            string msg = "共有选择题：" + _Optionsubjects.OptionSubjects.Count + " 题,  非选择题： " + _Imgsubjects.Subjects.Count + " 小题";
-            msg += "\r\n选择题共： " + _Optionsubjects.OptionSubjects.Select(r => r.Score).Sum() + "分";
-            msg += "\r\n 非选择题共： " + _Imgsubjects.Subjects.Select(r => r.Score).Sum() + "分";
-            msg += "\r\n 合计共： " + (_Optionsubjects.OptionSubjects.Select(r => r.Score).Sum() + _Imgsubjects.Subjects.Select(r => r.Score).Sum()) + "分";
+            string msg = ResultInfomation();
             ShowOptionScoreMsg();
             MessageBox.Show(msg);            
         }
-        private void ShowOptionScoreMsg()
+        private string ResultInfomation()
         {
-            string msg = "非选择题分值";
-            int score = 0;
-            foreach (DataRow dr in _dtsetfxzt.Rows )
-            {
-                score += Convert.ToInt32( dr["最大分值"].ToString());
-            }
-            textBoxMsg.Text = msg + score;
+            float OptionScore =  _Optionsubjects.OptionSubjects.Select(r => r.Score).Sum() ;
+            float UnChoosScore =  _Imgsubjects.Subjects.Select(r => r.Score).Sum() ;
+            float TotalScore = OptionScore+ UnChoosScore;
+            string msg =string.Format("总分：{0}  \r\n选择题：{1}题 {2}分 \r\n非选择题：{3}题 {4}分",TotalScore, 
+                _Optionsubjects.OptionSubjects.Count, OptionScore,
+                _Imgsubjects.Subjects.Count,UnChoosScore);
+           return msg;
+        }
+        private void ShowOptionScoreMsg()
+        {           
+            textBoxMsg.Text = ResultInfomation();
         }
         private void dgvSet_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
-            if (DgvShowOptionMode) return;
-            if (_dtsetfxzt.Columns[e.ColumnIndex].ColumnName == "最大分值")
-                ShowOptionScoreMsg();
+            DataGridView dgv = dgvSet;
+            if (e.RowIndex == -1 || e.ColumnIndex == -1 || _InitDgv) return;
+            string columnName = dgv.Columns[e.ColumnIndex].Name;
+            string str = dgv[e.ColumnIndex,e.RowIndex].Value.ToString();
+            if (DgvShowOptionMode)
+            {
+                DataRow dr = _dtsetxzt.Rows[e.RowIndex];
+                Optionsubject O = (Optionsubject)((ValueTag)(dr["OID"])).Tag;
+                if (columnName == "最大分值")
+                {
+                    O.Score = Convert.ToSingle(str);
+                    //dr["最大分值"] = O.Score;
+                }
+                else if (columnName == "半对分值")
+                {
+                    O.HalfScore = Convert.ToSingle(str);
+                }
+                else if (columnName == "正确答案")
+                {
+                    str = str.ToUpper();
+                    str = Regex.Replace(str, "[^A-D]", "");                   
+                    O.Answer = str;
+                }               
+            }
+            else // "非选择题"
+            {
+                DataRow dr = _dtsetfxzt.Rows[e.RowIndex];
+                Imgsubject U = (Imgsubject)((ValueTag)dr["OID"]).Tag;
+                if (columnName == "最大分值")
+                    U.Score = Convert.ToInt32(str);
+            }
+            ShowOptionScoreMsg();
         }
         private void AcceptXztDataTableModified()
         {
@@ -365,6 +434,7 @@ namespace ScanTemplate.FormYJ
         private string _DataFullPath;
         private Tzsubjects _Tzsubjects;
         private bool DgvShowOptionMode;
+        private ScanConfig _sc;
 
     }    
     public class Optionsubjects

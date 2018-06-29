@@ -43,6 +43,8 @@
             this.buttonShowFXztSet = new System.Windows.Forms.Button();
             this.buttonImportOptionAnswerScore = new System.Windows.Forms.Button();
             this.buttonShowStudents = new System.Windows.Forms.Button();
+            this.buttonModifyKH = new System.Windows.Forms.Button();
+            this.buttonSaveExam = new System.Windows.Forms.Button();
             this.panel3 = new System.Windows.Forms.Panel();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -193,12 +195,15 @@
             this.tableLayoutPanel3.Controls.Add(this.buttonShowFXztSet, 1, 0);
             this.tableLayoutPanel3.Controls.Add(this.buttonImportOptionAnswerScore, 3, 0);
             this.tableLayoutPanel3.Controls.Add(this.buttonShowStudents, 2, 0);
+            this.tableLayoutPanel3.Controls.Add(this.buttonModifyKH, 0, 2);
+            this.tableLayoutPanel3.Controls.Add(this.buttonSaveExam, 2, 2);
             this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel3.Location = new System.Drawing.Point(3, 3);
             this.tableLayoutPanel3.Name = "tableLayoutPanel3";
-            this.tableLayoutPanel3.RowCount = 2;
+            this.tableLayoutPanel3.RowCount = 3;
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 29F));
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 29F));
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel3.Size = new System.Drawing.Size(208, 400);
             this.tableLayoutPanel3.TabIndex = 2;
@@ -214,9 +219,10 @@
             this.dgv.Name = "dgv";
             this.dgv.RowTemplate.Height = 50;
             this.dgv.RowTemplate.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.dgv.Size = new System.Drawing.Size(202, 365);
+            this.dgv.Size = new System.Drawing.Size(202, 336);
             this.dgv.TabIndex = 2;
             this.dgv.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgv_CellContentClick);
+            this.dgv.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgv_CellValueChanged);
             // 
             // buttonShowXztSet
             // 
@@ -261,6 +267,30 @@
             this.buttonShowStudents.Text = "考生";
             this.buttonShowStudents.UseVisualStyleBackColor = true;
             this.buttonShowStudents.Click += new System.EventHandler(this.buttonShowStudents_Click);
+            // 
+            // buttonModifyKH
+            // 
+            this.tableLayoutPanel3.SetColumnSpan(this.buttonModifyKH, 2);
+            this.buttonModifyKH.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.buttonModifyKH.Location = new System.Drawing.Point(3, 374);
+            this.buttonModifyKH.Name = "buttonModifyKH";
+            this.buttonModifyKH.Size = new System.Drawing.Size(98, 23);
+            this.buttonModifyKH.TabIndex = 6;
+            this.buttonModifyKH.Text = "编辑考号信息";
+            this.buttonModifyKH.UseVisualStyleBackColor = true;
+            this.buttonModifyKH.Click += new System.EventHandler(this.buttonModifyKH_Click);
+            // 
+            // buttonSaveExam
+            // 
+            this.tableLayoutPanel3.SetColumnSpan(this.buttonSaveExam, 2);
+            this.buttonSaveExam.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.buttonSaveExam.Location = new System.Drawing.Point(107, 374);
+            this.buttonSaveExam.Name = "buttonSaveExam";
+            this.buttonSaveExam.Size = new System.Drawing.Size(98, 23);
+            this.buttonSaveExam.TabIndex = 7;
+            this.buttonSaveExam.Text = "保存修改信息";
+            this.buttonSaveExam.UseVisualStyleBackColor = true;
+            this.buttonSaveExam.Click += new System.EventHandler(this.buttonSaveExam_Click);
             // 
             // panel3
             // 
@@ -327,5 +357,7 @@
         private System.Windows.Forms.Button buttonExportResult;
         private System.Windows.Forms.Button buttonRefresh;
         private System.Windows.Forms.Button buttonReadMe;
+        private System.Windows.Forms.Button buttonModifyKH;
+        private System.Windows.Forms.Button buttonSaveExam;
     }
 }

@@ -254,35 +254,41 @@ namespace ScanTemplate.FormYJ
             DataGridView dgv = dgvSet;
             if (e.RowIndex == -1 || e.ColumnIndex == -1 || _InitDgv) return;
             string columnName = dgv.Columns[e.ColumnIndex].Name;
-            string str = dgv[e.ColumnIndex,e.RowIndex].Value.ToString();
+            string str = dgv[e.ColumnIndex, e.RowIndex].Value.ToString();
             if (DgvShowOptionMode)
             {
-                DataRow dr = _dtsetxzt.Rows[e.RowIndex];
-                Optionsubject O = (Optionsubject)((ValueTag)(dr["OID"])).Tag;
-                if (columnName == "最大分值")
-                {
-                    O.Score = Convert.ToSingle(str);
-                    //dr["最大分值"] = O.Score;
-                }
-                else if (columnName == "半对分值")
-                {
-                    O.HalfScore = Convert.ToSingle(str);
-                }
-                else if (columnName == "正确答案")
-                {
-                    str = str.ToUpper();
-                    str = Regex.Replace(str, "[^A-D]", "");                   
-                    O.Answer = str;
-                }               
+                UpdateDgvOptionSubjectValue(columnName, str,  (DataRow) _dtsetxzt.Rows[e.RowIndex] );
             }
-            else // "非选择题"
+            else
             {
-                DataRow dr = _dtsetfxzt.Rows[e.RowIndex];
-                Imgsubject U = (Imgsubject)((ValueTag)dr["OID"]).Tag;
-                if (columnName == "最大分值")
-                    U.Score = Convert.ToInt32(str);
-            }
+                UpdateDgvImgSubjectValue(columnName, str, _dtsetfxzt.Rows[e.RowIndex]);
+            }         
             ShowOptionScoreMsg();
+        }
+        public static void UpdateDgvOptionSubjectValue(string columnName, string cellvalue, DataRow dr)
+        {
+            Optionsubject O = (Optionsubject)((ValueTag)(dr["OID"])).Tag;
+            if (columnName == "最大分值")
+            {
+                O.Score = Convert.ToSingle(cellvalue);
+                //dr["最大分值"] = O.Score;
+            }
+            else if (columnName == "半对分值")
+            {
+                O.HalfScore = Convert.ToSingle(cellvalue);
+            }
+            else if (columnName == "正确答案")
+            {
+                cellvalue = cellvalue.ToUpper();
+                cellvalue = Regex.Replace(cellvalue, "[^A-D]", "");
+                O.Answer = cellvalue;
+            }
+        }
+        public static void UpdateDgvImgSubjectValue(string columnName, string cellvalue, DataRow dr)
+        {
+            Imgsubject U = (Imgsubject)((ValueTag)dr["OID"]).Tag;
+            if (columnName == "最大分值")
+                U.Score = Convert.ToInt32(cellvalue);
         }
         private void AcceptXztDataTableModified()
         {

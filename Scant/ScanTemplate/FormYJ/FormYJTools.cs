@@ -24,7 +24,9 @@ namespace ScanTemplate.FormYJ
             _template = null;
             _src = null;
             this._activeitem = null;
-            _bexamdatamodified = false;
+            _bexamdataresultmodified = false;
+            _InitDgv = false;
+            _bExamDataBaseInfomationChanged = false;
         }
         private void FormYJTools_Load(object sender, EventArgs e)
         {
@@ -107,12 +109,15 @@ namespace ScanTemplate.FormYJ
         private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (listBox1.SelectedIndex == -1) return;
-
             ExamInfo ei = (ExamInfo)listBox1.SelectedItem;
             if (_activeitem == ei)
                 return;
+            if (_bExamDataBaseInfomationChanged)
+            {
+                SaveYjData();               
+            }
             _activeitem = ei;
-            _bexamdatamodified = false;
+            _bexamdataresultmodified = false;
             string filename = ei.Path.Substring(0, ei.Path.Length - ei.Number.ToString().Length - 1) + ei.Name + ".json";
             if (!File.Exists(filename))
                 return;
@@ -150,7 +155,7 @@ namespace ScanTemplate.FormYJ
         }
         private void dgv_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (!_bshowstudent) return;
+            if (!_bShowstudent) return;
             if (e.ColumnIndex == -1 || e.RowIndex == -1) return;
             Student S =(Student) ((ValueTag)dgv[0, e.RowIndex].Value).Tag;
 
@@ -159,7 +164,24 @@ namespace ScanTemplate.FormYJ
                 Angle.SetPaper(S.Angle);
             pictureBox1.Image = TemplateTools.DrawInfoBmp(S.Src.Clone( S.SrcCorrectRect,S.Src.PixelFormat) , _template, Angle);
         }
-       
+        private void dgv_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex == -1 || e.ColumnIndex == -1 || _InitDgv) return;
+            string columnName = dgv.Columns[e.ColumnIndex].Name;
+            string str = dgv[e.ColumnIndex, e.RowIndex].Value.ToString();
+            if (_bShowstudent)
+            {
+                _bExamDataBaseInfomationChanged = true;
+            }
+            else
+            {
+                if (_bShowxzt)
+                    FormYJInit.UpdateDgvOptionSubjectValue(columnName, str, _dtsetxzt.Rows[e.RowIndex]);
+                else
+                    FormYJInit.UpdateDgvOptionSubjectValue(columnName, str, _dtsetfxzt.Rows[e.RowIndex]);
+                _bExamDataBaseInfomationChanged = true;
+            }            
+        }
         private void buttonExportResult_Click(object sender, EventArgs e)
         {
             if (_activeitem == null) return;
@@ -175,7 +197,7 @@ namespace ScanTemplate.FormYJ
             {
                 CheckDataTable(); // 修改 选择题的答案和分值， 以及非选择题的分值，以及添加考生
                 //保存当前数据
-                if (_bexamdatamodified)
+                if (_bexamdataresultmodified)
                 {
                     //MessageBox.Show("是否保存当前数据");
                     String Name = ((ExamInfo)_activeitem).Path + ((ExamInfo)_activeitem).Name;
@@ -183,9 +205,10 @@ namespace ScanTemplate.FormYJ
                     string str = Tools.JsonFormatTool.ConvertJsonString(Newtonsoft.Json.JsonConvert.SerializeObject(_examdata));
                     File.WriteAllText(Name + ".json", str);
                     MessageBox.Show("已保存当前数据");
-                    _bexamdatamodified = false;
+                    _bexamdataresultmodified = false;
                 }
             }
+            _bExamDataBaseInfomationChanged = false;
         }
         private void buttonBeginYJ_Click(object sender, EventArgs e)
         {
@@ -193,7 +216,7 @@ namespace ScanTemplate.FormYJ
             FormFullScreenYJ fs = new FormFullScreenYJ(_exam);
             this.Hide();
             fs.ShowDialog();
-            _bexamdatamodified = fs.Modified;
+            _bexamdataresultmodified = fs.Modified;
             SaveYjData();
             this.Show();
         }
@@ -210,7 +233,7 @@ namespace ScanTemplate.FormYJ
             dgv.RowTemplate.Height = 24;
             dgv.DataSource = null;
             dgv.DataSource = _dtsetstudents;
-            _bshowstudent = true;
+            _bShowstudent = true;
             foreach (DataGridViewColumn dc in dgv.Columns)
                 if (dc.Name.Contains("考号"))
                     dc.Width = 75;
@@ -220,6 +243,15 @@ namespace ScanTemplate.FormYJ
         private void buttonImportOptionAnswerScore_Click(object sender, EventArgs e)
         {
            FormYJInit.ImportOptionAnswerScore(_dtsetxzt);
+        }
+        private void buttonModifyKH_Click(object sender, EventArgs e)
+        {
+            VerifyName();
+        }
+        private void buttonSaveExam_Click(object sender, EventArgs e)
+        {
+            if (_bExamDataBaseInfomationChanged)
+                SaveYjData();
         }
         private void pictureBox1_MouseEnter(object sender, EventArgs e)
         {
@@ -263,7 +295,8 @@ namespace ScanTemplate.FormYJ
         }
         private void InitDgvSetUI(bool xzt)
         {
-            _bshowstudent = false;
+            _bShowstudent = false;
+            _bShowxzt = xzt;
             dgv.DataSource = null;
             if (xzt)
             {
@@ -376,7 +409,7 @@ namespace ScanTemplate.FormYJ
                         I.Score = Convert.ToInt32(dr["最大分值"].ToString());    
                         I.Answer = dr["正确答案"].ToString();
                         dr.AcceptChanges();
-                        _bexamdatamodified = true;
+                        _bexamdataresultmodified = true;
                     }
                 }
         }
@@ -391,7 +424,7 @@ namespace ScanTemplate.FormYJ
                         I.Score = Convert.ToInt32(dr["最大分值"].ToString());
                         I.Name = dr["题组名称"].ToString();
                         dr.AcceptChanges();
-                        _bexamdatamodified = true;
+                        _bexamdataresultmodified = true;
                     }
                 }
         }
@@ -408,6 +441,138 @@ namespace ScanTemplate.FormYJ
                     }
                 }
         }
+        private void VerifyName()
+        {
+            //Template _artemplate = _scan.Template;
+            //AutoAngle _angle = _scan.Angle;
+            //if (!_artemplate.Dic.ContainsKey("考号") || _artemplate.Dic["考号"].Count == 0)
+            //{
+            //    return;
+            //}
+            //DataTable dt = Tools.DataTableTools.ConstructDataTable(new string[] {
+            //                                                        "OID考号",			                                                  
+            //                                                        "图片姓名",
+            //                                                        "姓名",
+            //                                                        "新考号",
+            //                                                        "是否修改"
+            //                                                       });
+            //Rectangle r = _artemplate.Dic["考号"][0].ImgArea;
+            //Rectangle rxm = new Rectangle();
+            //if (_artemplate.Dic["校对"].Count > 0)
+            //{
+            //    foreach (Area I in _artemplate.Dic["校对"])
+            //    {
+            //        if (I.ToString().Contains("姓名"))
+            //        {
+            //            rxm = I.Rect;
+            //        }
+            //    }
+            //}
+            //foreach (DataRow dr in _rundt.Rows)
+            //{
+            //    if (!dr["考号"].ToString().Contains("-"))
+            //    {
+            //        string fn = dr["文件名"].ToString().Replace("LJH\\", "LJH\\Correct\\").Replace("\\img", "");
+            //        if (File.Exists(fn))
+            //        {
+            //            double angle = (double)(dr["校验角度"]);
+            //            Bitmap bmp = (Bitmap)Bitmap.FromFile(fn);
+            //            if (_angle != null)
+            //                _angle.SetPaper(angle);
+            //            DataRow ndr = dt.NewRow();
+            //            ndr["OID考号"] = new ValueTag(dr["考号"].ToString(), dr);
+            //            int kh = Convert.ToInt32(dr["考号"].ToString());
+            //            if (_sc.Studentbases.HasStudentBase)
+            //            {
+            //                string name = _sc.Studentbases.GetName(kh);
+            //                ndr["姓名"] = name;
+            //            }
+            //            ndr["是否修改"] = false;
+            //            if (rxm.Width > 0)
+            //            {
+            //                ndr["图片姓名"] = bmp.Clone(rxm, bmp.PixelFormat);
+            //            }
+            //            dt.Rows.Add(ndr);
+            //        }
+            //    }
+            //}
+            //if (dt.Rows.Count > 0)
+            //{
+            //    //MessageBox.Show("暂未实现，待修改");
+            //    FormVerify f = new FormVerify(_sc, dt, "核对姓名");
+            //    if (f.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+            //    {
+            //        MessageBox.Show("未校验");
+            //    }
+            //    else
+            //    {
+            //        if (f.Changed)
+            //        {
+            //            ScanData sd = (ScanData)listBoxScantData.SelectedItem;
+            //            if (global.ScanDataJsonFormat == true)
+            //            {
+            //                foreach (DataRow dr1 in _rundt.Rows)
+            //                {
+            //                    if (dr1.RowState == DataRowState.Modified)
+            //                    {
+            //                        ValueTag vt = (ValueTag)dr1["序号"];
+            //                        Paper p = (Paper)vt.Tag;
+            //                        try
+            //                        {
+            //                            p.KH = Convert.ToInt32(dr1["考号"]);
+            //                            p.Name = dr1["姓名"].ToString();
+            //                        }
+            //                        catch
+            //                        {
+            //                            ;
+            //                        }
+            //                    }
+            //                }
+            //                _papers.SavePapers(sd.DataFullName + ".json");
+            //            }
+            //            else
+            //            {
+            //                string[] ss = File.ReadAllLines(sd.DataFullName);
+            //                Dictionary<string, int> _ssindex = new Dictionary<string, int>();
+            //                for (int i = 1; i < ss.Length; i++)
+            //                {
+            //                    string[] item = ss[i].Split(',');
+            //                    _ssindex[item[0]] = i;
+            //                }
+            //                try
+            //                {
+            //                    foreach (DataRow dr in _rundt.Rows)
+            //                    {
+            //                        if (dr.RowState == DataRowState.Modified)
+            //                        {
+            //                            string filename = dr["文件名"].ToString();
+            //                            if (_ssindex.ContainsKey(filename))
+            //                            {
+            //                                int index = _ssindex[filename];
+            //                                string[] item = ss[index].Split(',');
+            //                                item[3] = dr["考号"].ToString();
+            //                                item[4] = dr["姓名"].ToString();
+            //                                ss[index] = string.Join(",", item);
+            //                            }
+            //                        }
+            //                    }
+            //                    File.WriteAllText(sd.DataFullName, string.Join("\r\n", ss));
+            //                }
+            //                catch (Exception ee)
+            //                {
+            //                    MessageBox.Show("未保存更改，因为" + ee.Message);
+            //                }
+            //            }
+            //        }
+            //    }
+            //    //修改之后
+            //    dt.Rows.Clear();
+            //}
+            //else
+            //{
+            //    MessageBox.Show("没有姓名信息需要核对");
+            //}
+        }
         private Exam _exam;
         private string _workpath;
         private Bitmap _src;
@@ -418,11 +583,13 @@ namespace ScanTemplate.FormYJ
         private int _AvgUnImgHeight;
         private Template _template;
         private Students _students;
-        private bool _bshowstudent;
         private object _activeitem;
         private Examdata _examdata;
-        private bool _bexamdatamodified;
-
+        private bool _bexamdataresultmodified;
+        private bool _bShowstudent;
+        private bool _bShowxzt;
+        private bool _InitDgv;
+        private bool _bExamDataBaseInfomationChanged;
     }
     public class Examdata
     {

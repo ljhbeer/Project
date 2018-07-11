@@ -146,36 +146,62 @@ namespace ScanTemplate
         }
         private void buttonImportAnswer_Click(object sender, EventArgs e)
         {
+            Boolean SetOptionMode = false;
+            if (comboBox1.SelectedItem.ToString() == "选择题")
+                SetOptionMode = true;
+            else if(comboBox1.SelectedItem.ToString() == "非选择题")
+            {
+                SetOptionMode = false;
+            }
+
             if (FormatImportAnswer.CheckActionStr(textBoxAnswer.Text))
             {
                 FormatImportAnswer fia = new FormatImportAnswer(textBoxAnswer.Text);
-                fia.IDBE.SetBEID(0, _dtxzt.Rows.Count);
+                if (!fia.IDBE.SetMode)
+                {
+                    if(SetOptionMode)
+                        fia.IDBE.SetBEID(0, _dtxzt.Rows.Count);
+                    else
+                        fia.IDBE.SetBEID(0, _dtUnxzt.Rows.Count);
+                }
                 for (int i = fia.IDBE.Begin; i < fia.IDBE.End; i++)
                 {
-                    OptionAnswerScore O = (OptionAnswerScore)((ValueTag)(_dtxzt.Rows[i]["OID"])).Tag;
-                    if (fia.Type.Type != "")
+                    if (SetOptionMode) //设定选择题
                     {
-                        O.Type = fia.Type.Type;
-                    }                    
-                    if(fia.Score.Score>0)
-                        O.Score = fia.Score.Score;
-                    if (fia.Answer.ListAnswer.Count > i - fia.IDBE.Begin)
-                        O.Answer = fia.Answer.ListAnswer[i - fia.IDBE.Begin];                    
+                        OptionAnswerScore O = (OptionAnswerScore)((ValueTag)(_dtxzt.Rows[i]["OID"])).Tag;
+                        if (fia.Type.SetMode)
+                        {
+                            O.Type = fia.Type.Type;
+                        }
+
+                        if (fia.Score.SetMode)
+                            O.Score = fia.Score.Score;
+
+                        if (fia.Answer.SetMode)
+                            if (fia.Answer.ListAnswer.Count > i - fia.IDBE.Begin)
+                                O.Answer = fia.Answer.ListAnswer[i - fia.IDBE.Begin];
+                    }
+                    else //设定非选择题
+                    {
+                        UnChoose O = (UnChoose)((ValueTag)(_dtUnxzt.Rows[i]["OID"])).Tag;
+                        if (fia.Score.SetMode)
+                            O.SetScore( fia.Score.Score );
+                    }
                 }
                 formTemplate.RefreshPicture();
-                ReFreshDgv();
+                ReFreshDgv(SetOptionMode);
             }
             else
             {
                 ;
             }
         }
-        private void ReFreshDgv()
+        private void ReFreshDgv(bool SetOptionMode)
         {
-            if (comboBox1.SelectedItem.ToString() == "选择题")
+            if (SetOptionMode)
                 foreach (DataRow dr in _dtxzt.Rows)
                     RefreshDrXzt(dr);
-            else if (comboBox1.SelectedItem.ToString() == "选择题")
+            else
                 foreach (DataRow dr in _dtUnxzt.Rows)
                     RefreshDrUnXzt(dr);
         }
@@ -260,10 +286,10 @@ namespace ScanTemplate
             string tx = mc.Groups[3].Value;
             string an = mc.Groups[4].Value;
 
-            IDBE = new IDBeginEnd(th);
-            Score = new FIScore(fz);
-            Type = new FIChooseType(tx);
-            Answer = new FIAnswer(an);
+            IDBE = new IDBeginEnd(th.Trim());
+            Score = new FIScore(fz.Trim());
+            Type = new FIChooseType(tx.Trim());
+            Answer = new FIAnswer(an.Trim());
           
         }
         public static bool CheckActionStr(string actstr)
@@ -334,25 +360,31 @@ namespace ScanTemplate
         public FIScore Score;
         public FIChooseType Type;
         public FIAnswer Answer;
-        public class IDBeginEnd
+        public class IDBeginEnd //未解析
         {
             public IDBeginEnd(string s)
             {
+                SetMode = false; //全部 
             }
-            public int Begin;
-            public int End;
-            public int Mode;
             public void SetBEID(int b, int e)
             {
                 Begin = b;
                 End = e;
             }
+            public int Begin;
+            public int End;
+            public Boolean SetMode;
         }
         public class FIScore
         {
             public FIScore(string s)
             {
+                SetMode = true;
                 Score = HalfScore = 0;
+                if (s == "")
+                {
+                    SetMode = false;
+                }
                 if (s.Contains(","))
                 {
                     Score = Convert.ToSingle(s.Substring(0,s.IndexOf(",")));
@@ -365,11 +397,13 @@ namespace ScanTemplate
             }
             public float Score;
             public float HalfScore;
+            public Boolean SetMode;
         }
         public class FIChooseType
         {
             public FIChooseType(string s) //  S M U
             {
+                SetMode = true;
                 if (s == "多选")
                     Type = "M";
                 else if (s == "不定项")
@@ -379,19 +413,26 @@ namespace ScanTemplate
                 else if (s == "单选")
                     Type = "S";
                 else
+                {
                     Type = "";
-
+                    SetMode = false;
+                }
             }
             public string Type;
+            public Boolean SetMode;
         }
         public class FIAnswer
         {
             public FIAnswer(string s)
             {
+                SetMode = true;
                 string str = Regex.Replace(s, "[^A-D ]", " ");
                 ListAnswer = str.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries).ToList();
+                if (ListAnswer.Count == 0)
+                    SetMode = false;
             }
             public List<string> ListAnswer;
+            public Boolean SetMode;
         }
     }
 }

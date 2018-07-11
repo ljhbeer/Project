@@ -767,9 +767,9 @@ namespace ARTemplate
         {
             int ID = 0;
             String keyname = "选择题";
-            if (m_tn.Nodes.ContainsKey("选择题") && m_tn.Nodes["选择题"].GetNodeCount(true) > 0)
+            if (m_tn.Nodes.ContainsKey(keyname) && m_tn.Nodes[keyname].GetNodeCount(true) > 0)
             {
-                foreach (TreeNode t in m_tn.Nodes["选择题"].Nodes)
+                foreach (TreeNode t in m_tn.Nodes[keyname].Nodes)
                 {
                     SingleChoiceArea I = (SingleChoiceArea)t.Tag;
                     ID += I.Count;

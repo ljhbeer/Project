@@ -663,7 +663,6 @@ namespace ScanTemplate
                 }
                 return false;
             }
-            return true;
         }
 
         private void buttonOpenTemplate_Click(object sender, EventArgs e)

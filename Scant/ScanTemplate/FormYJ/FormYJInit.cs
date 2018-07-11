@@ -506,8 +506,8 @@ namespace ScanTemplate.FormYJ
         public int Height { get { return Rect.Height; } }
         [JsonIgnore]
         public int Width { get { return Rect.Width; } }
-        [JsonIgnore]
-        private SingleChoiceArea U;
+        //[JsonIgnore]
+        //private SingleChoiceArea U;
 
 
     }

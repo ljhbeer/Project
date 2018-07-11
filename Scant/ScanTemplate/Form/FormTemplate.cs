@@ -352,7 +352,23 @@ namespace ARTemplate
             FormSetTemplateScore f = new FormSetTemplateScore(m_tn,this);            
             f.ShowDialog();
             //pictureBox1.Invalidate();
-        }       
+        }
+        private void ToolStripMenuItemOptionTzArea_Click(object sender, EventArgs e)
+        {
+
+        }
+        private void ToolStripMenuItemOptionTzSetShowArea_Click(object sender, EventArgs e)
+        {
+
+        }
+        private void ToolStripMenuItemRenameOptionTz_Click(object sender, EventArgs e)
+        {
+
+        }
+        private void ToolStripMenuItemModifyTzArea_Click(object sender, EventArgs e)
+        {
+
+        } // 
         private void CompleteSelection(bool bcomplete)
         {
             if (bcomplete)
@@ -1146,7 +1162,9 @@ namespace ARTemplate
         private List<Rectangle> _ControlRects;
         private Rectangle _TestR;
         private bool _bShowScore;
-        private int _NextChooseID; // 
+        private int _NextChooseID;
+
+        
 
     }
 }

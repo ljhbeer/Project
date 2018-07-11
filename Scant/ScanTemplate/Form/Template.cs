@@ -36,7 +36,7 @@ namespace ARTemplate
         private void InitEmptyDic()
         {
             _dic = new Dictionary<string, List<Area>>();
-            foreach (string s in new string[] { "特征点", "考号", "校对", "选择题", "非选择题", "选区变黑", "选区变白", "题组", "自定义" })
+            foreach (string s in new string[] { "特征点", "考号", "校对", "选择题", "非选择题", "选区变黑", "选区变白", "题组","选择题题组", "自定义" })
                 if (!_dic.ContainsKey(s))
                     _dic[s] = new List<Area>();
         }
@@ -78,7 +78,7 @@ namespace ARTemplate
         public TreeNode GetTreeNode()
         {
             TreeNode root = new TreeNode();
-            foreach (string s in new string[] { "特征点", "考号", "校对", "选择题", "非选择题", "选区变黑", "选区变白", "题组", "自定义" })
+            foreach (string s in new string[] { "特征点", "考号", "校对", "选择题", "非选择题", "选区变黑", "选区变白", "题组","选择题题组", "自定义" })
             {
                 TreeNode opt = new TreeNode();
                 opt.Name = opt.Text =s;
@@ -205,6 +205,7 @@ namespace ARTemplate
                             case "选择题": _manageareas.SinglechoiceAreas = new SingleChoiceAreas (kv.Value); break;
                             case "非选择题": _manageareas.Unchooseareas =new UnChooseAreas (kv.Value); break;
                             case "题组": _manageareas.Tzareas =new TzAreas (kv.Value); break;
+                            case "选择题题组": _manageareas.Optiongroups = new OptionGroups(kv.Value); break;
                             case "自定义": _manageareas.Customareas = new CustomAreas(kv.Value); break;
                             case "选区变黑": _manageareas.BlackTempareas = new TempAreas(kv.Value); break;
                             case "选区变白": _manageareas.WhiteTempareas = new TempAreas(kv.Value); break;
@@ -626,6 +627,10 @@ namespace ARTemplate
                         foreach (TzArea A in MyArea<TzArea>.ConvertToTz(item.Value))
                             dic[item.Key].Add(A);
                         break;
+                    case "选择题题组": dic[item.Key] = new List<Area>();
+                        foreach (OptionGroup A in MyArea<OptionGroup>.ConvertToTzOption(item.Value))
+                            dic[item.Key].Add(A);
+                        break;
                     case "自定义": dic[item.Key] = new List<Area>();
                         foreach (CustomArea A in MyArea<CustomArea>.ConvertTo(item.Value))
                             dic[item.Key].Add(A);
@@ -667,6 +672,31 @@ namespace ARTemplate
                 }
                 return list;
             }
+            public static List<OptionGroup> ConvertToTzOption(Object o)
+            {
+                string str = o.ToString();
+                List<TzOptionObject> tzo = Newtonsoft.Json.JsonConvert.DeserializeObject<List<TzOptionObject>>(str);
+                List<OptionGroup> list = new List<OptionGroup>();
+                foreach (TzOptionObject to in tzo)
+                {
+                    OptionGroup tz = new OptionGroup(to.Rect, to._name);
+                    list.Add(tz);
+                    if (to._subareas == null)
+                    {
+
+                    }
+                    else
+                    {
+                        //List<UnChoose> uclist = MyArea<UnChoose>.ConvertTo(to._subareas.ToString());
+                        //foreach (UnChoose u in uclist)
+                        //{
+                        //    tz.SubAreas.Add(u);
+                        //}
+                    }
+
+                }
+                return list;
+            }
         }
         public class TemplateObject
         {
@@ -682,7 +712,16 @@ namespace ARTemplate
             [JsonProperty]
             public Object _subareas;
             [JsonProperty]
-            public Rectangle  Rect { get; set; }
+            public Rectangle Rect { get; set; }
+        }
+        public class TzOptionObject
+        {
+            [JsonProperty]
+            public string _name;
+            [JsonProperty]
+            public Object _subareas;
+            [JsonProperty]
+            public Rectangle Rect { get; set; }
         }
     }
     public class TemplateTools

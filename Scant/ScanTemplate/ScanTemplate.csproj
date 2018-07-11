@@ -93,6 +93,7 @@
     <Compile Include="Form\FormReadme.Designer.cs">
       <DependentUpon>FormReadme.cs</DependentUpon>
     </Compile>
+    <Compile Include="Form\OptionGroups.cs" />
     <Compile Include="tools\CnPYTool.cs" />
     <Compile Include="tools\DetectImgTools.cs" />
     <Compile Include="tools\PYTool.cs" />

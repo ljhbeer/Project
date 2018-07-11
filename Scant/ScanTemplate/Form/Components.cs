@@ -1042,6 +1042,8 @@ namespace ARTemplate
         public TempAreas WhiteTempareas { get; set; }
         public TzAreas Tzareas { get; set; }
         public CustomAreas Customareas { get; set; }
+
+        public OptionGroups Optiongroups { get; set; }
     }
 
     public class ZoomBox

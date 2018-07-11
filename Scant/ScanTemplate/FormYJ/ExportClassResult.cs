@@ -71,7 +71,7 @@ namespace ScanTemplate.FormYJ
         public void Export(string resultAction)
         {
             string FileName = "";
-            if (!bReady)
+            if(resultAction.StartsWith("exonly"))// (!bReady)
             {
                 if (resultAction.Contains("exonlyoption"))
                 {
@@ -101,7 +101,7 @@ namespace ScanTemplate.FormYJ
                     MessageBox.Show("还有选择题没有设定答案或者分值  或者 试卷未改完 \r\n" + _Msg);
                     return;
                 }
-            }
+            }else
             if (resultAction != "")
                 switch (resultAction)
                 {
@@ -188,11 +188,13 @@ namespace ScanTemplate.FormYJ
                 r = _Optionsubjects.OptionSubjects[0].Rect;
             foreach (Optionsubject O in _Optionsubjects.OptionSubjects)
             {
+                if (!"MSU".Contains(O.Type))
+                    O.Type = XztQuestion.CharType(O.Type);
                 r = Rectangle.Union(r, O.Rect);
                 float score = 0;
                 if (O.Type == "S" || O.Type == "M")
                     score = S.CorrectXzt(O.Index, _Optionanswer[O.Index]) ? _OptionMaxscore[O.Index] : 0;
-                else  if(O.Type == "U")
+                else  if(O.Type == "U" )
                 {
                     List<int> listanswer = O.Answer.Select(rr => rr - 'A').ToList();
                     List<int> paperanswer = S.OptionAnswer( O.Index).Select(rr => rr - 'A').ToList().ToList();
@@ -392,7 +394,7 @@ namespace ScanTemplate.FormYJ
             {
                 PaperResult pr = ConstructPaperResult(S);
                 
-                sblistscore.AppendLine(S.Name=="-"?S.ID.ToString() : S.Name + "," +pr.Xzt.Floatscore);
+                sblistscore.AppendLine(  (S.Name=="-"||S.Name ==""?"无名"+S.ID.ToString() : S.Name) + "," +pr.Xzt.Floatscore);
             }
            
             Tools.TextBitmapTool tbl = new TextBitmapTool(

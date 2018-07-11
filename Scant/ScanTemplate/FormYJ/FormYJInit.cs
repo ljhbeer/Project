@@ -351,7 +351,7 @@ namespace ScanTemplate.FormYJ
                         _dtsetxzt.Rows[i]["最大分值"] = f.Xzt()[i].Score;
                         O.Answer = f.Xzt()[i].OptionAnswer;
                         O.Score = f.Xzt()[i].Score;
-                        O.Type = f.Xzt()[i].Type;
+                        O.Type = XztQuestion.CharType(  f.Xzt()[i].Type );
                         if (O.Type == "U") // S 单选, M 多选,U 不定项
                         {
                             O.HalfScore = f.Xzt()[i].HalfScore;
@@ -470,7 +470,7 @@ namespace ScanTemplate.FormYJ
             this.ID = O.ID;
             this.Score = O.Score;
             this.Answer = O.Answer;
-            this.Type = O.Type;
+            this.Type = XztQuestion.CharType( O.Type );
             InitDeserialize(U, pos);
 
         }
@@ -497,6 +497,7 @@ namespace ScanTemplate.FormYJ
 
         public float HalfScore { get; set; }
         public string Type { get; set; }
+               
         [JsonProperty]
         private Rectangle _Rect;
 
@@ -785,7 +786,14 @@ namespace ScanTemplate.FormYJ
         {
             if (xzt.EndsWith("|"))
                 xzt = xzt.Substring(0, xzt.Length - 1);
-            _XZT = xzt.Split('|').ToList();
+            if (xzt == "")
+                _XZT = new List<string>();
+            else if(xzt.Contains("|"))
+                _XZT = xzt.Split('|').ToList();
+            else{
+                _XZT = new List<string>();
+                _XZT.Add(xzt);
+            }
         }
         public void InitID()
         {

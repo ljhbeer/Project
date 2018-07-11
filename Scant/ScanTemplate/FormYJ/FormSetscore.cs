@@ -341,5 +341,18 @@ namespace ScanTemplate.FormYJ
             Type = "S";
             return "单选";
         }
+        public static string CharType( string Type)
+        {
+            if ("SMU".Contains(Type))
+                return Type;
+            if (Type == "单选")
+                return "S";
+            if (Type == "多选")
+                return "M";
+            if (Type == "不定项")
+                return "U";
+            return "S";
+
+        }
     }
 }

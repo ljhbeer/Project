@@ -23,6 +23,7 @@ namespace ScanTemplate.FormYJ
             this._Optionsubjects = _examdata.SR._Optionsubjects;
             this._Imgsubjects = _examdata.SR._Imgsubjects;
             this._Tzsubjects = _examdata.SR._Tzsubjects;
+            this._TzOptionsubjects = _examdata.SR._TzOptionsubjects;
             InitAnswer();
             InitMsg();        
         }
@@ -348,15 +349,24 @@ namespace ScanTemplate.FormYJ
             {
                 Tztitle += "," + T.Name;
             }
+
+            string TzOptiontitle = "";
+            if (_TzOptionsubjects != null)
+                foreach (TzOptionsubject T in _TzOptionsubjects.Tzs)
+                {
+                    TzOptiontitle += "," + T.Name;
+                }
+
             StringBuilder sblistscore = new StringBuilder("姓名,总分\r\n");
-            StringBuilder sblisttizu = new StringBuilder("姓名,总分,选择题,"+Tztitle + "\r\n");
+            StringBuilder sblisttizu = new StringBuilder("姓名,总分,选择题"  + Tztitle+ TzOptiontitle + "\r\n");
             StringBuilder sbdetail = new StringBuilder();
             foreach (Student S in _students.students)
             {
+                string showName = (S.Name == "-" || S.Name == "" ? "无名" + S.ID.ToString() : S.Name);
                 PaperResult pr = ConstructPaperResult(S);
-                sblistscore.AppendLine(S.Name + "," + pr.TotalScore());
-                sblisttizu.AppendLine(S.Name + "," + pr.TotalTz());
-                sbdetail .AppendLine(S.Name + "," + pr.Detail());
+                sblistscore.AppendLine(showName + "," + pr.TotalScore());
+                sblisttizu.AppendLine(showName + ","+ pr.TotalTz()+pr.TotalXztTz( _TzOptionsubjects ) );
+                sbdetail .AppendLine(showName + "," + pr.Detail());
             }
             if (key != "onlyxiaoti")
             File.WriteAllText(FileName+"小题分.txt", sbdetail.ToString());
@@ -387,14 +397,21 @@ namespace ScanTemplate.FormYJ
         }
         private void ExportOptionsResult(string FileName)
         {
-            StringBuilder sblistscore = new StringBuilder("姓名,选择题\r\n");
+            string TzOptiontitle = "";
+            if(_TzOptionsubjects!=null)
+            foreach (TzOptionsubject T in _TzOptionsubjects.Tzs)
+            {
+                TzOptiontitle += "," + T.Name;
+            }
+            StringBuilder sblistscore = new StringBuilder("姓名,选择题" + TzOptiontitle + "\r\n");
            
             StringBuilder sbdetail = new StringBuilder();
             foreach (Student S in _students.students)
             {
                 PaperResult pr = ConstructPaperResult(S);
-                
-                sblistscore.AppendLine(  (S.Name=="-"||S.Name ==""?"无名"+S.ID.ToString() : S.Name) + "," +pr.Xzt.Floatscore);
+                string showName = (S.Name == "-" || S.Name == "" ? "无名" + S.ID.ToString() : S.Name);
+                string str = showName+ "," + pr.Xzt.Floatscore;                
+                sblistscore.AppendLine( str+pr.TotalXztTz(_TzOptionsubjects) );
             }
            
             Tools.TextBitmapTool tbl = new TextBitmapTool(
@@ -450,5 +467,6 @@ namespace ScanTemplate.FormYJ
         //private TzAreas _TzAreas;
         private Tzsubjects _Tzsubjects;
         private AutoAngle _angle;
+        private TzOptionsubjects _TzOptionsubjects;
     }
 }

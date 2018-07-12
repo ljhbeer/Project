@@ -569,7 +569,7 @@ namespace ScanTemplate.FormYJ
         [JsonIgnore]
         public List<Optionsubject> Subjects;
         [JsonProperty]
-        private List<int> SubjectIndexs;
+        public List<int> SubjectIndexs;
         public Rectangle Rect;
         public string Name;
 

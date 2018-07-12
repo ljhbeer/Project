@@ -55,6 +55,24 @@ namespace ScanTemplate.FormYJ
             return "总分,选择题,非选择题,"+ string.Join(",", Options.Select( r => r.Txt).ToList());
         }
 
+
+        private float GetTzOptionScore(List<int> list)
+        {
+            return list.Select(r => Options[r].Score).Sum();
+        }
+
+        public string TotalXztTz(TzOptionsubjects   t_TzOptionsubjects)
+        {
+            string strtz = "";
+            if (t_TzOptionsubjects != null)
+            {
+                foreach (TzOptionsubject tzo in t_TzOptionsubjects.Tzs)
+                {
+                    strtz += "," + GetTzOptionScore(tzo.SubjectIndexs);
+                }
+            }
+            return strtz;
+        }
     }
     public class ResultObj
     {

@@ -608,6 +608,8 @@ namespace ScanTemplate.FormYJ
             SR._Students.InitDeserialize(); //init index and dic
             SR._Imgsubjects.InitDeserialize(); // dic and bitmapdatalength
             SR._Tzsubjects.Deserialize(SR._Imgsubjects);
+            if (SR._TzOptionsubjects != null)
+                SR._TzOptionsubjects.Deserialize(SR._Optionsubjects);
         }
     }
     public class StudentsResultData
@@ -617,6 +619,7 @@ namespace ScanTemplate.FormYJ
         public Imgsubjects _Imgsubjects;
         public Optionsubjects _Optionsubjects;
         public Tzsubjects _Tzsubjects;
+        public TzOptionsubjects _TzOptionsubjects;
         public List<List<int>> _Result;
     }
 }

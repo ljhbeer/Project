@@ -355,7 +355,27 @@ namespace ARTemplate
         }
         private void ToolStripMenuItemOptionTzArea_Click(object sender, EventArgs e)
         {
-
+            UpdateTemplate();           
+            FormSetOptionGroups f = new FormSetOptionGroups(_template.Manageareas.SinglechoiceAreas);
+            if (f.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                //_template.Manageareas.Optiongroups.cl
+                String keyname = "选择题题组";
+                m_tn.Nodes[keyname].Nodes.Clear();
+                foreach (ScanTemplate.ScOptionGroup scog in f.OGlist())
+                {
+                    if (scog.IndexList.Count==0)
+                    {
+                        MessageBox.Show("题组必须包含非选择题");
+                        break;
+                    }                   
+                    TreeNode t = new TreeNode();
+                    t.Name = scog.Name;
+                    t.Text = scog.ToString();
+                    t.Tag = new OptionGroup(scog.Name, scog.IndexList);
+                    m_tn.Nodes[keyname].Nodes.Add(t);
+                }
+            }
         }
         private void ToolStripMenuItemOptionTzSetShowArea_Click(object sender, EventArgs e)
         {
@@ -952,6 +972,8 @@ namespace ARTemplate
             if (treeView1.SelectedNode == null || treeView1.SelectedNode.Parent == null) return;
             if (e.KeyCode == Keys.Delete)
             {
+                if (treeView1.SelectedNode.Parent.Text == "选择题题组")
+                    return;
                 if (treeView1.SelectedNode.Parent.Text != "网上阅卷")
                 { 
                     Area I = (Area)treeView1.SelectedNode.Parent.Tag;
@@ -995,7 +1017,7 @@ namespace ARTemplate
                 {
                     int cnt = _template.Manageareas.SinglechoiceAreas.Count+1;
                     AddUnChooseToTzArea();
-                    ReNameUnChooseByTzArea1(cnt);
+                    ReNameUnChooseByTzArea(cnt);
                     ReNameAreaByIncreace("选区变黑");
                     ReNameAreaByIncreace("选区变白");
                     UpdateTemplate();
@@ -1064,12 +1086,12 @@ namespace ARTemplate
         {
             return m_tn.Nodes["非选择题"].Nodes.Count > 0;
         }
-        private void ReNameUnChooseByTzArea1(int cnt)
+        private void ReNameUnChooseByTzArea(int cnt)
         {
             for (int i = 0; i < m_tn.Nodes["题组"].Nodes.Count; i++)
             {
                 TreeNode t = m_tn.Nodes["题组"].Nodes[i];
-                t.Name = "TZ-" + cnt;
+                t.Name = cnt + "题";
                 t.Text = t.Name;
                 TzArea tr = (TzArea)t.Tag;
 
@@ -1080,29 +1102,6 @@ namespace ARTemplate
                     tn.Name = tn.Text = cnt + "-" + subcnt;
                     uc.SetName(tn.Name);
                     subcnt++;
-                }
-                cnt++;
-            }
-        }
-        private void ReNameUnChooseByTzArea(int cnt)
-        {
-            for (int i = 0; i < m_tn.Nodes["题组"].Nodes.Count; i++)
-            {
-                TreeNode t = m_tn.Nodes["题组"].Nodes[i];
-                t.Name = "TZ-" + cnt;
-                t.Text = t.Name;
-                TzArea tr = (TzArea)t.Tag;
-
-                int subcnt = 1;
-                foreach (TreeNode tn in m_tn.Nodes["非选择题"].Nodes)
-                {
-                    UnChoose uc = (UnChoose)tn.Tag;
-                    if (tr.ImgArea.Contains(uc.ImgArea))
-                    {
-                        tn.Name = tn.Text = cnt + "-" + subcnt;
-                        uc.SetName(tn.Name);
-                        subcnt++;
-                    }
                 }
                 cnt++;
             }
@@ -1135,7 +1134,7 @@ namespace ARTemplate
         }
         private void UpdateTemplate()
         {
-            _template.UpdateTreeNodes(m_tn);           
+            _template.UpdateTreeNodes(m_tn);
         }
         private void ShowMessage(string message)
         {

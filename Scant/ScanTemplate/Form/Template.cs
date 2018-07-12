@@ -97,12 +97,13 @@ namespace ARTemplate
                 foreach (Area I in kv.Value)
                 {
                     TreeNode t = new TreeNode();
-                    string txt = I.ToString();
+                    t.Name = t.Text = I.ToString();
                     if (I.ShowTitle)
-                        txt = I.Title;
-                    t.Name= t.Text =txt;
+                        t.Text = I.Title;
                     if (t.Name == "")
-                        t.Name = t.Text = I.TypeName;
+                        t.Name = I.TypeName;
+                    if (t.Text == "")
+                        t.Text = t.Name;
                     t.Tag = I;
                     opt.Nodes.Add(t);
 
@@ -319,7 +320,26 @@ namespace ARTemplate
             }
             return t_Tzsubjects;
         }
-
+        public static TzOptionsubjects ConstructTzOptionsubjects(Template template, Optionsubjects t_optionsubjects)
+        {
+            TzOptionsubjects t_TzOptionsubjects = new TzOptionsubjects();
+            //= ConstructImgsubjects(template);
+            int index = t_optionsubjects.OptionSubjects.Count;
+            foreach (Area I in template.Manageareas.Optiongroups.list)
+            {
+                TzOptionsubject tzs = new TzOptionsubject();
+                tzs.Name = I.ToString();
+                tzs.Rect = I.Rect;
+                t_TzOptionsubjects.Add(tzs);
+                OptionGroup O = (OptionGroup)I;                
+                foreach (int i in O.IndexList)
+                {
+                    tzs.Add(t_optionsubjects.OptionSubjects[i]);
+                }
+                tzs.SetIndexList(O.IndexList);
+            }
+            return t_TzOptionsubjects;
+        }
         public string LoadFileName { get; set; }
     }
     public class ConvertTemplateData
@@ -679,9 +699,9 @@ namespace ARTemplate
                 List<OptionGroup> list = new List<OptionGroup>();
                 foreach (TzOptionObject to in tzo)
                 {
-                    OptionGroup tz = new OptionGroup(to.Rect, to._name);
+                    OptionGroup tz = new OptionGroup(to._name,to._indexlist);
                     list.Add(tz);
-                    if (to._subareas == null)
+                    if (to._indexlist == null)
                     {
 
                     }
@@ -719,7 +739,7 @@ namespace ARTemplate
             [JsonProperty]
             public string _name;
             [JsonProperty]
-            public Object _subareas;
+            public List<int> _indexlist;
             [JsonProperty]
             public Rectangle Rect { get; set; }
         }

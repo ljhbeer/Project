@@ -56,6 +56,7 @@ namespace ScanTemplate.FormYJ
             _Imgsubjects = Template.ConstructImgsubjects(_artemplate);
             _Tzsubjects = Template.ConstructTzsubjects(_artemplate,_Imgsubjects);
             _Optionsubjects = Template.ConstructOptionSubject(_artemplate);
+            _TzOptionsubjects = Template.ConstructTzOptionsubjects(_artemplate,_Optionsubjects);
         }
         private void InitStudents()
         {
@@ -190,7 +191,7 @@ namespace ScanTemplate.FormYJ
             }
             {
                 AcceptXztDataTableModified();
-                Exam exam = new Exam(_Students, _Imgsubjects,_Optionsubjects,_Tzsubjects, ei.Path);
+                Exam exam = new Exam(_Students, _Imgsubjects,_Optionsubjects,_Tzsubjects,_TzOptionsubjects, ei.Path);
                 exam.Name = _examname;
                 if (!Directory.Exists(ei.Path))
                     Directory.CreateDirectory(ei.Path);
@@ -313,7 +314,7 @@ namespace ScanTemplate.FormYJ
             string path = _workpath.Replace("\\LJH", "\\LJH\\bindata") + "\\";
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
-            Exam exam = new Exam(_Students, _Imgsubjects, _Optionsubjects, _Tzsubjects, path);
+            Exam exam = new Exam(_Students, _Imgsubjects, _Optionsubjects, _Tzsubjects,_TzOptionsubjects, path);
             FormFullScreenYJ fs = new FormFullScreenYJ(exam);
             this.Hide();
             fs.ShowDialog();
@@ -439,6 +440,7 @@ namespace ScanTemplate.FormYJ
         private string _examname;
         private string _DataFullPath;
         private Tzsubjects _Tzsubjects;
+        private TzOptionsubjects _TzOptionsubjects;
         private bool DgvShowOptionMode;
         private ScanConfig _sc;
 
@@ -512,6 +514,72 @@ namespace ScanTemplate.FormYJ
 
 
     }
+
+
+    [JsonObject(MemberSerialization.OptIn)]
+    public class TzOptionsubjects
+    {
+        public TzOptionsubjects()
+        {
+            Tzs = new List<TzOptionsubject>();
+        }
+        [JsonProperty]
+        public List<TzOptionsubject> Tzs;
+        public void Add(TzOptionsubject tz)
+        {
+            Tzs.Add(tz);
+        }
+        public void InitIds()
+        {
+            foreach (TzOptionsubject tz in Tzs)
+                tz.InitIds();
+        }
+        public void Deserialize(Optionsubjects optioinsubjects)
+        {
+            foreach (TzOptionsubject r in Tzs)
+                r.InitDeserialize(optioinsubjects);
+        }
+    }
+
+    [JsonObject(MemberSerialization.OptOut)]
+    public class TzOptionsubject
+    {
+        public TzOptionsubject()
+        {
+            Subjects = new List<Optionsubject>();
+            SubjectIndexs = new List<int>();
+        }
+        public void Add(Optionsubject tz)
+        {
+            Subjects.Add(tz);
+        }
+        public void InitIds()
+        {
+            SubjectIndexs.Clear();
+            if (Subjects.Count > 0)
+                SubjectIndexs.AddRange(
+                    Subjects.Select(r => r.ID).ToArray());
+        }
+        public void InitDeserialize(Optionsubjects ibs)
+        {
+            Subjects.Clear();
+            if (SubjectIndexs.Count > 0)
+                Subjects = SubjectIndexs.Select(r => ibs.OptionSubjects[r]).ToList();
+        }
+        [JsonIgnore]
+        public List<Optionsubject> Subjects;
+        [JsonProperty]
+        private List<int> SubjectIndexs;
+        public Rectangle Rect;
+        public string Name;
+
+        public void SetIndexList(List<int> list)
+        {
+            SubjectIndexs.Clear();
+            SubjectIndexs.AddRange(list);
+        }
+    }
+
     [JsonObject(MemberSerialization.OptIn)]
     public class Tzsubjects
     {
@@ -1524,14 +1592,15 @@ namespace ScanTemplate.FormYJ
     public class StudentsResult
     {
         public Imgsubject ActiveSubject { get { return _activesubject; } }
-        public List<Student> Students { get; set; }        
-        public StudentsResult(FormYJ.Students _Students, FormYJ.Imgsubjects _Imgsubjects, Optionsubjects _Optionsubjects,Tzsubjects _Tzsubjects, string _workpath)
+        public List<Student> Students { get; set; }
+        public StudentsResult(FormYJ.Students _Students, FormYJ.Imgsubjects _Imgsubjects, Optionsubjects _Optionsubjects, Tzsubjects _Tzsubjects, TzOptionsubjects _TzOptionsubjects, string _workpath)
         {
             this._Students = _Students;
             this._Imgsubjects = _Imgsubjects;
             this._workpath = _workpath;
             this._Optionsubjects = _Optionsubjects;
             this._Tzsubjects = _Tzsubjects;
+            this._TzOptionsubjects = _TzOptionsubjects;
             _Result = new List<List<int>>();
             for (int i = 0; i < _Imgsubjects.Subjects.Count; i++)
             {
@@ -1545,12 +1614,13 @@ namespace ScanTemplate.FormYJ
             _Ims = new ImgbinManagesubjects(_Students, _Imgsubjects);
             _Ims.InitLoadBindata(_workpath);
         }
-        public StudentsResult(FormYJ.Students _Students, Imgsubjects _Imgsubjects, Optionsubjects _Optionsubjects,Tzsubjects _Tzsubjects, string Path, List<List<int>> result)
+        public StudentsResult(FormYJ.Students _Students, Imgsubjects _Imgsubjects, Optionsubjects _Optionsubjects, Tzsubjects _Tzsubjects, TzOptionsubjects _TzOptionsubjects, string Path, List<List<int>> result)
         {
             this._Students = _Students;
             this._Imgsubjects = _Imgsubjects;
             this._Optionsubjects = _Optionsubjects;
             this._Tzsubjects = _Tzsubjects;
+            this._TzOptionsubjects = _TzOptionsubjects;
             this._workpath = Path;
             this._Result = result;
             _Ims = new ImgbinManagesubjects(_Students, _Imgsubjects);
@@ -1558,7 +1628,7 @@ namespace ScanTemplate.FormYJ
             if (!_Students.CheckIndex())
                 MessageBox.Show("index Error");
         }
-
+       
         public void SetActiveSubject(Imgsubject S)
         {
             this._activesubject = S;
@@ -1633,6 +1703,9 @@ namespace ScanTemplate.FormYJ
         private Tzsubjects _Tzsubjects;
         [JsonProperty]
         private List<List<int>> _Result;
+        [JsonProperty]
+        private TzOptionsubjects _TzOptionsubjects;
+        private string path;
     }
     public class Exam
     {
@@ -1641,15 +1714,8 @@ namespace ScanTemplate.FormYJ
         private StudentsResult _SR;
         private Optionsubjects _Optionsubjects;
         private Tzsubjects _Tzsubjects;
-        public Exam(Students _Students, Imgsubjects _Imgsubjects, Optionsubjects _Optionsubjects,Tzsubjects _Tzsubjects,  string path )
-        {
-            this._Students = _Students;
-            this._Imgsubjects = _Imgsubjects;
-            this._Optionsubjects = _Optionsubjects;
-            this._Tzsubjects = _Tzsubjects;
-            this.Path = path;
-            _SR = new StudentsResult(_Students, _Imgsubjects,_Optionsubjects,_Tzsubjects, path);
-        }
+        private TzOptionsubjects _TzOptionsubjects;
+       
         public Exam(Examdata ed)
         {
             this.Name = ed.Name;
@@ -1658,7 +1724,20 @@ namespace ScanTemplate.FormYJ
             _Students = ed.SR._Students;
             _Optionsubjects = ed.SR._Optionsubjects;
             _Tzsubjects = ed.SR._Tzsubjects;
-            this._SR = new StudentsResult(_Students, _Imgsubjects, _Optionsubjects,_Tzsubjects, Path,ed.SR._Result);
+            //_TzOptionsubjects = ed.SR._
+            this._SR = new StudentsResult(_Students, _Imgsubjects, _Optionsubjects,_Tzsubjects,_TzOptionsubjects, Path,ed.SR._Result);
+        }
+
+        public Exam(Students _Students, Imgsubjects _Imgsubjects, Optionsubjects _Optionsubjects, Tzsubjects _Tzsubjects, TzOptionsubjects _TzOptionsubjects, string path)
+        {
+            this._Students = _Students;
+            this._Imgsubjects = _Imgsubjects;
+            this._Optionsubjects = _Optionsubjects;
+            this._Tzsubjects = _Tzsubjects;
+
+            this._TzOptionsubjects = _TzOptionsubjects;
+            this.Path = path;
+            _SR = new StudentsResult(_Students, _Imgsubjects, _Optionsubjects, _Tzsubjects,_TzOptionsubjects, path);
         }
 
         public string Name { get; set; }

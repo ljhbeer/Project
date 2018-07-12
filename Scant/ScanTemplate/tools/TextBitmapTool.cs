@@ -35,7 +35,7 @@ namespace Tools
         }
         public  Bitmap DrawListInPaper( List<string> list, bool blackfont = false )
         {
-            WhiteImage();
+            WhiteImage();          
             using (Graphics g = Graphics.FromImage(Src))
             {
                 string maxstr = "";
@@ -108,6 +108,7 @@ namespace Tools
             list.Reverse();
             Point Loc = _content.Location;
             Stack<string> stack = new Stack<string>(list);
+            bool first = true;
             for (int x = 0; x < Scnt.Width; x++)
             {
                 for (int y = 0; y < Scnt.Height; y++)
@@ -115,7 +116,13 @@ namespace Tools
                     if (stack.Count == 0)
                         break;
                     PointF pos = new PointF(Loc.X + x * Sitem.Width, Loc.Y + y * Sitem.Height);
-                    g.DrawString(stack.Pop(), font, br, pos);
+                    string str = stack.Pop();
+                    if (first)
+                    {
+                        str = str.Replace("\t选择题\t", "  选择题  ");
+                        first = false;
+                    }
+                    g.DrawString(str, font, br, pos);
                 }
                 if (stack.Count == 0)
                     break;

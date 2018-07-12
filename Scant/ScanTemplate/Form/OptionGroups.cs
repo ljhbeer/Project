@@ -21,6 +21,7 @@ namespace ARTemplate
             _list = null;
             baselist = lista;
         }
+       
         private List<OptionGroup> _list;
         public List<OptionGroup> list
         {
@@ -45,15 +46,6 @@ namespace ARTemplate
         public  string ScoreInfomation()
         {
             if(list!=null)
-            //return string.Join("\r\n",
-            //    list.Select(r =>
-            //    {
-            //        string str  = "";
-            //       str =  r.Title + "\t"+ r.SubAreas.Sum(rr => ((UnChoose)rr).Scores)+"分\t"+ 
-            //           string.Join(" ",r.SubAreas.Select( rr => ((UnChoose)rr).Scores + "分"));
-            //        return str;
-            //    }).ToList()
-            //    );
             if (list == null)
                 return base.GetScoreInfomation();
             float totalscore = list.Sum(r => r.GetTotalScore());
@@ -65,32 +57,29 @@ namespace ARTemplate
     [JsonObject(MemberSerialization.OptIn)]
     public class OptionGroup : Area
     {
-        public OptionGroup(Rectangle rect, string name)
+        public OptionGroup(string name, List<int> list)
         {
             this.TypeName = "选择题题组";
-            this.Rect = rect;
+            this.Rect = new Rectangle();
+            ShowTitle = true;
+           
             this._name = name;
-            ShowTitle = false;
+            this._indexlist = list; 
+
             _subareas = new List<Area>();
         }
         public override string Title
         {
             get
             {
+                if(_indexlist!=null && _indexlist.Count>0)
+                    return _name + "["+ (_indexlist[0]+1)+"-"+(_indexlist[_indexlist.Count-1]+1)+"]";
                 return _name;
             }
         }
         public override String ToString()
         {
             return _name;
-        }
-        public override void SetName(string name)
-        {
-            _name = name;
-        }
-        public void AddSubArea(Area I)
-        {
-            _subareas.Add(I);
         }
         public override bool HasSubAreas()
         {
@@ -114,10 +103,18 @@ namespace ARTemplate
                 return _subareas;
             }
         }
+        [JsonIgnore]
+        public List<int> IndexList { get {
+            if (_indexlist == null)
+                return new List<int>();
+            return _indexlist; 
+        } }
+        [JsonIgnore]
+        private List<Area> _subareas;
         [JsonProperty]
-        private string _name;
+        private string _name;       
         [JsonProperty]
-        private List<Area> _subareas; 
-        //public List<SingleChoiceArea> _scas;
+        private List<int> _indexlist;
+
     }
 }

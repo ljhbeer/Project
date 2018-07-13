@@ -180,14 +180,14 @@ namespace ScanTemplate.FormYJ
                 bmp.Save(filename);
             }
         }
-        private PaperResult ConstructPaperResult(Student S,bool onlyoptions=false)
+        private  PaperResult ConstructPaperResult(Student S,Examdata _examdata,bool onlyoptions=false) //static
         {
             PaperResult pr = new PaperResult();
             float fsum = 0;
             Rectangle r = new Rectangle();
-            if (_Optionsubjects.OptionSubjects.Count > 0)
-                r = _Optionsubjects.OptionSubjects[0].Rect;
-            foreach (Optionsubject O in _Optionsubjects.OptionSubjects)
+            if (_examdata.SR._Optionsubjects.OptionSubjects.Count > 0)
+                r = _examdata.SR._Optionsubjects.OptionSubjects[0].Rect;
+            foreach (Optionsubject O in _examdata.SR._Optionsubjects.OptionSubjects)
             {
                 if (!"MSU".Contains(O.Type))
                     O.Type = XztQuestion.CharType(O.Type);
@@ -229,29 +229,29 @@ namespace ScanTemplate.FormYJ
                 pr.ZF = new ResultObj(new Rectangle(r.Width / 3, 30, 30, 30), fsum, 0, true);
                 return pr;
             }
-            foreach (Tzsubject T in _Tzsubjects.Tzs)
+            foreach (Tzsubject T in _examdata.SR._Tzsubjects.Tzs)
             {
                 int subsum = 0;
                 foreach (Imgsubject I in T.Subjects)
                 {
-                    int score = _SR._Result[I.Index][S.Index];
+                    int score = _examdata.SR._Result[I.Index][S.Index];
                     pr.AddOption(new ResultObj(I.Rect, score,I.Score));
                     subsum += score;
                 }
                 fsum += subsum;
                 pr.Tz.Add(new ResultObj(T.Rect, subsum,0,true));
             }
-            if (pr.Tz.Count == 0 && _Imgsubjects.Subjects.Count>0)
+            if (pr.Tz.Count == 0 && _examdata.SR._Imgsubjects.Subjects.Count > 0)
             {
                 int subsum = 0;
-                foreach (Imgsubject I in _Imgsubjects.Subjects)
+                foreach (Imgsubject I in _examdata.SR._Imgsubjects.Subjects)
                 {
-                    int score = _SR._Result[I.Index][S.Index];
+                    int score = _examdata.SR._Result[I.Index][S.Index];
                     pr.AddOption(new ResultObj(I.Rect, score,I.Score));
                     subsum += score;
                 }
                 fsum += subsum;
-                Rectangle TRect = _Imgsubjects.Subjects[0].Rect;
+                Rectangle TRect = _examdata.SR._Imgsubjects.Subjects[0].Rect;
                 TRect.Y -= 35;
                 TRect.X -= 30;
                 pr.Tz.Add(new ResultObj(TRect, subsum, 0,true));

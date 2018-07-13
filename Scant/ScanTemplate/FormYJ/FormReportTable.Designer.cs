@@ -109,6 +109,7 @@
             this.tabControl1.SelectedIndex = 0;
             this.tabControl1.Size = new System.Drawing.Size(789, 429);
             this.tabControl1.TabIndex = 1;
+            this.tabControl1.SelectedIndexChanged += new System.EventHandler(this.tabControl1_SelectedIndexChanged);
             // 
             // tabPageByStudent
             // 
@@ -164,6 +165,7 @@
             this.dgvstudent.RowTemplate.Height = 23;
             this.dgvstudent.Size = new System.Drawing.Size(226, 366);
             this.dgvstudent.TabIndex = 0;
+            this.dgvstudent.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvstudent_CellContentClick);
             // 
             // textBox1
             // 
@@ -214,6 +216,7 @@
             this.checkBoxOnlyShowerror.TabIndex = 0;
             this.checkBoxOnlyShowerror.Text = "仅显示错误";
             this.checkBoxOnlyShowerror.UseVisualStyleBackColor = true;
+            this.checkBoxOnlyShowerror.CheckedChanged += new System.EventHandler(this.checkBoxOnlyShowerror_CheckedChanged);
             // 
             // splitContainer1
             // 
@@ -245,6 +248,7 @@
             this.dgvcorrectid.RowTemplate.Height = 23;
             this.dgvcorrectid.Size = new System.Drawing.Size(181, 197);
             this.dgvcorrectid.TabIndex = 0;
+            this.dgvcorrectid.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvcorrectid_CellContentClick);
             // 
             // dgverrorid
             // 
@@ -258,6 +262,7 @@
             this.dgverrorid.RowTemplate.Height = 23;
             this.dgverrorid.Size = new System.Drawing.Size(181, 165);
             this.dgverrorid.TabIndex = 0;
+            this.dgverrorid.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgverrorid_CellContentClick);
             // 
             // tableLayoutPanel3
             // 
@@ -289,6 +294,7 @@
             this.dgvsubjects.RowTemplate.Height = 23;
             this.dgvsubjects.Size = new System.Drawing.Size(149, 359);
             this.dgvsubjects.TabIndex = 0;
+            this.dgvsubjects.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvsubjects_CellContentClick);
             // 
             // tableLayoutPanel4
             // 
@@ -314,6 +320,7 @@
             this.buttonShowOption.TabIndex = 0;
             this.buttonShowOption.Text = "选择题";
             this.buttonShowOption.UseVisualStyleBackColor = true;
+            this.buttonShowOption.Click += new System.EventHandler(this.buttonShowOption_Click);
             // 
             // buttonShowUnChoose
             // 
@@ -324,6 +331,7 @@
             this.buttonShowUnChoose.TabIndex = 0;
             this.buttonShowUnChoose.Text = "非选择题";
             this.buttonShowUnChoose.UseVisualStyleBackColor = true;
+            this.buttonShowUnChoose.Click += new System.EventHandler(this.buttonShowUnChoose_Click);
             // 
             // flowLayoutPanel3
             // 
@@ -344,6 +352,7 @@
             this.buttonShowCorrectStudentList.TabIndex = 0;
             this.buttonShowCorrectStudentList.Text = "显示正确名单";
             this.buttonShowCorrectStudentList.UseVisualStyleBackColor = true;
+            this.buttonShowCorrectStudentList.Click += new System.EventHandler(this.buttonShowCorrectStudentList_Click);
             // 
             // buttonShowerrorList
             // 
@@ -353,6 +362,7 @@
             this.buttonShowerrorList.TabIndex = 0;
             this.buttonShowerrorList.Text = "显示错误名单";
             this.buttonShowerrorList.UseVisualStyleBackColor = true;
+            this.buttonShowerrorList.Click += new System.EventHandler(this.buttonShowerrorList_Click);
             // 
             // textBoxMsg
             // 
@@ -374,6 +384,7 @@
             this.dgvRightErrorStudentList.RowTemplate.Height = 23;
             this.dgvRightErrorStudentList.Size = new System.Drawing.Size(614, 359);
             this.dgvRightErrorStudentList.TabIndex = 3;
+            this.dgvRightErrorStudentList.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvRightErrorStudentList_CellContentClick);
             // 
             // FormReportTable
             // 

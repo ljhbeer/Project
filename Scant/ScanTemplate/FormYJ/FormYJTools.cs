@@ -194,10 +194,8 @@ namespace ScanTemplate.FormYJ
         private void buttonResultTable_Click(object sender, EventArgs e)
         {
             if (_activeitem == null) return;
-            FormChooseResult f = new FormChooseResult();
+            FormReportTable f = new FormReportTable(_sc, _examdata, _template);
             f.ShowDialog();
-            ExportClassResult ecr = new ExportClassResult(_sc, _examdata, _template);
-            ecr.Export(f.Result);
             f = null;
         }
         private void SaveYjData()

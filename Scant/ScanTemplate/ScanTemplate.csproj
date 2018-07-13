@@ -55,10 +55,10 @@
   <ItemGroup>
     <Compile Include="AutoAngle.cs" />
     <Compile Include="AutoComputeXZT.cs" />
-    <Compile Include="FormReportTable.cs">
+    <Compile Include="FormYJ\FormReportTable.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FormReportTable.Designer.cs">
+    <Compile Include="FormYJ\FormReportTable.Designer.cs">
       <DependentUpon>FormReportTable.cs</DependentUpon>
     </Compile>
     <Compile Include="FormSetOptionGroups.cs">
@@ -175,7 +175,7 @@
     <Compile Include="ScanConfig.cs" />
     <Compile Include="tools\BitmapTools.cs" />
     <Compile Include="tools\DataTableTools.cs" />
-    <EmbeddedResource Include="FormReportTable.resx">
+    <EmbeddedResource Include="FormYJ\FormReportTable.resx">
       <DependentUpon>FormReportTable.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FormSetOptionGroups.resx">

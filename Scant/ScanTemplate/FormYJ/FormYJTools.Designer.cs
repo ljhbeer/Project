@@ -36,6 +36,7 @@
             this.buttonBeginYJ = new System.Windows.Forms.Button();
             this.buttonExportResult = new System.Windows.Forms.Button();
             this.buttonReadMe = new System.Windows.Forms.Button();
+            this.buttonResultTable = new System.Windows.Forms.Button();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.dgv = new System.Windows.Forms.DataGridView();
@@ -89,6 +90,7 @@
             this.tableLayoutPanel1.Controls.Add(this.buttonBeginYJ, 2, 2);
             this.tableLayoutPanel1.Controls.Add(this.buttonExportResult, 0, 2);
             this.tableLayoutPanel1.Controls.Add(this.buttonReadMe, 3, 0);
+            this.tableLayoutPanel1.Controls.Add(this.buttonResultTable, 1, 2);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -148,11 +150,10 @@
             // 
             // buttonExportResult
             // 
-            this.tableLayoutPanel1.SetColumnSpan(this.buttonExportResult, 2);
             this.buttonExportResult.Dock = System.Windows.Forms.DockStyle.Fill;
             this.buttonExportResult.Location = new System.Drawing.Point(3, 367);
             this.buttonExportResult.Name = "buttonExportResult";
-            this.buttonExportResult.Size = new System.Drawing.Size(92, 36);
+            this.buttonExportResult.Size = new System.Drawing.Size(43, 36);
             this.buttonExportResult.TabIndex = 8;
             this.buttonExportResult.Text = "导出";
             this.buttonExportResult.UseVisualStyleBackColor = true;
@@ -167,6 +168,16 @@
             this.buttonReadMe.Text = "说明";
             this.buttonReadMe.UseVisualStyleBackColor = true;
             this.buttonReadMe.Click += new System.EventHandler(this.buttonReadMe_Click);
+            // 
+            // buttonResultTable
+            // 
+            this.buttonResultTable.Location = new System.Drawing.Point(52, 367);
+            this.buttonResultTable.Name = "buttonResultTable";
+            this.buttonResultTable.Size = new System.Drawing.Size(43, 36);
+            this.buttonResultTable.TabIndex = 15;
+            this.buttonResultTable.Text = "成绩报表";
+            this.buttonResultTable.UseVisualStyleBackColor = true;
+            this.buttonResultTable.Click += new System.EventHandler(this.buttonResultTable_Click);
             // 
             // tableLayoutPanel2
             // 
@@ -359,5 +370,6 @@
         private System.Windows.Forms.Button buttonReadMe;
         private System.Windows.Forms.Button buttonModifyKH;
         private System.Windows.Forms.Button buttonSaveExam;
+        private System.Windows.Forms.Button buttonResultTable;
     }
 }

@@ -109,7 +109,7 @@
             this.toolStripButtonToDark,
             this.toolStripButtonSetGroup,
             this.toolStripButtonCustomDefine});
-            this.toolStrip1.Location = new System.Drawing.Point(16, 25);
+            this.toolStrip1.Location = new System.Drawing.Point(3, 0);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(697, 25);
             this.toolStrip1.TabIndex = 1;
@@ -254,7 +254,7 @@
             // toolStripContainer1.ContentPanel
             // 
             this.toolStripContainer1.ContentPanel.Controls.Add(this.tableLayoutPanel1);
-            this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(952, 611);
+            this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(952, 657);
             this.toolStripContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.toolStripContainer1.Location = new System.Drawing.Point(0, 0);
             this.toolStripContainer1.Name = "toolStripContainer1";
@@ -281,7 +281,7 @@
             this.tableLayoutPanel1.RowCount = 2;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 27F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 92.46468F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(952, 611);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(952, 657);
             this.tableLayoutPanel1.TabIndex = 1;
             // 
             // treeView1
@@ -289,7 +289,7 @@
             this.treeView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.treeView1.Location = new System.Drawing.Point(3, 30);
             this.treeView1.Name = "treeView1";
-            this.treeView1.Size = new System.Drawing.Size(151, 578);
+            this.treeView1.Size = new System.Drawing.Size(151, 624);
             this.treeView1.TabIndex = 1;
             this.treeView1.KeyUp += new System.Windows.Forms.KeyEventHandler(this.treeView1_KeyUp);
             // 
@@ -301,15 +301,15 @@
             this.panel1.Location = new System.Drawing.Point(160, 3);
             this.panel1.Name = "panel1";
             this.tableLayoutPanel1.SetRowSpan(this.panel1, 2);
-            this.panel1.Size = new System.Drawing.Size(789, 605);
+            this.panel1.Size = new System.Drawing.Size(789, 651);
             this.panel1.TabIndex = 0;
             // 
             // pictureBox1
             // 
             this.pictureBox1.AccessibleRole = System.Windows.Forms.AccessibleRole.ScrollBar;
-            this.pictureBox1.Location = new System.Drawing.Point(3, 3);
+            this.pictureBox1.Location = new System.Drawing.Point(201, 115);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(786, 619);
+            this.pictureBox1.Size = new System.Drawing.Size(588, 507);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
@@ -335,9 +335,9 @@
             this.toolStripComboBoxKHFormat,
             this.toolStripComboBoxChooseType,
             this.toolStripDropDownButton1});
-            this.toolStrip2.Location = new System.Drawing.Point(3, 0);
+            this.toolStrip2.Location = new System.Drawing.Point(700, 0);
             this.toolStrip2.Name = "toolStrip2";
-            this.toolStrip2.Size = new System.Drawing.Size(454, 25);
+            this.toolStrip2.Size = new System.Drawing.Size(252, 29);
             this.toolStrip2.TabIndex = 2;
             // 
             // toolStripButtonCloseAndOutImages
@@ -346,7 +346,7 @@
             this.toolStripButtonCloseAndOutImages.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonCloseAndOutImages.Image")));
             this.toolStripButtonCloseAndOutImages.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButtonCloseAndOutImages.Name = "toolStripButtonCloseAndOutImages";
-            this.toolStripButtonCloseAndOutImages.Size = new System.Drawing.Size(60, 22);
+            this.toolStripButtonCloseAndOutImages.Size = new System.Drawing.Size(60, 26);
             this.toolStripButtonCloseAndOutImages.Text = "保存退出";
             this.toolStripButtonCloseAndOutImages.Click += new System.EventHandler(this.toolStripButtonCloseAndOutImages_Click);
             // 
@@ -356,7 +356,7 @@
             this.toolStripButtonZoomNone.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonZoomNone.Image")));
             this.toolStripButtonZoomNone.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButtonZoomNone.Name = "toolStripButtonZoomNone";
-            this.toolStripButtonZoomNone.Size = new System.Drawing.Size(36, 22);
+            this.toolStripButtonZoomNone.Size = new System.Drawing.Size(36, 26);
             this.toolStripButtonZoomNone.Text = "还原";
             this.toolStripButtonZoomNone.Click += new System.EventHandler(this.toolStripButtonZoomNone_Click);
             // 
@@ -374,7 +374,7 @@
             "考号-涂卡10位",
             "考号-无"});
             this.toolStripComboBoxKHFormat.Name = "toolStripComboBoxKHFormat";
-            this.toolStripComboBoxKHFormat.Size = new System.Drawing.Size(121, 25);
+            this.toolStripComboBoxKHFormat.Size = new System.Drawing.Size(121, 29);
             this.toolStripComboBoxKHFormat.Text = "考号格式";
             // 
             // toolStripComboBoxChooseType
@@ -399,7 +399,7 @@
             this.toolStripDropDownButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripDropDownButton1.Image")));
             this.toolStripDropDownButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripDropDownButton1.Name = "toolStripDropDownButton1";
-            this.toolStripDropDownButton1.Size = new System.Drawing.Size(69, 22);
+            this.toolStripDropDownButton1.Size = new System.Drawing.Size(69, 21);
             this.toolStripDropDownButton1.Text = "其他操作";
             // 
             // ToolStripMenuItemShowScore

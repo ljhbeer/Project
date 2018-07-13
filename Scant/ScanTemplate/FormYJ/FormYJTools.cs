@@ -191,6 +191,15 @@ namespace ScanTemplate.FormYJ
             ecr.Export(f.Result);
             f = null;
         }
+        private void buttonResultTable_Click(object sender, EventArgs e)
+        {
+            if (_activeitem == null) return;
+            FormChooseResult f = new FormChooseResult();
+            f.ShowDialog();
+            ExportClassResult ecr = new ExportClassResult(_sc, _examdata, _template);
+            ecr.Export(f.Result);
+            f = null;
+        }
         private void SaveYjData()
         {
             if (_activeitem != null)
@@ -589,7 +598,7 @@ namespace ScanTemplate.FormYJ
         private bool _bShowstudent;
         private bool _bShowxzt;
         private bool _InitDgv;
-        private bool _bExamDataBaseInfomationChanged;
+        private bool _bExamDataBaseInfomationChanged;       
     }
     public class Examdata
     {

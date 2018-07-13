@@ -25,7 +25,8 @@ namespace ScanTemplate.FormYJ
             this._Tzsubjects = _examdata.SR._Tzsubjects;
             this._TzOptionsubjects = _examdata.SR._TzOptionsubjects;
             InitAnswer();
-            InitMsg();        
+            InitMsg();
+            Paperconstruct = new PaperConstruct(_exam);
         }
         private void InitMsg()
         {
@@ -57,7 +58,6 @@ namespace ScanTemplate.FormYJ
             }
             return true;
         }
-
         private bool CheckOnlyOptions()
         {
             _Optionanswer = _exam.OSubjects.Select(r => r.Answer).ToList();
@@ -153,7 +153,7 @@ namespace ScanTemplate.FormYJ
 
             foreach (Student S in _students.students)
             {
-                PaperResult pr = ConstructPaperResult(S,onlyoptions);
+                PaperResult pr = Paperconstruct.ConstructPaperResult(S, onlyoptions);
                 Bitmap bmp = TemplateTools.DrawInfoBmp(S, _angle, pr);
                 //Bitmap bmp = TemplateTools.DrawInfoBmp(S, _SR, _angle, _Optionanswer, ltz);
                 string filename =ImgPath + "\\" + S.ID + ".jpg";
@@ -179,87 +179,7 @@ namespace ScanTemplate.FormYJ
                 }
                 bmp.Save(filename);
             }
-        }
-        private  PaperResult ConstructPaperResult(Student S,Examdata _examdata,bool onlyoptions=false) //static
-        {
-            PaperResult pr = new PaperResult();
-            float fsum = 0;
-            Rectangle r = new Rectangle();
-            if (_examdata.SR._Optionsubjects.OptionSubjects.Count > 0)
-                r = _examdata.SR._Optionsubjects.OptionSubjects[0].Rect;
-            foreach (Optionsubject O in _examdata.SR._Optionsubjects.OptionSubjects)
-            {
-                if (!"MSU".Contains(O.Type))
-                    O.Type = XztQuestion.CharType(O.Type);
-                r = Rectangle.Union(r, O.Rect);
-                float score = 0;
-                if (O.Type == "S" || O.Type == "M")
-                    score = S.CorrectXzt(O.Index, _Optionanswer[O.Index]) ? _OptionMaxscore[O.Index] : 0;
-                else  if(O.Type == "U" )
-                {
-                    List<int> listanswer = O.Answer.Select(rr => rr - 'A').ToList();
-                    List<int> paperanswer = S.OptionAnswer( O.Index).Select(rr => rr - 'A').ToList().ToList();
-                   
-                    if (paperanswer.Count==0 || paperanswer.Exists( rr=> !listanswer.Contains(rr)))
-                    {
-                        score = 0;
-                    }
-                    else 
-                    {
-                        if (listanswer.Exists(rr => !paperanswer.Contains(rr)))
-                            score = O.HalfScore;
-                        else
-                            score = O.Score;
-                    }
-                }
-                //TODO:  只适合单选
-                int listindex = _dicABCDToOption[_Optionanswer[O.Index].Substring(0,1)];
-                Rectangle RO = O.Rect;
-                if (O.List.Count > listindex)
-                    RO.Offset(O.List[listindex]);
-                pr.AddOption(new ResultObj(RO, score,O.Score));
-                fsum += score;
-            }
-            if (r.Y > 30)
-                r.Y -= 30;
-            pr.Xzt = new ResultObj(r, fsum,0,true);
-
-            if (onlyoptions)
-            {
-                pr.ZF = new ResultObj(new Rectangle(r.Width / 3, 30, 30, 30), fsum, 0, true);
-                return pr;
-            }
-            foreach (Tzsubject T in _examdata.SR._Tzsubjects.Tzs)
-            {
-                int subsum = 0;
-                foreach (Imgsubject I in T.Subjects)
-                {
-                    int score = _examdata.SR._Result[I.Index][S.Index];
-                    pr.AddOption(new ResultObj(I.Rect, score,I.Score));
-                    subsum += score;
-                }
-                fsum += subsum;
-                pr.Tz.Add(new ResultObj(T.Rect, subsum,0,true));
-            }
-            if (pr.Tz.Count == 0 && _examdata.SR._Imgsubjects.Subjects.Count > 0)
-            {
-                int subsum = 0;
-                foreach (Imgsubject I in _examdata.SR._Imgsubjects.Subjects)
-                {
-                    int score = _examdata.SR._Result[I.Index][S.Index];
-                    pr.AddOption(new ResultObj(I.Rect, score,I.Score));
-                    subsum += score;
-                }
-                fsum += subsum;
-                Rectangle TRect = _examdata.SR._Imgsubjects.Subjects[0].Rect;
-                TRect.Y -= 35;
-                TRect.X -= 30;
-                pr.Tz.Add(new ResultObj(TRect, subsum, 0,true));
-            }
-            pr.ZF = new ResultObj(new Rectangle(r.Width / 3, 30, 30, 30), fsum ,0, true);
-             
-            return pr;
-        }
+        }        
         private void CheckFold(string ImgPath)
         {
             if (!Directory.Exists(ImgPath))
@@ -363,7 +283,7 @@ namespace ScanTemplate.FormYJ
             foreach (Student S in _students.students)
             {
                 string showName = (S.Name == "-" || S.Name == "" ? "无名" + S.ID.ToString() : S.Name);
-                PaperResult pr = ConstructPaperResult(S);
+                PaperResult pr = Paperconstruct.ConstructPaperResult(S);
                 sblistscore.AppendLine(showName + "," + pr.TotalScore());
                 sblisttizu.AppendLine(showName + ","+ pr.TotalTz()+pr.TotalXztTz( _TzOptionsubjects ) );
                 sbdetail .AppendLine(showName + "," + pr.Detail());
@@ -408,7 +328,7 @@ namespace ScanTemplate.FormYJ
             StringBuilder sbdetail = new StringBuilder();
             foreach (Student S in _students.students)
             {
-                PaperResult pr = ConstructPaperResult(S);
+                PaperResult pr = Paperconstruct.ConstructPaperResult(S);
                 string showName = (S.Name == "-" || S.Name == "" ? "无名" + S.ID.ToString() : S.Name);
                 string str = showName+ "," + pr.Xzt.Floatscore;                
                 sblistscore.AppendLine( str+pr.TotalXztTz(_TzOptionsubjects) );
@@ -468,5 +388,143 @@ namespace ScanTemplate.FormYJ
         private Tzsubjects _Tzsubjects;
         private AutoAngle _angle;
         private TzOptionsubjects _TzOptionsubjects;
+
+        public PaperConstruct Paperconstruct { get; set; }
+    }
+    public class PaperConstruct
+    {
+        public PaperConstruct(Exam _exam)
+        {
+            this._exam = _exam;          
+            InitOptionAnswer();
+            bOptionReady = CheckOnlyOptions();
+            bAllReady = CheckResult();
+        }
+        public PaperResult ConstructPaperResult(Student S, bool onlyoptions = false) //static
+        {
+            PaperResult pr = new PaperResult();
+            float fsum = 0;
+            Rectangle r = new Rectangle();
+            if (_exam.OSubjects.Count > 0)
+                r = _exam.OSubjects[0].Rect;
+            int index = 0;
+            foreach (Optionsubject O in _exam.OSubjects)
+            {
+                if (!"MSU".Contains(O.Type))
+                    O.Type = XztQuestion.CharType(O.Type);
+                r = Rectangle.Union(r, O.Rect);
+                float score = 0;
+                if (O.Type == "S" || O.Type == "M")
+                    score = S.CorrectXzt(O.Index, _Optionanswer[O.Index]) ? _OptionMaxscore[O.Index] : 0;
+                else if (O.Type == "U")
+                {
+                    List<int> listanswer = O.Answer.Select(rr => rr - 'A').ToList();
+                    List<int> paperanswer = S.OptionAnswer(O.Index).Select(rr => rr - 'A').ToList().ToList();
+
+                    if (paperanswer.Count == 0 || paperanswer.Exists(rr => !listanswer.Contains(rr)))
+                    {
+                        score = 0;
+                    }
+                    else
+                    {
+                        if (listanswer.Exists(rr => !paperanswer.Contains(rr)))
+                            score = O.HalfScore;
+                        else
+                            score = O.Score;
+                    }
+                }
+                //TODO:  只适合单选
+                int listindex = _dicABCDToOption[_Optionanswer[O.Index].Substring(0, 1)];
+                Rectangle RO = O.Rect;
+                if (O.List.Count > listindex)
+                    RO.Offset(O.List[listindex]);
+                ResultObj robj = new ResultObj(RO, score, O.Score);
+                robj.Index = index;
+                index++;
+                pr.AddOption(robj);
+                fsum += score;
+            }
+            if (r.Y > 30)
+                r.Y -= 30;
+            pr.Xzt = new ResultObj(r, fsum, 0, true);
+
+            if (onlyoptions)
+            {
+                pr.ZF = new ResultObj(new Rectangle(r.Width / 3, 30, 30, 30), fsum, 0, true);
+                return pr;
+            }
+            index = 0;
+            foreach (Tzsubject T in _exam.TzSubjects.Tzs)
+            {
+                int subsum = 0;
+                foreach (Imgsubject I in T.Subjects)
+                {
+                    int score =_exam.SR.Result[I.Index][S.Index];
+                    ResultObj robj = new ResultObj(I.Rect, score, I.Score);
+                    robj.Index = index;
+                    index++;
+                    pr.AddOption(robj);
+                    subsum += score;
+                }
+                fsum += subsum;
+                pr.Tz.Add(new ResultObj(T.Rect, subsum, 0, true));
+            }
+            if (pr.Tz.Count == 0 && _exam.Subjects.Count > 0)
+            {
+                int subsum = 0;
+                foreach (Imgsubject I in _exam.Subjects)
+                {
+                    int score = _exam.SR.Result[I.Index][S.Index];
+                    ResultObj robj = new ResultObj(I.Rect, score, I.Score);
+                    robj.Index = index;
+                    index++;
+                    pr.AddOption(robj);
+                    subsum += score;
+                }
+                fsum += subsum;
+                Rectangle TRect = _exam.Subjects[0].Rect;
+                TRect.Y -= 35;
+                TRect.X -= 30;
+                pr.Tz.Add(new ResultObj(TRect, subsum, 0, true));
+            }
+            pr.ZF = new ResultObj(new Rectangle(r.Width / 3, 30, 30, 30), fsum, 0, true);
+
+            return pr;
+        }
+        private void InitOptionAnswer()
+        {
+            _Optionanswer = _exam.OSubjects.Select(r => r.Answer).ToList();
+            _OptionMaxscore = _exam.OSubjects.Select(r => r.Score).ToList();
+            _ABCD = new List<string>() { "A", "B", "C", "D" };
+            _dicABCDToOption = _ABCD.ToDictionary(r => r, r => r[0] - 'A');
+        }
+        private bool CheckResult()
+        {
+            foreach (List<int> L in _exam.SR.Result)
+            {
+                if (L.Any(r => r < 0))
+                    return false;
+            }
+            return true;
+        }
+        private bool CheckOnlyOptions()
+        {            
+            if (!(!_Optionanswer.Exists(r => r.Length == 0)//|| !"ABCD".Contains(r)  //有不定项选择
+                && !_OptionMaxscore.Exists(r => r <= 0)))
+                return false;
+            return true;
+            //if (!_Optionanswer.Exists(r => r.Length != 1 || !"ABCD".Contains(r))
+            //    && !_OptionMaxscore.Exists(r => r <= 0))
+            //    bReady = true;
+        }
+
+        //private StudentsResultData _SR;
+        private bool bOptionReady;
+        private bool bAllReady;
+        private Exam _exam;
+        private List<string> _Optionanswer;
+        private List<float> _OptionMaxscore;
+        private List<string> _ABCD;
+        private Dictionary<string, int> _dicABCDToOption;
     }
 }

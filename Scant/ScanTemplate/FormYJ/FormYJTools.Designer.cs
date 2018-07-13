@@ -171,6 +171,7 @@
             // 
             // buttonResultTable
             // 
+            this.buttonResultTable.Dock = System.Windows.Forms.DockStyle.Fill;
             this.buttonResultTable.Location = new System.Drawing.Point(52, 367);
             this.buttonResultTable.Name = "buttonResultTable";
             this.buttonResultTable.Size = new System.Drawing.Size(43, 36);

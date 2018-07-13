@@ -130,7 +130,7 @@ namespace ScanTemplate.FormYJ
             _examdata.InitDeserialize();
            
             _students = _examdata.SR._Students;
-            if(_students.students.Count>0){
+            if(_students.students.Count>0 && _template!=null){
                 InitSrc(_template, _students.students[0]);
             }
             _exam = new Exam(_examdata);
@@ -194,9 +194,16 @@ namespace ScanTemplate.FormYJ
         private void buttonResultTable_Click(object sender, EventArgs e)
         {
             if (_activeitem == null) return;
-            FormReportTable f = new FormReportTable(_sc, _examdata, _template);
+            if (_template == null)
+            {
+                MessageBox.Show("找不到模板文件");
+                return;
+            }
+            FormReportTable f = new FormReportTable(_sc, _exam,_template.Angle);
+            this.Hide();
             f.ShowDialog();
             f = null;
+            this.Show();
         }
         private void SaveYjData()
         {
@@ -614,6 +621,7 @@ namespace ScanTemplate.FormYJ
             }
             SR._Students.InitDeserialize(); //init index and dic
             SR._Imgsubjects.InitDeserialize(); // dic and bitmapdatalength
+            SR._Optionsubjects.InitDeserialize(); // old version . Type = null
             SR._Tzsubjects.Deserialize(SR._Imgsubjects);
             if (SR._TzOptionsubjects != null)
                 SR._TzOptionsubjects.Deserialize(SR._Optionsubjects);

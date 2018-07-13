@@ -54,13 +54,10 @@ namespace ScanTemplate.FormYJ
         {
             return "总分,选择题,非选择题,"+ string.Join(",", Options.Select( r => r.Txt).ToList());
         }
-
-
         private float GetTzOptionScore(List<int> list)
         {
             return list.Select(r => Options[r].Score).Sum();
         }
-
         public string TotalXztTz(TzOptionsubjects   t_TzOptionsubjects)
         {
             string strtz = "";
@@ -73,6 +70,14 @@ namespace ScanTemplate.FormYJ
             }
             return strtz;
         }
+        public float TotalTz(Tzsubject T)
+        {
+            return 0;
+        }
+        public float TotalXztTz(TzOptionsubject T)
+        {
+            return GetTzOptionScore(T.SubjectIndexs);
+        }
     }
     public class ResultObj
     {
@@ -81,6 +86,7 @@ namespace ScanTemplate.FormYJ
         }
         public ResultObj(Rectangle rect, float score,float maxscore,bool showscore = false)
         {
+            Index = -1;
             HalfRightMode = false;
             this.Rect = rect;
             this.Floatscore = score;
@@ -105,6 +111,7 @@ namespace ScanTemplate.FormYJ
                 NumberMode = false;
             }
         }
+        public int Index { get; set; }
         public float Floatscore;
         public Rectangle Rect;
         public int Score;

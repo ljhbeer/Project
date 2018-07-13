@@ -459,6 +459,13 @@ namespace ScanTemplate.FormYJ
             OptionSubjects.Add(S);
         }
         public List<Optionsubject> OptionSubjects { get; set; }
+
+        public void InitDeserialize()
+        {
+            if (OptionSubjects != null)
+                foreach (Optionsubject O in OptionSubjects)
+                    O.InitDeserialize();
+        }
     }
     public class Optionsubject
     {
@@ -474,14 +481,20 @@ namespace ScanTemplate.FormYJ
             this.Answer = O.Answer;
             this.Type = XztQuestion.CharType( O.Type );
             InitDeserialize(U, pos);
-
         }
         private void InitDeserialize(SingleChoiceArea U, int pos)
         {
             this._Rect = U.ImgArea;
             this.Size = U.Size;
             this.List = new List<Point>();
-            List = U.list[pos];
+            List = U.list[pos];            
+        }
+        public void InitDeserialize()
+        {
+            if (Type == null)
+                Type = "S";
+            else if ("SMU".Contains(Type))
+                this.Type = XztQuestion.CharType(  Type );
         }
         public override string ToString()
         {
@@ -511,8 +524,6 @@ namespace ScanTemplate.FormYJ
         public int Width { get { return Rect.Width; } }
         //[JsonIgnore]
         //private SingleChoiceArea U;
-
-
     }
 
 
@@ -1050,6 +1061,8 @@ namespace ScanTemplate.FormYJ
             _src = null;
             Sort = new StudentSort();
             BackScore = -1;
+            Tag = null;
+            TagInfor = "";
         }
         public Student()
         {
@@ -1152,6 +1165,10 @@ namespace ScanTemplate.FormYJ
                 return r == _XZT[index];
             return false;
         }
+        [JsonIgnore]
+        public PaperResult Tag { get; set; }
+        [JsonIgnore]
+        public string TagInfor { get; set; }
     }
     public class StudentBases
     {
@@ -1709,13 +1726,6 @@ namespace ScanTemplate.FormYJ
     }
     public class Exam
     {
-        private Students _Students;
-        private Imgsubjects _Imgsubjects;
-        private StudentsResult _SR;
-        private Optionsubjects _Optionsubjects;
-        private Tzsubjects _Tzsubjects;
-        private TzOptionsubjects _TzOptionsubjects;
-       
         public Exam(Examdata ed)
         {
             this.Name = ed.Name;
@@ -1724,30 +1734,38 @@ namespace ScanTemplate.FormYJ
             _Students = ed.SR._Students;
             _Optionsubjects = ed.SR._Optionsubjects;
             _Tzsubjects = ed.SR._Tzsubjects;
-            //_TzOptionsubjects = ed.SR._
+            _TzOptionsubjects = ed.SR._TzOptionsubjects;
             this._SR = new StudentsResult(_Students, _Imgsubjects, _Optionsubjects,_Tzsubjects,_TzOptionsubjects, Path,ed.SR._Result);
         }
-
         public Exam(Students _Students, Imgsubjects _Imgsubjects, Optionsubjects _Optionsubjects, Tzsubjects _Tzsubjects, TzOptionsubjects _TzOptionsubjects, string path)
         {
             this._Students = _Students;
             this._Imgsubjects = _Imgsubjects;
             this._Optionsubjects = _Optionsubjects;
             this._Tzsubjects = _Tzsubjects;
-
             this._TzOptionsubjects = _TzOptionsubjects;
             this.Path = path;
             _SR = new StudentsResult(_Students, _Imgsubjects, _Optionsubjects, _Tzsubjects,_TzOptionsubjects, path);
         }
-
         public string Name { get; set; }
         public string Path { get; set; }
         public StudentsResult SR { get { return _SR; } }
+        [JsonIgnore]
+        public List<Student> Students { get { return _Students.students; } }
         [JsonIgnore]
         public List<Imgsubject> Subjects { get { return _Imgsubjects.Subjects; } }        
         [JsonIgnore]
         public List<Optionsubject> OSubjects { get { return _Optionsubjects.OptionSubjects; } }
         [JsonIgnore]
-        public  Tzsubjects TzSubjects { get { return _Tzsubjects; } }
+        public Tzsubjects TzSubjects { get { return _Tzsubjects; } }
+        [JsonIgnore]
+        public TzOptionsubjects TzOptionsubjects { get { return _TzOptionsubjects; } }
+
+        private Students _Students;
+        private Imgsubjects _Imgsubjects;
+        private StudentsResult _SR;
+        private Optionsubjects _Optionsubjects;
+        private Tzsubjects _Tzsubjects;
+        private TzOptionsubjects _TzOptionsubjects;
     }
 }

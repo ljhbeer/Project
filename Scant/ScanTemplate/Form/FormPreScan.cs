@@ -126,10 +126,14 @@ namespace ScanTemplate
                     }
                 }
                 else
-                {
-                    // TODO: DetectCorrectArea
-                    //_dtm == DetectMode.DetectCorrectArea
+                {                   
                     PrePaper p = PreScanSelect(_namelist[0]);
+                    int rept = 0;
+                    while (!p.Detected() && rept ++ <10 )
+                    {
+                        if(rept<_namelist.Count)
+                            p = PreScanSelect(_namelist[rept]);
+                    }
                     if (p.Detected())
                     {
                         List<Rectangle> lrtb = new List<Rectangle>();
@@ -142,14 +146,6 @@ namespace ScanTemplate
                         foreach (string s in _namelist)
                         {
                                     _pp.AddPrePaper(PreScan(s, lrtb, p.listFeatures[0].Size));
-                            //try
-                            //{
-                            //    if (File.Exists(s))
-                            //}
-                            //catch
-                            //{
-                            //    break;
-                            //}
                         }
                     }
                 }

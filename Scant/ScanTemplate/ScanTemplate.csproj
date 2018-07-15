@@ -108,6 +108,7 @@
     <Compile Include="Form\OptionGroups.cs" />
     <Compile Include="tools\CnPYTool.cs" />
     <Compile Include="tools\DetectImgTools.cs" />
+    <Compile Include="tools\IDbeTool.cs" />
     <Compile Include="tools\PYTool.cs" />
     <Compile Include="tools\TextBitmapTool.cs" />
     <Compile Include="Form\FormInputComboBox.cs">

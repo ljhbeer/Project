@@ -238,6 +238,7 @@
             this.dgvstudenterrorsubjectid.Size = new System.Drawing.Size(181, 196);
             this.dgvstudenterrorsubjectid.TabIndex = 0;
             this.dgvstudenterrorsubjectid.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgverrorid_CellClick);
+            this.dgvstudenterrorsubjectid.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvstudenterrorsubjectid_CellDoubleClick);
             // 
             // dgvstudentrightsubjectid
             // 
@@ -252,6 +253,7 @@
             this.dgvstudentrightsubjectid.Size = new System.Drawing.Size(181, 166);
             this.dgvstudentrightsubjectid.TabIndex = 0;
             this.dgvstudentrightsubjectid.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvcorrectid_CellClick);
+            this.dgvstudentrightsubjectid.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvstudentrightsubjectid_CellDoubleClick);
             // 
             // tabPageBySubject
             // 
@@ -385,6 +387,7 @@
             this.dgvSubjectRightErrorStudentList.Size = new System.Drawing.Size(614, 359);
             this.dgvSubjectRightErrorStudentList.TabIndex = 3;
             this.dgvSubjectRightErrorStudentList.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvRightErrorStudentList_CellClick);
+            this.dgvSubjectRightErrorStudentList.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvSubjectRightErrorStudentList_CellDoubleClick);
             // 
             // FormReportTable
             // 

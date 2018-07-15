@@ -39,6 +39,11 @@ namespace ScanTemplate
             dgvSubjectRightErrorStudentList.DataSource = _dtsubjectRightStudent;
             dgvsubjects.DataSource = _dtsubjectoption;
             InitDgvUI();
+
+            _idbe = new IDbeTool();
+            _idbe.B = 0;
+            _idbe.E = 2;
+            _idbe.MoveToTop();
         }
         private void InitOptionAnswer()
         {
@@ -168,6 +173,7 @@ namespace ScanTemplate
         }
         private void InitDgvUI(DataGridView dgv, string _type="",DataTable _dt=null)
         {
+            dgv.MultiSelect = false;
             dgv.RowHeadersVisible = false;
             foreach (DataGridViewColumn dc in dgv.Columns)
                 if (dc.Name == "OID")
@@ -237,14 +243,6 @@ namespace ScanTemplate
             _dtstudentErrorID.AcceptChanges();
             _dtstudentRightID.AcceptChanges();            
         }
-        private void dgvcorrectid_CellClick(object sender, DataGridViewCellEventArgs e)
-        {
-
-        }
-        private void dgverrorid_CellClick(object sender, DataGridViewCellEventArgs e)
-        {
-
-        }
         private void checkBoxOnlyShowerror_CheckedChanged(object sender, EventArgs e)
         {
             if (_ActiveStudent == null)
@@ -253,7 +251,6 @@ namespace ScanTemplate
             PaperResult PR = (PaperResult)S.Tag;
             pictureBox1.Image = ARTemplate.TemplateTools.DrawInfoBmp(S, _angle, PR, checkBoxOnlyShowerror.Checked);
         }        
-        ///////////////////////////////////////////
         private void dgvsubjects_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             DataGridView dgv = (DataGridView)sender;
@@ -263,46 +260,12 @@ namespace ScanTemplate
             if (!SubjectShowOptionMode)
             {
                 Imgsubject O = (Imgsubject)((ValueTag)dgv["OID", e.RowIndex].Value).Tag;
-                for (int i = 0; i < _exam.Students.Count; i++)
-                {
-                    Student S = _exam.Students[i];
-                    DataTable dt;
-                    if (_exam.SR.Result[O.Index][S.Index] > 0) //OK
-                    {
-                        dt = _dtsubjectRightStudent;
-                    }
-                    else //Error
-                    {
-                        dt = _dtsubjectErrorStudent;
-                    }
-                    DataRow dr = dt.NewRow();
-                    DataRow dr1 = _dtstudent.Rows[i];
-                    for (int index = 0; index < dr1.Table.Columns.Count; index++)
-                        dr[index] = dr1[index];
-                    dt.Rows.Add(dr);
-                }
+                dgvsubjecttodtclickedwithUnchoose(O);
             }
             else
             {
                 Optionsubject O = (Optionsubject)((ValueTag)dgv["OID", e.RowIndex].Value).Tag;
-                for (int i = 0; i < _exam.Students.Count; i++)
-                {
-                    Student S = _exam.Students[i];
-                    DataTable dt;
-                    if (S.SelectOption(O.Answer, O.Index)) //OK
-                    {
-                        dt = _dtsubjectRightStudent;
-                    }
-                    else //Error
-                    {
-                        dt = _dtsubjectErrorStudent;
-                    } 
-                    DataRow dr = dt.NewRow();
-                    DataRow dr1 = _dtstudent.Rows[i];
-                    for (int index = 0; index < dr1.Table.Columns.Count; index++)
-                        dr[index] = dr1[index];
-                    dt.Rows.Add(dr);
-                }
+                dgvsubjecttodtclickedwithOption(O);
             }
             _dtsubjectRightStudent.AcceptChanges();
             _dtsubjectErrorStudent.AcceptChanges();
@@ -311,9 +274,131 @@ namespace ScanTemplate
             else
                 dgvSubjectRightErrorStudentList.DataSource = _dtsubjectErrorStudent;
         }
+        private void dgvsubjecttodtclickedwithOption(Optionsubject O)
+        {
+            for (int i = 0; i < _exam.Students.Count; i++)
+            {
+                Student S = _exam.Students[i];
+                DataTable dt;
+                if (S.SelectOption(O.Answer, O.Index)) //OK
+                {
+                    dt = _dtsubjectRightStudent;
+                }
+                else //Error
+                {
+                    dt = _dtsubjectErrorStudent;
+                }
+                DataRow dr = dt.NewRow();
+                DataRow dr1 = _dtstudent.Rows[i];
+                for (int index = 0; index < dr1.Table.Columns.Count; index++)
+                    dr[index] = dr1[index];
+                dt.Rows.Add(dr);
+            }
+        }
+        private void dgvsubjecttodtclickedwithUnchoose(Imgsubject O)
+        {
+            for (int i = 0; i < _exam.Students.Count; i++)
+            {
+                Student S = _exam.Students[i];
+                DataTable dt;
+                if (_exam.SR.Result[O.Index][S.Index] > 0) //OK
+                {
+                    dt = _dtsubjectRightStudent;
+                }
+                else //Error
+                {
+                    dt = _dtsubjectErrorStudent;
+                }
+                DataRow dr = dt.NewRow();
+                DataRow dr1 = _dtstudent.Rows[i];
+                for (int index = 0; index < dr1.Table.Columns.Count; index++)
+                    dr[index] = dr1[index];
+                dt.Rows.Add(dr);
+            }
+        }
+        //Click UnImplement
+        private void dgvcorrectid_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
+        private void dgverrorid_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
         private void dgvRightErrorStudentList_CellClick(object sender, DataGridViewCellEventArgs e)
         {
 
+        }
+        //DoubleClick
+        private void dgvstudenterrorsubjectid_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            DataGridView dgv = (DataGridView)sender;
+            studentrighterrorsubjectDealDoubleClick(e, dgv,false);
+        }
+        private void dgvstudentrightsubjectid_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            DataGridView dgv = (DataGridView)sender;
+            studentrighterrorsubjectDealDoubleClick(e, dgv, true);
+        }
+        private void studentrighterrorsubjectDealDoubleClick(DataGridViewCellEventArgs e, DataGridView dgv, bool righterror)
+        {
+            if (e.ColumnIndex == -1 || e.RowIndex == -1) return;
+            if (e.ColumnIndex != 1) return;
+            //1 转到按题,  2. 显示选择题/非选择题   2,  显示错误名单
+            string Value = dgv[e.ColumnIndex, e.RowIndex].Value.ToString();
+
+            SwitchTab();
+            _dtsubjectErrorStudent.Rows.Clear();
+            _dtsubjectRightStudent.Rows.Clear();
+            if (Value.Contains("选择题")) //选择题
+            {
+                if (buttonShowOption.Enabled)
+                    buttonShowOption.PerformClick();
+                Optionsubject O = (Optionsubject)(((ValueTag)(dgv["OID", e.RowIndex].Value)).Tag);
+                dgvsubjecttodtclickedwithOption(O);
+                dgvsubjects[1, O.Index].Selected = true;
+            }
+            else //非选择题
+            {
+                if (buttonShowUnChoose.Enabled)
+                    buttonShowUnChoose.PerformClick();
+                Imgsubject O = (Imgsubject)(((ValueTag)(dgv["OID", e.RowIndex].Value)).Tag);
+                dgvsubjecttodtclickedwithUnchoose(O);
+              
+                dgvsubjects[1, O.Index].Selected = true;
+            }
+            _dtsubjectRightStudent.AcceptChanges();
+            _dtsubjectErrorStudent.AcceptChanges();
+
+            if (righterror)
+            {
+                if (buttonShowRightStudentList.Enabled)
+                    buttonShowRightStudentList.PerformClick();
+            }
+            else
+            {
+                if (buttonShowErrorStudentList.Enabled)
+                    buttonShowErrorStudentList.PerformClick();
+            }
+        }
+
+        private void dgvSubjectRightErrorStudentList_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            DataGridView dgv = (DataGridView)sender;
+            if (e.ColumnIndex == -1 || e.RowIndex == -1) return;
+            if (e.ColumnIndex != 1) return;
+            SwitchTab();
+            //1 转到按人,  2. 定位到人
+            Student S = (Student)(((ValueTag)(dgv["OID", e.RowIndex].Value)).Tag);
+            dgvstudent[1, S.Index].Selected = true;
+            dgvstudent_CellClick(dgvstudent,
+                new DataGridViewCellEventArgs(dgvstudent.SelectedCells[0].ColumnIndex, dgvstudent.SelectedCells[0].RowIndex));
+
+        }
+        private void SwitchTab()
+        {
+            _idbe.MoveCircleNext();
+            tabControl1.SelectedIndex = _idbe.ActiveIndex;
         }
         private void buttonShowOption_Click(object sender, EventArgs e)
         {
@@ -356,6 +441,7 @@ namespace ScanTemplate
         private Exam _exam;
         private Boolean SubjectShowOptionMode;
         private Boolean ShowRightStudentMode;
+        private IDbeTool _idbe;
         //private Examdata _examdata;
         private DataTable _dtstudent;
         private DataTable _dtstudentErrorID;
@@ -373,5 +459,6 @@ namespace ScanTemplate
         private Dictionary<string, int> _dicABCDToOption;
         private Student _ActiveStudent;
         public PaperConstruct Paperconstruct { get; set; }
+
     }
 }

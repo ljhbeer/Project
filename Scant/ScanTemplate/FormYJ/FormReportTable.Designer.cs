@@ -40,8 +40,8 @@
             this.flowLayoutPanel2 = new System.Windows.Forms.FlowLayoutPanel();
             this.checkBoxOnlyShowerror = new System.Windows.Forms.CheckBox();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.dgvstudentrightsubjectid = new System.Windows.Forms.DataGridView();
             this.dgvstudenterrorsubjectid = new System.Windows.Forms.DataGridView();
+            this.dgvstudentrightsubjectid = new System.Windows.Forms.DataGridView();
             this.tabPageBySubject = new System.Windows.Forms.TabPage();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.dgvsubjects = new System.Windows.Forms.DataGridView();
@@ -49,8 +49,8 @@
             this.buttonShowOption = new System.Windows.Forms.Button();
             this.buttonShowUnChoose = new System.Windows.Forms.Button();
             this.flowLayoutPanel3 = new System.Windows.Forms.FlowLayoutPanel();
-            this.buttonShowCorrectStudentList = new System.Windows.Forms.Button();
-            this.buttonShowerrorList = new System.Windows.Forms.Button();
+            this.buttonShowRightStudentList = new System.Windows.Forms.Button();
+            this.buttonShowErrorStudentList = new System.Windows.Forms.Button();
             this.textBoxMsg = new System.Windows.Forms.TextBox();
             this.dgvSubjectRightErrorStudentList = new System.Windows.Forms.DataGridView();
             this.tableLayoutPanel1.SuspendLayout();
@@ -65,8 +65,8 @@
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dgvstudentrightsubjectid)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvstudenterrorsubjectid)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvstudentrightsubjectid)).BeginInit();
             this.tabPageBySubject.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvsubjects)).BeginInit();
@@ -114,10 +114,10 @@
             // tabPageByStudent
             // 
             this.tabPageByStudent.Controls.Add(this.tableLayoutPanel2);
-            this.tabPageByStudent.Location = new System.Drawing.Point(4, 21);
+            this.tabPageByStudent.Location = new System.Drawing.Point(4, 22);
             this.tabPageByStudent.Name = "tabPageByStudent";
             this.tabPageByStudent.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageByStudent.Size = new System.Drawing.Size(781, 404);
+            this.tabPageByStudent.Size = new System.Drawing.Size(781, 403);
             this.tabPageByStudent.TabIndex = 0;
             this.tabPageByStudent.Text = "按人";
             this.tabPageByStudent.UseVisualStyleBackColor = true;
@@ -139,7 +139,7 @@
             this.tableLayoutPanel2.RowCount = 2;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(775, 398);
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(775, 397);
             this.tableLayoutPanel2.TabIndex = 0;
             // 
             // dgvstudent
@@ -152,7 +152,7 @@
             this.dgvstudent.Name = "dgvstudent";
             this.dgvstudent.ReadOnly = true;
             this.dgvstudent.RowTemplate.Height = 23;
-            this.dgvstudent.Size = new System.Drawing.Size(226, 367);
+            this.dgvstudent.Size = new System.Drawing.Size(226, 366);
             this.dgvstudent.TabIndex = 0;
             this.dgvstudent.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvstudent_CellContentClick);
             // 
@@ -174,7 +174,7 @@
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(235, 28);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(350, 367);
+            this.panel1.Size = new System.Drawing.Size(350, 366);
             this.panel1.TabIndex = 2;
             // 
             // pictureBox1
@@ -216,28 +216,14 @@
             // 
             // splitContainer1.Panel1
             // 
-            this.splitContainer1.Panel1.Controls.Add(this.dgvstudentrightsubjectid);
+            this.splitContainer1.Panel1.Controls.Add(this.dgvstudenterrorsubjectid);
             // 
             // splitContainer1.Panel2
             // 
-            this.splitContainer1.Panel2.Controls.Add(this.dgvstudenterrorsubjectid);
-            this.splitContainer1.Size = new System.Drawing.Size(181, 367);
-            this.splitContainer1.SplitterDistance = 197;
+            this.splitContainer1.Panel2.Controls.Add(this.dgvstudentrightsubjectid);
+            this.splitContainer1.Size = new System.Drawing.Size(181, 366);
+            this.splitContainer1.SplitterDistance = 196;
             this.splitContainer1.TabIndex = 4;
-            // 
-            // dgvstudentrightsubjectid
-            // 
-            this.dgvstudentrightsubjectid.AllowUserToAddRows = false;
-            this.dgvstudentrightsubjectid.AllowUserToDeleteRows = false;
-            this.dgvstudentrightsubjectid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgvstudentrightsubjectid.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dgvstudentrightsubjectid.Location = new System.Drawing.Point(0, 0);
-            this.dgvstudentrightsubjectid.Name = "dgvstudentrightsubjectid";
-            this.dgvstudentrightsubjectid.ReadOnly = true;
-            this.dgvstudentrightsubjectid.RowTemplate.Height = 23;
-            this.dgvstudentrightsubjectid.Size = new System.Drawing.Size(181, 197);
-            this.dgvstudentrightsubjectid.TabIndex = 0;
-            this.dgvstudentrightsubjectid.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvcorrectid_CellContentClick);
             // 
             // dgvstudenterrorsubjectid
             // 
@@ -249,17 +235,31 @@
             this.dgvstudenterrorsubjectid.Name = "dgvstudenterrorsubjectid";
             this.dgvstudenterrorsubjectid.ReadOnly = true;
             this.dgvstudenterrorsubjectid.RowTemplate.Height = 23;
-            this.dgvstudenterrorsubjectid.Size = new System.Drawing.Size(181, 166);
+            this.dgvstudenterrorsubjectid.Size = new System.Drawing.Size(181, 196);
             this.dgvstudenterrorsubjectid.TabIndex = 0;
             this.dgvstudenterrorsubjectid.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgverrorid_CellContentClick);
+            // 
+            // dgvstudentrightsubjectid
+            // 
+            this.dgvstudentrightsubjectid.AllowUserToAddRows = false;
+            this.dgvstudentrightsubjectid.AllowUserToDeleteRows = false;
+            this.dgvstudentrightsubjectid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgvstudentrightsubjectid.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dgvstudentrightsubjectid.Location = new System.Drawing.Point(0, 0);
+            this.dgvstudentrightsubjectid.Name = "dgvstudentrightsubjectid";
+            this.dgvstudentrightsubjectid.ReadOnly = true;
+            this.dgvstudentrightsubjectid.RowTemplate.Height = 23;
+            this.dgvstudentrightsubjectid.Size = new System.Drawing.Size(181, 166);
+            this.dgvstudentrightsubjectid.TabIndex = 0;
+            this.dgvstudentrightsubjectid.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvcorrectid_CellContentClick);
             // 
             // tabPageBySubject
             // 
             this.tabPageBySubject.Controls.Add(this.tableLayoutPanel3);
-            this.tabPageBySubject.Location = new System.Drawing.Point(4, 21);
+            this.tabPageBySubject.Location = new System.Drawing.Point(4, 22);
             this.tabPageBySubject.Name = "tabPageBySubject";
             this.tabPageBySubject.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageBySubject.Size = new System.Drawing.Size(781, 404);
+            this.tabPageBySubject.Size = new System.Drawing.Size(781, 403);
             this.tabPageBySubject.TabIndex = 1;
             this.tabPageBySubject.Text = "按题";
             this.tabPageBySubject.UseVisualStyleBackColor = true;
@@ -279,7 +279,7 @@
             this.tableLayoutPanel3.RowCount = 2;
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 32F));
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel3.Size = new System.Drawing.Size(775, 398);
+            this.tableLayoutPanel3.Size = new System.Drawing.Size(775, 397);
             this.tableLayoutPanel3.TabIndex = 0;
             // 
             // dgvsubjects
@@ -292,7 +292,7 @@
             this.dgvsubjects.Name = "dgvsubjects";
             this.dgvsubjects.ReadOnly = true;
             this.dgvsubjects.RowTemplate.Height = 23;
-            this.dgvsubjects.Size = new System.Drawing.Size(149, 360);
+            this.dgvsubjects.Size = new System.Drawing.Size(149, 359);
             this.dgvsubjects.TabIndex = 0;
             this.dgvsubjects.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvsubjects_CellContentClick);
             // 
@@ -335,8 +335,8 @@
             // 
             // flowLayoutPanel3
             // 
-            this.flowLayoutPanel3.Controls.Add(this.buttonShowCorrectStudentList);
-            this.flowLayoutPanel3.Controls.Add(this.buttonShowerrorList);
+            this.flowLayoutPanel3.Controls.Add(this.buttonShowRightStudentList);
+            this.flowLayoutPanel3.Controls.Add(this.buttonShowErrorStudentList);
             this.flowLayoutPanel3.Controls.Add(this.textBoxMsg);
             this.flowLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.flowLayoutPanel3.Location = new System.Drawing.Point(158, 3);
@@ -344,25 +344,25 @@
             this.flowLayoutPanel3.Size = new System.Drawing.Size(614, 26);
             this.flowLayoutPanel3.TabIndex = 2;
             // 
-            // buttonShowCorrectStudentList
+            // buttonShowRightStudentList
             // 
-            this.buttonShowCorrectStudentList.Location = new System.Drawing.Point(3, 3);
-            this.buttonShowCorrectStudentList.Name = "buttonShowCorrectStudentList";
-            this.buttonShowCorrectStudentList.Size = new System.Drawing.Size(132, 26);
-            this.buttonShowCorrectStudentList.TabIndex = 0;
-            this.buttonShowCorrectStudentList.Text = "显示正确名单";
-            this.buttonShowCorrectStudentList.UseVisualStyleBackColor = true;
-            this.buttonShowCorrectStudentList.Click += new System.EventHandler(this.buttonShowCorrectStudentList_Click);
+            this.buttonShowRightStudentList.Location = new System.Drawing.Point(3, 3);
+            this.buttonShowRightStudentList.Name = "buttonShowRightStudentList";
+            this.buttonShowRightStudentList.Size = new System.Drawing.Size(132, 26);
+            this.buttonShowRightStudentList.TabIndex = 0;
+            this.buttonShowRightStudentList.Text = "显示正确名单";
+            this.buttonShowRightStudentList.UseVisualStyleBackColor = true;
+            this.buttonShowRightStudentList.Click += new System.EventHandler(this.buttonShowRightStudentList_Click);
             // 
-            // buttonShowerrorList
+            // buttonShowErrorStudentList
             // 
-            this.buttonShowerrorList.Location = new System.Drawing.Point(141, 3);
-            this.buttonShowerrorList.Name = "buttonShowerrorList";
-            this.buttonShowerrorList.Size = new System.Drawing.Size(139, 26);
-            this.buttonShowerrorList.TabIndex = 0;
-            this.buttonShowerrorList.Text = "显示错误名单";
-            this.buttonShowerrorList.UseVisualStyleBackColor = true;
-            this.buttonShowerrorList.Click += new System.EventHandler(this.buttonShowerrorList_Click);
+            this.buttonShowErrorStudentList.Location = new System.Drawing.Point(141, 3);
+            this.buttonShowErrorStudentList.Name = "buttonShowErrorStudentList";
+            this.buttonShowErrorStudentList.Size = new System.Drawing.Size(139, 26);
+            this.buttonShowErrorStudentList.TabIndex = 0;
+            this.buttonShowErrorStudentList.Text = "显示错误名单";
+            this.buttonShowErrorStudentList.UseVisualStyleBackColor = true;
+            this.buttonShowErrorStudentList.Click += new System.EventHandler(this.buttonShowErrorStudentList_Click);
             // 
             // textBoxMsg
             // 
@@ -382,7 +382,7 @@
             this.dgvSubjectRightErrorStudentList.Name = "dgvSubjectRightErrorStudentList";
             this.dgvSubjectRightErrorStudentList.ReadOnly = true;
             this.dgvSubjectRightErrorStudentList.RowTemplate.Height = 23;
-            this.dgvSubjectRightErrorStudentList.Size = new System.Drawing.Size(614, 360);
+            this.dgvSubjectRightErrorStudentList.Size = new System.Drawing.Size(614, 359);
             this.dgvSubjectRightErrorStudentList.TabIndex = 3;
             this.dgvSubjectRightErrorStudentList.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvRightErrorStudentList_CellContentClick);
             // 
@@ -408,8 +408,8 @@
             this.splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.dgvstudentrightsubjectid)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvstudenterrorsubjectid)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvstudentrightsubjectid)).EndInit();
             this.tabPageBySubject.ResumeLayout(false);
             this.tableLayoutPanel3.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgvsubjects)).EndInit();
@@ -444,8 +444,8 @@
         private System.Windows.Forms.Button buttonShowOption;
         private System.Windows.Forms.Button buttonShowUnChoose;
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel3;
-        private System.Windows.Forms.Button buttonShowCorrectStudentList;
-        private System.Windows.Forms.Button buttonShowerrorList;
+        private System.Windows.Forms.Button buttonShowRightStudentList;
+        private System.Windows.Forms.Button buttonShowErrorStudentList;
         private System.Windows.Forms.TextBox textBoxMsg;
         private System.Windows.Forms.DataGridView dgvSubjectRightErrorStudentList;
     }

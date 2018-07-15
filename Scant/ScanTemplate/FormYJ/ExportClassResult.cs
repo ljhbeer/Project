@@ -489,6 +489,8 @@ namespace ScanTemplate.FormYJ
             }
             pr.ZF = new ResultObj(new Rectangle(r.Width / 3, 30, 30, 30), fsum, 0, true);
 
+            pr.OptionCount = _exam.OSubjects.Count;
+            pr.UnChooseCount = _exam.Subjects.Count;
             return pr;
         }
         private void InitOptionAnswer()

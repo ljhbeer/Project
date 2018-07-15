@@ -871,7 +871,7 @@ namespace ARTemplate
             }
             return bmp;
         }
-        public static Bitmap DrawInfoBmp(Student S, AutoAngle angle, PaperResult pr)
+        public static Bitmap DrawInfoBmp(Student S, AutoAngle angle, PaperResult pr,bool OnlyError=false)
         {
             Bitmap src = S.Src.Clone(S.SrcCorrectRect, S.Src.PixelFormat); //bmp = src.Clone(new Rectangle(0, 0, src.Width, src.Height), System.Drawing.Imaging.PixelFormat.Format24bppRgb);
             Bitmap bmp = ConvertFormat.ConvertToRGB(src);
@@ -888,6 +888,8 @@ namespace ARTemplate
 
                 foreach (ResultObj I in pr.TotalObjs())
                 {
+                    if (OnlyError && I.Txt == "√" && !I.HalfRightMode )
+                        continue;
                     Rectangle r = I.Rect;
                     Point p = angle.GetCorrectPoint(r.X, r.Y);
                     r.Location = p;

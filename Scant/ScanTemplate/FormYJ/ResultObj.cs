@@ -11,9 +11,10 @@ namespace ScanTemplate.FormYJ
         public PaperResult()
         {
             Options = new List<ResultObj>();
-            Tz = new List<ResultObj>();            
+            Tz = new List<ResultObj>();  
+            OptionCount = 0;
+            UnChooseCount = 0;
         }
-        
         public void Compute()
         {
             float OptionTotalScore = Options.Select(r => r.Floatscore).Sum();
@@ -23,16 +24,14 @@ namespace ScanTemplate.FormYJ
         {
             Options.Add(resultObj);
         }
-        public List<ResultObj> Options;
-        public List<ResultObj> Tz;
-        public ResultObj Xzt;
-        public ResultObj ZF;
         public IEnumerable<ResultObj> TotalObjs()
         {
             List<ResultObj> r = new List<ResultObj>();
             r.AddRange(Options);
-            r.AddRange(Tz);
-            r.Add(Xzt);
+            if(Tz.Count>0)
+                r.AddRange(Tz);
+            if(HasOption)
+                r.Add(Xzt);
             r.Add(ZF);
             return r;
         }
@@ -78,6 +77,15 @@ namespace ScanTemplate.FormYJ
         {
             return GetTzOptionScore(T.SubjectIndexs);
         }
+        public List<ResultObj> Options;
+        public List<ResultObj> Tz;
+        public ResultObj Xzt;
+        public ResultObj ZF;
+        //Tags
+        public int OptionCount { get; set; }
+        public Boolean HasOption { get{return OptionCount>0;} }
+        public int UnChooseCount { get; set; }
+        public Boolean HasUnchoose { get { return UnChooseCount > 0; } }
     }
     public class ResultObj
     {

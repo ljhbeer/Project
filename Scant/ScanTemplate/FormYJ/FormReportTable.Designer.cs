@@ -154,7 +154,7 @@
             this.dgvstudent.RowTemplate.Height = 23;
             this.dgvstudent.Size = new System.Drawing.Size(226, 366);
             this.dgvstudent.TabIndex = 0;
-            this.dgvstudent.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvstudent_CellContentClick);
+            this.dgvstudent.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvstudent_CellClick);
             // 
             // textBox1
             // 
@@ -237,7 +237,7 @@
             this.dgvstudenterrorsubjectid.RowTemplate.Height = 23;
             this.dgvstudenterrorsubjectid.Size = new System.Drawing.Size(181, 196);
             this.dgvstudenterrorsubjectid.TabIndex = 0;
-            this.dgvstudenterrorsubjectid.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgverrorid_CellContentClick);
+            this.dgvstudenterrorsubjectid.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgverrorid_CellClick);
             // 
             // dgvstudentrightsubjectid
             // 
@@ -251,7 +251,7 @@
             this.dgvstudentrightsubjectid.RowTemplate.Height = 23;
             this.dgvstudentrightsubjectid.Size = new System.Drawing.Size(181, 166);
             this.dgvstudentrightsubjectid.TabIndex = 0;
-            this.dgvstudentrightsubjectid.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvcorrectid_CellContentClick);
+            this.dgvstudentrightsubjectid.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvcorrectid_CellClick);
             // 
             // tabPageBySubject
             // 
@@ -294,7 +294,7 @@
             this.dgvsubjects.RowTemplate.Height = 23;
             this.dgvsubjects.Size = new System.Drawing.Size(149, 359);
             this.dgvsubjects.TabIndex = 0;
-            this.dgvsubjects.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvsubjects_CellContentClick);
+            this.dgvsubjects.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvsubjects_CellClick);
             // 
             // tableLayoutPanel4
             // 
@@ -384,7 +384,7 @@
             this.dgvSubjectRightErrorStudentList.RowTemplate.Height = 23;
             this.dgvSubjectRightErrorStudentList.Size = new System.Drawing.Size(614, 359);
             this.dgvSubjectRightErrorStudentList.TabIndex = 3;
-            this.dgvSubjectRightErrorStudentList.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvRightErrorStudentList_CellContentClick);
+            this.dgvSubjectRightErrorStudentList.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvRightErrorStudentList_CellClick);
             // 
             // FormReportTable
             // 

@@ -198,7 +198,7 @@ namespace ScanTemplate
         {
 
         }
-        private void dgvstudent_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        private void dgvstudent_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             DataGridView dgv = (DataGridView)sender;
             if (e.ColumnIndex == -1 || e.RowIndex == -1) return;
@@ -237,11 +237,11 @@ namespace ScanTemplate
             _dtstudentErrorID.AcceptChanges();
             _dtstudentRightID.AcceptChanges();            
         }
-        private void dgvcorrectid_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        private void dgvcorrectid_CellClick(object sender, DataGridViewCellEventArgs e)
         {
 
         }
-        private void dgverrorid_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        private void dgverrorid_CellClick(object sender, DataGridViewCellEventArgs e)
         {
 
         }
@@ -254,7 +254,7 @@ namespace ScanTemplate
             pictureBox1.Image = ARTemplate.TemplateTools.DrawInfoBmp(S, _angle, PR, checkBoxOnlyShowerror.Checked);
         }        
         ///////////////////////////////////////////
-        private void dgvsubjects_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        private void dgvsubjects_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             DataGridView dgv = (DataGridView)sender;
             if (e.ColumnIndex == -1 || e.RowIndex == -1) return;
@@ -311,7 +311,7 @@ namespace ScanTemplate
             else
                 dgvSubjectRightErrorStudentList.DataSource = _dtsubjectErrorStudent;
         }
-        private void dgvRightErrorStudentList_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        private void dgvRightErrorStudentList_CellClick(object sender, DataGridViewCellEventArgs e)
         {
 
         }

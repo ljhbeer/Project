@@ -24,6 +24,7 @@ namespace ScanTemplate.FormYJ
             this._Imgsubjects = _examdata.SR._Imgsubjects;
             this._Tzsubjects = _examdata.SR._Tzsubjects;
             this._TzOptionsubjects = _examdata.SR._TzOptionsubjects;
+            InitOptionAnswer();
             InitAnswer();
             InitMsg();
             Paperconstruct = new PaperConstruct(_exam);
@@ -35,18 +36,22 @@ namespace ScanTemplate.FormYJ
             _Msg += "\r\n 非选择题共： " + _Imgsubjects.Subjects.Select(r => r.Score).Sum() + "分";
             _Msg += "\r\n 合计共： " + (_Optionsubjects.OptionSubjects.Select(r => r.Score).Sum() + _Imgsubjects.Subjects.Select(r => r.Score).Sum()) + "分";
         }
+        private void InitOptionAnswer()
+        {
+            _Optionanswer = _exam.OSubjects.Select(r => r.Answer).ToList();
+            _OptionMaxscore = _exam.OSubjects.Select(r => r.Score).ToList();
+            _ABCD = new List<string>() { "A", "B", "C", "D" };
+            _ABCDL = new List<string>() { "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N" };
+            _dicABCDToOption = _ABCDL.ToDictionary(r => r, r => r[0] - 'A');
+        }
         private void InitAnswer()
         {
             bReady = false;
             if (CheckResult())
-            {
-                _Optionanswer = _exam.OSubjects.Select(r => r.Answer).ToList();
-                _OptionMaxscore = _exam.OSubjects.Select(r => r.Score).ToList();
+            {               
                 if (!_Optionanswer.Exists(r => r.Length != 1 || !"ABCD".Contains(r))
                     && !_OptionMaxscore.Exists(r => r <= 0))
-                    bReady = true;
-                _ABCD = new List<string>() { "A", "B", "C", "D" };
-                _dicABCDToOption = _ABCD.ToDictionary(r => r, r => r[0] - 'A');
+                    bReady = true;               
             }
         }
         private bool CheckResult()
@@ -60,13 +65,9 @@ namespace ScanTemplate.FormYJ
         }
         private bool CheckOnlyOptions()
         {
-            _Optionanswer = _exam.OSubjects.Select(r => r.Answer).ToList();
-            _OptionMaxscore = _exam.OSubjects.Select(r => r.Score).ToList();
             if(! (!_Optionanswer.Exists(r => r.Length == 0 )//|| !"ABCD".Contains(r)  //有不定项选择
                 && !_OptionMaxscore.Exists(r => r <= 0)))
                 return false;
-            _ABCD = new List<string>() { "A", "B", "C", "D" };
-            _dicABCDToOption = _ABCD.ToDictionary(r => r, r => r[0] - 'A');
             return true;
         }
         public void Export(string resultAction)
@@ -195,7 +196,10 @@ namespace ScanTemplate.FormYJ
             StringBuilder sb = new StringBuilder();
             foreach (Optionsubject O in _Optionsubjects.OptionSubjects)
             {
-                List<int> Iabcd = _ABCD.Select(r =>
+                int optioncnt = 4;
+                if (O.List.Count > 4)
+                    optioncnt = O.List.Count;
+                List<int> Iabcd = _ABCDL.Take(optioncnt ).Select(r =>
                     _students.students.Where(rr => rr.SelectOption(r, O.Index)).Count()).ToList();
                 // TODO: 不定项没有统计
                 int okindex = _dicABCDToOption[_Optionanswer[O.Index].Substring(0,1)]; //存在不定项
@@ -210,7 +214,7 @@ namespace ScanTemplate.FormYJ
                 //);
                 sb.AppendLine(
                    string.Join("\t",
-                   _ABCD.Select(r => r + "(" + Iabcd[_dicABCDToOption[r]].ToString("00") + "/" + count + ")")
+                   _ABCDL.Take(optioncnt).Select(r => r + "(" + Iabcd[_dicABCDToOption[r]].ToString("00") + "/" + count + ")")
                    )
                );
                 //错误学生明单
@@ -219,7 +223,7 @@ namespace ScanTemplate.FormYJ
                     sb.AppendLine("错误学生名单");
                     sb.AppendLine(
                         string.Join("\r\n",
-                            _ABCD.Where(r => r != _Optionanswer[O.Index]).Select(r =>
+                            _ABCDL.Take(optioncnt).Where(r => r != _Optionanswer[O.Index]).Select(r =>
                             {
                                 return "选项" + r + ":" + string.Join(",",
                                 _students.students.Where(rr => rr.SelectOption(r, O.Index)).Select(sr => sr.Name));
@@ -378,6 +382,7 @@ namespace ScanTemplate.FormYJ
         private List<float> _OptionMaxscore;
         private Dictionary<string, int> _dicABCDToOption;
         private List<string> _ABCD;
+        private List<string> _ABCDL;
         private string _Msg;
         
         private Students _students;
@@ -498,7 +503,8 @@ namespace ScanTemplate.FormYJ
             _Optionanswer = _exam.OSubjects.Select(r => r.Answer).ToList();
             _OptionMaxscore = _exam.OSubjects.Select(r => r.Score).ToList();
             _ABCD = new List<string>() { "A", "B", "C", "D" };
-            _dicABCDToOption = _ABCD.ToDictionary(r => r, r => r[0] - 'A');
+            _ABCDL = new List<string>() { "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N" };
+            _dicABCDToOption = _ABCDL.ToDictionary(r => r, r => r[0] - 'A');
         }
         private bool CheckResult()
         {
@@ -528,5 +534,6 @@ namespace ScanTemplate.FormYJ
         private List<float> _OptionMaxscore;
         private List<string> _ABCD;
         private Dictionary<string, int> _dicABCDToOption;
+        private List<string> _ABCDL;
     }
 }

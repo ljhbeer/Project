@@ -65,8 +65,9 @@
             this.ToolStripMenuItemOptionTzArea = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolStripMenuItemOptionTzSetShowArea = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolStripMenuItemRenameOptionTz = new System.Windows.Forms.ToolStripMenuItem();
-            this.ToolStripMenuItemModifyTzArea = new System.Windows.Forms.ToolStripMenuItem();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
+            this.ToolStripMenuItemdefineLongOptions = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripComboBoxLongOptions = new System.Windows.Forms.ToolStripComboBox();
             this.toolStrip1.SuspendLayout();
             this.toolStripContainer1.ContentPanel.SuspendLayout();
             this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
@@ -109,7 +110,7 @@
             this.toolStripButtonToDark,
             this.toolStripButtonSetGroup,
             this.toolStripButtonCustomDefine});
-            this.toolStrip1.Location = new System.Drawing.Point(3, 0);
+            this.toolStrip1.Location = new System.Drawing.Point(3, 25);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(697, 25);
             this.toolStrip1.TabIndex = 1;
@@ -254,7 +255,7 @@
             // toolStripContainer1.ContentPanel
             // 
             this.toolStripContainer1.ContentPanel.Controls.Add(this.tableLayoutPanel1);
-            this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(952, 657);
+            this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(952, 636);
             this.toolStripContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.toolStripContainer1.Location = new System.Drawing.Point(0, 0);
             this.toolStripContainer1.Name = "toolStripContainer1";
@@ -264,8 +265,8 @@
             // 
             // toolStripContainer1.TopToolStripPanel
             // 
-            this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.toolStrip2);
             this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.toolStrip1);
+            this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.toolStrip2);
             // 
             // tableLayoutPanel1
             // 
@@ -281,7 +282,7 @@
             this.tableLayoutPanel1.RowCount = 2;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 27F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 92.46468F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(952, 657);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(952, 636);
             this.tableLayoutPanel1.TabIndex = 1;
             // 
             // treeView1
@@ -289,7 +290,7 @@
             this.treeView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.treeView1.Location = new System.Drawing.Point(3, 30);
             this.treeView1.Name = "treeView1";
-            this.treeView1.Size = new System.Drawing.Size(151, 624);
+            this.treeView1.Size = new System.Drawing.Size(151, 603);
             this.treeView1.TabIndex = 1;
             this.treeView1.KeyUp += new System.Windows.Forms.KeyEventHandler(this.treeView1_KeyUp);
             // 
@@ -301,15 +302,15 @@
             this.panel1.Location = new System.Drawing.Point(160, 3);
             this.panel1.Name = "panel1";
             this.tableLayoutPanel1.SetRowSpan(this.panel1, 2);
-            this.panel1.Size = new System.Drawing.Size(789, 651);
+            this.panel1.Size = new System.Drawing.Size(789, 630);
             this.panel1.TabIndex = 0;
             // 
             // pictureBox1
             // 
             this.pictureBox1.AccessibleRole = System.Windows.Forms.AccessibleRole.ScrollBar;
-            this.pictureBox1.Location = new System.Drawing.Point(201, 115);
+            this.pictureBox1.Location = new System.Drawing.Point(3, 3);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(588, 507);
+            this.pictureBox1.Size = new System.Drawing.Size(777, 618);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
@@ -334,10 +335,11 @@
             this.toolStripButtonZoomNone,
             this.toolStripComboBoxKHFormat,
             this.toolStripComboBoxChooseType,
-            this.toolStripDropDownButton1});
-            this.toolStrip2.Location = new System.Drawing.Point(700, 0);
+            this.toolStripDropDownButton1,
+            this.toolStripComboBoxLongOptions});
+            this.toolStrip2.Location = new System.Drawing.Point(3, 0);
             this.toolStrip2.Name = "toolStrip2";
-            this.toolStrip2.Size = new System.Drawing.Size(252, 29);
+            this.toolStrip2.Size = new System.Drawing.Size(579, 25);
             this.toolStrip2.TabIndex = 2;
             // 
             // toolStripButtonCloseAndOutImages
@@ -346,7 +348,7 @@
             this.toolStripButtonCloseAndOutImages.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonCloseAndOutImages.Image")));
             this.toolStripButtonCloseAndOutImages.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButtonCloseAndOutImages.Name = "toolStripButtonCloseAndOutImages";
-            this.toolStripButtonCloseAndOutImages.Size = new System.Drawing.Size(60, 26);
+            this.toolStripButtonCloseAndOutImages.Size = new System.Drawing.Size(60, 22);
             this.toolStripButtonCloseAndOutImages.Text = "保存退出";
             this.toolStripButtonCloseAndOutImages.Click += new System.EventHandler(this.toolStripButtonCloseAndOutImages_Click);
             // 
@@ -356,7 +358,7 @@
             this.toolStripButtonZoomNone.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonZoomNone.Image")));
             this.toolStripButtonZoomNone.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButtonZoomNone.Name = "toolStripButtonZoomNone";
-            this.toolStripButtonZoomNone.Size = new System.Drawing.Size(36, 26);
+            this.toolStripButtonZoomNone.Size = new System.Drawing.Size(36, 22);
             this.toolStripButtonZoomNone.Text = "还原";
             this.toolStripButtonZoomNone.Click += new System.EventHandler(this.toolStripButtonZoomNone_Click);
             // 
@@ -374,7 +376,7 @@
             "考号-涂卡10位",
             "考号-无"});
             this.toolStripComboBoxKHFormat.Name = "toolStripComboBoxKHFormat";
-            this.toolStripComboBoxKHFormat.Size = new System.Drawing.Size(121, 29);
+            this.toolStripComboBoxKHFormat.Size = new System.Drawing.Size(121, 25);
             this.toolStripComboBoxKHFormat.Text = "考号格式";
             // 
             // toolStripComboBoxChooseType
@@ -395,54 +397,69 @@
             this.ToolStripMenuItemOptionTzArea,
             this.ToolStripMenuItemOptionTzSetShowArea,
             this.ToolStripMenuItemRenameOptionTz,
-            this.ToolStripMenuItemModifyTzArea});
+            this.ToolStripMenuItemdefineLongOptions});
             this.toolStripDropDownButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripDropDownButton1.Image")));
             this.toolStripDropDownButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripDropDownButton1.Name = "toolStripDropDownButton1";
-            this.toolStripDropDownButton1.Size = new System.Drawing.Size(69, 21);
+            this.toolStripDropDownButton1.Size = new System.Drawing.Size(69, 22);
             this.toolStripDropDownButton1.Text = "其他操作";
             // 
             // ToolStripMenuItemShowScore
             // 
             this.ToolStripMenuItemShowScore.Name = "ToolStripMenuItemShowScore";
-            this.ToolStripMenuItemShowScore.Size = new System.Drawing.Size(160, 22);
+            this.ToolStripMenuItemShowScore.Size = new System.Drawing.Size(172, 22);
             this.ToolStripMenuItemShowScore.Text = "显示分值";
             this.ToolStripMenuItemShowScore.Click += new System.EventHandler(this.ToolStripMenuItemShowScore_Click);
             // 
             // ToolStripMenuItemSetScore
             // 
             this.ToolStripMenuItemSetScore.Name = "ToolStripMenuItemSetScore";
-            this.ToolStripMenuItemSetScore.Size = new System.Drawing.Size(160, 22);
+            this.ToolStripMenuItemSetScore.Size = new System.Drawing.Size(172, 22);
             this.ToolStripMenuItemSetScore.Text = "设置分值";
             this.ToolStripMenuItemSetScore.Click += new System.EventHandler(this.ToolStripMenuItemSetScore_Click);
             // 
             // ToolStripMenuItemOptionTzArea
             // 
             this.ToolStripMenuItemOptionTzArea.Name = "ToolStripMenuItemOptionTzArea";
-            this.ToolStripMenuItemOptionTzArea.Size = new System.Drawing.Size(160, 22);
+            this.ToolStripMenuItemOptionTzArea.Size = new System.Drawing.Size(172, 22);
             this.ToolStripMenuItemOptionTzArea.Text = "设置选择题分组";
             this.ToolStripMenuItemOptionTzArea.Click += new System.EventHandler(this.ToolStripMenuItemOptionTzArea_Click);
             // 
             // ToolStripMenuItemOptionTzSetShowArea
             // 
             this.ToolStripMenuItemOptionTzSetShowArea.Name = "ToolStripMenuItemOptionTzSetShowArea";
-            this.ToolStripMenuItemOptionTzSetShowArea.Size = new System.Drawing.Size(160, 22);
+            this.ToolStripMenuItemOptionTzSetShowArea.Size = new System.Drawing.Size(172, 22);
             this.ToolStripMenuItemOptionTzSetShowArea.Text = "选择题显示位置";
             this.ToolStripMenuItemOptionTzSetShowArea.Click += new System.EventHandler(this.ToolStripMenuItemOptionTzSetShowArea_Click);
             // 
             // ToolStripMenuItemRenameOptionTz
             // 
             this.ToolStripMenuItemRenameOptionTz.Name = "ToolStripMenuItemRenameOptionTz";
-            this.ToolStripMenuItemRenameOptionTz.Size = new System.Drawing.Size(160, 22);
+            this.ToolStripMenuItemRenameOptionTz.Size = new System.Drawing.Size(172, 22);
             this.ToolStripMenuItemRenameOptionTz.Text = "更改题组名称";
             this.ToolStripMenuItemRenameOptionTz.Click += new System.EventHandler(this.ToolStripMenuItemRenameOptionTz_Click);
             // 
-            // ToolStripMenuItemModifyTzArea
+            // ToolStripMenuItemdefineLongOptions
             // 
-            this.ToolStripMenuItemModifyTzArea.Name = "ToolStripMenuItemModifyTzArea";
-            this.ToolStripMenuItemModifyTzArea.Size = new System.Drawing.Size(160, 22);
-            this.ToolStripMenuItemModifyTzArea.Text = "调整题组范围";
-            this.ToolStripMenuItemModifyTzArea.Click += new System.EventHandler(this.ToolStripMenuItemModifyTzArea_Click);
+            this.ToolStripMenuItemdefineLongOptions.Name = "ToolStripMenuItemdefineLongOptions";
+            this.ToolStripMenuItemdefineLongOptions.Size = new System.Drawing.Size(172, 22);
+            this.ToolStripMenuItemdefineLongOptions.Text = "定义长格式选择题";
+            this.ToolStripMenuItemdefineLongOptions.Click += new System.EventHandler(this.ToolStripMenuItemdefineLongOptions_Click);
+            // 
+            // toolStripComboBoxLongOptions
+            // 
+            this.toolStripComboBoxLongOptions.Items.AddRange(new object[] {
+            "5选项",
+            "6选项",
+            "7选项",
+            "8选项",
+            "9选项",
+            "10选项"});
+            this.toolStripComboBoxLongOptions.Name = "toolStripComboBoxLongOptions";
+            this.toolStripComboBoxLongOptions.Size = new System.Drawing.Size(121, 25);
+            this.toolStripComboBoxLongOptions.Text = "长选择题数选项";
+            this.toolStripComboBoxLongOptions.Visible = false;
+            this.toolStripComboBoxLongOptions.Click += new System.EventHandler(this.toolStripComboBoxLongOptions_Click);
             // 
             // FormTemplate
             // 
@@ -509,7 +526,8 @@
         private System.Windows.Forms.ToolStripMenuItem ToolStripMenuItemOptionTzArea;
         private System.Windows.Forms.ToolStripMenuItem ToolStripMenuItemOptionTzSetShowArea;
         private System.Windows.Forms.ToolStripMenuItem ToolStripMenuItemRenameOptionTz;
-        private System.Windows.Forms.ToolStripMenuItem ToolStripMenuItemModifyTzArea;
+        private System.Windows.Forms.ToolStripMenuItem ToolStripMenuItemdefineLongOptions;
+        private System.Windows.Forms.ToolStripComboBox toolStripComboBoxLongOptions;
     }
 }
 

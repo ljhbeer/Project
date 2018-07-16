@@ -774,10 +774,16 @@ namespace ARTemplate
                 }
                 _NextChooseID = GetNextChooseID();
                 Bitmap bitmap = GetDrawedbyBlackWhiteBitMap();
+                int optioncnt = 4;
+                if (_LongOptionMode)
+                {
+                    InitLongOptionCount();
+                    optioncnt = _LongOption;
+                }
                 if (Hengpai)
                 {//TODO:仅支持 横向填涂
                     DetectChoiceArea dca = new DetectChoiceArea(bitmap, count);
-                    if (dca.Detect())
+                    if (dca.Detect(Hengpai , optioncnt))
                     {
                         t.Name = t.Text = choosename+"["+ (_NextChooseID+1)+"-"+(_NextChooseID+count)+"]";
                         t.Tag = new SingleChoiceArea(m_Imgselection,
@@ -788,7 +794,7 @@ namespace ARTemplate
                 else
                 {
                     DetectChoiceArea dca = new DetectChoiceArea(bitmap, count);
-                    if (dca.Detect(Hengpai))
+                    if (dca.Detect(Hengpai,optioncnt))
                     {
                         t.Name = t.Text = choosename + "[" + (_NextChooseID + 1) + "-" + (_NextChooseID + count) + "]";
                         t.Tag = new SingleChoiceArea(m_Imgselection,
@@ -1162,6 +1168,28 @@ namespace ARTemplate
         private Rectangle _TestR;
         private bool _bShowScore;
         private int _NextChooseID;
+        private int _LongOption;
+        private bool _LongOptionMode;
+
+        private void ToolStripMenuItemdefineLongOptions_Click(object sender, EventArgs e)
+        {
+            ToolStripMenuItem tsm = (ToolStripMenuItem)sender;
+            tsm.Checked = !tsm.Checked;
+            _LongOptionMode = tsm.Checked;
+            toolStripComboBoxLongOptions.Visible = _LongOptionMode;
+        }
+
+        private void toolStripComboBoxLongOptions_Click(object sender, EventArgs e)
+        {
+            InitLongOptionCount();
+        }
+        private void InitLongOptionCount()
+        {
+            if (toolStripComboBoxLongOptions.SelectedIndex == -1)
+                _LongOption = 5;
+            else
+                _LongOption = 5 + toolStripComboBoxLongOptions.SelectedIndex;
+        }
 
         
 

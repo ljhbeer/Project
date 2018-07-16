@@ -178,7 +178,7 @@ namespace ARTemplate
             //DrawToFile(xcnt);
             return false;
         }
-        public bool Detect(bool hengpai=true)
+        public bool Detect(bool hengpai=true,  int optioncnt = 4) // optioncnt:  选择题 选项数
         {               
             List<int> xposlen,yposlen;
             Rectangle rt = new Rectangle(0, 0, _src.Size.Width, _src.Size.Height);
@@ -198,12 +198,12 @@ namespace ARTemplate
                 return false;
             MergeSection(yposlen);
             MergeSection(xposlen);
-            int xcheck = 4;
+            int xcheck = optioncnt;
             int ycheck = choicecount;
             if (!hengpai)
             {
                 xcheck = ycheck;
-                ycheck = 4;
+                ycheck = optioncnt;
             }
 
             if (hengpai)

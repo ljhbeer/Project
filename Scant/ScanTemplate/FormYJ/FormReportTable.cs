@@ -50,7 +50,8 @@ namespace ScanTemplate
             _Optionanswer = _exam.OSubjects.Select(r => r.Answer).ToList();
             _OptionMaxscore = _exam.OSubjects.Select(r => r.Score).ToList();
             _ABCD = new List<string>() { "A", "B", "C", "D" };
-            _dicABCDToOption = _ABCD.ToDictionary(r => r, r => r[0] - 'A');
+            List<string> _ABCDL = new List<string>() { "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N" };
+            _dicABCDToOption = _ABCDL.ToDictionary(r => r, r => r[0] - 'A');
         }
         private void InitTitles()
         {

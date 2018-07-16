@@ -53,6 +53,9 @@
             this.buttonShowErrorStudentList = new System.Windows.Forms.Button();
             this.textBoxMsg = new System.Windows.Forms.TextBox();
             this.dgvSubjectRightErrorStudentList = new System.Windows.Forms.DataGridView();
+            this.buttonZoomout = new System.Windows.Forms.Button();
+            this.buttonZoomin = new System.Windows.Forms.Button();
+            this.buttonZoomMouse = new System.Windows.Forms.Button();
             this.tableLayoutPanel1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPageByStudent.SuspendLayout();
@@ -137,7 +140,7 @@
             this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 3);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.RowCount = 2;
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 28F));
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel2.Size = new System.Drawing.Size(775, 397);
             this.tableLayoutPanel2.TabIndex = 0;
@@ -148,11 +151,11 @@
             this.dgvstudent.AllowUserToDeleteRows = false;
             this.dgvstudent.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvstudent.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dgvstudent.Location = new System.Drawing.Point(3, 28);
+            this.dgvstudent.Location = new System.Drawing.Point(3, 31);
             this.dgvstudent.Name = "dgvstudent";
             this.dgvstudent.ReadOnly = true;
             this.dgvstudent.RowTemplate.Height = 23;
-            this.dgvstudent.Size = new System.Drawing.Size(226, 366);
+            this.dgvstudent.Size = new System.Drawing.Size(226, 363);
             this.dgvstudent.TabIndex = 0;
             this.dgvstudent.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvstudent_CellClick);
             // 
@@ -172,9 +175,9 @@
             this.panel1.AutoScroll = true;
             this.panel1.Controls.Add(this.pictureBox1);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel1.Location = new System.Drawing.Point(235, 28);
+            this.panel1.Location = new System.Drawing.Point(235, 31);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(350, 366);
+            this.panel1.Size = new System.Drawing.Size(350, 363);
             this.panel1.TabIndex = 2;
             // 
             // pictureBox1
@@ -186,14 +189,19 @@
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
+            this.pictureBox1.MouseEnter += new System.EventHandler(this.pictureBox1_MouseEnter);
+            this.pictureBox1.MouseWheel +=new System.Windows.Forms.MouseEventHandler(pictureBox1_MouseWheel);
             // 
             // flowLayoutPanel2
             // 
             this.flowLayoutPanel2.Controls.Add(this.checkBoxOnlyShowerror);
+            this.flowLayoutPanel2.Controls.Add(this.buttonZoomout);
+            this.flowLayoutPanel2.Controls.Add(this.buttonZoomin);
+            this.flowLayoutPanel2.Controls.Add(this.buttonZoomMouse);
             this.flowLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.flowLayoutPanel2.Location = new System.Drawing.Point(235, 3);
             this.flowLayoutPanel2.Name = "flowLayoutPanel2";
-            this.flowLayoutPanel2.Size = new System.Drawing.Size(350, 19);
+            this.flowLayoutPanel2.Size = new System.Drawing.Size(350, 22);
             this.flowLayoutPanel2.TabIndex = 3;
             // 
             // checkBoxOnlyShowerror
@@ -210,7 +218,7 @@
             // splitContainer1
             // 
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer1.Location = new System.Drawing.Point(591, 28);
+            this.splitContainer1.Location = new System.Drawing.Point(591, 31);
             this.splitContainer1.Name = "splitContainer1";
             this.splitContainer1.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
@@ -221,8 +229,8 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.dgvstudentrightsubjectid);
-            this.splitContainer1.Size = new System.Drawing.Size(181, 366);
-            this.splitContainer1.SplitterDistance = 196;
+            this.splitContainer1.Size = new System.Drawing.Size(181, 363);
+            this.splitContainer1.SplitterDistance = 194;
             this.splitContainer1.TabIndex = 4;
             // 
             // dgvstudenterrorsubjectid
@@ -235,7 +243,7 @@
             this.dgvstudenterrorsubjectid.Name = "dgvstudenterrorsubjectid";
             this.dgvstudenterrorsubjectid.ReadOnly = true;
             this.dgvstudenterrorsubjectid.RowTemplate.Height = 23;
-            this.dgvstudenterrorsubjectid.Size = new System.Drawing.Size(181, 196);
+            this.dgvstudenterrorsubjectid.Size = new System.Drawing.Size(181, 194);
             this.dgvstudenterrorsubjectid.TabIndex = 0;
             this.dgvstudenterrorsubjectid.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgverrorid_CellClick);
             this.dgvstudenterrorsubjectid.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvstudenterrorsubjectid_CellDoubleClick);
@@ -250,7 +258,7 @@
             this.dgvstudentrightsubjectid.Name = "dgvstudentrightsubjectid";
             this.dgvstudentrightsubjectid.ReadOnly = true;
             this.dgvstudentrightsubjectid.RowTemplate.Height = 23;
-            this.dgvstudentrightsubjectid.Size = new System.Drawing.Size(181, 166);
+            this.dgvstudentrightsubjectid.Size = new System.Drawing.Size(181, 165);
             this.dgvstudentrightsubjectid.TabIndex = 0;
             this.dgvstudentrightsubjectid.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvcorrectid_CellClick);
             this.dgvstudentrightsubjectid.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvstudentrightsubjectid_CellDoubleClick);
@@ -389,6 +397,36 @@
             this.dgvSubjectRightErrorStudentList.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvRightErrorStudentList_CellClick);
             this.dgvSubjectRightErrorStudentList.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvSubjectRightErrorStudentList_CellDoubleClick);
             // 
+            // buttonZoomout
+            // 
+            this.buttonZoomout.Location = new System.Drawing.Point(93, 3);
+            this.buttonZoomout.Name = "buttonZoomout";
+            this.buttonZoomout.Size = new System.Drawing.Size(32, 18);
+            this.buttonZoomout.TabIndex = 1;
+            this.buttonZoomout.Text = "-";
+            this.buttonZoomout.UseVisualStyleBackColor = true;
+            this.buttonZoomout.Click += new System.EventHandler(this.buttonZoomout_Click);
+            // 
+            // buttonZoomin
+            // 
+            this.buttonZoomin.Location = new System.Drawing.Point(131, 3);
+            this.buttonZoomin.Name = "buttonZoomin";
+            this.buttonZoomin.Size = new System.Drawing.Size(32, 18);
+            this.buttonZoomin.TabIndex = 1;
+            this.buttonZoomin.Text = "+";
+            this.buttonZoomin.UseVisualStyleBackColor = true;
+            this.buttonZoomin.Click += new System.EventHandler(this.buttonZoomin_Click);
+            // 
+            // buttonZoomMouse
+            // 
+            this.buttonZoomMouse.Location = new System.Drawing.Point(169, 3);
+            this.buttonZoomMouse.Name = "buttonZoomMouse";
+            this.buttonZoomMouse.Size = new System.Drawing.Size(48, 18);
+            this.buttonZoomMouse.TabIndex = 1;
+            this.buttonZoomMouse.Text = "zoom";
+            this.buttonZoomMouse.UseVisualStyleBackColor = true;
+            this.buttonZoomMouse.Click += new System.EventHandler(this.buttonZoomMouse_Click);
+            // 
             // FormReportTable
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -451,5 +489,8 @@
         private System.Windows.Forms.Button buttonShowErrorStudentList;
         private System.Windows.Forms.TextBox textBoxMsg;
         private System.Windows.Forms.DataGridView dgvSubjectRightErrorStudentList;
+        private System.Windows.Forms.Button buttonZoomout;
+        private System.Windows.Forms.Button buttonZoomin;
+        private System.Windows.Forms.Button buttonZoomMouse;
     }
 }

@@ -8,6 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 using ScanTemplate.FormYJ;
 using Tools;
+using ARTemplate;
 
 namespace ScanTemplate
 {
@@ -44,6 +45,10 @@ namespace ScanTemplate
             _idbe.B = 0;
             _idbe.E = 2;
             _idbe.MoveToTop();
+
+            _ZoomMouseMode = false;
+            zoombox = new ZoomBox();
+            zoombox.Reset();
         }
         private void InitOptionAnswer()
         {
@@ -438,6 +443,34 @@ namespace ScanTemplate
                 dgvSubjectRightErrorStudentList.DataSource = _dtsubjectErrorStudent;
         }
 
+        private void pictureBox1_MouseEnter(object sender, EventArgs e)
+        {
+            if (_ZoomMouseMode)
+                pictureBox1.Focus();
+        }
+        private void pictureBox1_MouseWheel(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            if (pictureBox1.Image == null) return;
+            int numberOfTextLinesToMove = e.Delta * SystemInformation.MouseWheelScrollLines / 120;
+            double f = 0.0;
+            if (numberOfTextLinesToMove > 0)
+            {
+                for (int i = 0; i < numberOfTextLinesToMove; i++)
+                {
+                    f += 0.05;
+                }
+                Zoomrat(f + 1, e.Location);
+            }
+            else if (numberOfTextLinesToMove < 0)
+            {
+                for (int i = 0; i > numberOfTextLinesToMove; i--)
+                {
+                    f -= 0.05;
+                }
+                Zoomrat(f + 1, e.Location);
+            }
+        }
+
         private ScanConfig _sc;
         private Exam _exam;
         private Boolean SubjectShowOptionMode;
@@ -461,5 +494,45 @@ namespace ScanTemplate
         private Student _ActiveStudent;
         public PaperConstruct Paperconstruct { get; set; }
 
+        private void toolStripButtonZoomin_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void toolStripButtonZoomMouse_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void buttonZoomout_Click(object sender, EventArgs e)
+        {
+            Zoomrat(0.9, new Point(pictureBox1.Width / 2, pictureBox1.Height / 2));
+        }
+        private void buttonZoomin_Click(object sender, EventArgs e)
+        {
+            Zoomrat(1.1, new Point(pictureBox1.Width / 2, pictureBox1.Height / 2));
+        }
+        private void buttonZoomMouse_Click(object sender, EventArgs e)
+        {
+            _ZoomMouseMode = true;
+        }
+        private void Zoomrat(double rat, Point e)
+        {
+            Bitmap bitmap_show = (Bitmap)pictureBox1.Image;
+            Point L = pictureBox1.Location;
+            Point S = panel1.AutoScrollPosition;
+            int w = (int)(pictureBox1.Width * rat);
+            int h = w * bitmap_show.Height / bitmap_show.Width;
+            L.Offset((int)(e.X * (rat - 1)), (int)(e.Y * (rat - 1)));
+            pictureBox1.SetBounds(S.X, S.Y, w, h);
+            zoombox.UpdateBoxScale(pictureBox1);
+
+            S.Offset((int)(e.X * (1 - rat)), (int)(e.Y * (1 - rat)));
+            panel1.Invalidate();
+            panel1.AutoScrollPosition = new Point(-S.X, -S.Y);
+        }
+
+        private ZoomBox zoombox;
+        private bool _ZoomMouseMode;
     }
 }

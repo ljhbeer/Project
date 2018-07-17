@@ -18,6 +18,7 @@ namespace ScanTemplate
         public FormReportTable(ScanConfig _sc, Exam _exam, AutoAngle _angle)
         {
             InitializeComponent();
+            _SR = _exam.SR;
             this._angle = _angle;
             this._sc = _sc;
             this._exam = _exam;
@@ -84,8 +85,9 @@ namespace ScanTemplate
 
             _dtsubjectoption = Tools.DataTableTools.ConstructDataTable(new List<string> { "OID", "题号", "均分", "得分率", "错误人数", "正确人数" }.ToArray());
             _dtsubjectunchoose = Tools.DataTableTools.ConstructDataTable(new List<string> { "OID", "题号", "均分", "得分率", "错误人数", "正确人数" }.ToArray());
-            _dtsubjectErrorStudent = Tools.DataTableTools.ConstructDataTable(studenttitle.ToArray());
-            _dtsubjectRightStudent = Tools.DataTableTools.ConstructDataTable(studenttitle.ToArray());
+            List<string> studentrighterror= new List<string> { "OID", "姓名", "得分", "答案","图片" };
+            _dtsubjectErrorStudent = Tools.DataTableTools.ConstructDataTable(studentrighterror.ToArray());
+            _dtsubjectRightStudent = Tools.DataTableTools.ConstructDataTable(studentrighterror.ToArray());
         }
         private void InitDataTableData()
         {
@@ -195,7 +197,13 @@ namespace ScanTemplate
             else if (_type == "subject"  || _type.EndsWith("subject"))
             {
                 dgv.Columns["题号"].Width =60;
-            }else if (_type == "选择题")
+            }
+            else if (_type == "showoptionmode")
+            {
+                dgv.Columns["图片"].Visible = false;
+                dgv.Columns["答案"].Visible = true;
+                dgv.Columns["姓名"].Width = 50;
+            }else if(_type == "showsubjectmode")
             {
                 dgv.RowTemplate.Height = 30;
                 dgv.DataSource = null;
@@ -203,7 +211,12 @@ namespace ScanTemplate
                 foreach (DataGridViewColumn dc in dgv.Columns)
                     if (dc.Name.Contains("图片"))
                         ((DataGridViewImageColumn)(dc)).ImageLayout = DataGridViewImageCellLayout.Zoom;
-                dgv.Columns["题号"].Width = 30;
+                    else if (dc.Name.Contains("答案") || dc.Name == "OID")
+                    {
+                        dc.Visible = false;
+                    }
+                    else
+                        dc.Width =50; 
             }          
         }
         private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
@@ -296,13 +309,18 @@ namespace ScanTemplate
                 }
                 DataRow dr = dt.NewRow();
                 DataRow dr1 = _dtstudent.Rows[i];
-                for (int index = 0; index < dr1.Table.Columns.Count; index++)
-                    dr[index] = dr1[index];
+                //for (int index = 0; index < dr1.Table.Columns.Count; index++)
+                //    dr[index] = dr1[index];
+                dr["OID"] = dr1["OID"];
+                dr["姓名"] = dr1["姓名"];
+                dr["得分"] = O.Score;
+                dr["答案"] = S.OptionAnswer(O.Index);
                 dt.Rows.Add(dr);
             }
         }
         private void dgvsubjecttodtclickedwithUnchoose(Imgsubject O)
         {
+            _SR.SetActiveSubject(O);
             for (int i = 0; i < _exam.Students.Count; i++)
             {
                 Student S = _exam.Students[i];
@@ -317,8 +335,13 @@ namespace ScanTemplate
                 }
                 DataRow dr = dt.NewRow();
                 DataRow dr1 = _dtstudent.Rows[i];
-                for (int index = 0; index < dr1.Table.Columns.Count; index++)
-                    dr[index] = dr1[index];
+                //for (int index = 0; index < dr1.Table.Columns.Count; index++)
+                //    dr[index] = dr1[index];
+                dr["OID"] = dr1["OID"];
+                dr["姓名"] = dr1["姓名"];
+                dr["得分"] = O.Score;
+
+                dr["图片"] = _SR.GetBitMap(S);
                 dt.Rows.Add(dr);
             }
         }
@@ -386,6 +409,7 @@ namespace ScanTemplate
                 if (buttonShowErrorStudentList.Enabled)
                     buttonShowErrorStudentList.PerformClick();
             }
+            InitSubjectRightErrorStudentListdgvUI();
         }
 
         private void dgvSubjectRightErrorStudentList_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
@@ -419,10 +443,15 @@ namespace ScanTemplate
             buttonShowOption.Enabled = !buttonShowOption.Enabled;
             buttonShowUnChoose.Enabled = !buttonShowUnChoose.Enabled;
             SubjectShowOptionMode = !SubjectShowOptionMode;
-            if (SubjectShowOptionMode)
+            if (SubjectShowOptionMode){
                 dgvsubjects.DataSource = _dtsubjectoption;
-            else
+            }
+            else{
                 dgvsubjects.DataSource = _dtsubjectunchoose;
+            }
+            _dtsubjectRightStudent.Rows.Clear();
+            _dtsubjectErrorStudent.Rows.Clear();
+            InitSubjectRightErrorStudentListdgvUI();
         }
         private void buttonShowRightStudentList_Click(object sender, EventArgs e)
         {
@@ -437,12 +466,25 @@ namespace ScanTemplate
             buttonShowErrorStudentList.Enabled = !buttonShowErrorStudentList.Enabled;
             buttonShowRightStudentList.Enabled = !buttonShowRightStudentList.Enabled;
             ShowRightStudentMode = !ShowRightStudentMode;
+            DataTable dt;
             if (ShowRightStudentMode)
-                dgvSubjectRightErrorStudentList.DataSource = _dtsubjectRightStudent;
+                dt = _dtsubjectRightStudent;
             else
-                dgvSubjectRightErrorStudentList.DataSource = _dtsubjectErrorStudent;
+                dt = _dtsubjectErrorStudent;
+            dgvSubjectRightErrorStudentList.DataSource = dt;
         }
-
+        private void InitSubjectRightErrorStudentListdgvUI()
+        {
+            DataTable dt;
+            if (ShowRightStudentMode)
+                dt = _dtsubjectRightStudent;
+            else
+                dt = _dtsubjectErrorStudent;
+            if (SubjectShowOptionMode)
+                InitDgvUI(dgvSubjectRightErrorStudentList, "showoptionmode");
+            else
+                InitDgvUI(dgvSubjectRightErrorStudentList, "showsubjectmode", dt);
+        }
         private void pictureBox1_MouseEnter(object sender, EventArgs e)
         {
             if (_ZoomMouseMode)
@@ -492,6 +534,7 @@ namespace ScanTemplate
         private List<string> _ABCD;
         private Dictionary<string, int> _dicABCDToOption;
         private Student _ActiveStudent;
+        private StudentsResult _SR;
         public PaperConstruct Paperconstruct { get; set; }
 
         private void toolStripButtonZoomin_Click(object sender, EventArgs e)

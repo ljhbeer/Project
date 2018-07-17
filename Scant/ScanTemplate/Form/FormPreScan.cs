@@ -318,6 +318,8 @@ namespace ScanTemplate
             }
             toolStripComboBoxDetectMode.SelectedIndex = 0;
             toolStripComboBoxImageMode.SelectedIndex = 0;
+            if (_pp != null) ;
+            listBox1.Items.AddRange(_pp.PrePaperList.ToArray());
         }
         public string PreActiveFileName
         {
@@ -1046,6 +1048,21 @@ namespace ScanTemplate
           
             return !ValidPreScan && !ValidPreScan2 ;
         }
+
+        private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (listBox1.SelectedIndex == -1) return;
+            PrePaper pp = (PrePaper)listBox1.SelectedItem;
+
+            pictureBox1.Image = pp.Src;
+            if (pp.Detected())
+            { 
+                //TODO: 修改参数
+            }
+            else
+            {
+            }
+        }
     }
     public class PrePapers
     {
@@ -1119,6 +1136,10 @@ namespace ScanTemplate
         public void SetNewFileName(string imgfilename)
         {
             _imgfilename = imgfilename;
+        }
+        public override string ToString()
+        {
+            return "检测结果："+ Detected() +"  "+ ImgFilename;
         }
         public string ToJsonString()
         {

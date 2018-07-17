@@ -40,6 +40,7 @@
             this.panelRT = new System.Windows.Forms.Panel();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.panelRB = new System.Windows.Forms.Panel();
+            this.listBox1 = new System.Windows.Forms.ListBox();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.toolStripButtonDefineDetectArea = new System.Windows.Forms.ToolStripButton();
             this.toolStripButtonDefineFeaturePointDetectArea = new System.Windows.Forms.ToolStripButton();
@@ -73,6 +74,7 @@
             this.splitContainerR.SuspendLayout();
             this.panelRT.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            this.panelRB.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.toolStripContainer1.ContentPanel.SuspendLayout();
             this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
@@ -171,7 +173,6 @@
             this.splitContainerR.Dock = System.Windows.Forms.DockStyle.Fill;
             this.splitContainerR.Location = new System.Drawing.Point(0, 0);
             this.splitContainerR.Name = "splitContainerR";
-            this.splitContainerR.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
             // splitContainerR.Panel1
             // 
@@ -191,7 +192,7 @@
             this.panelRT.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelRT.Location = new System.Drawing.Point(0, 0);
             this.panelRT.Name = "panelRT";
-            this.panelRT.Size = new System.Drawing.Size(786, 566);
+            this.panelRT.Size = new System.Drawing.Size(566, 636);
             this.panelRT.TabIndex = 0;
             // 
             // pictureBox1
@@ -199,7 +200,7 @@
             this.pictureBox1.AccessibleRole = System.Windows.Forms.AccessibleRole.ScrollBar;
             this.pictureBox1.Location = new System.Drawing.Point(0, 0);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(751, 595);
+            this.pictureBox1.Size = new System.Drawing.Size(566, 566);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
@@ -211,11 +212,23 @@
             // 
             // panelRB
             // 
+            this.panelRB.Controls.Add(this.listBox1);
             this.panelRB.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelRB.Location = new System.Drawing.Point(0, 0);
             this.panelRB.Name = "panelRB";
-            this.panelRB.Size = new System.Drawing.Size(786, 66);
+            this.panelRB.Size = new System.Drawing.Size(216, 636);
             this.panelRB.TabIndex = 0;
+            // 
+            // listBox1
+            // 
+            this.listBox1.FormattingEnabled = true;
+            this.listBox1.ItemHeight = 12;
+            this.listBox1.Location = new System.Drawing.Point(11, 3);
+            this.listBox1.Name = "listBox1";
+            this.listBox1.ScrollAlwaysVisible = true;
+            this.listBox1.Size = new System.Drawing.Size(193, 472);
+            this.listBox1.TabIndex = 0;
+            this.listBox1.SelectedIndexChanged += new System.EventHandler(this.listBox1_SelectedIndexChanged);
             // 
             // toolStrip1
             // 
@@ -431,6 +444,7 @@
             this.splitContainerR.ResumeLayout(false);
             this.panelRT.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            this.panelRB.ResumeLayout(false);
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
             this.toolStripContainer1.ContentPanel.ResumeLayout(false);
@@ -474,5 +488,6 @@
         private System.Windows.Forms.ToolStripMenuItem NinthDetectToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem SixteenthDetectToolStripMenuItem;
         private System.Windows.Forms.ToolStripComboBox toolStripComboBoxDetectMode;
+        private System.Windows.Forms.ListBox listBox1;
     }
 }

@@ -309,6 +309,8 @@ namespace  Tools
                             if (r.Width == 0 || r.Height == 0)
                                 return false;
                         }
+                        if (ListFeature.Count != 4)
+                            return false;
                         return true;
                     }
                 }

@@ -39,6 +39,9 @@
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.flowLayoutPanel2 = new System.Windows.Forms.FlowLayoutPanel();
             this.checkBoxOnlyShowerror = new System.Windows.Forms.CheckBox();
+            this.buttonZoomout = new System.Windows.Forms.Button();
+            this.buttonZoomin = new System.Windows.Forms.Button();
+            this.buttonZoomMouse = new System.Windows.Forms.Button();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.dgvstudenterrorsubjectid = new System.Windows.Forms.DataGridView();
             this.dgvstudentrightsubjectid = new System.Windows.Forms.DataGridView();
@@ -53,9 +56,6 @@
             this.buttonShowErrorStudentList = new System.Windows.Forms.Button();
             this.textBoxMsg = new System.Windows.Forms.TextBox();
             this.dgvSubjectRightErrorStudentList = new System.Windows.Forms.DataGridView();
-            this.buttonZoomout = new System.Windows.Forms.Button();
-            this.buttonZoomin = new System.Windows.Forms.Button();
-            this.buttonZoomMouse = new System.Windows.Forms.Button();
             this.tableLayoutPanel1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPageByStudent.SuspendLayout();
@@ -190,7 +190,7 @@
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
             this.pictureBox1.MouseEnter += new System.EventHandler(this.pictureBox1_MouseEnter);
-            this.pictureBox1.MouseWheel +=new System.Windows.Forms.MouseEventHandler(pictureBox1_MouseWheel);
+            this.pictureBox1.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.pictureBox1_MouseWheel);
             // 
             // flowLayoutPanel2
             // 
@@ -214,6 +214,36 @@
             this.checkBoxOnlyShowerror.Text = "仅显示错误";
             this.checkBoxOnlyShowerror.UseVisualStyleBackColor = true;
             this.checkBoxOnlyShowerror.CheckedChanged += new System.EventHandler(this.checkBoxOnlyShowerror_CheckedChanged);
+            // 
+            // buttonZoomout
+            // 
+            this.buttonZoomout.Location = new System.Drawing.Point(93, 3);
+            this.buttonZoomout.Name = "buttonZoomout";
+            this.buttonZoomout.Size = new System.Drawing.Size(32, 18);
+            this.buttonZoomout.TabIndex = 1;
+            this.buttonZoomout.Text = "-";
+            this.buttonZoomout.UseVisualStyleBackColor = true;
+            this.buttonZoomout.Click += new System.EventHandler(this.buttonZoomout_Click);
+            // 
+            // buttonZoomin
+            // 
+            this.buttonZoomin.Location = new System.Drawing.Point(131, 3);
+            this.buttonZoomin.Name = "buttonZoomin";
+            this.buttonZoomin.Size = new System.Drawing.Size(32, 18);
+            this.buttonZoomin.TabIndex = 1;
+            this.buttonZoomin.Text = "+";
+            this.buttonZoomin.UseVisualStyleBackColor = true;
+            this.buttonZoomin.Click += new System.EventHandler(this.buttonZoomin_Click);
+            // 
+            // buttonZoomMouse
+            // 
+            this.buttonZoomMouse.Location = new System.Drawing.Point(169, 3);
+            this.buttonZoomMouse.Name = "buttonZoomMouse";
+            this.buttonZoomMouse.Size = new System.Drawing.Size(48, 18);
+            this.buttonZoomMouse.TabIndex = 1;
+            this.buttonZoomMouse.Text = "zoom";
+            this.buttonZoomMouse.UseVisualStyleBackColor = true;
+            this.buttonZoomMouse.Click += new System.EventHandler(this.buttonZoomMouse_Click);
             // 
             // splitContainer1
             // 
@@ -396,36 +426,6 @@
             this.dgvSubjectRightErrorStudentList.TabIndex = 3;
             this.dgvSubjectRightErrorStudentList.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvRightErrorStudentList_CellClick);
             this.dgvSubjectRightErrorStudentList.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvSubjectRightErrorStudentList_CellDoubleClick);
-            // 
-            // buttonZoomout
-            // 
-            this.buttonZoomout.Location = new System.Drawing.Point(93, 3);
-            this.buttonZoomout.Name = "buttonZoomout";
-            this.buttonZoomout.Size = new System.Drawing.Size(32, 18);
-            this.buttonZoomout.TabIndex = 1;
-            this.buttonZoomout.Text = "-";
-            this.buttonZoomout.UseVisualStyleBackColor = true;
-            this.buttonZoomout.Click += new System.EventHandler(this.buttonZoomout_Click);
-            // 
-            // buttonZoomin
-            // 
-            this.buttonZoomin.Location = new System.Drawing.Point(131, 3);
-            this.buttonZoomin.Name = "buttonZoomin";
-            this.buttonZoomin.Size = new System.Drawing.Size(32, 18);
-            this.buttonZoomin.TabIndex = 1;
-            this.buttonZoomin.Text = "+";
-            this.buttonZoomin.UseVisualStyleBackColor = true;
-            this.buttonZoomin.Click += new System.EventHandler(this.buttonZoomin_Click);
-            // 
-            // buttonZoomMouse
-            // 
-            this.buttonZoomMouse.Location = new System.Drawing.Point(169, 3);
-            this.buttonZoomMouse.Name = "buttonZoomMouse";
-            this.buttonZoomMouse.Size = new System.Drawing.Size(48, 18);
-            this.buttonZoomMouse.TabIndex = 1;
-            this.buttonZoomMouse.Text = "zoom";
-            this.buttonZoomMouse.UseVisualStyleBackColor = true;
-            this.buttonZoomMouse.Click += new System.EventHandler(this.buttonZoomMouse_Click);
             // 
             // FormReportTable
             // 

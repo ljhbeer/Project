@@ -34,6 +34,7 @@ namespace ScanTemplate
             _Activedd = null;
             _fs = null;
             Init(null);
+            _init = true;
         }
         ~FormPreScan()
         {
@@ -41,6 +42,33 @@ namespace ScanTemplate
             Init(null);
         }
 
+        public void SetUserMode()
+        {
+            //toolStrip1;
+            //toolStrip2;
+            _init = false;
+            textBoxMessage.Visible = true; ;
+            treeView1.Visible = false;
+            //toolStripContainer1.Visible = false;
+            toolStripDropDownButtonAutoDetect.Visible = false;
+            //toolStripButtonDefineDetectArea.Visible = false;
+            toolStripButtonDefineFeaturePointDetectArea.Visible = false;
+            toolStripButtonScanLTDetectArea.Visible = false;
+            //toolStripButtonAutDetect.Visible = false;
+            toolStripButtonAutDetect.Text = "检查保存预检测数据";
+            toolStripButtonPreDetect.Visible = false;
+            toolStripButtonNextImage.Visible = false;
+            toolStripButtonZoomout.Visible = false;
+            toolStripButtonZoomin.Visible = false;
+            //toolStripButtonZoomMouse.Visible = false;
+            toolStripComboBoxImageMode.Visible = false;
+            toolStripComboBoxDetectMode.Visible = false;
+            NinthDetectToolStripMenuItem.Visible = false;
+            SixteenthDetectToolStripMenuItem.Visible = false;
+            toolStripComboBoxDetectMode.SelectedIndex = 0;
+            toolStripComboBoxImageMode.SelectedIndex = 0;
+            _init = true;
+        }
         public void Clear()
         {
             if (_src != null)
@@ -146,7 +174,7 @@ namespace ScanTemplate
                         }
                         foreach (string s in _namelist)
                         {
-                                    _pp.AddPrePaper(PreScan(s, lrtb, p.listFeatures[0].Size));
+                            _pp.AddPrePaper(PreScan(s, lrtb, p.listFeatures[0].Size));
                         }
                         if (!_pp.AllDetected()) // 对未成功模板重新检测
                         {
@@ -179,7 +207,63 @@ namespace ScanTemplate
             }
             return _pp;
         }
-
+        private void RePreScan(PrePapers _prepapers)
+        {
+            PrePaper okp = _prepapers.GetFirstCorrectPaper();
+            if (okp == null)
+            {
+                _prepapers = PreScan();
+                return;
+            }
+            ////////////////////////
+            List<Rectangle> lrtb = new List<Rectangle>();
+            foreach (Rectangle r in okp.listFeatures)
+            {
+                r.Inflate(r.Width / 2, r.Height / 2);
+                r.Offset(okp.Detectdata.CorrectRect.Location);
+                lrtb.Add(r);
+            }
+            foreach (PrePaper p in _prepapers.PrePaperList)
+            {
+                if (p.Detected()) continue;
+                PrePaper np = PreScan(p.ImgFilename, lrtb, okp.listFeatures[0].Size);
+                p.RealseSrc();
+                if (np.Detected())
+                {
+                    p.Detectdata = np.Detectdata;
+                    _prepapers._Changed = true;
+                    continue;
+                }
+            }
+            if (_prepapers.AllDetected()) return;
+            //第二次重新 PreScan
+            List<Rectangle> newlrtb = new List<Rectangle>();
+            Rectangle originLT = okp.listFeatures[0];
+            originLT.Offset(okp.Detectdata.CorrectRect.Location);
+            foreach (PrePaper fp in _prepapers.PrePaperList)
+            {
+                if (!fp.Detected())
+                {
+                    if (newlrtb.Count == 0)
+                        newlrtb = ResetNewLrtb(lrtb, originLT, fp);
+                    if (newlrtb.Count == 0)
+                        continue; //再次确认
+                    PrePaper newpp = PreScan(fp.ImgFilename, newlrtb, originLT.Size, false);
+                    if (!newpp.Detected())
+                    {
+                        newlrtb = ResetNewLrtb(lrtb, originLT, fp);
+                        if (newlrtb.Count > 0)
+                            newpp = PreScan(fp.ImgFilename, newlrtb, originLT.Size, false);
+                    }
+                    if (newpp.Detected())
+                    {
+                        fp.Detectdata = newpp.Detectdata;
+                        _prepapers._Changed = true;
+                    }
+                    fp.RealseSrc();
+                }
+            }
+        }
         private static List<Rectangle> ResetNewLrtb(List<Rectangle> lrtb, Rectangle originLT, PrePaper fp)
         {
             List<Rectangle> newlrtb = new List<Rectangle>();
@@ -515,7 +599,7 @@ namespace ScanTemplate
 
         private void CompleteSelection(bool bcomplete)
         {
-            if (bcomplete)
+            if (bcomplete && _init)
             {
                 ShowMessage("Complete: " + m_PreAct);
                 m_Imgselection = zoombox.BoxToImgSelection(MT.Selection);
@@ -673,6 +757,18 @@ namespace ScanTemplate
         private void CompleteAutoDetect()
         {
             if (pictureBox1.Image == null ) return;
+            if (global.UserMode)
+            {
+                _pp.CheckSavePrePapers(_dir.Fullpath + ".prescanpapers.json");
+                if (_pp.AllDetected())
+                {
+                    if(_pp.AllDetectedSize())
+                        MessageBox.Show("已生成或校验全部预检测数据，且全部正确");
+                    else
+                        MessageBox.Show("请检查不匹配的图像，请修改正确，或者移出当前文件夹，以跳过本次扫描，然后重试");
+                }
+                return;
+            }
             switch (_dtm)
             {
                 case DetectMode.Whole:
@@ -703,7 +799,8 @@ namespace ScanTemplate
             int cnt = m_tn.Nodes[keyname].GetNodeCount(false);
             if (cnt == 0)
             {
-                MessageBox.Show("没有"+keyname);
+                if(!global.UserMode)
+                    MessageBox.Show("没有"+keyname);
                 return new Rectangle();
             }
             TreeNode t = m_tn.Nodes[keyname].Nodes[0];
@@ -916,22 +1013,22 @@ namespace ScanTemplate
                             if (t.Tag != null)
                             {
                                 Rectangle r = (Rectangle)(t.Tag);
-                                e.Graphics.DrawRectangle(Pens.YellowGreen, zoombox.ImgToBoxSelection(r));
+                                e.Graphics.DrawRectangle(Pens.DarkGreen, zoombox.ImgToBoxSelection(r));
                             }
                         }
                     }
-                }
-                if (_dd != null && _dd.Detected)
-                {
-                    Rectangle r = _dd.CorrectRect;
-                    DrawRect(e, _dd.CorrectRect,Pens.Red);
-                    DrawRects(e, _dd.ListFeature,_dd.CorrectRect.Location,Pens.Red);
                 }
                 if (_Activedd != null && _Activedd.Detected)
                 {
                     Rectangle r = _Activedd.CorrectRect;
                     DrawRect(e, _Activedd.CorrectRect,Pens.DarkRed);
                     DrawRects(e, _Activedd.ListFeature,_Activedd.CorrectRect.Location,Pens.DarkRed);
+                }else
+                if (!global.UserMode &&  _dd != null && _dd.Detected)
+                {
+                    Rectangle r = _dd.CorrectRect;
+                    DrawRect(e, _dd.CorrectRect,Pens.Red);
+                    DrawRects(e, _dd.ListFeature,_dd.CorrectRect.Location,Pens.Red);
                 }
             }
         }
@@ -962,6 +1059,14 @@ namespace ScanTemplate
             S.Offset((int)(e.X * (1 - rat)), (int)(e.Y * (1 - rat)));
             panelRT.Invalidate();
             panelRT.AutoScrollPosition = new Point(-S.X, -S.Y);
+        }
+        private void Zoomratzero( )
+        {
+            Bitmap bitmap_show = (Bitmap)pictureBox1.Image;
+            pictureBox1.SetBounds(0, 0, pictureBox1.Width,pictureBox1.Height);
+            zoombox.UpdateBoxScale(pictureBox1);
+            panelRT.Invalidate();
+            panelRT.AutoScrollPosition = new Point();
         }
         private void ReSetPictureBoxImage()
         {
@@ -1008,6 +1113,7 @@ namespace ScanTemplate
         private PrePapers _prepapers;
         private UnScan _dir;
         private DetectData _Activedd;
+        private bool _init;
         public PrePapers Prepapers
         {
             get { return _prepapers; }
@@ -1105,18 +1211,36 @@ namespace ScanTemplate
                 if (File.Exists(dir.Fullpath + ".prescanpapers.json"))
                 {
                     _prepapers.LoadPrePapers(dir.Fullpath + ".prescanpapers.json");
-                    ExistOKScanJson = ValidPreScanData(dir.ImgList(), _prepapers);
-                    if (!ExistOKScanJson)
-                        File.Delete(dir.Fullpath + ".prescanpapers.json");
+                    bool ValidNamelist = ValidPreScanData(dir.ImgList(), _prepapers);
+                    if (!ValidNamelist)
+                    {
+                        _prepapers.ReContructPapers(dir.ImgList());
+                        _prepapers.SavePrePapers(dir.Fullpath + ".prescanpapers.json");
+                        RePreScan(_prepapers);
+                        _prepapers.SavePrePapers(dir.Fullpath + ".prescanpapers.json");
+                        //File.Delete(dir.Fullpath + ".prescanpapers.json");
+                    }
                 }
-                if (!ExistOKScanJson)
+                else //  if (!ExistOKScanJson)
                 {
                     _prepapers = PreScan();
-                    if (_prepapers.AllDetected()) // 已成功预扫描
-                    {
-                        _prepapers.SavePrePapers(dir.Fullpath + ".prescanpapers.json");
+                    _prepapers.SavePrePapers(dir.Fullpath + ".prescanpapers.json");
+                }
+                if (_prepapers.AllDetected()) // 已成功预扫描
+                {
+                    if (_prepapers.AllDetectedSize())
                         ExistOKScanJson = true;
+                    else
+                    {
+                        _prepapers.CheckSizeInfo();
+                        ExistOKScanJson = false;
+                        _pp = _prepapers;
                     }
+                }
+                else
+                {
+                    ExistOKScanJson = false;
+                    _pp = _prepapers;
                 }
             }
             else //扫描数据
@@ -1144,54 +1268,84 @@ namespace ScanTemplate
             _src = pp.Src;
             if (pp.Detected())
             { 
-                //TODO: 修改参数
-                //_dd = pp.Detectdata;
-                _Activedd = pp.Detectdata;              
+                _Activedd = pp.Detectdata;
+                Zoomrat(1, new Point(0, 0));
             }
             else
             {
                 _Activedd = null;
-                if (_dd != null && _dd.ListFeature.Count > 0)
+                PrePaper newpp;
+                if(global.UserMode)
+                    newpp = PreScanByArea(pp.ImgFilename);
+                else
+                    newpp = PreScanBydd(pp.ImgFilename);
+                if (newpp != null)
                 {
-                    Rectangle LT = _dd.ListFeature[0];
-                    Rectangle DetectLT = LT;                   
-                    DetectLT.Offset(_dd.CorrectRect.Location);
-                    DetectLT.Inflate(DetectLT.Width * 3 / 2, DetectLT.Height * 3 / 2);
-                    DetectLT.Intersect(new Rectangle(0, 0, _src.Width * 4 / 2, _src.Height));
-                    int right = _src.Width / 3;
-                    DetectLT.Width = right - DetectLT.Left;
-
-                    Rectangle nLT = DetectLTPoint(DetectLT, _src, LT.Size, false);
-                    if (nLT.Width > 0 && nLT.Height > 0)
-                    {
-                        List<Rectangle> lrtb = new List<Rectangle>();
-                        foreach (Rectangle r in _dd.ListFeature)
-                        {
-                            r.Inflate(r.Width / 2, r.Height / 2);
-                            r.Offset(nLT.Location);
-                            lrtb.Add(r);
-                        }
-
-                        PrePaper newpp = PreScan(pp.ImgFilename, lrtb, LT.Size);
-                        if (newpp.Detected())
-                        {
-                            //pp.Detectdata = newpp.Detectdata;
-                        }
-                        _Activedd = pp.Detectdata;
-
-                        //Refresh
-                        listBox1.Items.Clear();
-                        listBox1.Items.AddRange(_pp.PrePaperList.ToArray());
-                        Zoomrat(1, new Point(0, 0));
-                    }
-                    else
-                    {
-                        Rectangle pb = zoombox.ImgToBoxSelection(LT);
-                        MT.Selection = pb;
-                        CompleteDefineScanLTDetectArea();
-                    }
+                    pp.Detectdata = newpp.Detectdata;
+                    _pp._Changed = true;
+                    _Activedd = pp.Detectdata;
+                    listBox1.Items.Clear();
+                    listBox1.Items.AddRange(_pp.PrePaperList.ToArray());
+                    Zoomrat(1, new Point(0, 0));
+                }
+                else
+                {
+                    pictureBox1.Width =(int) _OriginWith;
+                    pictureBox1.Height =(int)(  _OriginWith * _src.Height / _src.Width);
+                    pictureBox1.Invalidate();
+                    zoombox.UpdateBoxScale(pictureBox1);
+                   
                 }
             }
+        }
+
+        private PrePaper PreScanByArea(string s)
+        {
+            Rectangle DetectArea = ReadDetectArea();
+            if (DetectArea.Width > 0)
+                try
+                {
+                    DetectData dd = DetectImageTools.DetectImg(_src, DetectArea);
+                    dd = DetectImageTools.DetectCorrect.ReDetectCorrectImg(_src, dd);
+                    if (dd.CorrectRect.Width > 0)
+                    {
+                        PrePaper pp = new PrePaper(s);
+                        pp.Detectdata = dd;
+                        if (pp.Detected())
+                            return pp;
+                    }
+                }
+                catch { }           
+            return null;
+        }
+        private PrePaper PreScanBydd(string ImgFilename)
+        {
+            if (_dd != null && _dd.ListFeature.Count > 0)
+            {
+                Rectangle LT = _dd.ListFeature[0];
+                Rectangle DetectLT = LT;
+                DetectLT.Offset(_dd.CorrectRect.Location);
+                DetectLT.Inflate(DetectLT.Width * 3 / 2, DetectLT.Height * 3 / 2);
+                DetectLT.Intersect(new Rectangle(0, 0, _src.Width * 4 / 2, _src.Height));
+                int right = _src.Width / 3;
+                DetectLT.Width = right - DetectLT.Left;
+
+                Rectangle nLT = DetectLTPoint(DetectLT, _src, LT.Size, false);
+                if (nLT.Width > 0 && nLT.Height > 0)
+                {
+                    List<Rectangle> lrtb = new List<Rectangle>();
+                    foreach (Rectangle r in _dd.ListFeature)
+                    {
+                        r.Inflate(r.Width / 2, r.Height / 2);
+                        r.Offset(nLT.Location);
+                        lrtb.Add(r);
+                    }
+                    PrePaper newpp = PreScan(ImgFilename, lrtb, LT.Size);
+                    if (newpp.Detected())
+                        return newpp;
+                }
+            }
+            return null;
         }
     }
     public class PrePapers
@@ -1200,6 +1354,7 @@ namespace ScanTemplate
         {
             _PrePapers = new List<PrePaper>();
             _dic = null;
+            _Changed = false;
         }
         public PrePapers(List<PrePaper> PrePapers)
         {
@@ -1207,22 +1362,26 @@ namespace ScanTemplate
             foreach (PrePaper p in PrePapers)
                 AddPrePaper(p);
             _dic = null;
+            _Changed = false;
         }
         public void AddPrePaper(PrePaper p)
         {
             _PrePapers.Add(p);
+            _Changed = true;
         }
         public void SavePrePapers(string Datafilename)
         {
             string str = Tools.JsonFormatTool.ConvertJsonString(
                 Newtonsoft.Json.JsonConvert.SerializeObject(_PrePapers));
             File.WriteAllText(Datafilename, str);
+            _Changed = false;
         }
         public void LoadPrePapers(string Datafilename)
         {
             Clear();
             _PrePapers = 
-            Newtonsoft.Json.JsonConvert.DeserializeObject<List<PrePaper>>(File.ReadAllText(Datafilename)); 
+            Newtonsoft.Json.JsonConvert.DeserializeObject<List<PrePaper>>(File.ReadAllText(Datafilename));
+            _Changed = false;
         }
         public void Clear()
         {
@@ -1235,7 +1394,44 @@ namespace ScanTemplate
         }
         public bool AllDetected()
         {
-            return !_PrePapers.Exists(r => !r.Detected()) && _PrePapers.Count>0;
+            if (_PrePapers.Count == 0)
+                return false;
+            return !_PrePapers.Exists(r => !r.Detected());
+        }
+        public bool AllDetectedSize()
+        {
+            if (_PrePapers.Count == 0) return false;
+            if (_PrePapers[0].Detectdata == null) return false;
+            Size size = _PrePapers[0].Detectdata.CorrectRect.Size;
+            foreach (PrePaper p in _PrePapers)
+            {
+                if (!p.Detected()) return false;
+                Size size1 = p.Detectdata.CorrectRect.Size;
+                double xrate = size.Width*1.0 / size1.Width;
+                double yrate = size.Height*1.0 / size1.Height;
+                if (xrate > 1.1 || xrate < 0.9 || yrate > 1.1 || yrate < 0.9)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+        public void CheckSizeInfo()
+        {
+            PrePaper okp = GetFirstCorrectPaper();
+            if (okp == null) return;
+            Size size =okp.Detectdata.CorrectRect.Size;
+            foreach (PrePaper p in _PrePapers)
+            {
+                if (!p.Detected()) continue;
+                Size size1 = p.Detectdata.CorrectRect.Size;
+                double xrate = size.Width * 1.0 / size1.Width;
+                double yrate = size.Height * 1.0 / size1.Height;
+                if (xrate > 1.1 || xrate < 0.9 || yrate > 1.1 || yrate < 0.9)
+                    p.Msg = "模板大小不匹配";
+                else
+                    p.Msg = "";
+            }
         }
         [JsonProperty]
         private List<PrePaper> _PrePapers;
@@ -1254,6 +1450,38 @@ namespace ScanTemplate
                 return _dic[s];
             return null;
         }
+
+        public void ReContructPapers(List<string> list)
+        {
+            _Changed = true;
+            _dic = _PrePapers.ToDictionary(r => r.ImgFilename, r => r);
+            _PrePapers.Clear();
+            foreach (string s in list)
+            {
+                if (_dic.ContainsKey(s))
+                    _PrePapers.Add(_dic[s]);
+                else
+                    _PrePapers.Add(new PrePaper(s));
+            }
+            _dic.Clear();
+            _dic = null;
+        }
+        public  PrePaper GetFirstCorrectPaper()
+        {
+            foreach (PrePaper p in PrePaperList)
+                if (p.Detected())
+                    return p;
+            return null;
+        }
+        public  void CheckSavePrePapers(string p)
+        {
+            if (_Changed)
+            {
+                SavePrePapers(p);
+                _Changed = false;
+            }
+        }
+        public bool _Changed { get; set; }
     }
     [JsonObject(MemberSerialization.OptOut)]
     public class PrePaper
@@ -1269,7 +1497,12 @@ namespace ScanTemplate
         }
         public override string ToString()
         {
-            return "检测结果："+ Detected() +"  "+ ImgFilename;
+            string sif = _imgfilename;
+            if (sif.Contains("\\"))
+            {
+                sif = sif.Substring(sif.LastIndexOf("\\"));
+            }
+            return ( Detected()?"":"检测错误 "  ) + Msg +" "+ sif ;
         }
         public string ToJsonString()
         {
@@ -1321,5 +1554,7 @@ namespace ScanTemplate
                 _src = null;
             }
         }
+
+        public string Msg { get; set; }
     }
 }

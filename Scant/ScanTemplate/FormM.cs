@@ -110,6 +110,8 @@ namespace ScanTemplate
             else
             {
                 this.Hide();
+                if (global.UserMode)
+                    fps.SetUserMode();
                 fps.ShowDialog();
                 fps.Clear();
                 fps = null;
@@ -160,6 +162,8 @@ namespace ScanTemplate
             else
             {
                 this.Hide();
+                if (global.UserMode)
+                    fps.SetUserMode();
                 fps.ShowDialog();
                 fps.Clear();
                 fps = null;

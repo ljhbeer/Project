@@ -28,6 +28,11 @@ namespace ScanTemplate
                     global.featuretype = gs.featuretype;
                     global.tag = gs.tag;
                     global.msg = gs.msg;
+                    global.UserMode = true;
+                    if (gs.ProgramerCode == "ljh_beer@163.com.copyright")
+                    {
+                        global.UserMode = false;
+                    }
                 }
                 catch
                 {

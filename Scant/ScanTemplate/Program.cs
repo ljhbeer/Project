@@ -26,6 +26,7 @@ namespace ScanTemplate
         public static string msg = "说明";
 
         public static bool ScanDataJsonFormat = false;
+        public static bool UserMode = true;
         public static void SaveDirectoryMemo(string path,string infotip)
         {
             string filename = path + "\\desktop.ini";
@@ -58,5 +59,6 @@ namespace ScanTemplate
         public  int tag;
         public  int featuretype;  // 0 左上下  1右上下
         public  string msg;
+        public  string ProgramerCode;
     }
 }

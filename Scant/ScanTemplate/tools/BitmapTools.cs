@@ -218,17 +218,18 @@ namespace Tools
                 }
                 else if (bmp.PixelFormat == PixelFormat.Format32bppArgb)
                 {
+                    long[] lrv = new long[r.Size.Width];
                     for (int i = 0; i < data.Height; i++)
                     {
                         for (int j = 0; j < data.Width; j++)
                         { // write the logic implementation here 
-                            rv[j] += ptr[0] + ptr[1] + ptr[2];
+                            lrv[j] += ptr[1]; // int[] rv = new int[r.Size.Width];
                             ptr += 4;
                         }
                         ptr += data.Stride - data.Width * 4;
                     }
                     for (int i = 0; i < rv.Length; i++)
-                        rv[i] /= 255;
+                        rv[i] =(int)( lrv[i] / 255);
                 }
             }
             bmp.UnlockBits(data);
@@ -292,17 +293,19 @@ namespace Tools
                 }
                 else if (bmp.PixelFormat == PixelFormat.Format32bppArgb)
                 {
+                    long[] lrv = new long[r.Size.Width];
                     for (int i = 0; i < data.Height; i++)
                     {
                         for (int j = 0; j < data.Width; j++)
                         { // write the logic implementation here 
-                            rv[i] += ptr[0] + ptr[1] + ptr[2];  // rv[i] += ptr[1];
+                            lrv[i] += ptr[1];  // rv[i] += ptr[1];
                             ptr += 4;
                         }
                         ptr += data.Stride - data.Width * 4;
                     }
                     for (int i = 0; i < rv.Length; i++)
-                        rv[i] /= 255;
+                        rv[i] = (int)(lrv[i] / 255);
+                        //rv[i] /= 255;
                 }
             }
             bmp.UnlockBits(data);

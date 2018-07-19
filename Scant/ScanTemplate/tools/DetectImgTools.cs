@@ -81,6 +81,7 @@ namespace  Tools
                     HasCorrectRect = false;
                     _CorrectRect = DetectCorrectFromImg(src, area,false, 10);                  
                 }
+                //src.Clone(_CorrectRect, src.PixelFormat).Save("F:\\debug\\_correct.tif");
                 //Rectangle area = new Rectangle(0, 0, src.Width, src.Height);
                 List<Rectangle> FourLtbRtbRect = GetLrbRtb(_CorrectRect, 40, 40);
                 List<Rectangle> list = new List<Rectangle>();
@@ -89,10 +90,12 @@ namespace  Tools
                 {
                     r.Inflate(r.Size);
                     r.Intersect(area);
+                    //if (global.Debug && (global.tag & 8) > 0 &&r.Width > 0 && r.Height > 0)
+                    //    src.Clone(r, src.PixelFormat).Save("F:\\debug\\b_" + cnt + "-" + r.ToString("_") + ".tif");  
                     Rectangle nr2 = DetectCorrectFromImg(src, r, true, r.Width / 6);
-                    list.Add(nr2);
-                    if(global.Debug && (global.tag & 8)>0)
-                        src.Clone(nr2, src.PixelFormat).Save("F:\\debug\\" + cnt + "-" + nr2.ToString("_") + ".tif");
+                    list.Add(nr2); 
+                    if (global.Debug && (global.tag & 8) > 0 && nr2.Width > 0 && nr2.Height > 0)
+                        src.Clone(nr2, src.PixelFormat).Save("F:\\debug\\" + cnt + "-" + nr2.ToString("_") + ".tif");                    
                     cnt++;
                 }
                 return ConstructDetectData(HasCorrectRect, _CorrectRect,list);

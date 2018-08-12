@@ -35,13 +35,17 @@
             this.button5 = new System.Windows.Forms.Button();
             this.button6 = new System.Windows.Forms.Button();
             this.button7 = new System.Windows.Forms.Button();
+            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.buttonClose = new System.Windows.Forms.Button();
+            this.tableLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(94, 24);
+            this.button1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.button1.Location = new System.Drawing.Point(87, 3);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(72, 69);
+            this.button1.Size = new System.Drawing.Size(78, 67);
             this.button1.TabIndex = 0;
             this.button1.Text = "导出成绩";
             this.button1.UseVisualStyleBackColor = true;
@@ -49,9 +53,10 @@
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(251, 24);
+            this.button2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.button2.Location = new System.Drawing.Point(255, 3);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(72, 69);
+            this.button2.Size = new System.Drawing.Size(78, 67);
             this.button2.TabIndex = 0;
             this.button2.Text = "导出图片";
             this.button2.UseVisualStyleBackColor = true;
@@ -59,9 +64,10 @@
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(330, 24);
+            this.button3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.button3.Location = new System.Drawing.Point(339, 3);
             this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(72, 69);
+            this.button3.Size = new System.Drawing.Size(78, 67);
             this.button3.TabIndex = 0;
             this.button3.Text = "导出\r\n成绩分析";
             this.button3.UseVisualStyleBackColor = true;
@@ -69,9 +75,10 @@
             // 
             // button4
             // 
-            this.button4.Location = new System.Drawing.Point(12, 24);
+            this.button4.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.button4.Location = new System.Drawing.Point(3, 3);
             this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(72, 69);
+            this.button4.Size = new System.Drawing.Size(78, 67);
             this.button4.TabIndex = 0;
             this.button4.Text = "导出全部";
             this.button4.UseVisualStyleBackColor = true;
@@ -79,9 +86,10 @@
             // 
             // button5
             // 
-            this.button5.Location = new System.Drawing.Point(408, 24);
+            this.button5.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.button5.Location = new System.Drawing.Point(423, 3);
             this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(72, 69);
+            this.button5.Size = new System.Drawing.Size(78, 67);
             this.button5.TabIndex = 1;
             this.button5.Text = "仅导出\r\n选择题";
             this.button5.UseVisualStyleBackColor = true;
@@ -89,9 +97,10 @@
             // 
             // button6
             // 
-            this.button6.Location = new System.Drawing.Point(486, 24);
+            this.button6.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.button6.Location = new System.Drawing.Point(507, 3);
             this.button6.Name = "button6";
-            this.button6.Size = new System.Drawing.Size(72, 69);
+            this.button6.Size = new System.Drawing.Size(83, 67);
             this.button6.TabIndex = 2;
             this.button6.Text = "仅导出\r\n选择题图片";
             this.button6.UseVisualStyleBackColor = true;
@@ -99,31 +108,64 @@
             // 
             // button7
             // 
-            this.button7.Location = new System.Drawing.Point(173, 24);
+            this.button7.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.button7.Location = new System.Drawing.Point(171, 3);
             this.button7.Name = "button7";
-            this.button7.Size = new System.Drawing.Size(72, 69);
+            this.button7.Size = new System.Drawing.Size(78, 67);
             this.button7.TabIndex = 0;
             this.button7.Text = "导出小题成绩";
             this.button7.UseVisualStyleBackColor = true;
             this.button7.Click += new System.EventHandler(this.button7_Click);
             // 
+            // tableLayoutPanel1
+            // 
+            this.tableLayoutPanel1.ColumnCount = 7;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 14.28571F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 14.28571F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 14.28571F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 14.28571F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 14.28571F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 14.28571F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 14.28571F));
+            this.tableLayoutPanel1.Controls.Add(this.button4, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.button6, 6, 0);
+            this.tableLayoutPanel1.Controls.Add(this.button1, 1, 0);
+            this.tableLayoutPanel1.Controls.Add(this.button5, 5, 0);
+            this.tableLayoutPanel1.Controls.Add(this.button7, 2, 0);
+            this.tableLayoutPanel1.Controls.Add(this.button3, 4, 0);
+            this.tableLayoutPanel1.Controls.Add(this.button2, 3, 0);
+            this.tableLayoutPanel1.Controls.Add(this.buttonClose, 3, 1);
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(12, 12);
+            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+            this.tableLayoutPanel1.RowCount = 2;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 69.81132F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 30.18868F));
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(593, 106);
+            this.tableLayoutPanel1.TabIndex = 3;
+            // 
+            // buttonClose
+            // 
+            this.buttonClose.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.buttonClose.Location = new System.Drawing.Point(255, 76);
+            this.buttonClose.Name = "buttonClose";
+            this.buttonClose.Size = new System.Drawing.Size(78, 27);
+            this.buttonClose.TabIndex = 4;
+            this.buttonClose.Text = "取消";
+            this.buttonClose.UseVisualStyleBackColor = true;
+            this.buttonClose.Click += new System.EventHandler(this.buttonClose_Click);
+            // 
             // FormChooseResult
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(617, 120);
-            this.Controls.Add(this.button6);
-            this.Controls.Add(this.button5);
-            this.Controls.Add(this.button4);
-            this.Controls.Add(this.button3);
-            this.Controls.Add(this.button2);
-            this.Controls.Add(this.button7);
-            this.Controls.Add(this.button1);
+            this.ClientSize = new System.Drawing.Size(617, 131);
+            this.Controls.Add(this.tableLayoutPanel1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "FormChooseResult";
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "FormChoose";
+            this.tableLayoutPanel1.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -137,5 +179,7 @@
         private System.Windows.Forms.Button button5;
         private System.Windows.Forms.Button button6;
         private System.Windows.Forms.Button button7;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+        private System.Windows.Forms.Button buttonClose;
     }
 }

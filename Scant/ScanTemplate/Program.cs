@@ -51,7 +51,8 @@ namespace ScanTemplate
             System.IO.FileInfo fi = new System.IO.FileInfo(filename);
             fi.Attributes = System.IO.FileAttributes.System | System.IO.FileAttributes.Hidden | fi.Attributes;
         }
-         
+
+        public static EncyptTools.RegHelper Reghelper = new EncyptTools.RegHelper();
     }
     public class globalsave
     {

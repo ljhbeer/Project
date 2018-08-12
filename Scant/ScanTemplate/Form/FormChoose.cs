@@ -42,6 +42,12 @@ namespace ScanTemplate
             {
                 SaveGlobal();
             }
+            if (!global.Reghelper.CheckReged())
+            {
+                SoftRegTools.FormRegShow f = new SoftRegTools.FormRegShow(global.Reghelper);
+                f.ShowDialog();
+                this.Close();
+            }
         }
         private void button1_Click(object sender, EventArgs e)
         {
@@ -66,6 +72,18 @@ namespace ScanTemplate
             gs.msg = global.msg;
             string str = Tools.JsonFormatTool.ConvertJsonString(Newtonsoft.Json.JsonConvert.SerializeObject(gs));
             File.WriteAllText("global.json", str);
-        }        
+        }
+
+        private void buttonClose_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        private void buttonRegInfo_Click(object sender, EventArgs e)
+        {
+            SoftRegTools.FormRegShow f = new SoftRegTools.FormRegShow(global.Reghelper);
+            f.ShowDialog();
+        }
+  
     }
 }

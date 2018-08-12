@@ -56,6 +56,12 @@ namespace ScanTemplate
         }
         public string Result { get { return _result; } }
 
+        private void buttonClose_Click(object sender, EventArgs e)
+        {
+            _result = "";
+            this.Close();
+        }
+
 
     }
 }

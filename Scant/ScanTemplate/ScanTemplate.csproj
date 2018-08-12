@@ -11,7 +11,8 @@
     <RootNamespace>ScanTemplate</RootNamespace>
     <AssemblyName>ScanTemplate</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
@@ -40,6 +41,8 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Management" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -105,7 +108,18 @@
     <Compile Include="Form\FormReadme.Designer.cs">
       <DependentUpon>FormReadme.cs</DependentUpon>
     </Compile>
+    <Compile Include="Form\FormRegShow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form\FormRegShow.Designer.cs">
+      <DependentUpon>FormRegShow.cs</DependentUpon>
+    </Compile>
     <Compile Include="Form\OptionGroups.cs" />
+    <Compile Include="SoftWare\CWeb.cs" />
+    <Compile Include="SoftWare\MD5Helper.cs" />
+    <Compile Include="SoftWare\RegSetting.cs" />
+    <Compile Include="SoftWare\RSACryption.cs" />
+    <Compile Include="SoftWare\SoftRegister.cs" />
     <Compile Include="tools\CnPYTool.cs" />
     <Compile Include="tools\DetectImgTools.cs" />
     <Compile Include="tools\IDbeTool.cs" />
@@ -206,6 +220,9 @@
     <EmbeddedResource Include="Form\FormReadme.resx">
       <DependentUpon>FormReadme.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Form\FormRegShow.resx">
+      <DependentUpon>FormRegShow.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Form\FormVerify.resx">
       <DependentUpon>FormVerify.cs</DependentUpon>
     </EmbeddedResource>
@@ -235,7 +252,9 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
+    <None Include="app.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

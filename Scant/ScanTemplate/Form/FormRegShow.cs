@@ -53,7 +53,14 @@ namespace SoftRegTools
         {            
             if (_reghelper.TryRegHash(textBoxRegCodeHash.Text))
             {
+                if (!ScanTemplate.global.LocReghelper.TryRegHash(textBoxRegCodeHash.Text))
+                {
+                    MessageBox.Show("逻辑错误");
+                }
+                textBoxRegstate.Text = "你已经成功注册，有效期为" + _reghelper.ExpirDate.ToShortDateString();
                 MessageBox.Show("你已经成功注册，有效期为" + _reghelper.ExpirDate.ToShortDateString());
+                buttonClose.Text = "确定";
+                buttonReg.Visible = false;
             }
             else
             {
@@ -65,6 +72,5 @@ namespace SoftRegTools
             this.Close();
         }
         private RegHelper _reghelper;
-        private RegHelper regHelper;
     }
 }

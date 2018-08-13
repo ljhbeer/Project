@@ -42,11 +42,22 @@ namespace ScanTemplate
             {
                 SaveGlobal();
             }
-            if (!global.Reghelper.CheckReged())
+            if (!global.LocReghelper.CheckReged())
             {
                 SoftRegTools.FormRegShow f = new SoftRegTools.FormRegShow(global.Reghelper);
                 f.ShowDialog();
-                this.Close();
+                //this.Close();
+            }
+            else
+            {
+                if (!global.Reghelper.CheckReged())
+                {
+                    MessageBox.Show("你还没有注册");
+                    global.LocReghelper.IsReged = false;
+                    global.Reghelper.IsReged = false;
+                    //this.Close();
+                }else
+                global.Threadchecksign.StartRun();
             }
         }
         private void button1_Click(object sender, EventArgs e)

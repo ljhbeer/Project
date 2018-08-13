@@ -34,6 +34,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json">
@@ -116,6 +117,7 @@
     </Compile>
     <Compile Include="Form\OptionGroups.cs" />
     <Compile Include="SoftWare\CWeb.cs" />
+    <Compile Include="SoftWare\LocalRegHelper.cs" />
     <Compile Include="SoftWare\MD5Helper.cs" />
     <Compile Include="SoftWare\RegSetting.cs" />
     <Compile Include="SoftWare\RSACryption.cs" />

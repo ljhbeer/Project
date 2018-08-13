@@ -185,6 +185,12 @@ namespace ScanTemplate.FormYJ
         private void buttonExportResult_Click(object sender, EventArgs e)
         {
             if (_activeitem == null) return;
+            if (!global.LocReghelper.IsReged)
+            {
+                MessageBox.Show("没有注册的版本，暂时不支持导出功能。快去注册吧， 首次注册前半年免费哦！！");
+                return;
+            }
+
             FormChooseResult f = new FormChooseResult();
             f.ShowDialog();
             ExportClassResult ecr = new ExportClassResult(_sc,_examdata,_template);
@@ -194,6 +200,11 @@ namespace ScanTemplate.FormYJ
         private void buttonResultTable_Click(object sender, EventArgs e)
         {
             if (_activeitem == null) return;
+            if (!global.LocReghelper.IsReged)
+            {
+                MessageBox.Show("没有注册的版本，暂时不支持导出功能。快去注册吧， 首次注册前半年免费哦！！");
+                return;
+            }
             if (_template == null)
             {
                 MessageBox.Show("找不到模板文件");
@@ -227,6 +238,11 @@ namespace ScanTemplate.FormYJ
         private void buttonBeginYJ_Click(object sender, EventArgs e)
         {
             if (_exam == null ) return;
+            if (!global.LocReghelper.IsReged)
+            {
+                MessageBox.Show("注意：没有注册的版本，不支持导出功能.\r\n你阅卷完成后，可能无法查看成绩哦，快去注册吧， 首次注册前半年免费哦！！\r\n");
+               
+            }
             FormFullScreenYJ fs = new FormFullScreenYJ(_exam);
             this.Hide();
             fs.ShowDialog();

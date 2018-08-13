@@ -53,7 +53,7 @@ namespace EncyptTools
             string strNum = SoftVersion + SoftMD5.Substring(0, 5) + CPUSerialNum.Substring(0, 5) + DiskVolume.Substring(0, 5);
             
             //ForTest
-            strNum = "V02F6774BFEBF6A166";
+            //strNum = "V02F6774BFEBF6A166";
             return strNum;//18个注册字符
         }        
         private static string SoftVersion = "V02";//v0.1
@@ -186,8 +186,8 @@ namespace EncyptTools
             catch (Exception e)
             {
                 //判断是否联网
-                _msg = e.Message;
                 Clear();
+                _msg = e.Message;
             }
             return IsReged;
         }
@@ -237,11 +237,23 @@ namespace EncyptTools
                 return IsReged;
             }
             string regmc = SericalNumber.Split('-')[0];           
-            if (regmc != _localmachinecode)
+            //if (regmc != _localmachinecode)
+            //{
+            //    _msg = "注册机器与本机不一致,请联系管理员！";
+            //    return IsReged;
+            //}
+            string signmc = regmc.Substring(0, 3) + regmc.Substring(8, 10);
+            string locmachinecode = SoftRegisterTools.getMachineNum();
+            //版本升级用
+            string localmc = locmachinecode.Substring(0, 3) + locmachinecode.Substring(8, 10);
+            if (signmc != localmc)
             {
                 _msg = "注册机器与本机不一致,请联系管理员！";
                 return IsReged;
             }
+
+
+
             // 比较时间 /
             string NowDate = DateTime.Now.ToString("yyyyMMdd");
             string EndDate = SericalNumber.Split('-')[1];
@@ -261,6 +273,33 @@ namespace EncyptTools
 
             IsReged = true;
             return IsReged;
+        }
+        public bool CheckSign()
+        {
+            try
+            {
+                ReadSettings();
+                string signinfo = DESHeper.DecryptDES(_aes, "love2018");
+                //Refine Sign and MachineCode
+                string  sign = Refinestring("<SIGN>", "</SIGN>", signinfo);
+                string  machinecode = Refinestring("<MACHINECODE>", "</MACHINECODE>", signinfo);
+                if (_sign != sign || _machinecode != machinecode)
+                {
+                    _sign = sign;
+                    _machinecode = machinecode;
+                    SaveSettings();
+                }
+                if (!rsah.SignCheck(_machinecode, _sign))
+                {
+                    return false;
+                }
+            }
+            catch
+            {
+                Clear();
+                return false;
+            }
+            return true;
         }
         // 判断软件是否可用，拥有十次的试用期，也可以换成天数,再写入注册表信息      
         public static bool GetUseInfo(ref int usedcount)
@@ -344,5 +383,7 @@ namespace EncyptTools
         private string url = @"https://gitee.com/ljhbeer/ScreenData/raw/master/RegKeys/xk-ScanPapeV3.0.keys";
         private string _msg;
 
+
+        
     }
 }

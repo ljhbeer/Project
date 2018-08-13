@@ -53,6 +53,8 @@ namespace ScanTemplate
         }
 
         public static EncyptTools.RegHelper Reghelper = new EncyptTools.RegHelper();
+        public static EncyptTools.LocalRegHelper LocReghelper = new EncyptTools.LocalRegHelper();
+        public static EncyptTools.ThreadCheckSign Threadchecksign = new EncyptTools.ThreadCheckSign();
     }
     public class globalsave
     {

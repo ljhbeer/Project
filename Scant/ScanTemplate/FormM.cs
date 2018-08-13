@@ -217,7 +217,11 @@ namespace ScanTemplate
             {
 				MessageBox.Show("未选择目录或者模板");
                 return;
-            }           
+            }
+            if (!global.LocReghelper.IsReged)
+            {
+                MessageBox.Show("未注册版本，一次最多支持扫描50份试卷");
+            }
             InitDoneScan();
 		}
         private void buttonReScan_Click(object sender, EventArgs e)
@@ -264,6 +268,10 @@ namespace ScanTemplate
                         _bSingleTestScan = true;
                     }
                     _scan = new Scan(_sc, ti.TemplateFileName, nameList, dir.Fullpath);
+                    if (!global.LocReghelper.IsReged)
+                    {
+                        _scan.MaxCount = 50;
+                    }
                     _scan.Prepapers = fps.Prepapers;
                     _rundt = Tools.DataTableTools.ConstructDataTable(_scan.ColNames.ToArray());
                     dgv.DataSource = _rundt;

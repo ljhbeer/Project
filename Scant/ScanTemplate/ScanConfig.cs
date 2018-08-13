@@ -363,6 +363,7 @@ namespace ScanTemplate
                 Directory.CreateDirectory(CorrectPath);
             _template = t;
             Msg = "";
+            MaxCount = int.MaxValue;
         }
         public void Clear()
         {
@@ -380,9 +381,12 @@ namespace ScanTemplate
             StringBuilder msg = new StringBuilder();
             StringBuilder sb = new StringBuilder();
             _angle = _template.Angle;
-         
+
+            int cnt = 0;
 			foreach (string s in _nameList)
 			{
+                if (cnt++ > MaxCount)
+                    break;
                 PrePaper p = Prepapers.GetPrepaper(s);
                 bool redo = false;
                 try
@@ -676,6 +680,8 @@ namespace ScanTemplate
         public Template Template { get { return _template; } }
 
         public PrePapers Prepapers { get; set; }
+
+        public int MaxCount { get; set; }
     }
     public class ValueTag
     {

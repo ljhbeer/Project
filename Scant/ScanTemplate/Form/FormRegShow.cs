@@ -12,7 +12,7 @@ namespace SoftRegTools
 {
     public partial class FormRegShow : Form
     {
-        public FormRegShow(RegHelper regHelper)
+        public FormRegShow(LocalRegHelper regHelper)
         {           
             InitializeComponent();
             _reghelper = regHelper;
@@ -32,7 +32,7 @@ namespace SoftRegTools
 在线购买方式2： 添加本人的支付宝，或者微信进行购买";
             textBoxJG.Text = @"警告: 本计算机程序受著作权法和国际公约的保护，未经授权擅自复制或散布本程序的部分或全部，将承受严厉的民事和刑事处罚，对已知的违反者将给予法律范围内的全面制裁。";
         }
-
+        
         private void Form1_Load(object sender, EventArgs e)
         {
             textBoxMachineCode.Text = SoftRegisterTools.getMachineNum();
@@ -71,6 +71,6 @@ namespace SoftRegTools
         {
             this.Close();
         }
-        private RegHelper _reghelper;
+        private LocalRegHelper _reghelper;
     }
 }

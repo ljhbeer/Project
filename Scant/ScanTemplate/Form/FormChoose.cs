@@ -44,7 +44,7 @@ namespace ScanTemplate
             }
             if (!global.LocReghelper.CheckReged())
             {
-                SoftRegTools.FormRegShow f = new SoftRegTools.FormRegShow(global.Reghelper);
+                SoftRegTools.FormRegShow f = new SoftRegTools.FormRegShow(global.LocReghelper);
                 f.ShowDialog();
                 //this.Close();
             }
@@ -92,7 +92,7 @@ namespace ScanTemplate
 
         private void buttonRegInfo_Click(object sender, EventArgs e)
         {
-            SoftRegTools.FormRegShow f = new SoftRegTools.FormRegShow(global.Reghelper);
+            SoftRegTools.FormRegShow f = new SoftRegTools.FormRegShow(global.LocReghelper);
             f.ShowDialog();
         }
   

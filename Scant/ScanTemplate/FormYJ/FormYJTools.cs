@@ -187,7 +187,11 @@ namespace ScanTemplate.FormYJ
             if (_activeitem == null) return;
             if (!global.LocReghelper.IsReged)
             {
-                MessageBox.Show("没有注册的版本，暂时不支持导出功能。快去注册吧， 首次注册前半年免费哦！！");
+                MessageBox.Show("没有注册的版本，只能导出前30名的选择题成绩。快去注册吧， 首次注册前半年免费哦！！");
+                if(MessageBox.Show("你确定要导出前30名的选择题成绩吗","导出选择题成绩",MessageBoxButtons.OKCancel) == System.Windows.Forms.DialogResult.Cancel)
+                    return;
+                ExportClassResult ecr1 = new ExportClassResult(_sc, _examdata, _template);
+                ecr1.Export("exonlyoption");
                 return;
             }
 

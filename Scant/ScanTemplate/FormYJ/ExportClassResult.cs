@@ -330,12 +330,16 @@ namespace ScanTemplate.FormYJ
             StringBuilder sblistscore = new StringBuilder("姓名,选择题" + TzOptiontitle + "\r\n");
            
             StringBuilder sbdetail = new StringBuilder();
+            int cnt = 0;
             foreach (Student S in _students.students)
             {
                 PaperResult pr = Paperconstruct.ConstructPaperResult(S);
                 string showName = (S.Name == "-" || S.Name == "" ? "无名" + S.ID.ToString() : S.Name);
                 string str = showName+ "," + pr.Xzt.Floatscore;                
                 sblistscore.AppendLine( str+pr.TotalXztTz(_TzOptionsubjects) );
+                if (!global.LocReghelper.IsReged)
+                    if (cnt++ > 30)
+                        break;
             }
            
             Tools.TextBitmapTool tbl = new TextBitmapTool(
@@ -344,16 +348,19 @@ namespace ScanTemplate.FormYJ
          
             List<string> list = new List<string>(sblistscore.ToString().Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries));          
             List<int> cids = _students.StudentsClassid(_sc);
-            if (cids.Count == 1)
+            if (global.LocReghelper.IsReged)
             {
-                List<int> kh = _students.students.Select(r => r.KH).ToList();
-                List<string> uncheckin = UnScanNameList(cids[0], kh, _sc).Select(r => r + "\t未交").ToList();
-                list.AddRange(uncheckin);
+                if (cids.Count == 1)
+                {
+                    List<int> kh = _students.students.Select(r => r.KH).ToList();
+                    List<string> uncheckin = UnScanNameList(cids[0], kh, _sc).Select(r => r + "\t未交").ToList();
+                    list.AddRange(uncheckin);
+                }
+                else
+                {
+                    MessageBox.Show("存在多个班级");
+                }
             }
-            else
-            {
-                MessageBox.Show("存在多个班级");
-            }           
             tbl.DrawListInPaper(list, true).Save(FileName + "选择题成绩单.jpg");
         }
         private string ZifuRate(double rightrate, int len = 20)

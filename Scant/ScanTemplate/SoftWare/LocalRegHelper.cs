@@ -46,9 +46,10 @@ namespace EncyptTools
                 if (_aes == "")
                     throw new Exception("Not Correct Hash");
                 _aes = Refinestring(":", ">", _aes);
-                _hash = Refinestring("<", ":", htmltxt);
-                if (!_hash.Contains(hashpart))
+                _hash =  Refinestring(hashpart, ":", htmltxt);
+                if (_hash == "")
                     throw new Exception("Not Correct Hash");
+                _hash = hashpart + _hash;
                 string signinfo = DESHeper.DecryptDES(_aes, "love2018");
                 //Refine Sign and MachineCode
                 _sign = Refinestring("<SIGN>", "</SIGN>", signinfo);
@@ -241,6 +242,7 @@ namespace EncyptTools
                 return src.Substring(0, src.IndexOf(end));
             return "";
         }
+        
         private static string SoftName = "ScanPaperV3.0";
         private string _localmachinecode;
         private string _machinecode;
@@ -266,6 +268,11 @@ namespace EncyptTools
                 _machinecode = _machinecode.Split('-')[0];
                 SaveSettings();
             }
+        }
+
+        internal string GetSignInfo()
+        {
+            return "<SIGN>[sign]</SIGN><MACHINECODE>[mc]</MACHINECODE>".Replace("[sign]", _sign).Replace("[mc]", _machinecode);
         }
     }
     public class ThreadCheckSign

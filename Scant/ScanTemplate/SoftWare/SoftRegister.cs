@@ -384,6 +384,11 @@ namespace EncyptTools
         private string _msg;
 
 
-        
+
+
+        internal void CopyDataToReg(LocalRegHelper loc)
+        {
+            TrySignInfo(loc.GetSignInfo());
+        }
     }
 }

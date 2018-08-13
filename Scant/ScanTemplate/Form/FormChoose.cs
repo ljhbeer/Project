@@ -52,10 +52,12 @@ namespace ScanTemplate
             {
                 if (!global.Reghelper.CheckReged())
                 {
-                    MessageBox.Show("你还没有注册");
-                    global.LocReghelper.IsReged = false;
-                    global.Reghelper.IsReged = false;
-                    //this.Close();
+                    //MessageBox.Show("你还没有注册");
+                    //global.LocReghelper.Clear();
+                    //global.LocReghelper.IsReged = false;
+                    //global.Reghelper.IsReged = false;
+                    ////this.Close();
+                    global.Reghelper.CopyDataToReg(global.LocReghelper);
                 }else
                 global.Threadchecksign.StartRun();
             }

@@ -1036,8 +1036,10 @@ namespace ScanTemplate.FormYJ
         public Student(DataRow dr,int XZTcount)
         {           
             this._imgfilename = dr["文件名"].ToString();
-            string str = _imgfilename.Substring(_imgfilename.LastIndexOf("-")+1);
-            str = str.Substring(0, str.IndexOf("."));
+            FileInfo fi = new FileInfo(_imgfilename);
+            string str =RefineNumber( fi.Name );
+            if (str == "")
+                str = ChangeToNumber(fi.Name);
             _id = Convert.ToInt32(str);
             _id %= 10000;
 
@@ -1064,16 +1066,20 @@ namespace ScanTemplate.FormYJ
             Tag = null;
             TagInfor = "";
         }
+
         public Student()
         {
             BackScore = -1;
         }
         public void InitDeserialize()
         {
-            string str = _imgfilename.Substring(_imgfilename.LastIndexOf("-") + 1);
-            str = str.Substring(0, str.IndexOf("."));
+            FileInfo fi = new FileInfo(_imgfilename);
+            string str = RefineNumber(fi.Name);
+            if (str == "")
+                str = ChangeToNumber(fi.Name);
             _id = Convert.ToInt32(str);
             _id %= 10000;
+
             Sort = new StudentSort();
             Sort.SetValue(Index);
             BackScore = -1;
@@ -1111,6 +1117,25 @@ namespace ScanTemplate.FormYJ
         public static string ResultTitle()
         {
             return "ID,考号,姓名,";
+        }
+
+        public static string RefineNumber(string name)
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (char c in name)
+                if(c>= '0' && c<='9')
+                sb.Append(c);
+            return sb.ToString();
+        }
+        private static string ChangeToNumber(string name)
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (char c in name)
+            {
+                int ic = c % 10;
+                sb.Append(ic);
+            }
+            return sb.ToString();
         }
         [JsonIgnore]
         public int ID { get { return _id; } }

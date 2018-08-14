@@ -41,6 +41,12 @@ namespace EncyptTools
             try
             {
                 Clear();
+                if (hashpart.Length < 8 || hashpart.Length > 32 ||
+                    !ToolsWeb.DgvTools.ValidBase64(hashpart))
+                {
+                    _msg = "不正确的注册代码";
+                    return false;
+                }
                 string htmltxt = ToolsWeb.CWeb.web.GetOKUrl(url);
                 _aes = Refinestring(hashpart, ">", htmltxt) + ">";
                 if (_aes == "")

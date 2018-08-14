@@ -64,6 +64,17 @@ namespace SoftRegTools
             }
             else
             {
+                string mc = textBoxMachineCode.Text;
+                if (textBoxRegCodeHash.Text.ToUpper() == mc.Substring(mc.Length - 4))
+                {
+                    if (ScanTemplate.global.Reghelper.CheckReged())
+                    {
+                        ScanTemplate.global.Reghelper.SaveRegToLocal();
+                        MessageBox.Show("已成功注册，请关闭后重新打开");
+                        this.Close();
+                        return;
+                    }
+                }
                 MessageBox.Show("注册失败，原因是" + _reghelper.ExceptMsg);
             }  
         }

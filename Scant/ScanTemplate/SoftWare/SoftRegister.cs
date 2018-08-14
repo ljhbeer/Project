@@ -390,5 +390,32 @@ namespace EncyptTools
         {
             TrySignInfo(loc.GetSignInfo());
         }
+
+        public void SaveRegToLocal()
+        {
+            sbsettings = new StringBuilder();
+            sbsettings.Clear();
+            SaveSetting1("MachineCode", _machinecode);
+            SaveSetting1("Sign", _sign);
+            SaveSetting1("Aes", _aes);
+            SaveSetting1("Hash", _hash);
+            SaveSetting1("BeginDateIndex", _beginDateIndex);
+            SaveSetting1("ExpiryDateIndex", _expiryDateIndex);
+            SaveSetting1("BeginDate", BeginDate.ToString("yyyyMMdd"));
+            SaveSetting1("ExpiryDate", ExpirDate.ToString("yyyyMMdd"));
+            //
+            SaveSetting1("SerialNumber", _localmachinecode + "-" + ExpirDate.ToString("yyyyMMdd"));
+
+            File.WriteAllText("configreg.ini", sbsettings.ToString());
+        }
+        public void SaveSetting1(string Key, string Value)
+        {
+            sbsettings.AppendLine("<" + Key + ">" + Value + "</" + Key + ">");
+        }
+        public void SaveSetting1(string Key, int Value)
+        {
+            SaveSetting1(Key, Value.ToString());
+        }
+        private StringBuilder sbsettings;
     }
 }

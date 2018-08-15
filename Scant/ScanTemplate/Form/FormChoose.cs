@@ -68,9 +68,9 @@ namespace ScanTemplate
         //或者 Process.GetCurrentProcess().Kill()
         //或者 Application.ExitThread();
         //或者 Application.ExitThread()
-            //System.Environment.Exit(System.Environment.ExitCode);
-            //this.Dispose();
-            //this.Close();
+            System.Environment.Exit(System.Environment.ExitCode);
+            this.Dispose();
+            this.Close();
         }
         private void button1_Click(object sender, EventArgs e)
         {

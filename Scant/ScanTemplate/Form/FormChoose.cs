@@ -62,6 +62,16 @@ namespace ScanTemplate
                 global.Threadchecksign.StartRun();
             }
         }
+        private void FormChoose_FormClosing(object sender, FormClosingEventArgs e)
+        {
+        //     System.Threading.Thread.CurrentThread.Abort();
+        //或者 Process.GetCurrentProcess().Kill()
+        //或者 Application.ExitThread();
+        //或者 Application.ExitThread()
+            //System.Environment.Exit(System.Environment.ExitCode);
+            //this.Dispose();
+            //this.Close();
+        }
         private void button1_Click(object sender, EventArgs e)
         {
             this.Hide();
@@ -97,6 +107,7 @@ namespace ScanTemplate
             SoftRegTools.FormRegShow f = new SoftRegTools.FormRegShow(global.LocReghelper);
             f.ShowDialog();
         }
+
   
     }
 }

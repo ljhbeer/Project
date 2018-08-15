@@ -109,6 +109,7 @@
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "FormChoose";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormChoose_FormClosing);
             this.Load += new System.EventHandler(this.FormChoose_Load);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.ResumeLayout(false);

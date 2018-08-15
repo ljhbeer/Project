@@ -161,7 +161,7 @@ namespace EncyptTools
                 _hash = Refinestring("<", ":", htmltxt);
                 if(!_hash.Contains(hashpart))
                     throw new Exception("Not Correct Hash");
-                string signinfo = DESHeper.DecryptDES(_aes, "love2018");
+                string signinfo = DESHeper.DecryptDES(_aes, _hash.Substring(0,8));
                 //Refine Sign and MachineCode
                 _sign = Refinestring("<SIGN>", "</SIGN>", signinfo);
                 _machinecode = Refinestring("<MACHINECODE>", "</MACHINECODE>", signinfo);
@@ -198,8 +198,8 @@ namespace EncyptTools
                 Clear();
                 _sign = Refinestring("<SIGN>", "</SIGN>", signinfo);
                 _machinecode = Refinestring("<MACHINECODE>", "</MACHINECODE>", signinfo);
-                _aes = DESHeper.EncryptDES(signinfo, "love2018");
-                _hash = ShaHelper.GetSha1Hash(_sign); ;
+                _hash = ShaHelper.GetSha1Hash(_sign); 
+                _aes = DESHeper.EncryptDES(signinfo, _hash.Substring(0,8));
                 if (_machinecode == "" || _sign == "")
                     throw new Exception("Not Correct Aes");
                 _beginDateIndex = Convert.ToInt32(Refinestring("#", "-", _machinecode + ">"));
@@ -279,7 +279,7 @@ namespace EncyptTools
             try
             {
                 ReadSettings();
-                string signinfo = DESHeper.DecryptDES(_aes, "love2018");
+                string signinfo = DESHeper.DecryptDES(_aes, _hash.Substring(0,8));
                 //Refine Sign and MachineCode
                 string  sign = Refinestring("<SIGN>", "</SIGN>", signinfo);
                 string  machinecode = Refinestring("<MACHINECODE>", "</MACHINECODE>", signinfo);

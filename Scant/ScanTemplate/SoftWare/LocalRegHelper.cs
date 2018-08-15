@@ -56,7 +56,7 @@ namespace EncyptTools
                 if (_hash == "")
                     throw new Exception("Not Correct Hash");
                 _hash = hashpart + _hash;
-                string signinfo = DESHeper.DecryptDES(_aes, "love2018");
+                string signinfo = DESHeper.DecryptDES(_aes,_hash.Substring(0,8));
                 //Refine Sign and MachineCode
                 _sign = Refinestring("<SIGN>", "</SIGN>", signinfo);
                 _machinecode = Refinestring("<MACHINECODE>", "</MACHINECODE>", signinfo);
@@ -93,8 +93,8 @@ namespace EncyptTools
                 Clear();
                 _sign = Refinestring("<SIGN>", "</SIGN>", signinfo);
                 _machinecode = Refinestring("<MACHINECODE>", "</MACHINECODE>", signinfo);
-                _aes = DESHeper.EncryptDES(signinfo, "love2018");
-                _hash = ShaHelper.GetSha1Hash(_sign); ;
+                _hash = ShaHelper.GetSha1Hash(_sign); 
+                _aes = DESHeper.EncryptDES(signinfo, _hash.Substring(0,8));
                 if (_machinecode == "" || _sign == "")
                     throw new Exception("Not Correct Aes");
                 _beginDateIndex = Convert.ToInt32(Refinestring("#", "-", _machinecode + ">"));
@@ -294,6 +294,7 @@ namespace EncyptTools
                 isrunning = true;
                 ThreadCheckSign tus = new ThreadCheckSign();
                 System.Threading.Thread nonParameterThread = new Thread(new ThreadStart(tus.Run));
+                nonParameterThread.IsBackground = true;
                 nonParameterThread.Start();
             }
         }

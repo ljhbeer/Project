@@ -25,6 +25,7 @@ namespace ScanTemplate
         private bool _bReScan;
         private bool _bSingleTestScan;
         private Papers _papers;
+        private FormPreScan _ActivePreScan;
         private bool _ActiveRescan;
         private int _SelectIndex;
 		public FormM()
@@ -32,6 +33,7 @@ namespace ScanTemplate
 			InitializeComponent();
             _bReScan = false;
             _papers = new Papers();
+            _ActivePreScan = null;
             _rundt = null;
             _ActiveRescan = false;
 		}
@@ -109,21 +111,19 @@ namespace ScanTemplate
             }
             else
             {
-                this.Hide();
-                if (global.UserMode)
-                    fps.SetUserMode();
-                fps.ShowDialog();
-                fps.Clear();
-                fps = null;
-                //if (fps.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-                //{
-                //}
-                //else
-                //{
-                //    MessageBox.Show("预处理失败");
-                //}
-                this.Show();
+                ShowFormPreScan(fps);
             }
+        }
+
+        private  void ShowFormPreScan(FormPreScan fps)
+        {
+            this.Hide();
+            if (global.UserMode)
+                fps.SetUserMode();
+            fps.ShowDialog();
+            fps.Clear();
+            fps = null;
+            this.Show();
         }
         private void buttonMatchTemplate_Click(object sender, EventArgs e)
         {
@@ -387,9 +387,25 @@ namespace ScanTemplate
 
                     string str = _rundt.Rows[e.RowIndex]["CorrectRect"].ToString();
                     Rectangle S_SrcCorrectRect = Tools.StringTools.StringToRectangle(str, '-');
-                 
-                    if (Angle != null && S_SrcCorrectRect.Width>20&& S_SrcCorrectRect.Height>20 )
-                        Angle.SetPaper(S_angle);
+
+                    if (Angle != null && S_SrcCorrectRect.Width > 20 && S_SrcCorrectRect.Height > 20)
+                    {
+                        Angle.SetPaper(S.Angle);
+
+                        ScanData sd = (ScanData)listBoxScantData.SelectedItem;
+                        UnScan dir = new UnScan("img", sd.Fullpath);
+                      
+                        if (_ActivePreScan == null || _ActivePreScan.Path != dir.Fullpath)
+                            _ActivePreScan = new FormPreScan(dir);
+
+
+                        PrePaper pp = _ActivePreScan.PrePaperBy(fn);
+                        if (pp != null)
+                        {
+                            Angle.DxyModel = true;
+                            Angle.SetPaper(pp.listFeatures);
+                        }
+                    }
                     pictureBox1.Image = TemplateTools.DrawInfoBmp(S_Src.Clone(S_SrcCorrectRect,S_Src.PixelFormat),_scan.Template, Angle);
                 }
             }
@@ -1220,17 +1236,16 @@ namespace ScanTemplate
         }
         private void listBoxUnScanDir_KeyUp(object sender, KeyEventArgs e)
         {
+            if (listBoxUnScanDir.SelectedIndex == -1) return;
+            UnScan dir = (UnScan)listBoxUnScanDir.SelectedItem;
+
             if (e.KeyCode == Keys.O)
             {
-                if (listBoxUnScanDir.SelectedIndex == -1) return;
-                UnScan dir = (UnScan)listBoxUnScanDir.SelectedItem;
                 if (Directory.Exists(dir.Fullpath))
                     System.Diagnostics.Process.Start(dir.Fullpath);  
             }
             else if (e.KeyCode == Keys.Delete)
             { //删除未扫描数据
-                if (listBoxUnScanDir.SelectedIndex == -1) return;
-                UnScan dir = (UnScan)listBoxUnScanDir.SelectedItem;
                 FormInput f = new FormInput("删除确认");
                 f.ShowDialog();
                 if (f.StrValue == null || f.StrValue != "Delete" + dir.DirName)
@@ -1241,6 +1256,12 @@ namespace ScanTemplate
                     Directory.Delete(dir.Fullpath, true);
                 //某些清理工作
                 buttonRefresh.PerformClick();
+            }
+            else if (e.KeyCode == Keys.P)
+            {
+                FormPreScan fps = new FormPreScan(dir);
+                bool ExistOKScanJson = fps.PreCheckJsonFile(dir);
+                ShowFormPreScan(fps);
             }
         }
         private void listBoxUnScanDir_SelectedIndexChanged(object sender, EventArgs e)

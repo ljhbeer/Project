@@ -42,6 +42,7 @@ namespace ScanTemplate
             Init(null);
         }
 
+        public string Path { get { return _dir.Fullpath; } }
         public void SetUserMode()
         {
             //toolStrip1;
@@ -1114,6 +1115,7 @@ namespace ScanTemplate
         private UnScan _dir;
         private DetectData _Activedd;
         private bool _init;
+        private Dictionary<string, PrePaper> _filenamedic;
         public PrePapers Prepapers
         {
             get { return _prepapers; }
@@ -1346,6 +1348,26 @@ namespace ScanTemplate
                 }
             }
             return null;
+        }
+
+        internal PrePaper PrePaperBy(string fn)
+        {
+
+            if (_prepapers == null)
+            {
+                bool bc = PreCheckJsonFile(_dir);
+            }
+            if (_prepapers == null)
+                return null;
+            if (_filenamedic == null || _filenamedic.Count != _prepapers.PrePaperList.Count)
+                RebuildFileNameDic();
+            if (_filenamedic.ContainsKey(fn))
+                return _filenamedic[fn];
+            return null;            
+        }
+        private void RebuildFileNameDic()
+        {
+            _filenamedic = _prepapers.PrePaperList.ToDictionary(r => r.ImgFilename);
         }
     }
     public class PrePapers

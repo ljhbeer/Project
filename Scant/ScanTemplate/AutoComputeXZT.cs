@@ -21,7 +21,7 @@ namespace ScanTemplate
             this._src = bmp;
             if (global.Debug && (global.tag & 16) > 0)
             {
-                if (Directory.Exists("F:\\img"))
+                if (!Directory.Exists("F:\\img"))
                 {
                     Directory.CreateDirectory("F:\\img");
                 }

@@ -1125,7 +1125,10 @@ namespace ScanTemplate.FormYJ
             foreach (char c in name)
                 if(c>= '0' && c<='9')
                 sb.Append(c);
-            return sb.ToString();
+            string str = sb.ToString();
+            if (str.Length > 8)
+                str = str.Substring(str.Length - 8);
+            return str;
         }
         private static string ChangeToNumber(string name)
         {
@@ -1135,7 +1138,10 @@ namespace ScanTemplate.FormYJ
                 int ic = c % 10;
                 sb.Append(ic);
             }
-            return sb.ToString();
+            string str = sb.ToString();
+            if (str.Length > 8)
+                str = str.Substring(str.Length - 8);
+            return str;
         }
         [JsonIgnore]
         public int ID { get { return _id; } }

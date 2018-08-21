@@ -55,7 +55,7 @@ namespace ScanTemplate.FormYJ
         }
         private float GetTzOptionScore(List<int> list)
         {
-            return list.Select(r => Options[r].Score).Sum();
+            return list.Select(r => Options[r].Floatscore).Sum();
         }
         public string TotalXztTz(TzOptionsubjects   t_TzOptionsubjects)
         {
